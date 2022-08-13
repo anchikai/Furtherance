@@ -1865,6 +1865,7 @@ local Wiki = {
 		{ -- Start Data
 			{str = "Start Data", fsize = 2, clr = 3, halign = 0},
 			{str = "Items:"},
+			{str = "- Polarity Shift"},
 			{str = "- Rune Shard"},
 			{str = "Stats:"},
 			{str = "- HP: 2 Bone Hearts, 4 Broken Hearts"},
@@ -1896,14 +1897,6 @@ local Wiki = {
 			{str = "Your lasers now target all enemies at once."},
 			{str = "- Your damage is evenly spread across all the enemies."},
 			{str = "- Targeting an enemy will focus most of the damage on it."},
-		},
-		{ -- Notes
-			{str = "Notes", fsize = 2, clr = 3, halign = 0},
-			
-		},
-		{ -- Trivia
-			{str = "Trivia", fsize = 2, clr = 3, halign = 0},
-			
 		},
 	},
 }
