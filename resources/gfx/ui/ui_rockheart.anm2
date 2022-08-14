@@ -1,9 +1,9 @@
 <AnimatedActor>
-	<Info CreatedBy="anchikai." CreatedOn="5/19/2022 5:16:20 PM" Version="15" Fps="30"/>
+	<Info CreatedBy="anchikai." CreatedOn="8/14/2022 7:45:41 PM" Version="16" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="ui_furtheranceheart.png" Id="0"/>
-			<Spritesheet Path="ui_hearts.png" Id="1"/>
+			<Spritesheet Path="ui_hearts_further.png" Id="1"/>
 		</Spritesheets>
 		<Layers>
 			<Layer Name="Heart" Id="0" SpritesheetId="0"/>
