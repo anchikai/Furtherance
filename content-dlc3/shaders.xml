@@ -56,7 +56,7 @@
         </fragment>
     </shader>
     <shader name="Moon and Rock Hearts">
-        <vertex><![CDATA[
+        <vertex><![CDATA[#version 150
             attribute vec3 Position;                                        
             attribute vec4 Color;                                           
             attribute vec2 TexCoord;                                        
