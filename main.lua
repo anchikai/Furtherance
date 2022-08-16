@@ -155,12 +155,12 @@ CARD_TRAP = Isaac.GetCardIdByName("Trap Card")
 CARD_KEY = Isaac.GetCardIdByName("Key Card")
 RUNE_SOUL_OF_PETER = Isaac.GetCardIdByName("Soul of Peter")
 RUNE_SOUL_OF_MIRIAM = Isaac.GetCardIdByName("Soul of Miriam")
-OBJ_ESSENCE_OF_LOVE = Isaac.GetCardIdByName("Essence of Love")
-OBJ_ESSENCE_OF_HATE = Isaac.GetCardIdByName("Essence of Hate")
-OBJ_ESSENCE_OF_LIFE = Isaac.GetCardIdByName("Essence of Life")
-OBJ_ESSENCE_OF_DEATH = Isaac.GetCardIdByName("Essence of Death")
-OBJ_ESSENCE_OF_PROSPERITY = Isaac.GetCardIdByName("Essence of Prosperity")
-OBJ_ESSENCE_OF_DROUGHT = Isaac.GetCardIdByName("Essence of Drought")
+RUNE_ESSENCE_OF_LOVE = Isaac.GetCardIdByName("Essence of Love")
+RUNE_ESSENCE_OF_HATE = Isaac.GetCardIdByName("Essence of Hate")
+RUNE_ESSENCE_OF_LIFE = Isaac.GetCardIdByName("Essence of Life")
+RUNE_ESSENCE_OF_DEATH = Isaac.GetCardIdByName("Essence of Death")
+RUNE_ESSENCE_OF_PROSPERITY = Isaac.GetCardIdByName("Essence of Prosperity")
+RUNE_ESSENCE_OF_DROUGHT = Isaac.GetCardIdByName("Essence of Drought")
 PILLEFFECT_HEARTACHE_UP = Isaac.GetPillEffectByName("Heartache Up")
 PILLEFFECT_HEARTACHE_DOWN = Isaac.GetPillEffectByName("Heartache Down")
 CARD_GOLDEN = Isaac.GetCardIdByName("Golden Card")
@@ -357,6 +357,7 @@ include("lua/challenges/WhereAmI.lua")
 
 -- Achievements
 include("lua/achievements.lua")
+include("lua/achievementCommands.lua")
 
 -- Mod Support
 if EID then
