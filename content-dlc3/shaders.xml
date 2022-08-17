@@ -31,7 +31,7 @@
         ]]>
         </vertex>
         <fragment>
-            <![CDATA[
+            <![CDATA[#version 150
             varying lowp vec4 Color0;  			
             varying mediump vec2 TexCoord0;  			
             varying lowp vec4 RenderDataOut;
@@ -56,7 +56,7 @@
         </fragment>
     </shader>
     <shader name="Moon and Rock Hearts">
-        <vertex><![CDATA[#version 150
+        <vertex><![CDATA[
             attribute vec3 Position;                                        
             attribute vec4 Color;                                           
             attribute vec2 TexCoord;                                        
