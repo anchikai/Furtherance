@@ -1,3 +1,5 @@
+local mod = Furtherance
+
 function mod:SunscreenDamage(entity, amount, flag)
     local player = entity:ToPlayer()
     if player:HasCollectible(CollectibleType.COLLECTIBLE_SUNSCREEN) and flag & DamageFlag.DAMAGE_FIRE == DamageFlag.DAMAGE_FIRE then
