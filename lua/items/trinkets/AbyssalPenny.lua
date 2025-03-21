@@ -6,9 +6,11 @@ function mod:CollectCoin(pickup, collider)
 		if player:HasTrinket(TrinketType.TRINKET_ABYSSAL_PENNY, false) then
 			if collider:ToPlayer() then
 				if pickup.SubType ~= CoinSubType.COIN_STICKYNICKEL then
-					local Water = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_HOLYWATER, 0,
-						pickup.Position, Vector.Zero, player)
-					Water:GetSprite().Scale = Vector.Zero
+					local Water = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL, 0,
+						pickup.Position, Vector.Zero, player):ToEffect()
+					---@cast Water EntityEffect
+					Water.Scale = 2
+					Water.Size = Water.Size * 2
 				end
 			end
 		end
