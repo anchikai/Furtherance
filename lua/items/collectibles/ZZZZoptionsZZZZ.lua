@@ -10,9 +10,9 @@ function MOD:ZZZZ()
 				for _, entity in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
 					entity:ToPickup().OptionsPickupIndex = 2
 				end
-				PLAYER:AddCollectible(CollectibleType.COLLECTIBLE_TMTRAINER)
 				local AAAAAAAAAAAAAA = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, 0, Isaac.GetRandomPosition(), Vector.Zero, PLAYER):ToPickup()
 				AAAAAAAAAAAAAA.OptionsPickupIndex = 2
+				AAAAAAAAAAAAAA:AddEntityFlags(EntityFlag.FLAG_GLITCH)
 				PLAYER:RemoveCollectible(CollectibleType.COLLECTIBLE_TMTRAINER)
 			end
 		end
