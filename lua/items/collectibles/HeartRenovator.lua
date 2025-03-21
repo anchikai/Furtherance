@@ -15,12 +15,13 @@ function mod:LeahHeartCount(isContinued)
 		end
 	end
 end
+
 mod:AddCallback(mod.CustomCallbacks.MC_POST_LOADED, mod.LeahHeartCount)
 
 local BrokenHeartbeatSound = Isaac.GetSoundIdByName("BrokenHeartbeat")
 
 local ChargeBar = Sprite()
-ChargeBar:Load("gfx/chargebar.anm2",true)
+ChargeBar:Load("gfx/chargebar.anm2", true)
 ChargeBar:LoadGraphics()
 
 function mod:UseRenovator(_, _, player)
@@ -35,6 +36,7 @@ function mod:UseRenovator(_, _, player)
 	player:EvaluateItems()
 	return true
 end
+
 mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.UseRenovator, CollectibleType.COLLECTIBLE_HEART_RENOVATOR)
 
 function mod:Hearts(heart, collider)
@@ -46,7 +48,7 @@ function mod:Hearts(heart, collider)
 		[HeartSubType.HEART_BLENDED] = 2,
 	}
 	if RepentancePlusMod then
-		heartCounter[CustomPickups.TaintedHearts.HEART_HOARDED] = 8
+		heartCounter[RepentancePlusMod.CustomPickups.TaintedHearts.HEART_HOARDED] = 8
 	end
 
 	local player = collider:ToPlayer()
@@ -85,19 +87,19 @@ function mod:Hearts(heart, collider)
 	end
 
 	if not player:CanPickRedHearts() then
-		heart:GetSprite():Play("Collect",true)
+		heart:GetSprite():Play("Collect", true)
 		heart:Die()
 		SFXManager():Play(SoundEffect.SOUND_BOSS2_BUBBLES, 1, 0, false)
-
 	elseif player:CanPickRedHearts() and RepentancePlusMod then
-		if heart.SubType == CustomPickups.TaintedHearts.HEART_HOARDED then
-			heart:GetSprite():Play("Collect",true)
+		if heart.SubType == RepentancePlusMod.CustomPickups.TaintedHearts.HEART_HOARDED then
+			heart:GetSprite():Play("Collect", true)
 			heart:Die()
 			SFXManager():Play(SoundEffect.SOUND_BOSS2_BUBBLES, 1, 0, false)
 			player:AddHearts(emptyHearts)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, mod.Hearts, PickupVariant.PICKUP_HEART)
 
 function mod:RenovatorDmg(player, flag)
@@ -112,6 +114,7 @@ function mod:RenovatorDmg(player, flag)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.RenovatorDmg)
 
 function mod:RenovatorOnKill(entity)
@@ -121,12 +124,14 @@ function mod:RenovatorOnKill(entity)
 			local hrRNG = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_HEART_RENOVATOR)
 			if entity:IsActiveEnemy(false) then
 				if hrRNG:RandomInt(16) == 0 then
-					Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_SCARED, entity.Position, Vector.Zero, player)
+					Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_SCARED,
+						entity.Position, Vector.Zero, player)
 				end
 			end
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, mod.RenovatorOnKill)
 
 local wasPressed = false
@@ -140,7 +145,7 @@ function mod:OnUpdate(player)
 		if Furtherance.LeahDoubleTapSpeed == 5 then
 			SnailSpeed = 15
 		else
-			SnailSpeed =  0
+			SnailSpeed = 0
 		end
 		if isPressed then
 			if not wasPressed then
@@ -162,6 +167,7 @@ function mod:OnUpdate(player)
 		wasPressed = isPressed
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, mod.OnUpdate)
 
 function mod:TwoOfHearts(card, player, flags)
@@ -172,15 +178,17 @@ function mod:TwoOfHearts(card, player, flags)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_USE_CARD, mod.TwoOfHearts, Card.CARD_HEARTS_2)
 
 function mod:shouldDeHook()
 	local reqs = {
-	  not game:GetHUD():IsVisible(),
-	  game:GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD)
+		not game:GetHUD():IsVisible(),
+		game:GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD)
 	}
 	return reqs[1] or reqs[2]
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_RENDER, function() -- The actual heart counter for Leah
 	if mod:shouldDeHook() then return end
 	local transparency = 1
@@ -210,7 +218,8 @@ mod:AddCallback(ModCallbacks.MC_POST_RENDER, function() -- The actual heart coun
 
 			local f = Font()
 			f:Load("font/pftempestasevencondensed.fnt")
-			f:DrawString("P" .. (i + 1) .. ":", 37 + offset.X,33 + offset.Y + charoffset, KColor(1, 1, 1, transparency), 0, true)
+			f:DrawString("P" .. (i + 1) .. ":", 37 + offset.X, 33 + offset.Y + charoffset, KColor(1, 1, 1, transparency),
+				0, true)
 			f:DrawString(data.HeartCount, 63 + offset.X, 33 + offset.Y + charoffset, kcolour, 0, true)
 
 			local counter = Sprite()
