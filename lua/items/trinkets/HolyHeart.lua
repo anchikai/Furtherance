@@ -2,8 +2,8 @@ local mod = Furtherance
 local rng = RNG()
 
 function mod:CollectHeart(pickup, collider)
-	if collider.Type == EntityType.ENTITY_PLAYER then
-        local player = collider:ToPlayer()
+	if collider:ToPlayer() then
+		local player = collider:ToPlayer()
 		if player:HasTrinket(TrinketType.TRINKET_HOLY_HEART, false) then
 			if pickup.SubType == HeartSubType.HEART_ETERNAL then
 				if rng:RandomInt(3) == 1 then
@@ -25,4 +25,5 @@ function mod:CollectHeart(pickup, collider)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, mod.CollectHeart, PickupVariant.PICKUP_HEART)

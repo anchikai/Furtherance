@@ -11,7 +11,7 @@ function mod:HeartsToCoins(entity, collider)
 	if RepentancePlusMod then
 		heartCounter[RepentancePlusMod.CustomPickups.TaintedHearts.HEART_HOARDED] = 8
 	end
-	if collider.Type == EntityType.ENTITY_PLAYER then
+	if collider:ToPlayer() then
 		local collider = collider:ToPlayer()
 		local data = mod:GetData(collider)
 		if collider:HasCollectible(CollectibleType.COLLECTIBLE_HEART_EMBEDDED_COIN) then
@@ -20,7 +20,7 @@ function mod:HeartsToCoins(entity, collider)
 					if entity.SubType == subtype then
 						local emptyHearts = collider:GetEffectiveMaxHearts() - collider:GetHearts()
 						local fullHearts = collider:GetHearts() + collider:GetSoulHearts() +
-						collider:GetBrokenHearts() * 2
+							collider:GetBrokenHearts() * 2
 						if emptyHearts <= amount then
 							if subtype ~= HeartSubType.HEART_BLENDED then
 								collider:AddCoins(amount - emptyHearts)
@@ -51,7 +51,7 @@ function mod:HeartsToCoins(entity, collider)
 					if entity.SubType == subtype then
 						local emptyHearts = collider:GetEffectiveMaxHearts() - collider:GetHearts()
 						local fullHearts = collider:GetHearts() + collider:GetSoulHearts() +
-						collider:GetBrokenHearts() * 2
+							collider:GetBrokenHearts() * 2
 						if emptyHearts <= amount then
 							if subtype ~= HeartSubType.HEART_BLENDED then
 								collider:AddCoins(amount - emptyHearts)

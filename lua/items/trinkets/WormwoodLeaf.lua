@@ -7,7 +7,7 @@ function mod:LeafDamage(player)
 		local goldenbox = player:GetTrinketMultiplier(TrinketType.TRINKET_WORMWOOD_LEAF)
 		local data = mod:GetData(player)
 		if not player:GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_HOLY_MANTLE) and not player:HasCollectible(CollectibleType.COLLECTIBLE_ISAACS_HEART)
-		and (rng:RandomFloat() <= (0.02 * goldenbox)) then
+			and (rng:RandomFloat() <= (0.02 * goldenbox)) then
 			if data.costume == -1 then
 				Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, player.Position, Vector.Zero, player)
 				player:AddCostume(Isaac.GetItemConfig():GetNullItem(4), false)
@@ -19,6 +19,7 @@ function mod:LeafDamage(player)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.LeafDamage, EntityType.ENTITY_PLAYER)
 
 function mod:StatueTimer(player)
@@ -32,6 +33,7 @@ function mod:StatueTimer(player)
 		player:RemoveCostume(Isaac.GetItemConfig():GetNullItem(4), false)
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.StatueTimer)
 
 function mod:CantMove(player)
@@ -39,30 +41,30 @@ function mod:CantMove(player)
 end
 
 function mod:NoMovement(entity, hook, button)
-	if entity ~= nil and entity.Type == EntityType.ENTITY_PLAYER and not entity:IsDead() and hook == InputHook.GET_ACTION_VALUE then
+	if entity ~= nil and entity:ToPlayer() and not entity:IsDead() and hook == InputHook.GET_ACTION_VALUE then
 		local player = entity:ToPlayer()
 		if player:HasTrinket(TrinketType.TRINKET_WORMWOOD_LEAF, false) then
 			local data = mod:GetData(player)
 			if data.costume > 15 then
 				if mod:CantMove(player) then
 					--if not player:HasCurseMistEffect() then
-						if button == ButtonAction.ACTION_LEFT then
-							return 0
-						end
-						if button == ButtonAction.ACTION_RIGHT then
-							return 0
-						end
-						if button == ButtonAction.ACTION_UP then
-							return 0
-						end
-						if button == ButtonAction.ACTION_DOWN then
-							return 0
-						end
+					if button == ButtonAction.ACTION_LEFT then
+						return 0
+					end
+					if button == ButtonAction.ACTION_RIGHT then
+						return 0
+					end
+					if button == ButtonAction.ACTION_UP then
+						return 0
+					end
+					if button == ButtonAction.ACTION_DOWN then
+						return 0
+					end
 					--end
 				end
 			end
 		end
 	end
-
 end
+
 mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, mod.NoMovement, 2)
