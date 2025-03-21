@@ -685,9 +685,10 @@ function mod:StartUnlocksPickups(entity)
 			entity:Morph(entity.Type, entity.Variant, allRunes[rng:RandomInt(#allRunes) + 1], true)
 		end
 	end
+
 	if mod.Unlocks.LeahB.GreedMode.Hard == false then
 		if entity.Variant == PickupVariant.PICKUP_TAROTCARD and entity.SubType == CARD_REVERSE_HOPE then
-			entity:Morph(entity.Type, entity.Variant, allRunes[rng:RandomInt(#allCards) + 1], true)
+			entity:Morph(entity.Type, entity.Variant, allCards[rng:RandomInt(#allCards) + 1], true)
 		end
 	end
 
@@ -709,7 +710,7 @@ function mod:StartUnlocksPickups(entity)
 	end
 	if mod.Unlocks.PeterB.GreedMode.Hard == false then
 		if entity.Variant == PickupVariant.PICKUP_TAROTCARD and entity.SubType == CARD_REVERSE_FAITH then
-			entity:Morph(entity.Type, entity.Variant, allRunes[rng:RandomInt(#allCards) + 1], true)
+			entity:Morph(entity.Type, entity.Variant, allCards[rng:RandomInt(#allCards) + 1], true)
 		end
 	end
 
@@ -726,7 +727,7 @@ function mod:StartUnlocksPickups(entity)
 	end
 	if mod.Unlocks.MiriamB.GreedMode.Hard == false then
 		if entity.Variant == PickupVariant.PICKUP_TAROTCARD and entity.SubType == CARD_REVERSE_CHARITY then
-			entity:Morph(entity.Type, entity.Variant, allRunes[rng:RandomInt(#allCards) + 1], true)
+			entity:Morph(entity.Type, entity.Variant, allCards[rng:RandomInt(#allCards) + 1], true)
 		end
 	end
 	if mod.Unlocks.MiriamB.MegaSatan.Hard == false then
