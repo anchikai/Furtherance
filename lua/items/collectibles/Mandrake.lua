@@ -21,12 +21,9 @@ function mod:Mandrake()
 					option = 2
 				end
 
-				-- Thanks Laraz#2909!
-				local ID
-				repeat
-					ID = player:GetDropRNG():RandomInt(Isaac.GetItemConfig():GetCollectibles().Size - 1) + 1
-				until (Isaac.GetItemConfig():GetCollectible(ID).Tags & ItemConfig.TAG_QUEST ~= ItemConfig.TAG_QUEST
-				and Isaac.GetItemConfig():GetCollectible(ID).Type == 4)
+				local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_MANDRAKE)
+				local ID = game:GetItemPool():GetCollectible(ItemPoolType.POOL_BABY_SHOP, true, rng:GetSeed())
+				rng:Next()
 
 				local babee = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, ID, room:GetGridPosition(pos), Vector.Zero, player):ToPickup()
 				babee.OptionsPickupIndex = option
