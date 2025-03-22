@@ -244,7 +244,7 @@ function mod:LeahbBrokenTears(tear)
 		else
 			data.brokentears = false
 		end
-		if player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and player:GetName() == "PlayerType.PLAYER_LEAH_B" then -- +20% Chance if you have Birthright
+		if player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and player:GetPlayerType() == PlayerType.PLAYER_LEAH_B then -- +20% Chance if you have Birthright
 			if brokenRoll <= (player:GetBrokenHearts() * 5 + 45) then
 				data.brokentears = true
 				tear.Color = Color(1, 0.588, 0.686, 1, 0, 0, 0)

@@ -168,7 +168,7 @@ function mod:OnUpdate(player)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, mod.OnUpdate)
+mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.OnUpdate)
 
 function mod:TwoOfHearts(card, player, flags)
 	local data = mod:GetData(player)
