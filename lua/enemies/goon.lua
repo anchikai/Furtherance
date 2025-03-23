@@ -3,13 +3,13 @@ local game = Game()
 local rng = RNG()
 
 local Settings = {
-	MoveSpeed = 4.25,
-	Range = 120,
-	SlowAmount  = 0.1,
+	MoveSpeed      = 4.25,
+	Range          = 120,
+	SlowAmount     = 0.1,
 	ShakeThreshold = 10,
-	NeededShakes = 10,
-	StunTime = 20,
-	RandomOffset = 10
+	NeededShakes   = 10,
+	StunTime       = 20,
+	RandomOffset   = 10
 }
 
 local States = {
@@ -33,13 +33,13 @@ function mod:GoonInit(entity)
 		if entity:IsChampion() then
 			sprite:ReplaceSpritesheet(2, "gfx/monsters/goons/goon_nose_champion.png")
 
-		-- Blue
+			-- Blue
 		elseif stage == LevelStage.STAGE4_3 then
 			sprite:ReplaceSpritesheet(0, "gfx/monsters/goons/blue_goon.png")
 			sprite:ReplaceSpritesheet(1, "gfx/monsters/goons/blue_goon.png")
 			sprite:ReplaceSpritesheet(2, "gfx/monsters/goons/blue_goon_nose.png")
 
-		-- Devilish / regular
+			-- Devilish / regular
 		else
 			-- Devilish skin
 			local goonType = ""
@@ -48,25 +48,29 @@ function mod:GoonInit(entity)
 				sprite:ReplaceSpritesheet(1, "gfx/monsters/goons/devilish_goon.png")
 				goonType = "devilish_"
 			end
-			
+
 			-- Nose color
 			local noseColor = rng:RandomInt(4)
 			sprite:ReplaceSpritesheet(2, "gfx/monsters/goons/" .. goonType .. "goon_nose_" .. noseColor .. ".png")
 		end
 		sprite:LoadGraphics()
-		
+
 		-- Multiple spawner
 		if entity.SubType > 0 then
 			for i = 0, entity.SubType - 1 do -- High amounts near rocks will most likely result in some of them spawning on top of the rocks!
-				local getPos = Vector(math.random(-Settings.RandomOffset, Settings.RandomOffset), math.random(-Settings.RandomOffset, Settings.RandomOffset))
+				local getPos = Vector(math.random(-Settings.RandomOffset, Settings.RandomOffset),
+					math.random(-Settings.RandomOffset, Settings.RandomOffset))
 				Isaac.Spawn(entity.Type, entity.Variant, 0, entity.Position + getPos, Vector.Zero, nil)
 			end
-			entity.Position = entity.Position + Vector(math.random(-Settings.RandomOffset, Settings.RandomOffset), math.random(-Settings.RandomOffset, Settings.RandomOffset))
+			entity.Position = entity.Position +
+			Vector(math.random(-Settings.RandomOffset, Settings.RandomOffset),
+				math.random(-Settings.RandomOffset, Settings.RandomOffset))
 			entity.SubType = 0
 		end
 		data.state = States.Appear
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.GoonInit, 200)
 
 function mod:GoonUpdate(entity)
@@ -86,8 +90,6 @@ function mod:GoonUpdate(entity)
 			if entity.Index % 2 == 1 then
 				sprite.FlipX = true
 			end
-
-
 		elseif data.state == States.Chilling then
 			entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_ALL
 			sprite.Offset = Vector.Zero
@@ -96,7 +98,7 @@ function mod:GoonUpdate(entity)
 			if not sprite:IsPlaying("Idle") and not sprite:IsPlaying("GetUp") then
 				sprite:Play("Idle", true)
 			end
-			
+
 			if data.timer then
 				if data.timer <= 0 then
 					data.timer = nil
@@ -114,8 +116,6 @@ function mod:GoonUpdate(entity)
 			if sprite:IsPlaying("GetUp") and sprite:GetFrame() == 6 then
 				data.state = States.Chasing
 			end
-
-
 		elseif data.state == States.Chasing then
 			-- Movement
 			local speed = Settings.MoveSpeed
@@ -125,7 +125,6 @@ function mod:GoonUpdate(entity)
 
 			if entity:HasEntityFlags(EntityFlag.FLAG_CONFUSION) then
 				entity.Pathfinder:MoveRandomly(false)
-
 			else
 				if entity.Pathfinder:HasPathToPos(target.Position) then
 					if game:GetRoom():CheckLine(entity.Position, target.Position, 0, 0, false, false) then
@@ -133,7 +132,6 @@ function mod:GoonUpdate(entity)
 					else
 						entity.Pathfinder:FindGridPath(target.Position, speed / 6, 500, false)
 					end
-
 				else
 					entity.Velocity = (entity.Velocity + (Vector.Zero - entity.Velocity) * 0.25)
 				end
@@ -161,8 +159,6 @@ function mod:GoonUpdate(entity)
 			else
 				sprite:SetOverlayFrame("HeadDown", 0)
 			end
-
-
 		elseif data.state == States.Attached then
 			entity.Position = entity.Parent.Position
 			entity.Velocity = entity.Parent.Velocity
@@ -178,13 +174,13 @@ function mod:GoonUpdate(entity)
 			if 1 - (#entity.Parent:GetData().goonies * Settings.SlowAmount) > 0.1 then
 				entity.Parent:AddSlowing(EntityRef(entity), 1, 1 - (#entity.Parent:GetData().goonies * Settings.SlowAmount), Color(1,1,1,1,0,0,0))
 			else
-				entity.Parent:AddSlowing(EntityRef(entity), 1, 0.1, Color(1,1,1,1,0,0,0))
+				entity.Parent:AddSlowing(EntityRef(entity), 1, 0.1, Color(1, 1, 1, 1, 0, 0, 0))
 			end
 
 			if entity.Index == entity.Parent:GetData().goonies[1] then
 				-- Get random first needed direction
 				if not data.needDir then
-					data.needDir = 0 + (math.random(0,1) * 2)
+					data.needDir = 0 + (math.random(0, 1) * 2)
 				end
 
 				-- Check if player is moving back and forth
@@ -200,19 +196,19 @@ function mod:GoonUpdate(entity)
 					else
 						data.needDir = 0
 					end
-					
+
 					data.timer = Settings.ShakeThreshold
 				end
 
 				-- Reset shake count if player is too slow
-				if data.timer then 
+				if data.timer then
 					if data.timer <= 0 then
 						data.shakes = 0
 					else
 						data.timer = data.timer - 1
 					end
 				end
-				
+
 				-- Fall off
 				if data.shakes and data.shakes >= Settings.NeededShakes then
 					data.shakes = 0
@@ -224,7 +220,7 @@ function mod:GoonUpdate(entity)
 					if sprite.FlipX == false then
 						mult = -1
 					end
-					entity.Velocity = Vector(mult * 15, math.random(-10,10))
+					entity.Velocity = Vector(mult * 15, math.random(-10, 10))
 
 					data.timer = Settings.StunTime
 					SFXManager():Play(SoundEffect.SOUND_BABY_HURT)
@@ -235,7 +231,7 @@ function mod:GoonUpdate(entity)
 
 		-- Remove from parent list on death
 		if entity:HasMortalDamage() and entity:IsDead() and entity.Parent and entity.Parent:GetData().goonies then
-			for i,g in pairs(entity.Parent:GetData().goonies) do
+			for i, g in pairs(entity.Parent:GetData().goonies) do
 				if g == entity.Index then
 					table.remove(entity.Parent:GetData().goonies, i)
 					entity.Parent:ClearEntityFlags(EntityFlag.FLAG_SLOW)
@@ -244,18 +240,19 @@ function mod:GoonUpdate(entity)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.GoonUpdate, 200)
 
 -- Attach to player
 function mod:GoonCollide(goon, collider)
-	if goon.Variant == 3071 and collider.Type == EntityType.ENTITY_PLAYER and goon:GetData().state == States.Chasing then
+	if goon.Variant == 3071 and collider:ToPlayer() and goon:GetData().state == States.Chasing then
 		if not collider:GetData().goonies then
 			collider:GetData().goonies = {}
 		end
 
 		if collider:GetData().goonies then
 			local add = true
-			for i,g in pairs(collider:GetData().goonies) do
+			for i, g in pairs(collider:GetData().goonies) do
 				if collider:GetData().goonies[i] == goon.Index then
 					add = false
 				end
@@ -271,6 +268,7 @@ function mod:GoonCollide(goon, collider)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, mod.GoonCollide, 200)
 
 -- Clear any goons that didn't get removed
@@ -283,4 +281,5 @@ function mod:ClearGoons()
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.ClearGoons)

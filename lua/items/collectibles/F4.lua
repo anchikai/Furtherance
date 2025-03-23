@@ -43,6 +43,7 @@ function mod:UseF4(_, _, player)
 		local bombs = player:GetNumBombs()
 		local coins = player:GetNumCoins()
 		local keys = player:GetNumKeys()
+		local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_F4_KEY)
 
 		local allowedRooms
 		if (coins == bombs) and (bombs == keys) then

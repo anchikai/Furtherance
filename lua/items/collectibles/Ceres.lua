@@ -57,13 +57,11 @@ mod:AddCallback(ModCallbacks.MC_PRE_KNIFE_COLLISION, mod.CeresTearEffect)
 
 function mod:CeresCreep(player)
 	local pdata = mod:GetData(player)
-	if pdata.CeresTentacle == nil then
-		pdata.CeresTentacle = false
-	end
 	if pdata.CeresCreep ~= nil and pdata.CeresCreep > 0 then
 		pdata.CeresCreep = pdata.CeresCreep - 1
 		if game:GetFrameCount() % 5 == 0 then
-			Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_GREEN, 0, player.Position, Vector.Zero, player)
+			local creep = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_GREEN, 0, player.Position, Vector.Zero, player)
+			creep:GetData().IsCeresCreep = true
 		end
 		if pdata.CeresCreep <= 0 then
 			pdata.CeresCreep = 0
@@ -72,23 +70,21 @@ function mod:CeresCreep(player)
 end
 mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.CeresCreep)
 
-function mod:TouchCreep(entity, collider) -- If an enemy walks over the creep
-	for i = 0, game:GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(i)
-		local pdata = mod:GetData(player)
-		if player:HasCollectible(CollectibleType.COLLECTIBLE_CERES) then
-			if (pdata.CeresCreep ~= nil and pdata.CeresCreep < 90) and entity.Variant == EffectVariant.PLAYER_CREEP_GREEN then
-				local tempEffects = player:GetEffects()
-				if pdata.CeresTentacle == false then
-					tempEffects:RemoveCollectibleEffect(CollectibleType.COLLECTIBLE_WORM_FRIEND, -1)
-					collider:AddSlowing(EntityRef(player), 30, 0.5, Color(0.75, 0.75, 0.75, 1, 0, 0, 0))
-					pdata.CeresTentacle = true
-				elseif pdata.CeresTentacle == true then
-					tempEffects:AddCollectibleEffect(CollectibleType.COLLECTIBLE_WORM_FRIEND, false, 1)
-					pdata.CeresTentacle = false
-				end
-			end
+local function isValidTarget(ent)
+	return ent:ToNPC() and ent:IsActiveEnemy(false) and not ent:HasEntityFlags(EntityFlag.FLAG_CHARM) and not ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
+end
+
+---@param effect EntityEffect
+function mod:TouchCreep(effect) -- If an enemy walks over the creep
+	local player = effect.SpawnerEntity and effect.SpawnerEntity:ToPlayer()
+	if not player or not effect:GetData().IsCeresCreep then return end
+	for _, ent in ipairs(Isaac.FindInRadius(effect.Position, effect.Size, EntityPartition.ENEMY)) do
+		if isValidTarget(ent) and not ent:GetData().CeresTentacle then
+			--[[ Isaac.Spawn(EntityType.ENTITY_FAMILIAR, FamiliarVariant.WORM_FRIEND, 0,
+			ent.Position, Vector.Zero, player) ]]
+			ent:AddSlowing(EntityRef(player), 30, 0.5, Color(0.75, 0.75, 0.75, 1, 0, 0, 0))
+			ent:GetData().CeresTentacle = true
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, mod.TouchCreep, EntityType.ENTITY_EFFECT)
+mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, mod.TouchCreep, EffectVariant.PLAYER_CREEP_GREEN)

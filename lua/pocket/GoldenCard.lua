@@ -86,65 +86,69 @@ local allCards = {
 
 local allCardsSet = {}
 for _, card in ipairs(allCardsSet) do
-    allCardsSet[card] = true
+	allCardsSet[card] = true
 end
 
 local function pickCard(rng)
-    return allCards[rng:RandomInt(#allCards) + 1]
+	return allCards[rng:RandomInt(#allCards) + 1]
 end
 
 local processedCards = {}
 
 local skullGridIndex = nil
 function mod:SpawnGoldenCard(entityType, variant, subtype, position, _, spawner, seed)
-    if processedCards[seed] then return end
-    -- has to be a card that is a tarot card
-    if entityType ~= EntityType.ENTITY_PICKUP or variant ~= PickupVariant.PICKUP_TAROTCARD or not allCardsSet[subtype] then return end
+	if processedCards[seed] then return end
+	-- has to be a card that is a tarot card
+	if entityType ~= EntityType.ENTITY_PICKUP or variant ~= PickupVariant.PICKUP_TAROTCARD or not allCardsSet[subtype] then return end
 
-    -- spawner cannot be the player
-    if spawner ~= nil and spawner.Type == EntityType.ENTITY_PLAYER then return end
+	-- spawner cannot be the player
+	if spawner ~= nil and spawner:ToPlayer() then return end
 
-    local room = game:GetRoom()
-    local index = room:GetGridIndex(position)
-    if index == skullGridIndex then return end
+	local room = game:GetRoom()
+	local index = room:GetGridIndex(position)
+	if index == skullGridIndex then return end
 
-    local rng = RNG()
-    rng:SetSeed(seed, 1)
-    if rng:RandomFloat() <= 0.025 then
-        processedCards[seed] = true
-        return { entityType, variant, CARD_GOLDEN, seed }
-    end
+	local rng = RNG()
+	rng:SetSeed(seed, 1)
+	if rng:RandomFloat() <= 0.025 then
+		processedCards[seed] = true
+		return { entityType, variant, CARD_GOLDEN, seed }
+	end
 end
+
 mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, mod.SpawnGoldenCard)
 
 function mod:ClearProcessedCards()
-    for k in pairs(processedCards) do
-        processedCards[k] = nil
-    end
+	for k in pairs(processedCards) do
+		processedCards[k] = nil
+	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, mod.ClearProcessedCards)
 
 function mod:UseGoldCard(card, player, flags)
-    local rng = player:GetCardRNG(CARD_GOLDEN)
-    if rng:RandomFloat() <= 0.5 then
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_BLANK_CARD) == false then
-            player:AddCard(CARD_GOLDEN)
-        end
-    end
-    player:UseCard(pickCard(rng), UseFlag.USE_NOANIM)
+	local rng = player:GetCardRNG(CARD_GOLDEN)
+	if rng:RandomFloat() <= 0.5 then
+		if player:HasCollectible(CollectibleType.COLLECTIBLE_BLANK_CARD) == false then
+			player:AddCard(CARD_GOLDEN)
+		end
+	end
+	player:UseCard(pickCard(rng), UseFlag.USE_NOANIM)
 end
+
 mod:AddCallback(ModCallbacks.MC_USE_CARD, mod.UseGoldCard, CARD_GOLDEN)
 
 function mod:CheckForFoolCard()
-    -- only check in depths II
-    if game:GetLevel():GetStage() ~= LevelStage.STAGE3_2 then return end
+	-- only check in depths II
+	if game:GetLevel():GetStage() ~= LevelStage.STAGE3_2 then return end
 
-    local room = Game():GetRoom()
-    for i = 1, room:GetGridSize() do
-        local gridEntity = room:GetGridEntity(i)
-        if gridEntity ~= nil and gridEntity:GetType() == GridEntityType.GRID_ROCK_ALT2 then
-            skullGridIndex = i
-        end
-    end
+	local room = Game():GetRoom()
+	for i = 1, room:GetGridSize() do
+		local gridEntity = room:GetGridEntity(i)
+		if gridEntity ~= nil and gridEntity:GetType() == GridEntityType.GRID_ROCK_ALT2 then
+			skullGridIndex = i
+		end
+	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.CheckForFoolCard)

@@ -6,8 +6,8 @@ function mod:UseAlt(_, _, player)
 	local stageType = game:GetLevel():GetStageType()
 	local level = game:GetLevel()
 	local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_ALT_KEY)
-	local randomAB = rng:RandomInt(3)
-	local randomREP = rng:RandomInt(2)
+	local randomAB = rng:RandomInt(3) + 1
+	local randomREP = rng:RandomInt(2) + 1
 	local data = mod:GetData(player)
 	data.NoChargeAlt = true
 

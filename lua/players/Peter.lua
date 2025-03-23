@@ -8,12 +8,13 @@ function mod:OnInit(player)
 	local data = mod:GetData(player)
 	data.Init = true
 
-	if player:GetPlayerType() == PlayerType.PLAYER_PETER then -- If the player is Peter it will apply his drip
+	if player:GetPlayerType() == PlayerType.PLAYER_PETER then    -- If the player is Peter it will apply his drip
 		player:AddNullCostume(COSTUME_PETER_A_DRIP)
 	elseif player:GetPlayerType() == PlayerType.PLAYER_PETER_B then -- Apply different drip for his tainted variant
 		player:AddNullCostume(COSTUME_PETER_B_DRIP)
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.OnInit)
 
 function mod:GivePeterItems(player)
@@ -35,6 +36,7 @@ function mod:GivePeterItems(player)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.GivePeterItems)
 
 function mod:PeterUpdate(player)
@@ -44,6 +46,7 @@ function mod:PeterUpdate(player)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.PeterUpdate)
 
 function mod:PeterStats(player, flag)
@@ -66,10 +69,11 @@ function mod:PeterStats(player, flag)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.PeterStats)
 
 function mod:Hearts(entity, collider)
-	if collider.Type == EntityType.ENTITY_PLAYER then
+	if collider:ToPlayer() then
 		local player = collider:ToPlayer()
 		local data = mod:GetData(player)
 		if player:GetPlayerType() == PlayerType.PLAYER_PETER_B then -- Prevent Tainted Peter from obtaining Non-Red Health
@@ -89,6 +93,7 @@ function mod:Hearts(entity, collider)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, mod.Hearts, PickupVariant.PICKUP_HEART)
 
 function mod:PeterQual(entity)
@@ -107,6 +112,7 @@ function mod:PeterQual(entity)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, mod.PeterQual, PickupVariant.PICKUP_COLLECTIBLE)
 
 function mod:BloodyTears(tear)
@@ -119,6 +125,7 @@ function mod:BloodyTears(tear)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.BloodyTears)
 
 function mod:ClickerFix(_, _, player)
@@ -130,6 +137,7 @@ function mod:ClickerFix(_, _, player)
 		player:AddNullCostume(COSTUME_PETER_B_DRIP)
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.ClickerFix, CollectibleType.COLLECTIBLE_CLICKER)
 
 
@@ -142,8 +150,8 @@ function mod:TaintedPeterHome()
 			local RememberPocket = player:GetActiveCharge(ActiveSlot.SLOT_POCKET)
 			for _, entity in ipairs(Isaac.GetRoomEntities()) do
 				if (((entity.Type == EntityType.ENTITY_PICKUP and entity.Variant == PickupVariant.PICKUP_COLLECTIBLE)
-				or (entity.Type == EntityType.ENTITY_SHOPKEEPER)) and room:IsFirstVisit())
-				or (entity.Type == EntityType.ENTITY_SLOT and entity.Variant == 14) then
+						or (entity.Type == EntityType.ENTITY_SHOPKEEPER)) and room:IsFirstVisit())
+					or (entity.Type == EntityType.ENTITY_SLOT and entity.Variant == 14) then
 					entity:Remove()
 					player:ChangePlayerType(PlayerType.PLAYER_PETER_B)
 					Isaac.Spawn(EntityType.ENTITY_SLOT, 14, 0, entity.Position, Vector.Zero, nil)
@@ -155,6 +163,7 @@ function mod:TaintedPeterHome()
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.TaintedPeterHome)
 
 function mod:UnlockTaintedPeter(player)
@@ -172,4 +181,5 @@ function mod:UnlockTaintedPeter(player)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.UnlockTaintedPeter)

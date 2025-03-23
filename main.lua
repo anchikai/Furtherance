@@ -182,6 +182,7 @@ BombSubType.BOMB_CHARGED = 118
 include("lua/customcallbacks.lua")
 include("lua/saveapi.lua")
 include("lua/piber.lua")
+include("lua.utility.helpers.misc_util")
 
 -- Players
 include("lua/players/Leah.lua")
@@ -213,7 +214,6 @@ include("lua/items/collectibles/Technology-1.lua")
 include("lua/items/collectibles/BookOfSwiftness.lua")
 include("lua/items/collectibles/BookOfAmbit.lua")
 include("lua/items/collectibles/NEASS.lua")
-include("lua/items/collectibles/Cringe.lua")
 include("lua/items/collectibles/ZZZZoptionsZZZZ.lua")
 include("lua/items/collectibles/Brunch.lua")
 include("lua/items/collectibles/CrabLegs.lua")
@@ -310,6 +310,7 @@ include("lua/items/trinkets/BI-84.lua")
 include("lua/items/trinkets/GlitchedPenny.lua")
 include("lua/items/trinkets/HammerheadWorm.lua")
 include("lua/items/trinkets/Parasol.lua")
+include("lua/items/trinkets/Cringe.lua")
 
 -- Enemies
 include("lua/enemies/Hostikai.lua")

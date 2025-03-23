@@ -281,13 +281,13 @@ mod:ShelveModData({
 	Unlocks = createUnlocksTable
 })
 
-local function PlayAchievement(achievement,playerName,name)
+local function PlayAchievement(achievement, playerName, name)
 	if GiantBookAPI and Furtherance.PrefferedAPI == 1 then
 		GiantBookAPI.ShowAchievement(achievement .. ".png")
 	elseif ScreenAPI and (Furtherance.PrefferedAPI == 2 or (not GiantBookAPI and Furtherance.PrefferedAPI ~= 3)) then
-		ScreenAPI.PlayAchievement("gfx/ui/achievements/"..achievement..".png", 60)
+		ScreenAPI.PlayAchievement("gfx/ui/achievements/" .. achievement .. ".png", 60)
 	else
-		table.insert(noAPIachievements,AchievementText[playerName][name])
+		table.insert(noAPIachievements, AchievementText[playerName][name])
 	end
 end
 
@@ -299,10 +299,10 @@ local function GetPlayerAchievements(player)
 		isTainted = false
 	elseif ptype == PlayerType.PLAYER_LEAH_B or ptype == PlayerType.PLAYER_PETER_B or ptype == PlayerType.PLAYER_MIRIAM_B then
 		isTainted = true
-		name = name.."B"
+		name = name .. "B"
 	end
 	if isTainted ~= nil then
-		return {name, isTainted}
+		return { name, isTainted }
 	else
 		return nil
 	end
@@ -314,7 +314,7 @@ end
 
 local function setCanShoot(player, canShoot) -- Funciton Credit: im_tem
 	local oldchallenge = game.Challenge
-	if Isaac.GetChallenge() == 0 then -- Fix by anchikai
+	if Isaac.GetChallenge() == 0 then        -- Fix by anchikai
 		game.Challenge = canShoot and Challenge.CHALLENGE_NULL or Challenge.CHALLENGE_SOLAR_SYSTEM
 		player:UpdateCanShoot()
 		game.Challenge = oldchallenge
@@ -322,12 +322,12 @@ local function setCanShoot(player, canShoot) -- Funciton Credit: im_tem
 end
 
 function mod:NoMovement(entity, hook, button)
-	if entity ~= nil and entity.Type == EntityType.ENTITY_PLAYER and not entity:IsDead() and hook == InputHook.GET_ACTION_VALUE then
+	if entity ~= nil and entity:ToPlayer() and not entity:IsDead() and hook == InputHook.GET_ACTION_VALUE then
 		local player = entity:ToPlayer()
 		if ((mod.Unlocks.Leah.Tainted == false and player:GetPlayerType() == PlayerType.PLAYER_LEAH_B)
-		or (mod.Unlocks.Peter.Tainted == false and player:GetPlayerType() == PlayerType.PLAYER_PETER_B)
-		or (mod.Unlocks.Miriam.Tainted == false and player:GetPlayerType() == PlayerType.PLAYER_MIRIAM_B))
-		and mod:CantMove(player) then
+				or (mod.Unlocks.Peter.Tainted == false and player:GetPlayerType() == PlayerType.PLAYER_PETER_B)
+				or (mod.Unlocks.Miriam.Tainted == false and player:GetPlayerType() == PlayerType.PLAYER_MIRIAM_B))
+			and mod:CantMove(player) then
 			setCanShoot(player, false)
 			if button == ButtonAction.ACTION_LEFT or button == ButtonAction.ACTION_RIGHT or button == ButtonAction.ACTION_UP or button == ButtonAction.ACTION_DOWN then
 				return 0
@@ -335,19 +335,21 @@ function mod:NoMovement(entity, hook, button)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, mod.NoMovement, 2)
 
 local noAPITextCooldown = 0
 function mod:TextAchievementHandler()
 	if #noAPIachievements > 0 and noAPITextCooldown == 0 then
-		game:GetHUD():ShowItemText("Unlocked "..noAPIachievements[1])
+		game:GetHUD():ShowItemText("Unlocked " .. noAPIachievements[1])
 		noAPITextCooldown = 90
-		table.remove(noAPIachievements,1)
+		table.remove(noAPIachievements, 1)
 	end
 	if noAPITextCooldown > 0 then
 		noAPITextCooldown = noAPITextCooldown - 1
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_UPDATE, mod.TextAchievementHandler)
 
 function mod:StartUnlocks()
@@ -540,6 +542,7 @@ function mod:StartUnlocks()
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, mod.StartUnlocks)
 
 local allCards = {
@@ -685,9 +688,10 @@ function mod:StartUnlocksPickups(entity)
 			entity:Morph(entity.Type, entity.Variant, allRunes[rng:RandomInt(#allRunes) + 1], true)
 		end
 	end
+
 	if mod.Unlocks.LeahB.GreedMode.Hard == false then
 		if entity.Variant == PickupVariant.PICKUP_TAROTCARD and entity.SubType == CARD_REVERSE_HOPE then
-			entity:Morph(entity.Type, entity.Variant, allRunes[rng:RandomInt(#allCards) + 1], true)
+			entity:Morph(entity.Type, entity.Variant, allCards[rng:RandomInt(#allCards) + 1], true)
 		end
 	end
 
@@ -709,7 +713,7 @@ function mod:StartUnlocksPickups(entity)
 	end
 	if mod.Unlocks.PeterB.GreedMode.Hard == false then
 		if entity.Variant == PickupVariant.PICKUP_TAROTCARD and entity.SubType == CARD_REVERSE_FAITH then
-			entity:Morph(entity.Type, entity.Variant, allRunes[rng:RandomInt(#allCards) + 1], true)
+			entity:Morph(entity.Type, entity.Variant, allCards[rng:RandomInt(#allCards) + 1], true)
 		end
 	end
 
@@ -726,7 +730,7 @@ function mod:StartUnlocksPickups(entity)
 	end
 	if mod.Unlocks.MiriamB.GreedMode.Hard == false then
 		if entity.Variant == PickupVariant.PICKUP_TAROTCARD and entity.SubType == CARD_REVERSE_CHARITY then
-			entity:Morph(entity.Type, entity.Variant, allRunes[rng:RandomInt(#allCards) + 1], true)
+			entity:Morph(entity.Type, entity.Variant, allCards[rng:RandomInt(#allCards) + 1], true)
 		end
 	end
 	if mod.Unlocks.MiriamB.MegaSatan.Hard == false then
@@ -735,6 +739,7 @@ function mod:StartUnlocksPickups(entity)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, mod.StartUnlocksPickups)
 
 function mod:UpdateCompletion(name, difficulty)
@@ -750,7 +755,7 @@ function mod:UpdateCompletion(name, difficulty)
 				TargetTab[name].Unlock = true
 
 				if AchievementGraphics[playerName][name] then
-					PlayAchievement(AchievementGraphics[playerName][name],playerName,name)
+					PlayAchievement(AchievementGraphics[playerName][name], playerName, name)
 				end
 			end
 			if difficulty == Difficulty.DIFFICULTY_HARD then
@@ -758,7 +763,7 @@ function mod:UpdateCompletion(name, difficulty)
 			elseif difficulty == Difficulty.DIFFICULTY_GREEDIER then
 				if TargetTab[name].Hard == false then
 					TargetTab[name].Hard = true
-					PlayAchievement(AchievementGraphics[playerName].Greedier,playerName,"Greedier")
+					PlayAchievement(AchievementGraphics[playerName].Greedier, playerName, "Greedier")
 				end
 			end
 
@@ -766,7 +771,7 @@ function mod:UpdateCompletion(name, difficulty)
 			local MissingHard = false
 			for boss, tab in pairs(TargetTab) do
 				if boss ~= "FullCompletion"
-				and type(tab) == "table"
+					and type(tab) == "table"
 				then
 					if tab.Unlock == false then
 						MissingUnlock = true
@@ -787,10 +792,10 @@ function mod:UpdateCompletion(name, difficulty)
 			then
 				if not TargetTab.FullCompletion.Unlock then
 					TargetTab.FullCompletion.Unlock = true
-					PlayAchievement(AchievementGraphics[playerName].FullCompletion,playerName,"FullCompletion")
+					PlayAchievement(AchievementGraphics[playerName].FullCompletion, playerName, "FullCompletion")
 
 					if (not MissingHard)
-					and (not TargetTab.FullCompletion.Hard)
+						and (not TargetTab.FullCompletion.Hard)
 					then
 						TargetTab.FullCompletion.Hard = true
 					end
@@ -803,7 +808,7 @@ function mod:UpdateCompletion(name, difficulty)
 				TargetTab[name].Unlock = true
 
 				if AchievementGraphics[playerName][name] then
-					PlayAchievement(AchievementGraphics[playerName][name],playerName,name)
+					PlayAchievement(AchievementGraphics[playerName][name], playerName, name)
 				end
 			end
 			if difficulty == Difficulty.DIFFICULTY_HARD then
@@ -811,33 +816,33 @@ function mod:UpdateCompletion(name, difficulty)
 			elseif difficulty == Difficulty.DIFFICULTY_GREEDIER then
 				if TargetTab[name].Hard == false then
 					TargetTab[name].Hard = true
-					PlayAchievement(AchievementGraphics[playerName].Greedier,playerName,"Greedier")
+					PlayAchievement(AchievementGraphics[playerName].Greedier, playerName, "Greedier")
 				end
 			end
 
 			if TargetTab.PolNegPath == false
-			and TargetTab.Isaac.Unlock == true
-			and TargetTab.BlueBaby.Unlock == true
-			and TargetTab.Satan.Unlock == true
-			and TargetTab.Lamb.Unlock == true
+				and TargetTab.Isaac.Unlock == true
+				and TargetTab.BlueBaby.Unlock == true
+				and TargetTab.Satan.Unlock == true
+				and TargetTab.Lamb.Unlock == true
 			then
 				TargetTab.PolNegPath = true
-				PlayAchievement(AchievementGraphics[playerName].PolNegPath,playerName,"PolNegPath")
+				PlayAchievement(AchievementGraphics[playerName].PolNegPath, playerName, "PolNegPath")
 			end
 
 			if TargetTab.SoulPath == false
-			and TargetTab.BossRush.Unlock == true
-			and TargetTab.Hush.Unlock == true
+				and TargetTab.BossRush.Unlock == true
+				and TargetTab.Hush.Unlock == true
 			then
 				TargetTab.SoulPath = true
-				PlayAchievement(AchievementGraphics[playerName].SoulPath,playerName,"SoulPath")
+				PlayAchievement(AchievementGraphics[playerName].SoulPath, playerName, "SoulPath")
 			end
 
 			local MissingUnlock = false
 			local MissingHard = false
 			for boss, tab in pairs(TargetTab) do
 				if boss ~= "FullCompletion"
-				and type(tab) == "table"
+					and type(tab) == "table"
 				then
 					if tab.Unlock == false then
 						MissingUnlock = true
@@ -854,12 +859,12 @@ function mod:UpdateCompletion(name, difficulty)
 				end
 			end
 
-			if (not MissingUnlock)	then
+			if (not MissingUnlock) then
 				if not TargetTab.FullCompletion.Unlock then
 					TargetTab.FullCompletion.Unlock = true
-					PlayAchievement(AchievementGraphics[playerName].FullCompletion,playerName,"FullCompletion")
+					PlayAchievement(AchievementGraphics[playerName].FullCompletion, playerName, "FullCompletion")
 					if (not MissingHard)
-					and (not TargetTab.FullCompletion.Hard)
+						and (not TargetTab.FullCompletion.Hard)
 					then
 						TargetTab.FullCompletion.Hard = true
 					end
@@ -874,11 +879,11 @@ local UnlockFunctions = {
 		if room:IsClear() then
 			local Name
 			if stageType >= StageType.STAGETYPE_REPENTANCE
-			and desc.SafeGridIndex == -10
+				and desc.SafeGridIndex == -10
 			then
 				Name = "Mother"
 			elseif stageType <= StageType.STAGETYPE_AFTERBIRTH
-			and room:IsCurrentRoomLastBoss()
+				and room:IsCurrentRoomLastBoss()
 			then
 				Name = "MomsHeart"
 			end
@@ -983,7 +988,7 @@ function mod:postUpdateAchievements()
 	local difficulty = game.Difficulty
 
 	if Isaac.GetChallenge() > 0
-	or game:GetVictoryLap() > 0
+		or game:GetVictoryLap() > 0
 	then
 		return
 	end
@@ -992,7 +997,7 @@ function mod:postUpdateAchievements()
 		local stageType = level:GetStageType()
 
 		if levelStage == LevelStage.STAGE4_1
-		and level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH > 0
+			and level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH > 0
 		then
 			levelStage = levelStage + 1
 		end
@@ -1009,12 +1014,13 @@ function mod:postUpdateAchievements()
 		end
 	else
 		if levelStage == LevelStage.STAGE7_GREED
-		and roomType == RoomType.ROOM_BOSS
-		and desc.SafeGridIndex == 45
+			and roomType == RoomType.ROOM_BOSS
+			and desc.SafeGridIndex == 45
 		then
 			UnlockFunctions.Greed(room, nil, difficulty, desc)
 			mod:OnSaveData(false)
 		end
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_POST_UPDATE, mod.postUpdateAchievements)

@@ -38,7 +38,7 @@ end
 function Furtherance:GetPlayerFromTear(tear)
 	local check = tear.Parent or mod:GetSpawner(tear) or tear.SpawnerEntity
 	if check then
-		if check.Type == EntityType.ENTITY_PLAYER then
+		if check:ToPlayer() then
 			return mod:GetPtrHashEntity(check):ToPlayer()
 		elseif check.Type == EntityType.ENTITY_FAMILIAR and check.Variant == FamiliarVariant.INCUBUS then
 			local data = mod:GetData(tear)
@@ -89,12 +89,13 @@ function mod:ClearDataTableOnExit()
 		dataTable[k] = nil
 	end
 end
+
 mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, mod.ClearDataTableOnExit)
 
 function Furtherance:GetEntityIndex(entity)
 	if entity == nil then
 		return nil
-	elseif entity.Type == EntityType.ENTITY_PLAYER then
+	elseif entity:ToPlayer() then
 		local player = entity:ToPlayer()
 		if player:GetPlayerType() == PlayerType.PLAYER_THESOUL_B then
 			player = player:GetOtherTwin()

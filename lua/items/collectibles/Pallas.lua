@@ -15,7 +15,7 @@ end
 mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.GetPallas)
 
 function mod:TearSize(tear)
-    local player = tear.Parent:ToPlayer()
+    local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
 	if player and player:HasCollectible(CollectibleType.COLLECTIBLE_PALLAS) then
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_FLAT_STONE) then
 			tear.Scale = tear.Scale * 2
