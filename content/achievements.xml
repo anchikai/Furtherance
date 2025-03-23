@@ -1,0 +1,82 @@
+<achievements gfxroot="gfx/ui/achievement/">
+	<!-- Leah Unlocks -->
+	<achievement name="Secret Diary" text='"Secret Diary" has appeared in the basement' gfx="achievement_secretdiary.png" />
+	<achievement name="Binds of Devotion" text='"Binds of Devotion" has appeared in the basement' gfx="achievement_bindsofdevotion.png" />
+	<achievement name="Rue" text='"Rue" has appeared in the basement' gfx="achievement_rue.png" />
+	<achievement name="Leah&apos;s Lock" text='"Leah&apos;s Lock" has appeared in the basement' gfx="achievement_leahslock.png" />
+	<achievement name="Mandrake" text='"Mandrake" has appeared in the basement' gfx="achievement_mandrake.png" />
+	<achievement name="Parasol" text='"Parasol" has appeared in the basement' gfx="achievement_parasol.png" />
+	<achievement name="D16" text='"D16" has appeared in the basement' gfx="achievement_d16.png" />
+	<achievement name="Holy Heart" text='"Holy Heart" has appeared in the basement' gfx="achievement_holyheart.png" />
+	<achievement name="Keratoconus" text='"Keratoconus" has appeared in the basement' gfx="achievement_keratoconus.png" />
+	<achievement name="Heart Embedded Coin" text='"Heart Embedded Coin" has appeared in the basement' gfx="achievement_heartembeddedcoin.png" />
+	<achievement name="Heart Renovator" text='"Heart Renovator" has appeared in the basement' gfx="achievement_heartrenovator.png" />
+	<achievement name="Owl&apos;s Eye" text='"Owl&apos;s Eye" has appeared in the basement' gfx="achievement_owlseye.png" />
+	<achievement name="Essence of Love" text='"Essence of Love" has appeared in the basement' gfx="achievement_essenceoflove.png" />
+	<achievement name="The Unloved" text='You unlocked "Leah"' gfx="achievement_taintedleah.png" />
+	<achievement name="Exsanguinsation" text='"Exsanguinsation" has appeared in the basement' gfx="achievement_exsanguination.png" />
+
+	<!-- Tainted Leah Unlocks -->
+	<achievement name="Soul of Leah" text='"Soul of Leah" has appeared in the basement' gfx="achievement_soulofleah.png" />
+	<achievement name="Leah&apos;s Heart" text='"Leah&apos;s Heart" has appeared in the basement' gfx="achievement_leahsheart.png" />
+	<achievement name="Rotten Love" text='"Rotten Love" has appeared in the basement' gfx="achievement_rottenlove.png" />
+	<achievement name="Shattered Heart" text='"Shattered Heart" has appeared in the basement' gfx="achievement_shatteredheart.png" />
+	<achievement name="Cold Hearted" text='"Cold Hearted" has appeared in the basement' gfx="achievement_coldhearted.png" />
+	<achievement name="Essence of Hate" text='"Essence of Hate" has appeared in the basement' gfx="achievement_essenceofhate.png" />
+	<achievement name="Reverse Hope" text='"Hope" has appeared in the basement' gfx="achievement_reversehope.png" />
+	<!-- <achievement name="Tainted Leah Completion" text='???' gfx="achievement.full_completion_b.png" /> -->
+
+	<!-- Peter Unlocks -->
+	<achievement name="Prayer Journal" text='"Prayer Journal" has appeared in the basement' gfx="achievement_prayerjournal.png" />
+	<achievement name="Pallium" text='"Pallium" has appeared in the basement' gfx="achievement_pallium.png" />
+	<achievement name="Severed Ear" text='"Severed Ear" has appeared in the basement' gfx="achievement_severedear.png" />
+	<achievement name="Chirho" text='"Chirho" has appeared in the basement' gfx="achievement_altruism.png" />
+	<achievement name="Book ofl Eviticus" text='"Book ofl Eviticus" has appeared in the basement' gfx="achievement_chirho.png" />
+	<achievement name="Altruism" text='"Altruism" has appeared in the basement' gfx="achievement_bookofleviticus.png" />
+	<achievement name="Astragali" text='"Astragali" has appeared in the basement' gfx="achievement_astragali.png" />
+	<achievement name="Alabaster Scrap" text='"Alabaster Scrap" has appeared in the basement' gfx="achievement_alabasterscrap.png" />
+	<achievement name="Liberation" text='"Liberation" has appeared in the basement' gfx="achievement_liberation.png" />
+	<achievement name="Molten Gold" text='"Molten Gold" has appeared in the basement' gfx="achievement_moltengold.png" />
+	<achievement name="Keys to the Kingdom" text='"Keys to the Kingdom" has appeared in the basement' gfx="achievement_keystothekingdom.png" />
+	<achievement name="Itching Powder" text='"Itching Powder" has appeared in the basement' gfx="achievement_itchingpowder.png" />
+	<achievement name="Essence of Life" text='"Essence of Life" has appeared in the basement' gfx="achievement_essenceoflife.png" />
+	<achievement name="The Martyr" text='You unlocked "Peter"' gfx="achievement_taintedpeter.png" />
+	<achievement name="Golden Port" text='"Golden Port" has appeared in the basement' gfx="achievement_goldenport.png" />
+
+	<!-- Tainted Peter Unlocks -->
+	<achievement name="Soul of Peter" text='"Soul of Peter" has appeared in the basement' gfx="achievement_soulofpeter.png" />
+	<achievement name="Leviathan&apos;s Tendril" text='"Leviathan&apos;s Tendril" has appeared in the basement' gfx="achievement_leviathanstendril.png" />
+	<achievement name="Trepanation" text='"Trepanation" has appeared in the basement' gfx="achievement_trepanation.png" />
+	<achievement name="Muddled Cross" text='"Muddled Cross" has appeared in the basement' gfx="achievement_muddledcross.png" />
+	<achievement name="Key to the Pit" text='"Key to the Pit" has appeared in the basement' gfx="achievement_keytothepit.png" />
+	<achievement name="Essence of Death" text='"Essence of Death" has appeared in the basement' gfx="achievement_essenceofdeath.png" />
+	<achievement name="Reverse Faith" text='"Faith" has appeared in the basement' gfx="achievement_reversefaith.png" />
+	<!-- <achievement name="All Tainted Peter marks" text='"All Tainted Peter marks" has appeared in the basement' gfx="achievement.full_completion_b.png" /> -->
+
+	<!-- Miriam Unlocks -->
+	<achievement name="Book of Guidance" text='"Book of Guidance" has appeared in the basement' gfx="achievement_bookofguidance.png" />
+	<achievement name="Apocalypse" text='"Apocalypse" has appeared in the basement' gfx="achievement_apocalypse.png" />
+	<achievement name="Kareth" text='"Kareth" has appeared in the basement' gfx="achievement_kareth.png" />
+	<achievement name="Pillar of Clouds" text='"Pillar of Clouds" has appeared in the basement' gfx="achievement_wormwoodleaf.png" />
+	<achievement name="Pillar of Fire" text='"Pillar of Fire" has appeared in the basement' gfx="achievement_pillarofclouds.png" />
+	<achievement name="Wormwood Leaf" text='"Wormwood Leaf" has appeared in the basement' gfx="achievement_pillaroffire.png" />
+	<achievement name="Caduceus Staff" text='"Caduceus Staff" has appeared in the basement' gfx="achievement_thedreidel.png" />
+	<achievement name="The Dreidel" text='"The Dreidel" has appeared in the basement' gfx="achievement_salinespray.png" />
+	<achievement name="Tambourine" text='"Tambourine" has appeared in the basement' gfx="achievement_caduceusstaff.png" />
+	<achievement name="Firstborn Son" text='"Firstborn Son" has appeared in the basement' gfx="achievement_miriamswell.png" />
+	<achievement name="Essence of Prosperity + Drought" text='"Essence of Prosperity + Drought" has appeared in the basement' gfx="achievement_tambourine.png" />
+	<achievement name="Saline Spray" text='"Saline Spray" has appeared in the basement' gfx="achievement_firstbornson.png" />
+	<achievement name="Miriam&apos;s Well" text='"Miriam&apos;s Well" has appeared in the basement' gfx="achievement_essenceofprosperityanddrought.png" />
+	<achievement name="The Condemned" text='You unlocked "Miriam"' gfx="achievement_taintedmiriam.png" />
+	<achievement name="Polydipsia" text='"Polydipsia" has appeared in the basement' gfx="achievement_polydipsia.png" />
+
+	<!-- Tainted Miriam Unlocks -->
+	<achievement name="Soul of Miriam" text='"Soul of Miriam" has appeared in the basement' gfx="achievement_soulofmiriam.png" />
+	<achievement name="Almagest Scrap" text='"Almagest Scrap" has appeared in the basement' gfx="achievement_almagestscrap.png" />
+	<achievement name="Golden Sack" text='"Golden Sack" has appeared in the basement' gfx="achievement_goldensack.png" />
+	<achievement name="Spiritual Wound" text='"Spiritual Wound" has appeared in the basement' gfx="achievement_spiritualwound.png" />
+	<achievement name="Abyssal Penny" text='"Abyssal Penny" has appeared in the basement' gfx="achievement_abyssalpenny.png" />
+	<achievement name="Jar of Manna" text='"Jar of Manna" has appeared in the basement' gfx="achievement_jarofmanna.png" />
+	<achievement name="Reverse Charity" text='"Charity" has appeared in the basement' gfx="achievement_reversecharity.png" />
+	<!-- <achievement name="All Tainted Miriam marks" text='"All Tainted Miriam marks" has appeared in the basement' gfx="achievement.full_completion_b.png" /> -->
+</achievements>
