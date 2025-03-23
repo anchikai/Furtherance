@@ -1,17 +1,153 @@
-Furtherance = RegisterMod("Furtherance", 1)
-local mod = Furtherance
-local game = Game()
-local json = require("json")
-local loading = {}
-local loadTimer
+---@class ModReference
+_G.Furtherance = RegisterMod("Furtherance", 1)
 
-Furtherance.FailSound = SoundEffect.SOUND_EDEN_GLITCH
-Furtherance.FlipSpeed = 1
-Furtherance.LeahDoubleTapSpeed = 1
-Furtherance.PrefferedAPI = 1
+Furtherance.Version = "INDEV_REWRITE"
 
-mod.isLoadingData = false
+Furtherance.SaveManager = include("scripts.tools.save_manager")
+Furtherance.SaveManager.Init(Furtherance)
+Furtherance.Game = Game()
+Furtherance.ItemConfig = Isaac.GetItemConfig()
+Furtherance.SFXMan = SFXManager()
+Furtherance.MusicMan = MusicManager()
+Furtherance.HUD = Furtherance.Game:GetHUD()
+Furtherance.Room = function() return Furtherance.Game:GetRoom() end
+Furtherance.Level = function() return Furtherance.Game:GetLevel() end
+Furtherance.PersistGameData = Isaac.GetPersistentGameData()
+Furtherance.Font = {
+	Terminus = Font(),
+	Tempest = Font(),
+	Meat10 = Font(),
+	Meat16 = Font()
+}
+Furtherance.Font.Terminus:Load("font/terminus.fnt")
+Furtherance.Font.Tempest:Load("font/pftempestasevencondensed.fnt")
+Furtherance.Font.Meat10:Load("font/teammeatfont10.fnt")
+Furtherance.Font.Meat16:Load("font/teammeatfont16bold.fnt")
 
+Furtherance.GENERIC_RNG = RNG()
+
+Furtherance:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function()
+	local seed = Furtherance.Game:GetSeeds():GetStartSeed()
+	Furtherance.GENERIC_RNG:SetSeed(seed)
+end)
+
+---@type table[]
+local getData = {}
+
+---Slightly faster than calling GetData, a micromanagement at best
+---
+---However GetData() is also wiped on POST_ENTITY_REMOVE, which is used frequently in the mod for entities removing themselves from data they're a part of
+---
+---So this helps retain the data until removal
+---@param ent Entity
+---@return table
+function Furtherance:GetData(ent)
+	local ptrHash = GetPtrHash(ent)
+	local data = getData[ptrHash]
+	if not data then
+		local newData = {}
+		getData[ptrHash] = newData
+		data = newData
+	end
+	return data
+end
+
+---@param ent Entity
+---@return table?
+function Furtherance:TryGetData(ent)
+	local ptrHash = GetPtrHash(ent)
+	local data = getData[ptrHash]
+	return data
+end
+
+Furtherance:AddPriorityCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, CallbackPriority.LATE, function(_, ent)
+	getData[GetPtrHash(ent)] = nil
+end)
+
+Furtherance.FileLoadError = false
+Furtherance.InvalidPathError = false
+
+---Mimics include() but with a pcall safety wrapper and appropriate error codes if any are found
+---
+---VSCode users: Go to Settings > Lua > Runtime:Special and link Furtherance.Include to require, just like you would regular include!
+function Furtherance.Include(path)
+	Isaac.DebugString("[Eevee] Loading " .. path)
+	local wasLoaded, result = pcall(include, path)
+	local errMsg = ""
+	local foundError = false
+	if not wasLoaded then
+		Furtherance.FileLoadError = true
+		foundError = true
+		errMsg = 'Error in path "' .. path .. '":\n' .. result .. '\n'
+	elseif result and type(result) == "string" and string.find(result, "no file '") then
+		foundError = true
+		Furtherance.InvalidPathError = true
+		errMsg = 'Unable to locate file in path "' .. path .. '"\n'
+	end
+	if foundError then
+		Furtherance:Log(errMsg)
+	end
+	return result
+end
+
+---@param tab table
+---@param path string
+local function loopInclude(tab, path)
+	for _, fileName in pairs(tab) do
+		Furtherance.Include(path .. "." .. fileName)
+	end
+end
+
+Furtherance.Core = {}
+Furtherance.Item = {}
+Furtherance.Trinket = {}
+Furtherance.Pickup = {}
+Furtherance.Challenge = {}
+Furtherance.Character = {}
+Furtherance.Misc = {}
+include("flags")
+
+local helpers = {
+	"table_functions",
+	"saving_system",
+	"bitmask_helper",
+	"maths_util",
+	"misc_util",
+	"players_util",
+	"familiars_util",
+	"string_util",
+	"stats_util",
+	"tears_util",
+	"proximity",
+	"npc_util",
+	"custom_callbacks",
+	"rooms_helper"
+}
+
+local tools = {
+	"debug_tools",
+	"hud_helper",
+	"save_manager",
+}
+
+loopInclude(helpers, "scripts.helpers")
+Dump = include("scripts.helpers.everything_function")
+InputHelper = include("scripts.helpers.vendor.inputhelper")
+loopInclude(tools, "scripts.tools")
+
+Furtherance.Include("scripts.compatibility.patches_loader")
+
+if Furtherance.FileLoadError then
+	Furtherance:Log("Mod failed to load! Report this to a coder in the dev server!")
+elseif Furtherance.InvalidPathError then
+	Furtherance:Log("One or more files were unable to be loaded. Report this to a coder in the dev server!")
+else
+	Furtherance:Log("v" .. Furtherance.Version .. " successfully loaded!")
+end
+
+Furtherance.Include = nil
+
+--[[
 -- Characters
 PlayerType.PLAYER_LEAH = Isaac.GetPlayerTypeByName("Leah", false)
 PlayerType.PLAYER_LEAH_B = Isaac.GetPlayerTypeByName("Leah", true)
@@ -526,4 +662,4 @@ if Isaac.GetPlayer() ~= nil then
 	Furtherance:OnLoadData(true)
 end
 
-print("Type \"furtherancehelp\" for Furtherance commands.")
+print("Type \"furtherancehelp\" for Furtherance commands.") ]]
