@@ -71,7 +71,7 @@ Furtherance.InvalidPathError = false
 ---
 ---VSCode users: Go to Settings > Lua > Runtime:Special and link Furtherance.Include to require, just like you would regular include!
 function Furtherance.Include(path)
-	Isaac.DebugString("[Eevee] Loading " .. path)
+	Isaac.DebugString("[Furtherance] Loading " .. path)
 	local wasLoaded, result = pcall(include, path)
 	local errMsg = ""
 	local foundError = false
@@ -134,6 +134,27 @@ loopInclude(helpers, "scripts.helpers")
 Dump = include("scripts.helpers.everything_function")
 InputHelper = include("scripts.helpers.vendor.inputhelper")
 loopInclude(tools, "scripts.tools")
+
+Furtherance.PlayerType = {
+	LEAH = Isaac.GetPlayerTypeByName("Laeh", false),
+	PETER = Isaac.GetPlayerTypeByName("Peter", false),
+	MIRIAM = Isaac.GetPlayerTypeByName("Miriam", false),
+	LEAH_B = Isaac.GetPlayerTypeByName("Laeh", true),
+	PETER_B = Isaac.GetPlayerTypeByName("Peter", true),
+	MIRIAM_B = Isaac.GetPlayerTypeByName("Miriam", true),
+}
+
+local characters = {}
+
+loopInclude(characters, "scripts.furtherance.characters")
+
+local challenges = {}
+
+loopInclude(challenges, "scripts.furtherance.challenes")
+
+Furtherance.Include("scripts.furtherance.unlocks.unlock_loader")
+
+--End of file
 
 Furtherance.Include("scripts.compatibility.patches_loader")
 

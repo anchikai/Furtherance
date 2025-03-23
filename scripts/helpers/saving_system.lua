@@ -49,24 +49,3 @@ end
 function Furtherance:AddDefaultFileData(key, value)
 	Furtherance.SaveManager.DEFAULT_SAVE.file.other[key] = value
 end
-
----@return KecleonShop
-function Furtherance:GetKecleonShopData()
-	return Furtherance:RunSave().KecleonShop
-end
-
---[[ ---@param jobType? JobType
-function Furtherance:GetJobs(jobType)
-	local shopData = Furtherance:GetKecleonShopData()
-	if not shopData then return end
-	if not jobType then
-		return shopData.Jobs
-	end
-	local requestedJobs = {}
-	for _, job in ipairs(shopData.Jobs) do
-		if job.Type == jobType then
-			Furtherance:Insert(requestedJobs, job)
-		end
-	end
-	return requestedJobs
-end ]]

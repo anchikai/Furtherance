@@ -325,9 +325,10 @@ local function InitFunctions()
 	---@param player EntityPlayer
 	---@param ignoreMod? boolean
 	function HudHelper.Utils.GetEffectiveMaxHealth(player, ignoreMod)
+		---@diagnostic disable-next-line: undefined-global
 		if NoHealthCapModEnabled and not ignoreMod then
-			return NoHealthCapRedMax + NoHealthCapSoulHearts + (NoHealthCapBoneHearts * 2) +
-				(NoHealthCapBrokenHearts * 2)
+			---@diagnostic disable-next-line: undefined-global
+			return NoHealthCapRedMax + NoHealthCapSoulHearts + (NoHealthCapBoneHearts * 2) + (NoHealthCapBrokenHearts * 2)
 		end
 		return player:GetEffectiveMaxHearts() + player:GetSoulHearts() +
 			(player:GetBrokenHearts() * 2)
@@ -2114,6 +2115,7 @@ local function InitFunctions()
 
 			local rows = HudHelper.Utils.GetCurrentMaxHeartRows(player)
 
+			---@diagnostic disable-next-line: undefined-global
 			if not (NoHealthCapModEnabled or CustomHealthAPI) then
 				rows = min(48 / heartPerRow, rows) --Hearts literally stop rendering after 4 rows legitimately
 			end

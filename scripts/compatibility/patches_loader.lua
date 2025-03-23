@@ -46,7 +46,7 @@ local patches = {
 
 }
 for _, fileName in ipairs(patches) do
-	Furtherance.Include("src_eevee.compatibility.patches." .. fileName)
+	Furtherance.Include("scripts.compatibility.patches." .. fileName)
 end
 
 -- This has to be done after all mods are loaded

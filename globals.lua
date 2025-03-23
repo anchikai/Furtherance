@@ -44,7 +44,6 @@ REPENTOGON = {}
 HudHelper = {}
 StatusEffectLibrary = {}
 HPBars = {}
---EEVEEMOD = {} --The demo, but it screws with my autofill lol
 Epiphany = {}
 CustomCoopGhost = {}
 Ughlite = {} --Ugh for bad items
@@ -54,6 +53,7 @@ UniqueProgressBarIcon = {}
 EnlightenmentMod = {}
 UniqueProgressBarIcon = {}
 CustomPoopAPI = {} --From Fiend Folio
+EeveeMod = {}
 
 ---@class EID_DescObj
 ---@field ObjType integer
