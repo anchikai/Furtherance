@@ -36,9 +36,7 @@ local getData = {}
 
 ---Slightly faster than calling GetData, a micromanagement at best
 ---
----However GetData() is also wiped on POST_ENTITY_REMOVE, which is used frequently in the mod for entities removing themselves from data they're a part of
----
----So this helps retain the data until removal
+---However GetData() is wiped on POST_ENTITY_REMOVE, so this also helps retain the data until after entity removal
 ---@param ent Entity
 ---@return table
 function Furtherance:GetData(ent)
