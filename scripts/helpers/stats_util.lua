@@ -2,6 +2,7 @@
 function Furtherance:GetWeaponOwnerDamageMult(owner)
 	local damageMult = 1
 	if owner:ToPlayer() then return damageMult end
+	---@cast owner EntityFamiliar
 	local variantToDamage = {
 		[FamiliarVariant.INCUBUS] = 0.75,
 		[FamiliarVariant.TWISTED_BABY] = 0.375,
@@ -18,8 +19,11 @@ function Furtherance:GetWeaponOwnerDamageMult(owner)
 			}
 			damageMult = subtypeToDamage[owner.SubType]
 		end
+		if owner.Player:GetPlayerType() == PlayerType.PLAYER_LILITH then
+			damageMult = 1
+		end
 	end
-	return damageMult
+	return damageMult * owner:GetMultiplier()
 end
 
 ---@param baseChance number
