@@ -126,12 +126,21 @@ local tools = {
 	"debug_tools",
 	"hud_helper",
 	"save_manager",
+	"pickups_tools"
+}
+
+local config = {
+	"settings_enum",
+	"settings_helper",
+	"settings_setup",
+	"mcm_setup",
 }
 
 loopInclude(helpers, "scripts.helpers")
 Dump = include("scripts.helpers.everything_function")
 InputHelper = include("scripts.helpers.vendor.inputhelper")
 loopInclude(tools, "scripts.tools")
+loopInclude(config, "scripts.furtherance.config")
 
 Furtherance.PlayerType = {
 	LEAH = Isaac.GetPlayerTypeByName("Laeh", false),

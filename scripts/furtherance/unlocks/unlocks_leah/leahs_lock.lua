@@ -2,11 +2,13 @@ local Mod = Furtherance
 
 local LEAHS_LOCK = {}
 
-Mod.Trinket.LEAHS_LOCK = LEAHS_LOCK
+Furtherance.Trinket.LEAHS_LOCK = LEAHS_LOCK
 
 LEAHS_LOCK.ID = Isaac.GetTrinketIdByName("Leah's Lock")
 
----@param ent EntityTear | EntityKnife | EntityLaser | EntityBomb
+--TODO: Will revisit for tear modifier implementation
+
+--[[ ---@param ent EntityTear | EntityKnife | EntityLaser | EntityBomb
 function LEAHS_LOCK:FireLLWeapon(ent)
 	local player = ent.SpawnerEntity and ent.SpawnerEntity:ToPlayer()
 	if not player or not player:HasTrinket(LEAHS_LOCK.ID) then return end
@@ -30,4 +32,4 @@ Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, LEAHS_LOCK.FireLLWeapon)
 Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BRIMSTONE, LEAHS_LOCK.FireLLWeapon)
 Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BRIMSTONE_BALL, LEAHS_LOCK.FireLLWeapon)
 Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BOMB, LEAHS_LOCK.FireLLWeapon)
-Mod:AddCallback(ModCallbacks.MC_POST_FIRE_KNIFE, LEAHS_LOCK.FireLLWeapon)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_KNIFE, LEAHS_LOCK.FireLLWeapon) ]]

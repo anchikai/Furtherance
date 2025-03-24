@@ -1,6 +1,14 @@
-local mod = Furtherance
+local Mod = Furtherance
 
-function mod:KeratoconusBuffs(player, flag)
+local KERATOCONUS = {}
+
+Furtherance.Item.KERATOCONUS = KERATOCONUS
+
+KERATOCONUS.ID = Isaac.GetItemIdByName("Keratoconus")
+
+--TODO: Will revisit for tear modifier/status effect implementation
+
+--[[ function Mod:KeratoconusBuffs(player, flag)
     if not player:HasCollectible(CollectibleType.COLLECTIBLE_KERATOCONUS) then return end
 
     if flag == CacheFlag.CACHE_SHOTSPEED then
@@ -9,13 +17,13 @@ function mod:KeratoconusBuffs(player, flag)
         player.TearRange = player.TearRange + 8
     end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.KeratoconusBuffs)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.KeratoconusBuffs)
 
 local function clamp(value, min, max)
     return math.min(math.max(value, min), max)
 end
 
-function mod:KeratoconusTear(tear)
+function Mod:KeratoconusTear(tear)
     local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
     if player == nil then return end
     if not player:HasCollectible(CollectibleType.COLLECTIBLE_KERATOCONUS) then return end
@@ -28,7 +36,7 @@ function mod:KeratoconusTear(tear)
     end
 
     if rng:RandomFloat() < chance then
-        local data = mod:GetData(tear)
+        local data = Mod:GetData(tear)
         data.IsKeratoconusTear = true
 
         local glowEffect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.HALLOWED_GROUND, 0, tear.Position, tear.Velocity, tear):ToEffect()
@@ -37,9 +45,9 @@ function mod:KeratoconusTear(tear)
         glowEffect.SpriteScale = glowEffect.SpriteScale / 2.2
     end
 end
-mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.KeratoconusTear)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, Mod.KeratoconusTear)
 
-function mod:SizeChanging(tear)
+function Mod:SizeChanging(tear)
     local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
     if player == nil then return end
     if not player:HasCollectible(CollectibleType.COLLECTIBLE_KERATOCONUS) then return end
@@ -47,7 +55,7 @@ function mod:SizeChanging(tear)
     local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_KERATOCONUS)
     for _, entity in ipairs(Isaac.FindInRadius(tear.Position, 40, EntityPartition.ENEMY)) do
         if entity:IsActiveEnemy(false) and entity:IsVulnerableEnemy() and entity:IsBoss() == false then
-            local data = mod:GetData(entity)
+            local data = Mod:GetData(entity)
             if data.IsAffectedByKer ~= true then
                 data.IsAffectedByKer = true
                 if rng:RandomFloat() <= 0.5 then
@@ -60,7 +68,7 @@ function mod:SizeChanging(tear)
         end
     end
 end
-mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, mod.SizeChanging)
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, Mod.SizeChanging)
 
 local sizingDuration = 0.5 * 60
 
@@ -74,8 +82,8 @@ local function quadEase(index)
     end
 end
 
-function mod:SmoothSizing(entity)
-    local data = mod:GetData(entity)
+function Mod:SmoothSizing(entity)
+    local data = Mod:GetData(entity)
     if not data.IsAffectedByKer then return end
 
     local index = (entity.FrameCount - data.AffectedByKerFrame) / sizingDuration
@@ -83,4 +91,4 @@ function mod:SmoothSizing(entity)
     local scaleGoal = data.KeratoconusScale
     entity.Scale = 1 * (1 - alpha) + scaleGoal * alpha
 end
-mod:AddCallback(ModCallbacks.MC_POST_NPC_RENDER, mod.SmoothSizing)
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_RENDER, Mod.SmoothSizing) ]]

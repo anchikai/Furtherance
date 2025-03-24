@@ -325,3 +325,11 @@ Furtherance.BloodClotSubtype = {
 	BONE = 5,
 	ROTTEN = 6
 }
+
+function Furtherance:TryStartAmbush()
+	local room = Furtherance.Room():GetType()
+	if room ~= RoomType.ROOM_BOSSRUSH and room ~= RoomType.ROOM_CHALLENGE then
+		return
+	end
+	Ambush.StartChallenge()
+end

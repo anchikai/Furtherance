@@ -2,6 +2,9 @@ local settings = Furtherance.SaveManager.DEFAULT_SAVE.file.settings
 settings.Debug = {
 	MonsterDexOverride = true
 }
+function Furtherance:GameSave()
+	return Furtherance.SaveManager.GetPersistentSave()
+end
 
 ---@param ent? Entity @If an entity is provided, returns an entity specific save within the run save. Otherwise, returns arbitrary data in the save not attached to an entity.
 ---@param noHourglass? false|boolean @If true, it'll look in a separate game save that is not affected by the Glowing Hourglass.

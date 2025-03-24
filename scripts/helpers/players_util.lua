@@ -284,3 +284,56 @@ function Furtherance:GetEffectiveHitPoints(player)
 		+ player:GetEternalHearts() --Eternal Hearts can tank a hit by themselves
 		- (player:GetRottenHearts() * 2) --Rotten Hearts take a full heart while not replacing red health
 end
+
+Furtherance.LostPlayers = Furtherance:Set({
+	PlayerType.PLAYER_THELOST,
+	PlayerType.PLAYER_THELOST_B
+})
+
+---@param player EntityPlayer
+function Furtherance:IsAnyLost(player)
+	return Furtherance.LostPlayers[player:GetPlayerType()]
+end
+
+---returns true if the player can pickup the item, false if they cannot (not being able to pickup due animation is included)
+---@param player EntityPlayer
+---@param pickup EntityPickup
+---@return boolean
+function Furtherance:CanPlayerBuyShopItem(player, pickup)
+	if player:CanPickupItem() then
+		local isItem = (pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE or pickup.Variant == PickupVariant.PICKUP_TRINKET)
+		local hasToHold = isItem or pickup.Price ~= 0
+
+		-- if you have to hold the item, you can't be on animation cooldown
+		if hasToHold then
+			if not player:IsExtraAnimationFinished() then
+				return false
+			end
+		end
+
+		if pickup.Price < 0 then
+			if not Furtherance:IsAnyLost(player) then
+				if pickup.Price == PickupPrice.PRICE_ONE_HEART and player:GetMaxHearts() < 2 then
+					return false
+				end
+				if pickup.Price == PickupPrice.PRICE_TWO_HEARTS and player:GetMaxHearts() < 2 then
+					return false
+				end
+				if pickup.Price == PickupPrice.PRICE_THREE_SOULHEARTS and player:GetSoulHearts() < 1 then
+					return false
+				end
+				if pickup.Price == PickupPrice.PRICE_ONE_HEART_AND_TWO_SOULHEARTS and ((player:GetMaxHearts() < 2 or player:GetSoulHearts() < 1) and player:GetMaxHearts() < 4) then
+					return false
+				end
+			end
+			return true
+		end
+
+		if pickup.Price == 0
+			or pickup.Price == PickupPrice.PRICE_FREE
+			or pickup.Price > 0 and player:GetNumCoins() >= pickup.Price then
+			return true
+		end
+	end
+	return false
+end

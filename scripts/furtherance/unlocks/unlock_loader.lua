@@ -14,7 +14,13 @@ local leah = {
 	"binds_of_devotion",
 	"rue",
 	"leahs_lock",
-	"mandrake"
+	"mandrake",
+	"parasol",
+	"d16",
+	"holy_heart",
+	"keratoconus",
+	"heart_renovator",
+	"heart_embedded_coin",
 }
 
 loopInclude(leah, "leah")
