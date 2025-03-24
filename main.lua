@@ -152,6 +152,13 @@ loopInclude(challenges, "scripts.furtherance.challenes")
 
 Furtherance.Include("scripts.furtherance.unlocks.unlock_loader")
 
+-- shader crash fix by AgentCucco
+Furtherance:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, function()
+	if #Isaac.FindByType(EntityType.ENTITY_PLAYER) == 0 then
+		Isaac.ExecuteCommand("reloadshaders")
+	end
+end)
+
 --End of file
 
 Furtherance.Include("scripts.compatibility.patches_loader")
@@ -574,13 +581,6 @@ function mod:LoadDataCacheEval(player)
 end
 
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.LoadDataCacheEval)
-
--- prevent shaders crash
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, function()
-	if #Isaac.FindByType(EntityType.ENTITY_PLAYER) == 0 then
-		Isaac.ExecuteCommand("reloadshaders")
-	end
-end)
 
 -- helper callback for applying custom tear effects
 -- used by Flux and Pharaoh Cat
