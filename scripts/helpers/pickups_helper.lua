@@ -96,10 +96,3 @@ function Furtherance:FindClosestPedestal(Position, OnlyFree)
 	end
 	return closestPedestal
 end
-
----@param rng? RNG
----@return Vector
-function Furtherance:PickupVelocity(rng)
-	rng = rng or Mod.GENERIC_RNG
-	return Vector.FromAngle(rng:RandomFloat() * 360):Resized(rng:RandomFloat() * 5 + 2)
-end

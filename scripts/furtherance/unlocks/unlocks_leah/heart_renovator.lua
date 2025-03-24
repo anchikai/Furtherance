@@ -24,12 +24,6 @@ HEART_RENOVATOR.HeartAmount = {
 	[HeartSubType.HEART_BLENDED] = 2,
 }
 
-	--[[
-	Mod:SavePlayerData({
-		HeartCount = 0,
-		RenovatorDamage = 0
-	}) ]]
-
 --TODO: We can just save this for Leah's file probably
 --[[ function Mod:LeahHeartCount(isContinued)
 	if isContinued then return end

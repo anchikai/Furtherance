@@ -179,15 +179,6 @@ function Furtherance:CheckTypeVarSub(ent, type, var, sub)
 		and ent.SubType == sub
 end
 
----@enum NotifySubType
-Furtherance.NotifySubtype = {
-	HEART = 0,
-	BATTERY_UP = 1,
-	BACKSTABBER = 2,
-	BATTERY_DOWN = 3,
-	SOUL_HEART = 4,
-	BLACK_HEART = 5
-}
 
 ---@param pos Vector
 ---@param subType NotifySubType
@@ -314,17 +305,6 @@ end
 function Furtherance:ShouldUpdateSprite()
 	return not Furtherance.Game:IsPaused() and Isaac.GetFrameCount() % 2 == 0
 end
-
----@enum BloodClotSubtype
-Furtherance.BloodClotSubtype = {
-	RED = 0,
-	SOUL = 1,
-	BLACK = 2,
-	ETERNAL = 3,
-	GOLD = 4,
-	BONE = 5,
-	ROTTEN = 6
-}
 
 function Furtherance:TryStartAmbush()
 	local room = Furtherance.Room():GetType()

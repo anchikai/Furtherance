@@ -1,15 +1,19 @@
-local mod = Furtherance
+local Mod = Furtherance
 
-local function clamp(value, min, max)
-	return math.min(math.max(value, min), max)
-end
+local OWLS_EYE = {}
 
-function mod:OwlTear(tear)
+Furtherance.Item.OWLS_EYE = OWLS_EYE
+
+OWLS_EYE.ID = Isaac.GetItemIdByName("Owl's Eye")
+
+--TODO: Will revisit for tear modifier implementation
+
+--[[ function Mod:OwlTear(tear)
 	local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
-	if player and player:HasCollectible(CollectibleType.COLLECTIBLE_OWLS_EYE) then
-		local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_OWLS_EYE)
+	if player and player:HasCollectible(OWLS_EYE.ID) then
+		local rng = player:GetCollectibleRNG(OWLS_EYE.ID)
 
-		local chance = clamp(player.Luck, 0, 12) * 0.08 + 0.08
+		local chance = Mod:Clamp(player.Luck * 0.08 + 0.08, 0, 12)
 		if player:HasTrinket(TrinketType.TRINKET_TEARDROP_CHARM) then
 			chance = 1 - (1 - chance) ^ 2
 		end
@@ -26,4 +30,4 @@ function mod:OwlTear(tear)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.OwlTear)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, Mod.OwlTear) ]]

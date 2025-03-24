@@ -19,8 +19,11 @@ local leah = {
 	"d16",
 	"holy_heart",
 	"keratoconus",
-	"heart_renovator",
 	"heart_embedded_coin",
+	"heart_renovator",
+	"owls_eye",
+	"essence_of_love",
+	"exsanguination"
 }
 
 loopInclude(leah, "leah")
@@ -33,6 +36,39 @@ local leah_b = {
 }
 
 loopInclude(leah_b, "leah_b")
+
+--#endregion
+
+--#region Peter
+
+local peter = {
+	"prayer_journal",
+	"pallium",
+	"severed_ear",
+	"chi_ro",
+	"book_of_leviticus",
+	"altruism",
+	"astragali",
+	"alabaster_scrap",
+	"liberation",
+	"molten_gold",
+	--keyts
+	"itching_powder",
+	"essence_of_life",
+	"golden_port"
+}
+
+loopInclude(peter, "peter")
+
+--#endregion
+
+--#region Tainted Peter
+
+local peter_b = {
+
+}
+
+loopInclude(peter_b, "peter_b")
 
 --#endregion
 
@@ -55,34 +91,6 @@ local miriam_b = {
 loopInclude(miriam_b, "miriam_b")
 
 --#endregion
-
---#region Peter
-
-local peter = {
-
-}
-
-loopInclude(peter, "peter")
-
---#endregion
-
---#region Tainted Peter
-
-local peter_b = {
-
-}
-
-loopInclude(peter_b, "peter_b")
-
---#endregion
-
---#region Default unlocks (if any?)
-
-local default = {
-
-}
-
-loopInclude(default, "default")
 
 --#region Challenges
 

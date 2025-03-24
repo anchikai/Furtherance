@@ -92,6 +92,7 @@ function Furtherance:GetClosestProjectile(pos, range)
 	return closestEnemy
 end
 
+---Runs the function for all EntityNPCs that pass :IsActiveEnemy(false) using Isaac.GetRoomEntities
 ---@param func fun(npc: EntityNPC)
 function Furtherance:ForEachEnemy(func)
 	for _, ent in pairs(Isaac.GetRoomEntities()) do

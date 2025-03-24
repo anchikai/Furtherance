@@ -14,7 +14,7 @@
 	<achievement name="Owl&apos;s Eye" text='"Owl&apos;s Eye" has appeared in the basement' gfx="achievement_owlseye.png" />
 	<achievement name="Essence of Love" text='"Essence of Love" has appeared in the basement' gfx="achievement_essenceoflove.png" />
 	<achievement name="The Unloved" text='You unlocked "Leah"' gfx="achievement_taintedleah.png" />
-	<achievement name="Exsanguinsation" text='"Exsanguinsation" has appeared in the basement' gfx="achievement_exsanguination.png" />
+	<achievement name="Exsanguination" text='"Exsanguination" has appeared in the basement' gfx="achievement_exsanguination.png" />
 
 	<!-- Tainted Leah Unlocks -->
 	<achievement name="Soul of Leah" text='"Soul of Leah" has appeared in the basement' gfx="achievement_soulofleah.png" />
@@ -30,9 +30,9 @@
 	<achievement name="Prayer Journal" text='"Prayer Journal" has appeared in the basement' gfx="achievement_prayerjournal.png" />
 	<achievement name="Pallium" text='"Pallium" has appeared in the basement' gfx="achievement_pallium.png" />
 	<achievement name="Severed Ear" text='"Severed Ear" has appeared in the basement' gfx="achievement_severedear.png" />
-	<achievement name="Chirho" text='"Chirho" has appeared in the basement' gfx="achievement_altruism.png" />
-	<achievement name="Book ofl Eviticus" text='"Book ofl Eviticus" has appeared in the basement' gfx="achievement_chirho.png" />
-	<achievement name="Altruism" text='"Altruism" has appeared in the basement' gfx="achievement_bookofleviticus.png" />
+	<achievement name="Chirho" text='"Chirho" has appeared in the basement' gfx="achievement_chirho.png" />
+	<achievement name="Book of Leviticus" text='"Book of Leviticus" has appeared in the basement' gfx="achievement_bookofleviticus" />
+	<achievement name="Altruism" text='"Altruism" has appeared in the basement' gfx="achievement_altruism.png" />
 	<achievement name="Astragali" text='"Astragali" has appeared in the basement' gfx="achievement_astragali.png" />
 	<achievement name="Alabaster Scrap" text='"Alabaster Scrap" has appeared in the basement' gfx="achievement_alabasterscrap.png" />
 	<achievement name="Liberation" text='"Liberation" has appeared in the basement' gfx="achievement_liberation.png" />

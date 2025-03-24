@@ -31,6 +31,10 @@ Furtherance:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function()
 	Furtherance.GENERIC_RNG:SetSeed(seed)
 end)
 
+Furtherance.RANGE_BASE_MULT = 40
+
+include("scripts.helpers.extra_enums")
+
 ---@type table[]
 local getData = {}
 
@@ -100,6 +104,8 @@ Furtherance.Core = {}
 Furtherance.Item = {}
 Furtherance.Trinket = {}
 Furtherance.Pickup = {}
+Furtherance.Card = {}
+Furtherance.Rune = {}
 Furtherance.Challenge = {}
 Furtherance.Character = {}
 Furtherance.Misc = {}
@@ -129,6 +135,10 @@ local tools = {
 	"pickups_tools"
 }
 
+local core = {
+	"hearts"
+}
+
 local config = {
 	"settings_enum",
 	"settings_helper",
@@ -140,6 +150,7 @@ loopInclude(helpers, "scripts.helpers")
 Dump = include("scripts.helpers.everything_function")
 InputHelper = include("scripts.helpers.vendor.inputhelper")
 loopInclude(tools, "scripts.tools")
+loopInclude(core, "scripts.furtherance.core")
 loopInclude(config, "scripts.furtherance.config")
 
 Furtherance.PlayerType = {
@@ -175,7 +186,7 @@ function Furtherance:PeterFlip(name)
 end
 Furtherance:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, Furtherance.PeterFlip)
 
---End of file
+--!End of file
 
 Furtherance.Include("scripts.compatibility.patches_loader")
 
