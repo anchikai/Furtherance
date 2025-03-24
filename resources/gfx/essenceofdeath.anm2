@@ -1,9 +1,9 @@
 <AnimatedActor>
-	<Info CreatedBy="robot" CreatedOn="5/13/2022 7:50:22 PM" Version="117" Fps="30"/>
+	<Info CreatedBy="robot" CreatedOn="3/23/2025 8:21:04 PM" Version="118" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="items\pick ups\essence_of_death.png" Id="0"/>
-			<Spritesheet Path="ui\ui_cardfronts_further.png" Id="1"/>
+			<Spritesheet Path="..\..\content\gfx\ui_cardfronts.png" Id="1"/>
 			<Spritesheet Path="effects\effect_023_starflash.png" Id="2"/>
 		</Spritesheets>
 		<Layers>

@@ -1,8 +1,8 @@
 <AnimatedActor>
-	<Info CreatedBy="anchikai." CreatedOn="8/14/2022 6:09:08 AM" Version="37" Fps="30"/>
+	<Info CreatedBy="anchikai." CreatedOn="3/23/2025 8:21:54 PM" Version="39" Fps="30"/>
 	<Content>
 		<Spritesheets>
-			<Spritesheet Path="..\..\resources\gfx\ui\ui_cardfronts_further.png" Id="0"/>
+			<Spritesheet Path="ui_cardfronts.png" Id="0"/>
 		</Spritesheets>
 		<Layers>
 			<Layer Name="Main" Id="0" SpritesheetId="0"/>

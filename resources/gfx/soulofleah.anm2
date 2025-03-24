@@ -3,7 +3,7 @@
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="items\pick ups\soul_of_leah.png" Id="0"/>
-			<Spritesheet Path="ui\ui_cardfronts_further.png" Id="1"/>
+			<Spritesheet Path="..\..\content\gfx\ui_cardfronts.png" Id="1"/>
 			<Spritesheet Path="effects\effect_023_starflash.png" Id="2"/>
 		</Spritesheets>
 		<Layers>
