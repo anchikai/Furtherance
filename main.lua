@@ -159,6 +159,13 @@ Furtherance:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, function()
 	end
 end)
 
+function Furtherance:PeterFlip(name)
+	if name == 'Peter Flip' then
+		return { FlipFactor = 0 }
+	end
+end
+Furtherance:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, Furtherance.PeterFlip)
+
 --End of file
 
 Furtherance.Include("scripts.compatibility.patches_loader")

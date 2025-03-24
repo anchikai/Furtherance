@@ -33,7 +33,7 @@
 		birthright="Death field" />
 	
 	<!-- Fake Jacob for Binds of Devotion, copied from the original players.xml -->
-	<player name="FakeJacob" hp="6" hidden="true"
+	<player name="FR FakeJacob" hp="6" hidden="true"
 		skin="Character_002x_Jacob.png" 
 		costume="52" achievement="405"
 		nameimage="PlayerName_02x_Jacob_Esau.png" 

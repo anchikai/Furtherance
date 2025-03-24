@@ -10,14 +10,15 @@ end
 
 --Thank you piber!
 ---@param pos Vector
----@param range number
+---@param range? number
 ---@return EntityNPC | nil
 function Furtherance:GetClosestEnemy(pos, range)
 	---@type EntityNPC | nil
 	local closestEnemy
 	local closestDistance
+	local entities = range == nil and Isaac.GetRoomEntities() or Isaac.FindInRadius(pos, range, EntityPartition.ENEMY)
 
-	for _, ent in pairs(Isaac.FindInRadius(pos, range, EntityPartition.ENEMY)) do
+	for _, ent in pairs(entities) do
 		local npc = ent:ToNPC()
 		if not isValidEnemyTarget(npc) then goto continue end
 		---@cast npc EntityNPC

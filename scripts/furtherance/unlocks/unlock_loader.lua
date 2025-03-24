@@ -10,7 +10,11 @@ end
 --#region Leah
 
 local leah = {
-
+	"secret_diary",
+	"binds_of_devotion",
+	"rue",
+	"leahs_lock",
+	"mandrake"
 }
 
 loopInclude(leah, "leah")
@@ -20,7 +24,6 @@ loopInclude(leah, "leah")
 --#region Tainted Leah
 
 local leah_b = {
-
 }
 
 loopInclude(leah_b, "leah_b")

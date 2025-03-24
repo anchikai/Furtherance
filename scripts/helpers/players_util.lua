@@ -45,13 +45,15 @@ end ]]
 ---@return EntityPlayer[]
 function Furtherance:GetAllMainPlayers()
 	local players = PlayerManager.GetPlayers()
+	local mainPlayers = {}
 	for _, player in ipairs(players) do
-		if player:GetMainTwin():GetPlayerType() == player:GetPlayerType()         --Is the main twin of 2 players
-			and (not player.Parent or player.Parent.Type ~= EntityType.ENTITY_PLAYER) then --Not a strawmann-like spawned-in player.
-			Furtherance:Insert(players, player)
+		if player:GetMainTwin():GetPlayerType() == player:GetPlayerType()	--Is the main twin of 2 players
+			and not player.Parent											--Not a strawmann-like spawned-in player.
+		then
+			Furtherance:Insert(mainPlayers, player)
 		end
 	end
-	return players
+	return mainPlayers
 end
 
 ---Executes given function for every player
