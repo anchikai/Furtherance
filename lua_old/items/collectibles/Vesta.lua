@@ -26,8 +26,7 @@ function mod:tearSize(tear)
 		else
 			local sprite = tear:GetSprite()
 			tear.Scale = tear.Scale * 0
-			sprite:Load("gfx/vesta_tears.anm2", true)
-			sprite:ReplaceSpritesheet(0, "gfx/vesta_tears.png")
+			sprite:Load("gfx/tear_vesta.anm2", true)
 			sprite:Play("Rotate0", true)
 		end
 	end

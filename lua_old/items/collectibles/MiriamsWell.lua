@@ -23,8 +23,6 @@ function mod:WellUpdate(Well)
     if data.WellRespawnTimer > 0 then
         data.WellRespawnTimer = data.WellRespawnTimer - 1
         if data.WellRespawnTimer == 0 then
-            sprite:Load("gfx/miriams_well.anm2", true)
-            sprite:SetAnimation("Idle", true)
             sprite:Play("Idle", true)
             data.WellRespawnTimer = -1
             data.WellDied = false
@@ -43,8 +41,6 @@ function mod:WellCollide(Well, collider)
     if collider.Type ~= EntityType.ENTITY_PLAYER then
         if data.WellDied ~= true then
             local sprite = Well:GetSprite()
-            sprite:Load("gfx/miriams_well.anm2", true)
-            sprite:SetAnimation("Break", true)
             sprite:Play("Break", true)
             data.WellDied = true
             data.WellRespawnTimer = 240

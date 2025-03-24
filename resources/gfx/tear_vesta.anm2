@@ -1,8 +1,8 @@
 <AnimatedActor>
-	<Info CreatedBy="trtv" CreatedOn="12/4/2021 3:00:06 AM" Version="7" Fps="30"/>
+	<Info CreatedBy="trtv" CreatedOn="3/23/2025 8:27:13 PM" Version="8" Fps="30"/>
 	<Content>
 		<Spritesheets>
-			<Spritesheet Path="vesta_tears.png" Id="0"/>
+			<Spritesheet Path="tears_vesta.png" Id="0"/>
 		</Spritesheets>
 		<Layers>
 			<Layer Name="body" Id="0" SpritesheetId="0"/>

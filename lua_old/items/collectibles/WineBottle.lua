@@ -24,9 +24,7 @@ function mod:CorkTear(tear)
 			local Cork = player:FireTear(player.Position, tear.Velocity * (player.ShotSpeed * 1.25), true, false, true,
 				player, 2)
 			local sprite = Cork:GetSprite()
-			sprite:Load("gfx/cork_tears.anm2", true)
-			sprite:ReplaceSpritesheet(0, "gfx/cork_tears.png")
-			sprite:LoadGraphics()
+			sprite:Load("gfx/tear_cork.anm2", true)
 			local tearScale = Furtherance:TearScaleToSizeAnim(Cork)
 			--Tear size is normally 1-13 but cork only has 1-6, so half it and clamp it
 			local sizeAnim = tostring(mod:Clamp(math.floor(tonumber(tearScale) / 2), 1, 6))

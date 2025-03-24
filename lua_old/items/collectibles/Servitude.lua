@@ -120,7 +120,7 @@ function mod:ServitudeTarget(pickup)
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_SERVITUDE) and item ~= nil and data.ServitudeCounter == 0 then
 
 			local sprite = Sprite()
-			sprite:Load("gfx/spiritual_wound_target.anm2", true)
+			sprite:Load("gfx/effect_spiritual_wound_target.anm2", true)
 			sprite:Play("Idle", true)
 			sprite:Render(room:WorldToScreenPosition(item.Position, Vector.Zero, Vector.Zero))
 		end
