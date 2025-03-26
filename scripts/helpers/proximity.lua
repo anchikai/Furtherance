@@ -11,16 +11,28 @@ end
 --Thank you piber!
 ---@param pos Vector
 ---@param range? number
+---@param occludeObstacles? boolean
+---@param occludeWalls? boolean
 ---@return EntityNPC | nil
-function Furtherance:GetClosestEnemy(pos, range)
+function Furtherance:GetClosestEnemy(pos, range, occludeObstacles, occludeWalls)
 	---@type EntityNPC | nil
 	local closestEnemy
 	local closestDistance
-	local entities = range == nil and Isaac.GetRoomEntities() or Isaac.FindInRadius(pos, range, EntityPartition.ENEMY)
+	local entities
+	if range ~= nil then
+		entities = Isaac.FindInRadius(pos, range, EntityPartition.ENEMY)
+	else
+		entities = Isaac.GetRoomEntities()
+	end
+	local room = Furtherance.Room()
 
 	for _, ent in pairs(entities) do
 		local npc = ent:ToNPC()
 		if not isValidEnemyTarget(npc) then goto continue end
+		local threshold = occludeObstacles and 1000 or 5000
+		local noOcclude = room:CheckLine(pos, ent.Position, LineCheckMode.PROJECTILE, threshold, occludeWalls)
+		if (occludeObstacles or occludeWalls) and not noOcclude then goto continue end
+
 		---@cast npc EntityNPC
 		local npcDistance = npc.Position:DistanceSquared(pos)
 

@@ -125,7 +125,8 @@ local helpers = {
 	"proximity",
 	"npc_util",
 	"custom_callbacks",
-	"rooms_helper"
+	"rooms_helper",
+	"pickups_helper"
 }
 
 local tools = {

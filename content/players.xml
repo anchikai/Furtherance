@@ -3,31 +3,37 @@
          nameimageroot="gfx/ui/boss/">
 	<player name="Leah" skinColor="-1" hp="4" broken="1" coins="6" costumeSuffix="leah"
 		skin="Character_001_Leah_A.png"
+		modcostume="1"
 		nameimage="playername_Leah.png"
 		portrait="playerportrait_Leah_A.png"
 		birthright="Loved once more" />
 	<player name="Leah" bSkinParent="Leah" skinColor="-1" black="2" broken="11" costumeSuffix="leahb"
 		skin="Character_001_Leah_B.png"
+		modcostume="2"
 		nameimage="playername_Leah.png"
 		portrait="playerportrait_Leah_B.png"
 		birthright="Taken for granted" />
 	<player name="Peter" skinColor="-1" hp="4" keys="1" armor="2" hidden="false" costumeSuffix="peter"
 		skin="Character_002_Peter_A.png"
+		modcostume="3"
 		nameimage="playername_Peter.png"
 		portrait="playerportrait_Peter_A.png"
 		birthright="Mercy up" />
 	<player name="Peter" bSkinParent="Peter" skinColor="-1" hp="6" costumeSuffix="peterb"
 		skin="Character_002_Peter_B.png"
+		modcostume="4"
 		nameimage="playername_Peter.png"
 		portrait="playerportrait_Peter_B.png"
 		birthright="Hemorrhage" />
 	<player name="Miriam" skinColor="-1" hp="4" armor="4" costumeSuffix="miriam"
 		skin="Character_003_Miriam_A.png"
+		modcostume="5"
 		nameimage="playername_Miriam.png"
 		portrait="playerportrait_Miriam_A.png"
 		birthright="Crashing waves" />
 	<player name="Miriam" bSkinParent="Miriam" skinColor="-1" hp="1" broken="4" card="55" costumeSuffix="miriamb"
 		skin="Character_003_Miriam_B.png"
+		modcostume="6"
 		nameimage="playername_Miriam.png"
 		portrait="playerportrait_Miriam_B.png"
 		birthright="Death field" />

@@ -75,7 +75,21 @@ loopInclude(peter_b, "peter_b")
 --#region Miriam
 
 local miriam = {
-
+	"book_of_guidance",
+	"apocalypse",
+	"kareth",
+	"pillar_of_clouds",
+	"pillar_of_fire",
+	"wormwood_leaf",
+	"caduceus_staff",
+	"the_dreidel",
+	--tambourine (might be reworked to a wave instead of whirlpool)
+	--firstborn_son (what the fuck is this item)
+	"essence_of_prosperity",
+	"essence_of_drought",
+	"saline_spray",
+	"miriams_well"
+	--polydipsia
 }
 
 loopInclude(miriam, "miriam")

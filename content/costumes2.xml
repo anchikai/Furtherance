@@ -1,25 +1,26 @@
 <costumes anm2root="gfx/characters/">
-	<costume id="15" anm2path="ceres.anm2" type="passive" hasOverlay="true" hasSkinAlt="false" />
-	<costume id="17" anm2path="techix.anm2" type="passive" hasOverlay="true" hasSkinAlt="false" />
-	<costume id="20" anm2path="technology-1.anm2" type="passive" hasOverlay="true" hasSkinAlt="true" />
-	<costume id="3" anm2path="grass.anm2" type="trinket" hasOverlay="true" hasSkinAlt="false" />
-	<costume id="62" anm2path="little_raincoat.anm2" type="passive" hasOverlay="true" hasSkinAlt="false" />
+	<costume id="15" anm2path="ceres.anm2" type="passive" />
+	<costume id="17" anm2path="techix.anm2" type="passive" />
+	<costume id="20" anm2path="technology-1.anm2" type="passive" hasSkinAlt="true" />
+	<costume id="3" anm2path="grass.anm2" type="trinket" />
+	<costume id="62" anm2path="little_raincoat.anm2" type="passive" />
+	<costume id="9" anm2path="210_gnawedleaf_statue.anm2" type="trinket" priority="50" />
 
 	<!-- Leah -->
-	<costume anm2path="Character_001_Leah_Hair.anm2" type="none" priority="99" />
+	<costume id="1" anm2path="Character_001_Leah_Hair.anm2" type="none" priority="99" />
 	<costume anm2path="Character_001_Leah_Pog.anm2" type="none" priority="99" />
 	<!-- Tainted Leah -->
-	<costume anm2path="Character_001b_Leah_Hair.anm2" type="none" priority="99" />
+	<costume id="2" anm2path="Character_001b_Leah_Hair.anm2" type="none" priority="99" />
 	<costume anm2path="Character_001b_Leah_Pog.anm2" type="none" priority="99" />
 	<!-- Peter -->
-	<costume anm2path="Character_002_Peter_Drip.anm2" type="none" priority="99" />
+	<costume id="3" anm2path="Character_002_Peter_Drip.anm2" type="none" priority="99" />
 	<!-- Tainted Peter -->
-	<costume anm2path="Character_002b_Peter_Drip.anm2" type="none" priority="99" />
+	<costume id="4" anm2path="Character_002b_Peter_Drip.anm2" type="none" priority="99" />
 	<costume anm2path="Character_002b_Peter_Pog.anm2" type="none" priority="99" />
 	<!-- Miriam -->
-	<costume anm2path="Character_003_Miriam_Hair.anm2" type="none" priority="99" />
+	<costume id="5" anm2path="Character_003_Miriam_Hair.anm2" type="none" priority="99" />
 	<costume anm2path="Character_003_Miriam_Pog.anm2" type="none" priority="99" />
 	<!-- Tainted Miriam -->
-	<costume anm2path="Character_003b_Miriam_Hair.anm2" type="none" priority="99" />
+	<costume id="6" anm2path="Character_003b_Miriam_Hair.anm2" type="none" priority="99" />
 	<costume anm2path="Character_003b_Miriam_Pog.anm2" type="none" priority="99" />
 </costumes>

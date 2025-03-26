@@ -73,7 +73,7 @@ function HEART_RENOVATOR:CannotPickRedHeartsOrWillOverflow(pickup, player)
 	end
 
 	if canCollect then
-		local emptyHealth = player:GetEffectiveMaxHearts() - player:GetHearts() + (player:GetRottenHearts() * 2)
+		local emptyHealth = player:GetEffectiveMaxHearts() - player:GetHearts() - (player:GetRottenHearts() * 2)
 		if emptyHealth < amount and emptyHealth >= 0 then
 			amount = amount - emptyHealth
 			canOverflow = true
