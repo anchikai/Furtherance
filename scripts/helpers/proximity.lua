@@ -1,38 +1,32 @@
 ---@param ent Entity?
-local function isValidEnemyTarget(ent)
+function Furtherance:IsValidEnemyTarget(ent)
 	return ent
-		and ent:ToNPC()
-		and ent:IsActiveEnemy(false)
-		and ent:IsVulnerableEnemy()
-		and not ent:HasEntityFlags(EntityFlag.FLAG_CHARM | EntityFlag.FLAG_FRIENDLY)
-		and ent.EntityCollisionClass ~= EntityCollisionClass.ENTCOLL_NONE
+	and ent:ToNPC()
+	and ent:IsActiveEnemy(false)
+	and ent:IsVulnerableEnemy()
+	and not ent:HasEntityFlags(EntityFlag.FLAG_CHARM | EntityFlag.FLAG_FRIENDLY)
+	and ent.EntityCollisionClass ~= EntityCollisionClass.ENTCOLL_NONE
 end
 
 --Thank you piber!
 ---@param pos Vector
 ---@param range? number
----@param occludeObstacles? boolean
----@param occludeWalls? boolean
+---@param filter? fun(npc: EntityNPC): boolean?
 ---@return EntityNPC | nil
-function Furtherance:GetClosestEnemy(pos, range, occludeObstacles, occludeWalls)
+function Furtherance:GetClosestEnemy(pos, range, filter)
 	---@type EntityNPC | nil
 	local closestEnemy
 	local closestDistance
 	local entities
-	if range ~= nil then
+	if range then
 		entities = Isaac.FindInRadius(pos, range, EntityPartition.ENEMY)
 	else
 		entities = Isaac.GetRoomEntities()
 	end
-	local room = Furtherance.Room()
 
-	for _, ent in pairs(entities) do
+	for _, ent in ipairs(entities) do
 		local npc = ent:ToNPC()
-		if not isValidEnemyTarget(npc) then goto continue end
-		local threshold = occludeObstacles and 1000 or 5000
-		local noOcclude = room:CheckLine(pos, ent.Position, LineCheckMode.PROJECTILE, threshold, occludeWalls)
-		if (occludeObstacles or occludeWalls) and not noOcclude then goto continue end
-
+		if npc and (not filter and Furtherance:IsValidEnemyTarget(npc) or filter and filter(npc)) then goto continue end
 		---@cast npc EntityNPC
 		local npcDistance = npc.Position:DistanceSquared(pos)
 
@@ -60,7 +54,7 @@ function Furtherance:GetClosestEnemyInView(pos, range, dir, fov, occludeObstacle
 
 	for _, ent in pairs(Isaac.FindInRadius(pos, range, EntityPartition.ENEMY)) do
 		local npc = ent:ToNPC()
-		if not isValidEnemyTarget(npc) then goto continue end
+		if not Furtherance:IsValidEnemyTarget(npc) then goto continue end
 		---@cast npc EntityNPC
 
 		local dirToEnemy = (npc.Position - pos)
@@ -104,7 +98,6 @@ function Furtherance:GetClosestProjectile(pos, range)
 	return closestEnemy
 end
 
----Runs the function for all EntityNPCs that pass :IsActiveEnemy(false) using Isaac.GetRoomEntities
 ---@param func fun(npc: EntityNPC)
 function Furtherance:ForEachEnemy(func)
 	for _, ent in pairs(Isaac.GetRoomEntities()) do

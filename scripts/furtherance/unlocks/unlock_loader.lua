@@ -84,7 +84,7 @@ local miriam = {
 	"caduceus_staff",
 	"the_dreidel",
 	--tambourine (might be reworked to a wave instead of whirlpool)
-	--firstborn_son (what the fuck is this item)
+	"firstborn_son",
 	"essence_of_prosperity",
 	"essence_of_drought",
 	"saline_spray",
