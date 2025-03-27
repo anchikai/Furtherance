@@ -143,12 +143,11 @@ function Furtherance:DirectionToVector(dir)
 end
 
 ---@param num number
----@param nearestDecimal? integer
-function Furtherance:Round(num, nearestDecimal)
-	local mult = nearestDecimal and (10 ^ nearestDecimal) or 1
-	num = num * mult
-	local roundedNum = num % 1 >= 0.5 and math.ceil(num) or math.floor(num)
-	return roundedNum / mult
+---@param dp? integer
+function Furtherance:Round(num, dp)
+	dp = dp or 2
+	local mult = 10^dp
+	return math.floor(num * mult + 0.5)/mult
 end
 
 ---Takes two 2d vectors and checks them to see if they are equal

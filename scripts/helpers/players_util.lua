@@ -337,3 +337,25 @@ function Furtherance:CanPlayerBuyShopItem(player, pickup)
 	end
 	return false
 end
+
+---Aquired from EID who reverse engineerd the decomp code for Consolation Prize
+---@param player EntityPlayer
+---@param cacheFlag CacheFlag
+function Furtherance:GetStatScore(player, cacheFlag)
+	local score = 0
+	if cacheFlag == CacheFlag.CACHE_SPEED then
+		score = (player.MoveSpeed * 4.5) - 2
+	elseif cacheFlag == CacheFlag.CACHE_FIREDELAY then
+		score = (((30/(player.MaxFireDelay + 1))^0.75) * 2.120391) - 2
+	elseif cacheFlag ==CacheFlag.CACHE_DAMAGE then
+		score = ((player.Damage^0.56)*2.231179) - 2
+	elseif cacheFlag == CacheFlag.CACHE_RANGE then
+		score = ((player.TearRange - 230) / 60) + 2
+	--Shotspeed and Luck are custom. Default should be 2.5
+	elseif cacheFlag == CacheFlag.CACHE_SHOTSPEED then
+		score = (player.ShotSpeed * 6.5) - 4
+	elseif cacheFlag == CacheFlag.CACHE_LUCK then
+		score = player.Luck + 2.5
+	end
+	return Furtherance:Round(score)
+end

@@ -104,7 +104,13 @@ loopInclude(miriam, "miriam")
 --#region Tainted Miriam
 
 local miriam_b = {
-
+	"soul_of_miriam",
+	"almagest_scrap",
+	"golden_sack",
+	--"spiritual_wound",
+	"abyssal_penny",
+	"jar_of_manna",
+	"reverse_charity"
 }
 
 loopInclude(miriam_b, "miriam_b")
