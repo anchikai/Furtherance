@@ -99,11 +99,21 @@ function Furtherance:GetClosestProjectile(pos, range)
 end
 
 ---@param func fun(npc: EntityNPC)
-function Furtherance:ForEachEnemy(func)
-	for _, ent in pairs(Isaac.GetRoomEntities()) do
+---@param pos? Vector
+---@param radius? integer
+function Furtherance:ForEachEnemy(func, pos, radius)
+	local entities
+	if radius and pos then
+		entities = Isaac.FindInRadius(pos, radius, EntityPartition.ENEMY)
+	else
+		entities = Isaac.GetRoomEntities()
+	end
+	for _, ent in pairs(entities) do
 		local npc = ent:ToNPC()
 		if npc and npc:IsActiveEnemy(false) then
-			func(npc)
+			if func(npc) then
+				return true
+			end
 		end
 	end
 end

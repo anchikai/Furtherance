@@ -20,7 +20,7 @@ function ESSENCE_OF_PROSPERITY:OnUse(card, player, flag)
 			rainDrop.Parent = npc
 			---@cast rainDrop EntityEffect
 			rainDrop:FollowParent(npc)
-			local anim = Mod.GENERIC_RNG:RandomInt(4) + 1
+			local anim = RNG():RandomInt(4)
 			rainDrop:GetSprite():Play("Drop0" .. anim)
 			Mod:GetData(rainDrop).ProsperityRainDrop = true
 		end

@@ -20,7 +20,6 @@ local leah = {
 	"holy_heart",
 	"keratoconus",
 	"heart_embedded_coin",
-	"heart_renovator",
 	"owls_eye",
 	"essence_of_love",
 	"exsanguination"
@@ -33,6 +32,11 @@ loopInclude(leah, "leah")
 --#region Tainted Leah
 
 local leah_b = {
+	"soul_of_leah",
+	"leahs_heart",
+	"rotten_love",
+	--essence_of_hate,
+	"reverse_hope",
 }
 
 loopInclude(leah_b, "leah_b")
@@ -52,7 +56,6 @@ local peter = {
 	"alabaster_scrap",
 	"liberation",
 	"molten_gold",
-	--keyts
 	"itching_powder",
 	"essence_of_life",
 	"golden_port"
@@ -65,7 +68,11 @@ loopInclude(peter, "peter")
 --#region Tainted Peter
 
 local peter_b = {
-
+	"soul_of_peter",
+	"leviathans_tendril",
+	"trepanation",
+	"key_to_the_pit",
+	"essence_of_death"
 }
 
 loopInclude(peter_b, "peter_b")
@@ -83,13 +90,11 @@ local miriam = {
 	"wormwood_leaf",
 	"caduceus_staff",
 	"the_dreidel",
-	--tambourine (might be reworked to a wave instead of whirlpool)
 	"firstborn_son",
 	"essence_of_prosperity",
 	"essence_of_drought",
 	"saline_spray",
 	"miriams_well"
-	--polydipsia
 }
 
 loopInclude(miriam, "miriam")

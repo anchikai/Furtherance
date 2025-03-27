@@ -313,3 +313,20 @@ function Furtherance:TryStartAmbush()
 	end
 	Ambush.StartChallenge()
 end
+
+local bloodTearTable = {
+	[TearVariant.BLUE] = TearVariant.BLOOD,
+	[TearVariant.CUPID_BLUE] = TearVariant.CUPID_BLOOD,
+	[TearVariant.NAIL] = TearVariant.NAIL_BLOOD,
+	[TearVariant.PUPULA] = TearVariant.PUPULA_BLOOD,
+	[TearVariant.GODS_FLESH] = TearVariant.GODS_FLESH_BLOOD,
+	[TearVariant.GLAUCOMA] = TearVariant.GLAUCOMA_BLOOD,
+	[TearVariant.EYE] = TearVariant.EYE_BLOOD,
+}
+
+---@param tear EntityTear
+function Furtherance:TryChangeTearToBloodVariant(tear)
+	if bloodTearTable[tear.Variant] then
+		tear:ChangeVariant(bloodTearTable[tear.Variant])
+	end
+end

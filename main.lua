@@ -163,7 +163,21 @@ Furtherance.PlayerType = {
 	MIRIAM_B = Isaac.GetPlayerTypeByName("Miriam", true),
 }
 
-local characters = {}
+local characters = {
+	--"leah.leah"
+	"leah.heart_renovator",
+	--"leah_b.leah_b",
+	"leah_b.shattered_heart",
+	--"peter.peter",
+	"peter.keys_to_the_kingdom",
+	--"peter_b.peter_b",
+	--"peter_b.muddled_cross",
+	--"miriam.miriam",
+	--"miriam.tambourine",
+	--"miriam.polydipsia",
+	--"miriam_b.miriam_b",
+	--"miriam_b.polarity_shift"
+}
 
 loopInclude(characters, "scripts.furtherance.characters")
 

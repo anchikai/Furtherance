@@ -90,3 +90,8 @@ function Furtherance:CheckValidPreWombChapter(secondFloorOnly)
 		and not Furtherance.Game:IsGreedMode()
 	)
 end
+
+-- For getting a speicifc group of rooms of the respective difficulty
+function Furtherance:GetRoomMode()
+	return Furtherance.Game:IsGreedMode() and 1 or 0
+end
