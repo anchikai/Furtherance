@@ -169,7 +169,7 @@ local characters = {
 	--"leah_b.leah_b",
 	"leah_b.shattered_heart",
 	--"peter.peter",
-	"peter.keys_to_the_kingdom",
+	--"peter.keys_to_the_kingdom",
 	--"peter_b.peter_b",
 	--"peter_b.muddled_cross",
 	--"miriam.miriam",
