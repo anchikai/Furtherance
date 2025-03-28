@@ -199,6 +199,7 @@ function Furtherance:PeterFlip(name)
 		return { FlipFactor = 0 }
 	end
 end
+
 Furtherance:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, Furtherance.PeterFlip)
 
 --!End of file
@@ -363,7 +364,7 @@ RUNE_ESSENCE_OF_LOVE = Isaac.GetCardIdByName("Essence of Love")
 RUNE_ESSENCE_OF_HATE = Isaac.GetCardIdByName("Essence of Hate")
 RUNE_ESSENCE_OF_LIFE = Isaac.GetCardIdByName("Essence of Life")
 RUNE_ESSENCE_OF_DEATH = Isaac.GetCardIdByName("Essence of Death")
-RUNE_ESSENCE_OF_PROSPERITY = Isaac.GetCardIdByName("Essence of Prosperity")
+RUNE_ESSENCE_OF_DELUGE = Isaac.GetCardIdByName("Essence of Deluge")
 RUNE_ESSENCE_OF_DROUGHT = Isaac.GetCardIdByName("Essence of Drought")
 PILLEFFECT_HEARTACHE_UP = Isaac.GetPillEffectByName("Heartache Up")
 PILLEFFECT_HEARTACHE_DOWN = Isaac.GetPillEffectByName("Heartache Down")
@@ -536,7 +537,7 @@ include("lua/pocket/EssenceOfLove.lua")
 include("lua/pocket/EssenceOfHate.lua")
 include("lua/pocket/EssenceOfLife.lua")
 include("lua/pocket/EssenceOfDeath.lua")
-include("lua/pocket/EssenceOfProsperity.lua")
+include("lua/pocket/EssenceOfDeluge.lua")
 include("lua/pocket/EssenceOfDrought.lua")
 include("lua/pocket/Heartache.lua")
 include("lua/pocket/GoldenCard.lua")

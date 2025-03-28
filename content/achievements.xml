@@ -64,9 +64,9 @@
 	<achievement name="The Dreidel" text='"The Dreidel" has appeared in the basement' gfx="achievement_salinespray.png" />
 	<achievement name="Tambourine" text='"Tambourine" has appeared in the basement' gfx="achievement_caduceusstaff.png" />
 	<achievement name="Firstborn Son" text='"Firstborn Son" has appeared in the basement' gfx="achievement_miriamswell.png" />
-	<achievement name="Essence of Prosperity + Drought" text='"Essence of Prosperity + Drought" has appeared in the basement' gfx="achievement_tambourine.png" />
+	<achievement name="Essence of Deluge + Drought" text='"Essence of Deluge + Drought" has appeared in the basement' gfx="achievement_tambourine.png" />
 	<achievement name="Saline Spray" text='"Saline Spray" has appeared in the basement' gfx="achievement_firstbornson.png" />
-	<achievement name="Miriam&apos;s Well" text='"Miriam&apos;s Well" has appeared in the basement' gfx="achievement_essenceofprosperityanddrought.png" />
+	<achievement name="Miriam&apos;s Well" text='"Miriam&apos;s Well" has appeared in the basement' gfx="achievement_miriamswell.png" />
 	<achievement name="The Condemned" text='You unlocked "Miriam"' gfx="achievement_taintedmiriam.png" />
 	<achievement name="Polydipsia" text='"Polydipsia" has appeared in the basement' gfx="achievement_polydipsia.png" />
 

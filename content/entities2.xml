@@ -20,7 +20,6 @@
 	</entity>
 
 	<!-- Pickups -->
-	<entity anm2path="lightbeam.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="8" friction="1" id="5" variant="2868" subtype="100" name="Light Beam" numGridCollisionPoints="24" shadowSize="0" stageHP="0" /> <!-- is this even used? -->
 	<entity anm2path="pickup_soulofleah.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Soul of Leah" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="104" />
 	<entity anm2path="pickup_soulofpeter.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Soul of Peter" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="105" />
 	<entity anm2path="pickup_soulofmiriam.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Soul of Miriam" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="106" />
@@ -28,7 +27,7 @@
 	<entity anm2path="pickup_essenceofhate.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Essence of Hate" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="112" />
 	<entity anm2path="pickup_essenceoflife.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Essence of Life" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="113" />
 	<entity anm2path="pickup_essenceofdeath.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Essence of Death" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="114" />
-	<entity anm2path="pickup_essenceofprosperity.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Essence of Prosperity" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="115" />
+	<entity anm2path="pickup_essenceofdeluge.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Essence of Deluge" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="115" />
 	<entity anm2path="pickup_essenceofdrought.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Essence of Drought" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="116" />
 	<!-- <entity anm2path="moonheart.anm2" baseHP="0" boss="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Moon Heart" numGridCollisionPoints="24" shadowSize="17" stageHP="0" variant="10" subtype="225" />
 	<entity anm2path="rockheart.anm2" baseHP="0" boss="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Rock Heart" numGridCollisionPoints="24" shadowSize="17" stageHP="0" variant="10" subtype="226" /> -->

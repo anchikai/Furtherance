@@ -12,7 +12,7 @@ SOUL_OF_MIRIAM.ID = Isaac.GetCardIdByName("Soul of Miriam")
 ---@param player EntityPlayer
 ---@param flags UseFlag
 function SOUL_OF_MIRIAM:OnUse(card, player, flags)
-	Mod.Rune.ESSENCE_OF_PROSPERITY:OnUse(card, player, flags)
+	Mod.Rune.ESSENCE_OF_DELUGE:OnUse(card, player, flags)
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_CARD, SOUL_OF_MIRIAM.OnUse)

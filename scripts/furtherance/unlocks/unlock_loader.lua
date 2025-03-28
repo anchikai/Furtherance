@@ -91,7 +91,7 @@ local miriam = {
 	"caduceus_staff",
 	"the_dreidel",
 	"firstborn_son",
-	"essence_of_prosperity",
+	"essence_of_deluge",
 	"essence_of_drought",
 	"saline_spray",
 	"miriams_well"

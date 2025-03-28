@@ -2,7 +2,7 @@
 	<Info CreatedBy="robot" CreatedOn="5/14/2022 1:57:52 AM" Version="116" Fps="30"/>
 	<Content>
 		<Spritesheets>
-			<Spritesheet Path="items\pick ups\essence_of_prosperity.png" Id="0"/>
+			<Spritesheet Path="items\pick ups\essence_of_deluge.png" Id="0"/>
 			<Spritesheet Path="..\..\content\gfx\ui_cardfronts.png" Id="1"/>
 			<Spritesheet Path="effects\effect_023_starflash.png" Id="2"/>
 		</Spritesheets>
