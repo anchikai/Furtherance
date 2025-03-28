@@ -1,10 +1,10 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
 local Cyst = Isaac.GetEntityVariantByName("Blood Cyst")
 local CystHitbox = Isaac.GetEntityVariantByName("Blood Cyst Hitbox")
 
-function mod:RespawnCyst()
+function Mod:RespawnCyst()
 	local room = game:GetRoom()
 
 	-- the cyst hitbox gets automatically removed
@@ -20,7 +20,7 @@ function mod:RespawnCyst()
 			for _ = 1, player:GetCollectibleNum(CollectibleType.COLLECTIBLE_BLOOD_CYST) do
 				local position = Isaac.GetFreeNearPosition(room:GetRandomPosition(0), 40)
 				local bloodCyst = Isaac.Spawn(EntityType.ENTITY_FAMILIAR, Cyst, 0, position, Vector.Zero, player)
-				local data = mod:GetData(bloodCyst)
+				local data = Mod:GetData(bloodCyst)
 				data.SavedPosition = position
 
 				local hitbox = Isaac.Spawn(EntityType.ENTITY_BOIL, 0, 0, bloodCyst.Position, Vector.Zero, player):ToNPC()
@@ -29,7 +29,7 @@ function mod:RespawnCyst()
 				hitbox.EntityCollisionClass = EntityCollisionClass.ENTCOLL_PLAYEROBJECTS
 				hitbox:SetColor(Color(1, 1, 1, 0), 0, 1)
 
-				local hitboxData = mod:GetData(hitbox)
+				local hitboxData = Mod:GetData(hitbox)
 				hitboxData.IsBloodCystHitbox = true
 				hitboxData.BloodCyst = bloodCyst
 				hitboxData.SavedPosition = position
@@ -38,20 +38,20 @@ function mod:RespawnCyst()
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.RespawnCyst)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.RespawnCyst)
 
-function mod:FreezePosition(bloodCyst)
-	local data = mod:GetData(bloodCyst)
+function Mod:FreezePosition(bloodCyst)
+	local data = Mod:GetData(bloodCyst)
 	if data.SavedPosition == nil then return end
 
 	bloodCyst.Position = data.SavedPosition
 	bloodCyst.Velocity = Vector.Zero
 end
 
-mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, mod.FreezePosition, Cyst)
+Mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, Mod.FreezePosition, Cyst)
 
-function mod:StopHitboxAI(boil)
-	local data = mod:GetData(boil)
+function Mod:StopHitboxAI(boil)
+	local data = Mod:GetData(boil)
 	if not data.IsBloodCystHitbox then return false end
 
 	if data.SavedPosition ~= nil then
@@ -62,19 +62,19 @@ function mod:StopHitboxAI(boil)
 	return true
 end
 
-mod:AddCallback(ModCallbacks.MC_PRE_NPC_UPDATE, mod.StopHitboxAI, EntityType.ENTITY_BOIL)
+Mod:AddCallback(ModCallbacks.MC_PRE_NPC_UPDATE, Mod.StopHitboxAI, EntityType.ENTITY_BOIL)
 
-function mod:IgnorePlayerCollisions(boil, collider)
-	local data = mod:GetData(boil)
+function Mod:IgnorePlayerCollisions(boil, collider)
+	local data = Mod:GetData(boil)
 	if data.IsBloodCystHitbox and collider and collider:ToPlayer() then
 		return true
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, mod.IgnorePlayerCollisions, EntityType.ENTITY_BOIL)
+Mod:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, Mod.IgnorePlayerCollisions, EntityType.ENTITY_BOIL)
 
-function mod:HitboxDied(boil)
-	local data = mod:GetData(boil)
+function Mod:HitboxDied(boil)
+	local data = Mod:GetData(boil)
 	if not data.IsBloodCystHitbox then return end
 
 	local bloodCyst = data.BloodCyst
@@ -94,4 +94,4 @@ function mod:HitboxDied(boil)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, mod.HitboxDied, EntityType.ENTITY_BOIL)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, Mod.HitboxDied, EntityType.ENTITY_BOIL)

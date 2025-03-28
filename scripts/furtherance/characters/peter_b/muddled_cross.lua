@@ -1,9 +1,9 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
-mod:SaveModData({
+Mod:SaveModData({
 	Flipped = false,
-	MuddledCrossBackdropType = mod.SaveNil
+	MuddledCrossBackdropType = Mod.SaveNil
 })
 
 local FlipSFX = Isaac.GetSoundIdByName("PeterFlip")
@@ -17,66 +17,70 @@ local function switchBackground(isFlipped)
 	local level = game:GetLevel()
 	local room = game:GetRoom()
 	if isFlipped == true then
-		mod.MuddledCrossBackdropType = room:GetBackdropType()
+		Mod.MuddledCrossBackdropType = room:GetBackdropType()
 		if room:GetType() == RoomType.ROOM_DEFAULT or room:GetType() == RoomType.ROOM_TREASURE then
 			if level:GetStageType() <= StageType.STAGETYPE_AFTERBIRTH then
 				if level:GetStage() < LevelStage.STAGE4_3 then
-					game:ShowHallucination(0, mod.MuddledCrossBackdropType + 3)
+					game:ShowHallucination(0, Mod.MuddledCrossBackdropType + 3)
 				elseif level:GetStage() ~= LevelStage.STAGE4_3 and level:GetStage() < LevelStage.STAGE6 then
-					game:ShowHallucination(0, mod.MuddledCrossBackdropType + 2)
+					game:ShowHallucination(0, Mod.MuddledCrossBackdropType + 2)
 				end
 			elseif level:GetStageType() >= StageType.STAGETYPE_REPENTANCE then
 				if level:GetStage() < LevelStage.STAGE4_1 then
-					if (mod.MuddledCrossBackdropType >= BackdropType.MAUSOLEUM2 and mod.MuddledCrossBackdropType <= BackdropType.MAUSOLEUM4) or mod.MuddledCrossBackdropType == BackdropType.MAUSOLEUM then
+					if (Mod.MuddledCrossBackdropType >= BackdropType.MAUSOLEUM2 and Mod.MuddledCrossBackdropType <= BackdropType.MAUSOLEUM4) or Mod.MuddledCrossBackdropType == BackdropType.MAUSOLEUM then
 						game:ShowHallucination(0, BackdropType.CORPSE)
 					else
-						game:ShowHallucination(0, mod.MuddledCrossBackdropType + 1)
+						game:ShowHallucination(0, Mod.MuddledCrossBackdropType + 1)
 					end
 				end
 			end
 		end
 	elseif isFlipped == false then
-		game:ShowHallucination(0, mod.MuddledCrossBackdropType)
+		game:ShowHallucination(0, Mod.MuddledCrossBackdropType)
 	end
 	SFXManager():Stop(SoundEffect.SOUND_DEATH_CARD)
 end
 
-function mod:UseFlippedCross(_, _, player)
+function Mod:UseFlippedCross(_, _, player)
 	game:ShakeScreen(10)
 
-	mod.Flipped = not mod.Flipped
-	switchBackground(mod.Flipped)
+	Mod.Flipped = not Mod.Flipped
+	switchBackground(Mod.Flipped)
 
-	if mod.Flipped == true then
+	if Mod.Flipped == true then
 		SFXManager():Play(FlipSFX)
 	else
 		SFXManager():Play(UnflipSFX)
 	end
 	return true
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.UseFlippedCross, CollectibleType.COLLECTIBLE_MUDDLED_CROSS)
 
-function mod:RoomPersist()
-	if mod.Flipped == true then
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseFlippedCross, CollectibleType.COLLECTIBLE_MUDDLED_CROSS)
+
+function Mod:RoomPersist()
+	if Mod.Flipped == true then
 		switchBackground(true)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.RoomPersist)
 
-function mod:UltraSecretPool(pool, decrease, seed)
-	if mod.Flipped == true then
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.RoomPersist)
+
+function Mod:UltraSecretPool(pool, decrease, seed)
+	if Mod.Flipped == true then
 		if Rerolled ~= true then
 			Rerolled = true
-			return game:GetItemPool():GetCollectible(ItemPoolType.POOL_ULTRA_SECRET, false, seed, CollectibleType.COLLECTIBLE_NULL)
+			return game:GetItemPool():GetCollectible(ItemPoolType.POOL_ULTRA_SECRET, false, seed,
+				CollectibleType.COLLECTIBLE_NULL)
 		end
 		Rerolled = false
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_GET_COLLECTIBLE, mod.UltraSecretPool)
 
-function mod:DoubleStuff(pickup)
+Mod:AddCallback(ModCallbacks.MC_PRE_GET_COLLECTIBLE, Mod.UltraSecretPool)
+
+function Mod:DoubleStuff(pickup)
 	local room = game:GetRoom()
-	if pickup.FrameCount ~= 1 or mod.Flipped ~= true then
+	if pickup.FrameCount ~= 1 or Mod.Flipped ~= true then
 		return
 	end
 	for i = 0, game:GetNumPlayers() - 1 do
@@ -85,8 +89,9 @@ function mod:DoubleStuff(pickup)
 			pickup.SpawnerEntity = player
 			pickup.SpawnerType = EntityType.ENTITY_PLAYER
 			pickup.SpawnerVariant = player.Variant
-			if mod.Flipped and room:IsFirstVisit() then
-				local newItem = Isaac.Spawn(EntityType.ENTITY_PICKUP, pickup.Variant, 0, Isaac.GetFreeNearPosition(pickup.Position, 80), Vector.Zero, player):ToPickup()
+			if Mod.Flipped and room:IsFirstVisit() then
+				local newItem = Isaac.Spawn(EntityType.ENTITY_PICKUP, pickup.Variant, 0,
+					Isaac.GetFreeNearPosition(pickup.Position, 80), Vector.Zero, player):ToPickup()
 				newItem.Price = pickup.Price
 				newItem.OptionsPickupIndex = pickup.OptionsPickupIndex
 			end
@@ -95,31 +100,34 @@ function mod:DoubleStuff(pickup)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, mod.DoubleStuff)
 
-function mod:HealthDrain(player)
-	if mod.Flipped == true and player:GetHearts() > 1 and game:GetFrameCount() ~= 0 then
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, Mod.DoubleStuff)
+
+function Mod:HealthDrain(player)
+	if Mod.Flipped == true and player:GetHearts() > 1 and game:GetFrameCount() ~= 0 then
 		local drainSpeed
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and player:GetName() == "PeterB" then
 			drainSpeed = 420
 		else
 			drainSpeed = 210
 		end
-		if game:GetFrameCount()%drainSpeed == 0 then
+		if game:GetFrameCount() % drainSpeed == 0 then
 			player:AddHearts(-1)
-			local blood = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_RED, 0, player.Position, Vector.Zero, player):ToEffect()
+			local blood = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_RED, 0, player.Position,
+				Vector.Zero, player):ToEffect()
 			blood.Scale = 1.5
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.HealthDrain)
 
-function mod:TougherEnemies(entity)
-	if mod.Flipped ~= true then return end
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.HealthDrain)
+
+function Mod:TougherEnemies(entity)
+	if Mod.Flipped ~= true then return end
 
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
-		local data = mod:GetData(player)
+		local data = Mod:GetData(player)
 		if entity:IsActiveEnemy(false) and entity:IsVulnerableEnemy() then
 			if data.DamageTimeout == nil then
 				data.DamageTimeout = false
@@ -133,15 +141,16 @@ function mod:TougherEnemies(entity)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.TougherEnemies)
 
-function mod:FixInputs(entity, hook, button)
+Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, Mod.TougherEnemies)
+
+function Mod:FixInputs(entity, hook, button)
 	if entity == nil then return end
 
 	local player = entity:ToPlayer()
 	if player == nil then return end
 
-	if mod.Flipped ~= true then return end
+	if Mod.Flipped ~= true then return end
 
 	if button == ButtonAction.ACTION_DOWN then
 		return Input.GetActionValue(ButtonAction.ACTION_UP, player.ControllerIndex)
@@ -153,27 +162,30 @@ function mod:FixInputs(entity, hook, button)
 		return Input.GetActionValue(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, mod.FixInputs, InputHook.GET_ACTION_VALUE)
+
+Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, Mod.FixInputs, InputHook.GET_ACTION_VALUE)
 
 local newGame = false
-function mod:NewGame()
+function Mod:NewGame()
 	newGame = true
 end
-mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, mod.NewGame)
+
+Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, Mod.NewGame)
 
 local flipFactor = 0
-function mod:NewFloor()
-	if mod.Flipped and not newGame then
-		mod.Flipped = false
+function Mod:NewFloor()
+	if Mod.Flipped and not newGame then
+		Mod.Flipped = false
 		flipFactor = 0
 	end
 	newGame = false
 end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, mod.NewFloor)
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, Mod.NewFloor)
 
 local pauseTime = 0
 local pausedFixed = false
-function mod:AnimateFlip()
+function Mod:AnimateFlip()
 	local speed = 0.05
 	if Furtherance.FlipSpeed == 1 then
 		speed = 0.0172413793
@@ -183,7 +195,7 @@ function mod:AnimateFlip()
 		speed = 0.1
 	end
 
-	local renderFlipped = mod.Flipped and not pausedFixed
+	local renderFlipped = Mod.Flipped and not pausedFixed
 	if renderFlipped == true then
 		flipFactor = flipFactor + speed
 	elseif renderFlipped == false then
@@ -196,28 +208,31 @@ function mod:AnimateFlip()
 	else
 		pauseTime = 0
 	end
-	if mod.Flipped and pauseTime == 26 then
+	if Mod.Flipped and pauseTime == 26 then
 		pausedFixed = true
 	elseif pausedFixed and not game:IsPaused() then
 		pausedFixed = false
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_RENDER, mod.AnimateFlip)
+
+Mod:AddCallback(ModCallbacks.MC_POST_RENDER, Mod.AnimateFlip)
 
 -- Thank you im_tem for the shader!!
-function mod:PeterFlip(name)
+function Mod:PeterFlip(name)
 	if name == 'Peter Flip' then
 		return { FlipFactor = flipFactor }
 	end
 end
-mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, mod.PeterFlip)
 
-function mod:ResetFlipped(continued)
+Mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, Mod.PeterFlip)
+
+function Mod:ResetFlipped(continued)
 	pausedFixed = false
-	if not continued and mod.Flipped then
+	if not continued and Mod.Flipped then
 		switchBackground(false)
 		flipFactor = 0
-		mod.Flipped = false
+		Mod.Flipped = false
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, mod.ResetFlipped)
+
+Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, Mod.ResetFlipped)

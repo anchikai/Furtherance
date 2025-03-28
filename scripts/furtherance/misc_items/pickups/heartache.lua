@@ -1,13 +1,15 @@
-local mod = Furtherance
+local Mod = Furtherance
 
-function mod:HeartacheUp(pill, player, flags)
-    player:AddBrokenHearts(1)
-    player:AnimateSad()
+function Mod:HeartacheUp(pill, player, flags)
+	player:AddBrokenHearts(1)
+	player:AnimateSad()
 end
-mod:AddCallback(ModCallbacks.MC_USE_PILL, mod.HeartacheUp, PILLEFFECT_HEARTACHE_UP)
 
-function mod:HeartacheDown(pill, player, flags)
-    player:AddBrokenHearts(-1)
-    player:AnimateHappy()
+Mod:AddCallback(ModCallbacks.MC_USE_PILL, Mod.HeartacheUp, PILLEFFECT_HEARTACHE_UP)
+
+function Mod:HeartacheDown(pill, player, flags)
+	player:AddBrokenHearts(-1)
+	player:AnimateHappy()
 end
-mod:AddCallback(ModCallbacks.MC_USE_PILL, mod.HeartacheDown, PILLEFFECT_HEARTACHE_DOWN)
+
+Mod:AddCallback(ModCallbacks.MC_USE_PILL, Mod.HeartacheDown, PILLEFFECT_HEARTACHE_DOWN)

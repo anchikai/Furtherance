@@ -1,7 +1,7 @@
-local mod = Furtherance
+local Mod = Furtherance
 
 --removes the player's current trinkets, gives the player the one you provided, uses the smelter, then gives the player back the original trinkets. (kittenchilly's code!)
-function mod:AddSmeltedTrinket(player, trinket, firstTimePickingUp)
+function Mod:AddSmeltedTrinket(player, trinket, firstTimePickingUp)
 	--get the trinkets they're currently holding
 	local trinket0 = player:GetTrinket(0)
 	local trinket1 = player:GetTrinket(1)
@@ -14,7 +14,7 @@ function mod:AddSmeltedTrinket(player, trinket, firstTimePickingUp)
 		player:TryRemoveTrinket(trinket1)
 	end
 
-	player:AddTrinket(trinket, firstTimePickingUp == nil and true or firstTimePickingUp)  --add the trinket
+	player:AddTrinket(trinket, firstTimePickingUp == nil and true or firstTimePickingUp) --add the trinket
 	player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, false, false) --smelt it
 
 	--give their trinkets back
@@ -44,8 +44,8 @@ local allWorms = {
 	TrinketType.TRINKET_HAMMERHEAD_WORM,
 }
 
-function mod:GiveWormOnPickUp(player)
-	local data = mod:GetData(player)
+function Mod:GiveWormOnPickUp(player)
+	local data = Mod:GetData(player)
 	if player.QueuedItem.Item
 		and not player.QueuedItem.Touched
 		and player.QueuedItem.Item.ID == CollectibleType.COLLECTIBLE_ROTTEN_APPLE
@@ -55,20 +55,20 @@ function mod:GiveWormOnPickUp(player)
 	elseif not player.QueuedItem.Item and data.FR_RottenAppleGiveWorm then
 		local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_ROTTEN_APPLE)
 		local chosenWorm = allWorms[rng:RandomInt(#allWorms) + 1]
-		mod:AddSmeltedTrinket(player, chosenWorm, true)
+		Mod:AddSmeltedTrinket(player, chosenWorm, true)
 		data.FR_RottenAppleGiveWorm = false
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.GiveWormOnPickUp)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.GiveWormOnPickUp)
 
-function mod:RottenAppleBuffs(player, flag)
+function Mod:RottenAppleBuffs(player, flag)
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_ROTTEN_APPLE) then
 		if flag == CacheFlag.CACHE_DAMAGE then
 			player.Damage = player.Damage +
-			(2 * player:GetCollectibleNum(CollectibleType.COLLECTIBLE_ROTTEN_APPLE, false))
+				(2 * player:GetCollectibleNum(CollectibleType.COLLECTIBLE_ROTTEN_APPLE, false))
 		end
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.RottenAppleBuffs)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.RottenAppleBuffs)

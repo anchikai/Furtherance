@@ -1,11 +1,12 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
-function mod:UseQ(_, _, player)
+function Mod:UseQ(_, _, player)
 	-- If you use ? card
 	if (player:GetCard(0) == Card.CARD_QUESTIONMARK) then
 		player:SetCard(0, Card.CARD_NULL)
-		game:StartRoomTransition(game:GetLevel():QueryRoomTypeIndex(RoomType.ROOM_ERROR, false, RNG()), Direction.NO_DIRECTION, 3)
+		game:StartRoomTransition(game:GetLevel():QueryRoomTypeIndex(RoomType.ROOM_ERROR, false, RNG()),
+			Direction.NO_DIRECTION, 3)
 	else
 		-- Do normal thing
 		player:UseActiveItem(CollectibleType.COLLECTIBLE_PLACEBO, false, false, true, false, 0)
@@ -15,4 +16,5 @@ function mod:UseQ(_, _, player)
 	end
 	return true
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.UseQ, CollectibleType.COLLECTIBLE_Q_KEY)
+
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseQ, CollectibleType.COLLECTIBLE_Q_KEY)

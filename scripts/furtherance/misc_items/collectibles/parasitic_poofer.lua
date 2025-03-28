@@ -1,6 +1,6 @@
-local mod = Furtherance
+local Mod = Furtherance
 
-function mod:Parasite(entity)
+function Mod:Parasite(entity)
 	local player = entity:ToPlayer()
 	local poofRNG = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_PARASITIC_POOFER)
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_PARASITIC_POOFER) then
@@ -12,4 +12,5 @@ function mod:Parasite(entity)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.Parasite, EntityType.ENTITY_PLAYER)
+
+Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, Mod.Parasite, EntityType.ENTITY_PLAYER)

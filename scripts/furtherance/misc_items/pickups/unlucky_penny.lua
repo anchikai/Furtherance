@@ -1,13 +1,13 @@
-local mod = Furtherance
+local Mod = Furtherance
 
-mod:SavePlayerData({
+Mod:SavePlayerData({
 	UnluckyPennyStat = 0
 })
 
-function mod:UnluckyPenny(pickup, collider)
+function Mod:UnluckyPenny(pickup, collider)
 	if collider:ToPlayer() then
 		local player = collider:ToPlayer()
-		local data = mod:GetData(player)
+		local data = Mod:GetData(player)
 		if collider:ToPlayer() and pickup.SubType == CoinSubType.COIN_UNLUCKYPENNY then
 			SFXManager():Play(SoundEffect.SOUND_LUCKYPICKUP, 1, 2, false, 0.8)
 			data.UnluckyPennyStat = data.UnluckyPennyStat + 1
@@ -18,10 +18,10 @@ function mod:UnluckyPenny(pickup, collider)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, mod.UnluckyPenny, PickupVariant.PICKUP_COIN)
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, Mod.UnluckyPenny, PickupVariant.PICKUP_COIN)
 
-function mod:Lucknt(player, flag)
-	local data = mod:GetData(player)
+function Mod:Lucknt(player, flag)
+	local data = Mod:GetData(player)
 	if data.UnluckyPennyStat == nil then return end
 
 	if flag == CacheFlag.CACHE_DAMAGE then
@@ -32,4 +32,4 @@ function mod:Lucknt(player, flag)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.Lucknt)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.Lucknt)

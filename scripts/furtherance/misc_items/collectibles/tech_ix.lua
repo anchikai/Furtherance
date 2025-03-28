@@ -1,4 +1,4 @@
-local mod = Furtherance
+local Mod = Furtherance
 
 -- tear positions offset from original tear when shot to the right
 local pharaohCatPositions = {
@@ -12,7 +12,7 @@ local pharaohCatPositions = {
 
 local techIXColor = Color(0, 1, 0, 1, 0, 1, 0.6)
 
-function mod:IXShots(tear)
+function Mod:IXShots(tear)
 	local player = tear.Parent and tear.Parent:ToPlayer()
 	if player == nil then return end
 
@@ -29,7 +29,8 @@ function mod:IXShots(tear)
 		local laser = player:FireTechXLaser(tear.Position, tear.Velocity, 10, player, 0.66)
 		laser:SetColor(techIXColor, 0, 0, false, false)
 		for _, position in ipairs(pharaohCatPositions) do
-			local extraLaser = player:FireTechXLaser(tear.Position + position:Rotated(direction), tear.Velocity, 10, player, 0.66)
+			local extraLaser = player:FireTechXLaser(tear.Position + position:Rotated(direction), tear.Velocity, 10,
+				player, 0.66)
 			extraLaser:SetColor(techIXColor, 0, 0, false, false)
 		end
 		tear:Remove()
@@ -39,20 +40,23 @@ function mod:IXShots(tear)
 		tear:Remove()
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.IXShots)
 
-function mod:TechIXDebuff(player, cacheFlag)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, Mod.IXShots)
+
+function Mod:TechIXDebuff(player, cacheFlag)
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_IX) then
 		if cacheFlag == CacheFlag.CACHE_FIREDELAY then
 			player.MaxFireDelay = player.MaxFireDelay + 5
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.TechIXDebuff)
 
-function mod:Synergies(player, flag)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.TechIXDebuff)
+
+function Mod:Synergies(player, flag)
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_IX) and player:HasCollectible(CollectibleType.COLLECTIBLE_C_SECTION) then
 		player.TearFlags = player.TearFlags | TearFlags.TEAR_HOMING
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.Synergies, CacheFlag.CACHE_TEARFLAG)
+
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.Synergies, CacheFlag.CACHE_TEARFLAG)

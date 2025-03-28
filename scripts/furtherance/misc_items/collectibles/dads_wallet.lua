@@ -1,6 +1,6 @@
-local mod = Furtherance
+local Mod = Furtherance
 
-mod.DadsWalletCards = {
+Mod.DadsWalletCards = {
 	Card.CARD_CREDIT,
 	Card.CARD_HUMANITY,
 	Card.CARD_GET_OUT_OF_JAIL,
@@ -12,8 +12,8 @@ mod.DadsWalletCards = {
 }
 
 ---@param player EntityPlayer
-function mod:GiveCardsOnPickUp(player)
-	local data = mod:GetData(player)
+function Mod:GiveCardsOnPickUp(player)
+	local data = Mod:GetData(player)
 	if player.QueuedItem.Item
 		and not player.QueuedItem.Touched
 		and player.QueuedItem.Item.ID == CollectibleType.COLLECTIBLE_DADS_WALLET
@@ -22,19 +22,19 @@ function mod:GiveCardsOnPickUp(player)
 		data.FR_SpawnDadsWalletCards = true
 	elseif not player.QueuedItem.Item and data.FR_SpawnDadsWalletCards then
 		local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_DADS_WALLET)
-		local choice1 = rng:RandomInt(#mod.DadsWalletCards) + 1
-		local card1 = table.remove(mod.DadsWalletCards, choice1)
+		local choice1 = rng:RandomInt(#Mod.DadsWalletCards) + 1
+		local card1 = table.remove(Mod.DadsWalletCards, choice1)
 		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, card1,
 			Isaac.GetFreeNearPosition(player.Position, 40), Vector.Zero, player)
 
-		local choice2 = rng:RandomInt(#mod.DadsWalletCards) + 1
-		local card2 = mod.DadsWalletCards[choice2]
+		local choice2 = rng:RandomInt(#Mod.DadsWalletCards) + 1
+		local card2 = Mod.DadsWalletCards[choice2]
 		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, card2,
 			Isaac.GetFreeNearPosition(player.Position, 40), Vector.Zero, player)
 
-		table.insert(mod.DadsWalletCards, card1)
+		table.insert(Mod.DadsWalletCards, card1)
 		data.FR_SpawnDadsWalletCards = nil
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.GiveCardsOnPickUp)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.GiveCardsOnPickUp)

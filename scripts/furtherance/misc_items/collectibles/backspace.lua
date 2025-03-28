@@ -1,8 +1,8 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 local sfx = SFXManager()
 
-function mod:UseBackSpace(_, _, player)
+function Mod:UseBackSpace(_, _, player)
 	local level = game:GetLevel()
 	local door = game:GetRoom():GetDoor(level.EnterDoor)
 	if door and not door:IsOpen() then
@@ -21,4 +21,5 @@ function mod:UseBackSpace(_, _, player)
 	end
 	return true
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.UseBackSpace, CollectibleType.COLLECTIBLE_BACKSPACE_KEY)
+
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseBackSpace, CollectibleType.COLLECTIBLE_BACKSPACE_KEY)

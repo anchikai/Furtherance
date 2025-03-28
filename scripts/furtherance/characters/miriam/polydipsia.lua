@@ -1,4 +1,4 @@
-local mod = Furtherance
+local Mod = Furtherance
 
 local WhirlpoolVariant = Isaac.GetEntityVariantByName("Miriam Whirlpool")
 
@@ -12,7 +12,7 @@ local function isMiriam(player)
 	return player ~= nil and player:GetPlayerType() == PlayerType.PLAYER_MIRIAM
 end
 
-function mod:GetPolydipsia(player, cacheFlag)
+function Mod:GetPolydipsia(player, cacheFlag)
 	if hasItem(player) or isMiriam(player) then
 		if cacheFlag == CacheFlag.CACHE_RANGE then
 			player.TearFallingSpeed = player.TearFallingSpeed + 20
@@ -26,20 +26,23 @@ function mod:GetPolydipsia(player, cacheFlag)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.GetPolydipsia)
+
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.GetPolydipsia)
 
 local function makeMiriamPuddle(miriam, tear)
-	local data = mod:GetData(tear)
-	local playerData = mod:GetData(miriam)
+	local data = Mod:GetData(tear)
+	local playerData = Mod:GetData(miriam)
 	if playerData.MiriamAOE == nil then
 		playerData.MiriamAOE = 1
 	end
 	if data.MiriamPullEnemies then
-		local whirlpool = Isaac.Spawn(EntityType.ENTITY_EFFECT, WhirlpoolVariant, 0, tear.Position, Vector.Zero, miriam):ToEffect()
+		local whirlpool = Isaac.Spawn(EntityType.ENTITY_EFFECT, WhirlpoolVariant, 0, tear.Position, Vector.Zero, miriam)
+		:ToEffect()
 		whirlpool.CollisionDamage = miriam.Damage * 0.33
 		whirlpool.LifeSpan = 60
 	else
-		local puddle = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL, 1, tear.Position, Vector.Zero, miriam):ToEffect()
+		local puddle = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL, 1, tear
+		.Position, Vector.Zero, miriam):ToEffect()
 		---@cast puddle EntityEffect
 		local puddleDamage = miriam.Damage * 0.33
 		puddle.CollisionDamage = 0
@@ -56,10 +59,10 @@ local function makeMiriamPuddle(miriam, tear)
 		end
 		if miriam:HasCollectible(CollectibleType.COLLECTIBLE_SOY_MILK) then
 			local color = Color(1, 1, 1, 1, 0, 0, 0)
-    		color:SetColorize(2, 2, 2, 1)
+			color:SetColorize(2, 2, 2, 1)
 			puddle.Color = color
-			puddle.SpriteScale = Vector.One * playerData.MiriamAOE/2
-			puddle.Scale = playerData.MiriamAOE/2
+			puddle.SpriteScale = Vector.One * playerData.MiriamAOE / 2
+			puddle.Scale = playerData.MiriamAOE / 2
 		end
 		allPuddles[GetPtrHash(puddle)] = {
 			Entity = puddle,
@@ -76,14 +79,15 @@ local function makeMiriamPuddle(miriam, tear)
 	end
 end
 
-function mod:OnTearImpact(tear)
+function Mod:OnTearImpact(tear)
 	local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
 	if not hasItem(player) and not isMiriam(player) then return end
 
 	if isMiriam(player) then
 		makeMiriamPuddle(player, tear)
 	else
-		local puddle = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL, 1, tear.Position, Vector.Zero, player):ToEffect()
+		local puddle = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL, 1, tear
+		.Position, Vector.Zero, player):ToEffect()
 		---@cast puddle EntityEffect
 		puddle.CollisionDamage = 0
 		allPuddles[GetPtrHash(puddle)] = {
@@ -95,9 +99,10 @@ function mod:OnTearImpact(tear)
 		}
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, mod.OnTearImpact, EntityType.ENTITY_TEAR)
 
-function mod:PolydipsiaPuddleUpdate()
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, Mod.OnTearImpact, EntityType.ENTITY_TEAR)
+
+function Mod:PolydipsiaPuddleUpdate()
 	-- remove puddles that don't exist
 	for k, puddleData in pairs(allPuddles) do
 		if puddleData.Entity.Timeout <= 0 or not puddleData.Entity:Exists() then
@@ -119,26 +124,28 @@ function mod:PolydipsiaPuddleUpdate()
 		puddleData.DamageCooldown = math.max(puddleData.DamageCooldown - 1, 0)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_UPDATE, mod.PolydipsiaPuddleUpdate)
 
-function mod:MakePolydipsiaTear(tear)
-    local player = tear.Parent:ToPlayer()
+Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, Mod.PolydipsiaPuddleUpdate)
+
+function Mod:MakePolydipsiaTear(tear)
+	local player = tear.Parent:ToPlayer()
 	if hasItem(player) or isMiriam(player) then
 		tear.Scale = tear.Scale * 1.4
 		tear:AddTearFlags(TearFlags.TEAR_KNOCKBACK)
-		tear:SetKnockbackMultiplier(tear.KnockbackMultiplier*2)
-    end
+		tear:SetKnockbackMultiplier(tear.KnockbackMultiplier * 2)
+	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.MakePolydipsiaTear)
+
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, Mod.MakePolydipsiaTear)
 
 -- Dr. Fetus Synergy
-function mod:PolyBombUpdate(bomb)
-	local player = mod:GetPlayerFromTear(bomb)
-	local data = mod:GetData(bomb)
+function Mod:PolyBombUpdate(bomb)
+	local player = Mod:GetPlayerFromTear(bomb)
+	local data = Mod:GetData(bomb)
 	if player then
 		if bomb.FrameCount == 1 then
 			if bomb.Type == EntityType.ENTITY_BOMB and bomb.Variant ~= BombVariant.BOMB_THROWABLE
-			and (player:HasCollectible(CollectibleType.COLLECTIBLE_POLYDIPSIA) or isMiriam(player)) then
+				and (player:HasCollectible(CollectibleType.COLLECTIBLE_POLYDIPSIA) or isMiriam(player)) then
 				if data.isPolyBomb == nil then
 					data.isPolyBomb = true
 				end
@@ -152,14 +159,15 @@ function mod:PolyBombUpdate(bomb)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, mod.PolyBombUpdate)
+
+Mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, Mod.PolyBombUpdate)
 
 -- Brimstone & Tech "Synergy"
-function mod:PolyLasers(laser)
+function Mod:PolyLasers(laser)
 	local player = laser.SpawnerEntity and laser.SpawnerEntity:ToPlayer()
 	if player ~= nil and (player:HasCollectible(CollectibleType.COLLECTIBLE_POLYDIPSIA) or isMiriam(player)) and laser.FrameCount == 1 then
 		makeMiriamPuddle(player, laser)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, mod.PolyLasers)
+Mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, Mod.PolyLasers)

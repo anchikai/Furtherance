@@ -1,12 +1,12 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
-function mod:UseEnter(_, _, player)
+function Mod:UseEnter(_, _, player)
 	local room = game:GetRoom()
 	local level = game:GetLevel()
 	local hud = game:GetHUD()
 	if (level:GetCurrentRoomIndex() == -1) or (level:GetCurrentRoomIndex() == -3) or (level:GetCurrentRoomIndex() == -5) or (level:GetCurrentRoomIndex() == -10) then
-		mod:playFailSound()
+		Mod:playFailSound()
 		player:AnimateSad()
 	elseif ((room:IsDoorSlotAllowed(DoorSlot.LEFT0) == true and room:GetDoor(DoorSlot.LEFT0) == nil) or (room:IsDoorSlotAllowed(DoorSlot.UP0) == true and room:GetDoor(DoorSlot.UP0) == nil) or (room:IsDoorSlotAllowed(DoorSlot.DOWN0) == true and room:GetDoor(DoorSlot.DOWN0) == nil) or (room:IsDoorSlotAllowed(DoorSlot.RIGHT0) == true and room:GetDoor(DoorSlot.RIGHT0) == nil)) then
 		player:RemoveCollectible(CollectibleType.COLLECTIBLE_ENTER_KEY)
@@ -18,8 +18,9 @@ function mod:UseEnter(_, _, player)
 		room:MamaMegaExplosion(Vector.Zero)
 		return true
 	else
-		mod:playFailSound()
+		Mod:playFailSound()
 		player:AnimateSad()
 	end
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.UseEnter, CollectibleType.COLLECTIBLE_ENTER_KEY)
+
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseEnter, CollectibleType.COLLECTIBLE_ENTER_KEY)

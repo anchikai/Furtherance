@@ -1,9 +1,9 @@
-local mod = Furtherance
+local Mod = Furtherance
 
-function mod:GetVesta(player, flag)
+function Mod:GetVesta(player, flag)
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_VESTA) then
 		local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_VESTA)
-		if rng:RandomInt(100)+1 <= player.Luck*10+10 then
+		if rng:RandomInt(100) + 1 <= player.Luck * 10 + 10 then
 			if flag == CacheFlag.CACHE_TEARFLAG then
 				player.TearFlags = player.TearFlags | TearFlags.TEAR_SPECTRAL | TearFlags.TEAR_QUADSPLIT
 			end
@@ -16,10 +16,11 @@ function mod:GetVesta(player, flag)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.GetVesta)
 
-function mod:tearSize(tear)
-    local player = tear.Parent:ToPlayer()
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.GetVesta)
+
+function Mod:tearSize(tear)
+	local player = tear.Parent:ToPlayer()
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_VESTA) then
 		if player:HasTrinket(TrinketType.TRINKET_PULSE_WORM) then
 			tear.Scale = tear.Scale * 0.22
@@ -31,4 +32,5 @@ function mod:tearSize(tear)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.tearSize)
+
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, Mod.tearSize)

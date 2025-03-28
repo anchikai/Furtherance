@@ -55,7 +55,8 @@ function ALMAGEST_SCRAP:PreEnterPlanetarium(room, roomDesc)
 				numDoors = numDoors + 1
 			end
 		end
-		local planetarium = RoomConfigHolder.GetRandomRoom(rng:GetSeed(), true, StbType.SPECIAL_ROOMS, RoomType.ROOM_PLANETARIUM, shape,
+		local planetarium = RoomConfigHolder.GetRandomRoom(rng:GetSeed(), true, StbType.SPECIAL_ROOMS,
+			RoomType.ROOM_PLANETARIUM, shape,
 			-1, -1, 0, 10, numDoors, -1, Mod:GetRoomMode())
 		roomDesc.Data = planetarium
 		updatedRoom = true
@@ -136,13 +137,13 @@ local qualityPriceMap = {
     [4] = 3,
 }
 
---[[function mod:PlanetariumPickupSpawned(pickup)
+--[[function Mod:PlanetariumPickupSpawned(pickup)
     if isTreasureRoom() and someoneHasAlmagest() and pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE then
         local itemConfig = Isaac.GetItemConfig()
         local pickupQuality = itemConfig:GetCollectible(pickup.SubType).Quality
 
         -- get the price for pickup to data
-        local data = mod:GetData(pickup)
+        local data = Mod:GetData(pickup)
         data.BrokenHeartsPrice = qualityPriceMap[pickupQuality]
         print(data.BrokenHeartsPrice)
         -- add a broken hearts price graphic (wip)
@@ -150,7 +151,7 @@ local qualityPriceMap = {
 
 
 end
-mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, mod.PostPlanetariumPool)
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, Mod.PostPlanetariumPool)
 
 function Mod:PrePickupCollision(pickup, collider)
     local player = collider:ToPlayer()

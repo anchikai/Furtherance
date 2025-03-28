@@ -1,13 +1,13 @@
-local mod = Furtherance
+local Mod = Furtherance
 local rng = RNG()
 local game = Game()
 
-function mod:Hostikai(entity)
+function Mod:Hostikai(entity)
 	if entity.SubType == 3070 then
 		if entity.Variant == 0 then
 			local sprite = entity:GetSprite()
 			local data = entity:GetData()
-			
+
 			-- Start flying if player can't get to it
 			if not entity.Pathfinder:HasPathToPos(entity:GetPlayerTarget().Position, false) then
 				entity.State = NpcState.STATE_ATTACK
@@ -15,10 +15,11 @@ function mod:Hostikai(entity)
 
 			-- Start flying
 			if sprite:IsEventTriggered("FlyStart") then
-				data.moveTo = ((entity:GetPlayerTarget().Position + Vector(math.random(-40,40), math.random(-40,40))) - entity.Position):GetAngleDegrees()
+				data.moveTo = ((entity:GetPlayerTarget().Position + Vector(math.random(-40, 40), math.random(-40, 40))) - entity.Position)
+				:GetAngleDegrees()
 				entity.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_WALLS
 				entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_PLAYEROBJECTS
-			-- Land
+				-- Land
 			elseif sprite:IsEventTriggered("FlyStop") then
 				data.moveTo = nil
 				entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_ALL
@@ -32,11 +33,12 @@ function mod:Hostikai(entity)
 			if data.moveTo then
 				entity.Velocity = (entity.Velocity + ((Vector.FromAngle(data.moveTo) * 18) - entity.Velocity) * 0.25)
 			end
-		
-		-- Stop them from behaving like Red Hosts
+
+			-- Stop them from behaving like Red Hosts
 		elseif entity.Variant == 1 then
 			entity.Variant = 0
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.Hostikai, EntityType.ENTITY_HOST)
+
+Mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, Mod.Hostikai, EntityType.ENTITY_HOST)

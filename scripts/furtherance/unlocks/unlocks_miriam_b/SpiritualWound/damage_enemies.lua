@@ -1,4 +1,4 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
 local FindTargets = include("lua.items.collectibles.SpiritualWound.FindTargets")
@@ -15,7 +15,7 @@ IPECAC_COLOR:SetColorize(0.5, 0.9, 0.4, 1)
 
 local function hasItem(player)
 	return player:HasCollectible(CollectibleType.COLLECTIBLE_SPIRITUAL_WOUND) or
-	player:GetPlayerType() == PlayerType.PLAYER_MIRIAM_B
+		player:GetPlayerType() == PlayerType.PLAYER_MIRIAM_B
 end
 
 local function clamp(value, min, max)
@@ -130,7 +130,7 @@ function DamageEnemies:__call(itemData, targetQuery)
 		if target:HasMortalDamage() then
 			itemData.HitCount = 0
 			itemData.SnapCooldown = 7
-			mod:GetData(target).SpiritualWoundDied = true
+			Mod:GetData(target).SpiritualWoundDied = true
 			if player:HasCollectible(CollectibleType.COLLECTIBLE_IPECAC) then
 				ipecacExplodeEnemy(player, target)
 			end
@@ -147,8 +147,8 @@ function DamageEnemies:__call(itemData, targetQuery)
 	end
 end
 
-function mod:SpiritualWoundKill(entity)
-	local enemyData = mod:GetData(entity)
+function Mod:SpiritualWoundKill(entity)
+	local enemyData = Mod:GetData(entity)
 	if enemyData.SpiritualWoundDied == nil then return end
 
 	for i = 0, game:GetNumPlayers() - 1 do
@@ -158,7 +158,7 @@ function mod:SpiritualWoundKill(entity)
 		local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_SPIRITUAL_WOUND)
 		if rng:RandomFloat() > HEAL_CHANCE then goto continueKill end
 
-		local data = mod:GetData(player)
+		local data = Mod:GetData(player)
 
 		if not player:HasCollectible(CollectibleType.COLLECTIBLE_POLARITY_SHIFT) then goto continueKill end
 
@@ -184,13 +184,13 @@ function mod:SpiritualWoundKill(entity)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, mod.SpiritualWoundKill)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, Mod.SpiritualWoundKill)
 
 ---@param victim Entity
 ---@param flags DamageFlag
 ---@param source EntityRef
 ---@return false|nil -- returning true blocks other ENTITY_TAKE_DMG callbacks
-function mod:IgnoreEntityLaserDamage(victim, _, flags, source)
+function Mod:IgnoreEntityLaserDamage(victim, _, flags, source)
 	if source == nil or source.Entity == nil then return nil end
 
 	local player = source.Entity:ToPlayer()
@@ -205,6 +205,6 @@ function mod:IgnoreEntityLaserDamage(victim, _, flags, source)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.IgnoreEntityLaserDamage)
+Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, Mod.IgnoreEntityLaserDamage)
 
 return DamageEnemies

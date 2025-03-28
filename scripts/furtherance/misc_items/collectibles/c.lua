@@ -1,17 +1,18 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
 local cKeyLibrary = false
 
-function mod:UseC(_, _, player)
+function Mod:UseC(_, _, player)
 	player:RemoveCollectible(CollectibleType.COLLECTIBLE_C_KEY)
 	Isaac.ExecuteCommand("goto s.library.5")
 	cKeyLibrary = true
 	return true
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.UseC, CollectibleType.COLLECTIBLE_C_KEY)
 
-function mod:CKeyTeleported()
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseC, CollectibleType.COLLECTIBLE_C_KEY)
+
+function Mod:CKeyTeleported()
 	local room = game:GetRoom()
 	local level = game:GetLevel()
 	local roomDesc = level:GetCurrentRoomDesc()
@@ -29,4 +30,5 @@ function mod:CKeyTeleported()
 	end
 	cKeyLibrary = false
 end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.CKeyTeleported)
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.CKeyTeleported)

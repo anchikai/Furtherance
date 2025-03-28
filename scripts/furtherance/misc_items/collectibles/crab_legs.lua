@@ -1,7 +1,7 @@
-local mod = Furtherance
+local Mod = Furtherance
 
-function mod:OnMove(player)
-	local data = mod:GetData(player)
+function Mod:OnMove(player)
+	local data = Mod:GetData(player)
 	local inputPlayer = player
 	if player:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN_B then
 		inputPlayer = player:GetOtherTwin()
@@ -20,14 +20,15 @@ function mod:OnMove(player)
 	else
 		return
 	end
-	
+
 	player:AddCacheFlags(CacheFlag.CACHE_SPEED)
 	player:EvaluateItems()
 end
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.OnMove)
 
-function mod:CrabCacheEval(player)
-	local data = mod:GetData(player)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.OnMove)
+
+function Mod:CrabCacheEval(player)
+	local data = Mod:GetData(player)
 	if data.CrabSpeed == nil then
 		data.CrabSpeed = false
 	end
@@ -35,4 +36,5 @@ function mod:CrabCacheEval(player)
 		player.MoveSpeed = player.MoveSpeed + 0.2
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.CrabCacheEval, CacheFlag.CACHE_SPEED)
+
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.CrabCacheEval, CacheFlag.CACHE_SPEED)

@@ -1,23 +1,24 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
-mod:SavePlayerData({
+Mod:SavePlayerData({
 	CameraSaved = false,
-	CurRoomID = mod.SaveNil
+	CurRoomID = Mod.SaveNil
 })
 
-function mod:RespawnEnemies(player)
-	local data = mod:GetData(player)
+function Mod:RespawnEnemies(player)
+	local data = Mod:GetData(player)
 	local room = game:GetRoom()
 	if data.UsedOldCamera and game:IsPaused() == false then
 		room:RespawnEnemies()
 		data.UsedOldCamera = false
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.RespawnEnemies)
 
-function mod:UseCamera(_, _, player)
-	local data = mod:GetData(player)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.RespawnEnemies)
+
+function Mod:UseCamera(_, _, player)
+	local data = Mod:GetData(player)
 	local level = game:GetLevel()
 	if data.CameraSaved == false then
 		data.CameraSaved = true
@@ -32,15 +33,17 @@ function mod:UseCamera(_, _, player)
 	end
 	return true
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.UseCamera, CollectibleType.COLLECTIBLE_OLD_CAMERA)
+
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseCamera, CollectibleType.COLLECTIBLE_OLD_CAMERA)
 
 local newGame = false
-function mod:NewGame()
+function Mod:NewGame()
 	newGame = true
 end
-mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, mod.NewGame)
 
-function mod:ForgetOnNewLevel()
+Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, Mod.NewGame)
+
+function Mod:ForgetOnNewLevel()
 	if newGame then
 		newGame = false
 		return
@@ -48,8 +51,9 @@ function mod:ForgetOnNewLevel()
 
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
-		local data = mod:GetData(player)
+		local data = Mod:GetData(player)
 		data.CameraSaved = false
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, mod.ForgetOnNewLevel)
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, Mod.ForgetOnNewLevel)

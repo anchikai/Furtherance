@@ -1,6 +1,7 @@
-local mod = Furtherance
+local Mod = Furtherance
 
-function mod:UseTrapCard(card, player, useflags)
+function Mod:UseTrapCard(card, player, useflags)
 	player:UseActiveItem(CollectibleType.COLLECTIBLE_ANIMA_SOLA, UseFlag.USE_NOANIM, -1)
 end
-mod:AddCallback(ModCallbacks.MC_USE_CARD, mod.UseTrapCard, CARD_TRAP)
+
+Mod:AddCallback(ModCallbacks.MC_USE_CARD, Mod.UseTrapCard, CARD_TRAP)

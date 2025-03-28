@@ -1,10 +1,12 @@
-local mod = Furtherance
+local Mod = Furtherance
 
-function mod:UseBookOfSwiftness(_, _, player)
+function Mod:UseBookOfSwiftness(_, _, player)
 	if GiantBookAPI then
-		GiantBookAPI.playGiantBook("Appear", "swiftness.png", Color(1, 1, 1, 1, 0, 0, 0), Color(1, 1, 1, 1, 0, 0, 0), Color(1, 1, 1, 1, 0, 0, 0), SoundEffect.SOUND_BOOK_PAGE_TURN_12, false)
+		GiantBookAPI.playGiantBook("Appear", "swiftness.png", Color(1, 1, 1, 1, 0, 0, 0), Color(1, 1, 1, 1, 0, 0, 0),
+			Color(1, 1, 1, 1, 0, 0, 0), SoundEffect.SOUND_BOOK_PAGE_TURN_12, false)
 	end
 	player:UseCard(Card.CARD_ERA_WALK, 263)
-    return true
+	return true
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.UseBookOfSwiftness, CollectibleType.COLLECTIBLE_BOOK_OF_SWIFTNESS)
+
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseBookOfSwiftness, CollectibleType.COLLECTIBLE_BOOK_OF_SWIFTNESS)

@@ -1,7 +1,7 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
-mod:SavePlayerData({
+Mod:SavePlayerData({
 	CurrentServitudeItem = 0,
 	ServitudeCounter = 0,
 })
@@ -24,8 +24,8 @@ local function getNearestCollectible(player)
 	return nearestCollectible
 end
 
-function mod:UseServitude(_, _, player)
-	local data = mod:GetData(player)
+function Mod:UseServitude(_, _, player)
+	local data = Mod:GetData(player)
 	local item = getNearestCollectible(player)
 
 	if item and data.ServitudeCounter == 0 then
@@ -36,7 +36,8 @@ function mod:UseServitude(_, _, player)
 		return { Discharge = false, ShowAnim = false, Remove = false }
 	end
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.UseServitude, CollectibleType.COLLECTIBLE_SERVITUDE)
+
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseServitude, CollectibleType.COLLECTIBLE_SERVITUDE)
 
 local function getActiveSlot(player, collType)
 	for _, slot in pairs(ActiveSlot) do
@@ -49,7 +50,7 @@ local function getActiveSlot(player, collType)
 end
 
 local function decrementServitudeCounter(player)
-	local data = mod:GetData(player)
+	local data = Mod:GetData(player)
 	if data.ServitudeCounter == nil or data.ServitudeCounter == 0 then return end
 
 	local ServitudeSlot = getActiveSlot(player, CollectibleType.COLLECTIBLE_SERVITUDE)
@@ -63,22 +64,24 @@ local function decrementServitudeCounter(player)
 
 	data.ServitudeCounter = data.ServitudeCounter - 1
 	if data.ServitudeCounter == 0 then
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, data.CurrentServitudeItem, Isaac.GetFreeNearPosition(player.Position, 40), Vector.Zero, player)
+		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, data.CurrentServitudeItem,
+			Isaac.GetFreeNearPosition(player.Position, 40), Vector.Zero, player)
 		data.CurrentServitudeItem = 0
 	end
 end
 
-function mod:ServitudeRoom(rng, pos)
+function Mod:ServitudeRoom(rng, pos)
 	for p = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(p)
 		decrementServitudeCounter(player)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, mod.ServitudeRoom)
 
-function mod:ResetServitude(entity, amount, flag)
+Mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, Mod.ServitudeRoom)
+
+function Mod:ResetServitude(entity, amount, flag)
 	local player = entity:ToPlayer()
-	local data = mod:GetData(player)
+	local data = Mod:GetData(player)
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_SERVITUDE) and data.ServitudeCounter > 0 and flag & DamageFlag.DAMAGE_NO_PENALTIES == 0 then
 		data.ServitudeCounter = 0
 		data.CurrentServitudeItem = 0
@@ -86,16 +89,17 @@ function mod:ResetServitude(entity, amount, flag)
 		player:AddBrokenHearts(1)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.ResetServitude, EntityType.ENTITY_PLAYER)
 
-function mod:shouldDeHook()
+Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, Mod.ResetServitude, EntityType.ENTITY_PLAYER)
+
+function Mod:shouldDeHook()
 	return not game:GetHUD():IsVisible() or game:GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD)
 end
 
-function mod:ServitudeCounter(player)
-	local data = mod:GetData(player)
+function Mod:ServitudeCounter(player)
+	local data = Mod:GetData(player)
 	local room = game:GetRoom()
-	if mod:shouldDeHook() then return end
+	if Mod:shouldDeHook() then return end
 
 	data.ServitudeCounter = data.ServitudeCounter or 0
 	if data.ServitudeCounter > 0 then
@@ -106,19 +110,18 @@ function mod:ServitudeCounter(player)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, mod.ServitudeCounter)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, Mod.ServitudeCounter)
 
-function mod:ServitudeTarget(pickup)
-	if mod:shouldDeHook() then return end
+function Mod:ServitudeTarget(pickup)
+	if Mod:shouldDeHook() then return end
 
 	local room = game:GetRoom()
 	for p = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(p)
-		local data = mod:GetData(player)
+		local data = Mod:GetData(player)
 
 		local item = getNearestCollectible(player)
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_SERVITUDE) and item ~= nil and data.ServitudeCounter == 0 then
-
 			local sprite = Sprite()
 			sprite:Load("gfx/effect_spiritual_wound_target.anm2", true)
 			sprite:Play("Idle", true)
@@ -126,12 +129,14 @@ function mod:ServitudeTarget(pickup)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PICKUP_RENDER, mod.ServitudeTarget)
 
-function mod:RemoveCharge()
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_RENDER, Mod.ServitudeTarget)
+
+function Mod:RemoveCharge()
 
 end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.RemoveCharge)
+
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, Mod.RemoveCharge)
 
 local activeSlots = {
 	ActiveSlot.SLOT_PRIMARY,
@@ -149,12 +154,11 @@ local batteryCharges = {
 
 ---@param battery EntityPickup
 ---@param collider Entity
-function mod:IgnoreBatteries(battery, collider)
-
+function Mod:IgnoreBatteries(battery, collider)
 	local player = collider and collider:ToPlayer()
 	if player == nil then return end
 
-	local data = mod:GetData(player)
+	local data = Mod:GetData(player)
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_SERVITUDE) and data.ServitudeCounter > 0 then
 		local propagateCharge
 		for i, slot in ipairs(activeSlots) do
@@ -182,4 +186,5 @@ function mod:IgnoreBatteries(battery, collider)
 		return false
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, mod.IgnoreBatteries, PickupVariant.PICKUP_LIL_BATTERY)
+
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, Mod.IgnoreBatteries, PickupVariant.PICKUP_LIL_BATTERY)

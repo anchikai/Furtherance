@@ -1,7 +1,7 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
-function mod:UseD9(_, _, player)
+function Mod:UseD9(_, _, player)
 	local itemPool = game:GetItemPool()
 	for _, entity in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TRINKET)) do
 		local trinket = itemPool:GetTrinket()
@@ -10,4 +10,4 @@ function mod:UseD9(_, _, player)
 	return true
 end
 
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.UseD9, CollectibleType.COLLECTIBLE_D9)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseD9, CollectibleType.COLLECTIBLE_D9)

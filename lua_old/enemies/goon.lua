@@ -1,4 +1,4 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 local rng = RNG()
 
@@ -21,7 +21,7 @@ local States = {
 
 
 
-function mod:GoonInit(entity)
+function Mod:GoonInit(entity)
 	if entity.Variant == 3071 then
 		local data = entity:GetData()
 		local sprite = entity:GetSprite()
@@ -63,17 +63,17 @@ function mod:GoonInit(entity)
 				Isaac.Spawn(entity.Type, entity.Variant, 0, entity.Position + getPos, Vector.Zero, nil)
 			end
 			entity.Position = entity.Position +
-			Vector(math.random(-Settings.RandomOffset, Settings.RandomOffset),
-				math.random(-Settings.RandomOffset, Settings.RandomOffset))
+				Vector(math.random(-Settings.RandomOffset, Settings.RandomOffset),
+					math.random(-Settings.RandomOffset, Settings.RandomOffset))
 			entity.SubType = 0
 		end
 		data.state = States.Appear
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.GoonInit, 200)
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, Mod.GoonInit, 200)
 
-function mod:GoonUpdate(entity)
+function Mod:GoonUpdate(entity)
 	if entity.Variant == 3071 then
 		local data = entity:GetData()
 		local target = entity:GetPlayerTarget()
@@ -172,7 +172,8 @@ function mod:GoonUpdate(entity)
 
 			-- Slow player down
 			if 1 - (#entity.Parent:GetData().goonies * Settings.SlowAmount) > 0.1 then
-				entity.Parent:AddSlowing(EntityRef(entity), 1, 1 - (#entity.Parent:GetData().goonies * Settings.SlowAmount), Color(1,1,1,1,0,0,0))
+				entity.Parent:AddSlowing(EntityRef(entity), 1,
+					1 - (#entity.Parent:GetData().goonies * Settings.SlowAmount), Color(1, 1, 1, 1, 0, 0, 0))
 			else
 				entity.Parent:AddSlowing(EntityRef(entity), 1, 0.1, Color(1, 1, 1, 1, 0, 0, 0))
 			end
@@ -241,10 +242,10 @@ function mod:GoonUpdate(entity)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.GoonUpdate, 200)
+Mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, Mod.GoonUpdate, 200)
 
 -- Attach to player
-function mod:GoonCollide(goon, collider)
+function Mod:GoonCollide(goon, collider)
 	if goon.Variant == 3071 and collider:ToPlayer() and goon:GetData().state == States.Chasing then
 		if not collider:GetData().goonies then
 			collider:GetData().goonies = {}
@@ -269,10 +270,10 @@ function mod:GoonCollide(goon, collider)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, mod.GoonCollide, 200)
+Mod:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, Mod.GoonCollide, 200)
 
 -- Clear any goons that didn't get removed
-function mod:ClearGoons()
+function Mod:ClearGoons()
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
 		if player:GetData().goonies then
@@ -282,4 +283,4 @@ function mod:ClearGoons()
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.ClearGoons)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.ClearGoons)

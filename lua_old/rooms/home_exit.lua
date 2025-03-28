@@ -1,11 +1,11 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
-mod:SavePlayerData({
+Mod:SavePlayerData({
 	SleptInMomsBed = false
 })
 
-function mod.RoomGenerator(index, slot, newroom)
+function Mod.RoomGenerator(index, slot, newroom)
 	local level = game:GetLevel()
 	local OldStage, OldStageType, OldChallenge = level:GetStage(), level:GetStageType(), game.Challenge
 	-- Set to Basement 1
@@ -25,34 +25,34 @@ function mod.RoomGenerator(index, slot, newroom)
 	level:UpdateVisibility()
 end
 
-function mod:MakeExit(entity, collider)
+function Mod:MakeExit(entity, collider)
 	local level = game:GetLevel()
 	if collider:ToPlayer() then
 		local player = collider:ToPlayer()
-		local data = mod:GetData(player)
+		local data = Mod:GetData(player)
 		if level:GetStage() == LevelStage.STAGE8 then
 			if entity.SubType == 10 and data.SleptInMomsBed ~= true then
 				data.SleptInMomsBed = true
-				mod.RoomGenerator(109, DoorSlot.DOWN0, 135)
+				Mod.RoomGenerator(109, DoorSlot.DOWN0, 135)
 			end
 		end
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, mod.MakeExit, PickupVariant.PICKUP_BED)
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, Mod.MakeExit, PickupVariant.PICKUP_BED)
 
-function mod:BedData(player)
-	if mod.IsContinued then return end
-	local data = mod:GetData(player)
+function Mod:BedData(player)
+	if Mod.IsContinued then return end
+	local data = Mod:GetData(player)
 	data.SleptInMomsBed = false
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.BedData)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, Mod.BedData)
 
---[[function mod:Finale()
+--[[function Mod:Finale()
     for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
-        local data = mod:GetData(player)
+        local data = Mod:GetData(player)
         local level = game:GetLevel()
         local room = game:GetRoom()
         if level:GetStage() == LevelStage.STAGE8 and data.SleptInMomsBed == true and level:GetCurrentRoomIndex() == 84 and level:GetPreviousRoomIndex() == -3 then
@@ -71,12 +71,12 @@ mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.BedData)
         end
     end
 end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.Finale)]]
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.Finale)]]
 
-function mod:ExitRoom(player)
+function Mod:ExitRoom(player)
 	local level = game:GetLevel()
 	local room = game:GetRoom()
-	local data = mod:GetData(player)
+	local data = Mod:GetData(player)
 	if data.SleptInMomsBed == true then
 		if (level:GetCurrentRoomIndex() == 109 or level:GetCurrentRoomIndex() == 122) then
 			if player.Position.Y > 712 then
@@ -90,6 +90,6 @@ function mod:ExitRoom(player)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.ExitRoom)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.ExitRoom)
 
 -- Stop snooping around ;)

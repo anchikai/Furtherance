@@ -1,4 +1,4 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
 local FindTargets = include("lua.items.collectibles.SpiritualWound.FindTargets")
@@ -46,9 +46,9 @@ local LaserVariant = {
 }
 
 local LaserHomingType = {
-    NORMAL = 0,
-    FREEZE = 1,
-    FREEZE_HEAD = 2
+	NORMAL = 0,
+	FREEZE = 1,
+	FREEZE_HEAD = 2
 }
 
 local SpiritualWoundVariant = {
@@ -57,7 +57,7 @@ local SpiritualWoundVariant = {
 }
 
 local function playLaserSounds()
-    SFXManager():Play(SpiritualWoundSoundLoop, nil, nil, true)
+	SFXManager():Play(SpiritualWoundSoundLoop, nil, nil, true)
 	SFXManager():Play(SpiritualWoundSoundStart)
 end
 
@@ -69,32 +69,33 @@ end
 ---@param targetPosition Vector
 ---@return EntityLaser
 local function spawnLaser(itemData, targetPosition)
-    local player = itemData.Owner
-    local woundVariant = itemData.LaserVariant
+	local player = itemData.Owner
+	local woundVariant = itemData.LaserVariant
 
 	-- Set laser start and end position
 	local sourcePos = player.Position
-	local laser = EntityLaser.ShootAngle(woundVariant, sourcePos, ((targetPosition - sourcePos):GetAngleDegrees()), 0, Vector(0, player.SpriteScale.Y * -32), player)
+	local laser = EntityLaser.ShootAngle(woundVariant, sourcePos, ((targetPosition - sourcePos):GetAngleDegrees()), 0,
+		Vector(0, player.SpriteScale.Y * -32), player)
 	laser:SetMaxDistance(sourcePos:Distance(targetPosition) + 50)
 
 	if woundVariant == SpiritualWoundVariant.NORMAL then
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_IPECAC) then
-            laser:SetColor(IPECAC_LASER_COLOR, 0, 1)
-        elseif player:HasCollectible(CollectibleType.COLLECTIBLE_CHOCOLATE_MILK) then
-            laser:SetColor(CHOCOLATE_MILK_LASER_COLOR, 0, 1)
-        else
-            laser:SetColor(LASER_COLOR, 0, 1)
-        end
+		if player:HasCollectible(CollectibleType.COLLECTIBLE_IPECAC) then
+			laser:SetColor(IPECAC_LASER_COLOR, 0, 1)
+		elseif player:HasCollectible(CollectibleType.COLLECTIBLE_CHOCOLATE_MILK) then
+			laser:SetColor(CHOCOLATE_MILK_LASER_COLOR, 0, 1)
+		else
+			laser:SetColor(LASER_COLOR, 0, 1)
+		end
 		laser.SpriteScale = Vector.One * 0.3
 	elseif woundVariant == SpiritualWoundVariant.POLARITY_SHIFT then
 		laser.SpriteScale = Vector.One * 2
 	end
 
-	laser.Mass = 0 -- removes knockback
+	laser.Mass = 0         -- removes knockback
 	laser:AddTearFlags(TearFlags.TEAR_HOMING)
 	laser.CollisionDamage = 0 -- they still do 0.1 damage...
-	mod:GetData(laser).IsSpiritualWound = true
-    laser:SetHomingType(LaserHomingType.NORMAL)
+	Mod:GetData(laser).IsSpiritualWound = true
+	laser:SetHomingType(LaserHomingType.NORMAL)
 
 	return laser
 end
@@ -103,23 +104,24 @@ end
 ---@param itemData SpiritualWoundItemData
 ---@param targetPosition Vector
 local function updateLaser(laser, itemData, targetPosition)
-    if game:GetFrameCount() % 2 ~= 0 then return end
+	if game:GetFrameCount() % 2 ~= 0 then return end
 
-    local player = itemData.Owner
-    local rng = itemData.RNG
+	local player = itemData.Owner
+	local rng = itemData.RNG
 
-    local positionOffset = Vector(rng:RandomFloat() - 0.5, rng:RandomFloat() - 0.5) * 150
+	local positionOffset = Vector(rng:RandomFloat() - 0.5, rng:RandomFloat() - 0.5) * 150
 
-    targetPosition = targetPosition + positionOffset
+	targetPosition = targetPosition + positionOffset
 
-    local newGoal = lerp(laser:GetEndPoint(), targetPosition, 0.4)
+	local newGoal = lerp(laser:GetEndPoint(), targetPosition, 0.4)
 	local delta = newGoal - player.Position
 
-    local angleOffset = 40 * (rng:RandomFloat() - 0.5) * 90 / delta:Length()
+	local angleOffset = 40 * (rng:RandomFloat() - 0.5) * 90 / delta:Length()
 
 	laser:SetMaxDistance(delta:Length() + 50)
 	laser.AngleDegrees = delta:GetAngleDegrees() + angleOffset
-	laser.EndPoint = EntityLaser.CalculateEndPoint(player.Position, delta, Vector(0, player.SpriteScale.Y * -32), player, 0)
+	laser.EndPoint = EntityLaser.CalculateEndPoint(player.Position, delta, Vector(0, player.SpriteScale.Y * -32), player,
+		0)
 	laser.TearFlags = laser.TearFlags | TearFlags.TEAR_HOMING
 end
 
@@ -130,32 +132,32 @@ end
 ---@param count int
 ---@return EntityLaser[]
 local function spawnLasers(itemData, targetPosition, count)
-    local result = {}
+	local result = {}
 
-    for _ = 1, count do
-        local laser = spawnLaser(itemData, targetPosition)
-        table.insert(result, laser)
-    end
+	for _ = 1, count do
+		local laser = spawnLaser(itemData, targetPosition)
+		table.insert(result, laser)
+	end
 
-    return result
+	return result
 end
 
 ---@param lasers EntityLaser[]
 ---@param itemData SpiritualWoundItemData
 ---@param targetPosition Vector
 local function updateLasers(lasers, itemData, targetPosition)
-    if game:GetFrameCount() % 2 ~= 0 then return end
-    for _, laser in ipairs(lasers) do
-        updateLaser(laser, itemData, targetPosition)
-    end
+	if game:GetFrameCount() % 2 ~= 0 then return end
+	for _, laser in ipairs(lasers) do
+		updateLaser(laser, itemData, targetPosition)
+	end
 end
 
 ---@param lasers EntityLaser[]
 local function removeLasers(lasers)
-    for k, laser in pairs(lasers) do
-        laser:Die()
-        lasers[k] = nil
-    end
+	for k, laser in pairs(lasers) do
+		laser:Die()
+		lasers[k] = nil
+	end
 end
 
 --- Spawn a laser for every enemy
@@ -163,179 +165,183 @@ end
 ---@param targetQuery TargetQuery|nil
 ---@return boolean, boolean
 local function handleBirthright(itemData, targetQuery)
-    local untargetedLasers = itemData.UntargetedLasers
+	local untargetedLasers = itemData.UntargetedLasers
 
-    if targetQuery == nil or #targetQuery.AllEnemies == 1 and targetQuery.Type == TargetType.ENTITY then
-        removeLasers(untargetedLasers)
-        return false, false
-    end
+	if targetQuery == nil or #targetQuery.AllEnemies == 1 and targetQuery.Type == TargetType.ENTITY then
+		removeLasers(untargetedLasers)
+		return false, false
+	end
 
-    local lasersSpawned = false
-    local lasersExisted = false
+	local lasersSpawned = false
+	local lasersExisted = false
 
-    local enemyMapping = {}
-    for i = 2, #targetQuery.AllEnemies do -- this will need to change if we get multi-targeting??
-        local enemy = targetQuery.AllEnemies[i]
-        enemyMapping[GetPtrHash(enemy)] = enemy
-    end
+	local enemyMapping = {}
+	for i = 2, #targetQuery.AllEnemies do -- this will need to change if we get multi-targeting??
+		local enemy = targetQuery.AllEnemies[i]
+		enemyMapping[GetPtrHash(enemy)] = enemy
+	end
 
-    -- remove lasers for enemies that don't exist/are dead
-    for ptrHash, laser in pairs(untargetedLasers) do
-        local enemy = enemyMapping[ptrHash]
-        if enemy == nil then
-            laser:Die()
-            untargetedLasers[ptrHash] = nil
-        end
-    end
+	-- remove lasers for enemies that don't exist/are dead
+	for ptrHash, laser in pairs(untargetedLasers) do
+		local enemy = enemyMapping[ptrHash]
+		if enemy == nil then
+			laser:Die()
+			untargetedLasers[ptrHash] = nil
+		end
+	end
 
-    -- spawn and update lasers for enemies that still exist
-    for ptrHash, enemy in pairs(enemyMapping) do
-        local laser = untargetedLasers[ptrHash]
-        if laser == nil then
-            untargetedLasers[ptrHash] = spawnLaser(itemData, enemy.Position)
-            lasersSpawned = true
-        else
-            updateLaser(laser, itemData, enemy.Position)
-            lasersExisted = true
-        end
-    end
+	-- spawn and update lasers for enemies that still exist
+	for ptrHash, enemy in pairs(enemyMapping) do
+		local laser = untargetedLasers[ptrHash]
+		if laser == nil then
+			untargetedLasers[ptrHash] = spawnLaser(itemData, enemy.Position)
+			lasersSpawned = true
+		else
+			updateLaser(laser, itemData, enemy.Position)
+			lasersExisted = true
+		end
+	end
 
-    return lasersSpawned, lasersExisted
+	return lasersSpawned, lasersExisted
 end
 
 local RenderLasers = {
-    LaserVariant = LaserVariant,
-    ItemLaserVariant = SpiritualWoundVariant
+	LaserVariant = LaserVariant,
+	ItemLaserVariant = SpiritualWoundVariant
 }
 setmetatable(RenderLasers, RenderLasers)
 
 function RenderLasers.RemoveLasers(itemData)
-    removeLasers(itemData.UntargetedLasers)
-    removeLasers(itemData.TargetedLasers)
+	removeLasers(itemData.UntargetedLasers)
+	removeLasers(itemData.TargetedLasers)
 end
 
 function RenderLasers.StopLaserSounds()
-    stopLaserSounds()
+	stopLaserSounds()
 end
 
 ---@param itemData SpiritualWoundItemData
 ---@param targetQuery TargetQuery|nil
 function RenderLasers:__call(itemData, targetQuery)
-    local player = itemData.Owner
+	local player = itemData.Owner
 
-    local lasersSpawned = false
-    local lasersExisted = false
+	local lasersSpawned = false
+	local lasersExisted = false
 
-    if itemData.OldLaserVariant ~= itemData.LaserVariant
-        or itemData.TriggeredSynergies[CollectibleType.COLLECTIBLE_CHOCOLATE_MILK]
-        or itemData.TriggeredSynergies[CollectibleType.IPECAC]
-    then
-        RenderLasers.RemoveLasers(itemData)
-        itemData.OldLaserVariant = itemData.LaserVariant
-        lasersExisted = true
-    end
+	if itemData.OldLaserVariant ~= itemData.LaserVariant
+		or itemData.TriggeredSynergies[CollectibleType.COLLECTIBLE_CHOCOLATE_MILK]
+		or itemData.TriggeredSynergies[CollectibleType.IPECAC]
+	then
+		RenderLasers.RemoveLasers(itemData)
+		itemData.OldLaserVariant = itemData.LaserVariant
+		lasersExisted = true
+	end
 
-    if player:GetPlayerType() == PlayerType.PLAYER_MIRIAM_B
-        and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
-    then
-        local subLasersSpawned, subLasersExisted = handleBirthright(itemData, targetQuery)
-        lasersSpawned = lasersSpawned or subLasersSpawned
-        lasersExisted = lasersExisted or subLasersExisted
-    end
+	if player:GetPlayerType() == PlayerType.PLAYER_MIRIAM_B
+		and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
+	then
+		local subLasersSpawned, subLasersExisted = handleBirthright(itemData, targetQuery)
+		lasersSpawned = lasersSpawned or subLasersSpawned
+		lasersExisted = lasersExisted or subLasersExisted
+	end
 
-    local targetPosition
-    local targetedLasers = itemData.TargetedLasers
-    if targetQuery ~= nil then
-        if targetQuery.Type == TargetType.ENTITY then
-            targetPosition = targetQuery.Result[1].Position
-        elseif targetQuery.Type == TargetType.GRID_ENTITY then
-            targetPosition = targetQuery.Result.Position
-        elseif targetQuery.Type == TargetType.PSEUDO_GRID_ENTITY then
-            targetPosition = targetQuery.Result.Position
-        end
-    end
+	local targetPosition
+	local targetedLasers = itemData.TargetedLasers
+	if targetQuery ~= nil then
+		if targetQuery.Type == TargetType.ENTITY then
+			targetPosition = targetQuery.Result[1].Position
+		elseif targetQuery.Type == TargetType.GRID_ENTITY then
+			targetPosition = targetQuery.Result.Position
+		elseif targetQuery.Type == TargetType.PSEUDO_GRID_ENTITY then
+			targetPosition = targetQuery.Result.Position
+		end
+	end
 
-    if targetPosition ~= nil then
-        if #targetedLasers == 0 then
-            itemData.TargetedLasers = spawnLasers(itemData, targetPosition, 3)
-            lasersSpawned = true
-        else
-            updateLasers(targetedLasers, itemData, targetPosition)
-            lasersExisted = true
-        end
-    elseif #targetedLasers > 0 then
-        removeLasers(targetedLasers)
-    end
+	if targetPosition ~= nil then
+		if #targetedLasers == 0 then
+			itemData.TargetedLasers = spawnLasers(itemData, targetPosition, 3)
+			lasersSpawned = true
+		else
+			updateLasers(targetedLasers, itemData, targetPosition)
+			lasersExisted = true
+		end
+	elseif #targetedLasers > 0 then
+		removeLasers(targetedLasers)
+	end
 
-    if not lasersExisted then
-        if lasersSpawned then
-            playLaserSounds()
-        else
-            stopLaserSounds()
-        end
-    end
+	if not lasersExisted then
+		if lasersSpawned then
+			playLaserSounds()
+		else
+			stopLaserSounds()
+		end
+	end
 end
 
 ---@param laser EntityLaser
-function mod:SpiritualWoundRender(laser)
-    if laser.FrameCount ~= 1 then return end
-    local data = mod:GetData(laser)
-    if data.IsSpiritualWound and not laser:IsDead() then
-        if laser.Variant == SpiritualWoundVariant.NORMAL then
-            laser.SpriteScale = Vector.One * 0.3
-        elseif laser.Variant == SpiritualWoundVariant.POLARITY_SHIFT then
-            laser.SpriteScale = Vector.One * 2
-        end
-    end
+function Mod:SpiritualWoundRender(laser)
+	if laser.FrameCount ~= 1 then return end
+	local data = Mod:GetData(laser)
+	if data.IsSpiritualWound and not laser:IsDead() then
+		if laser.Variant == SpiritualWoundVariant.NORMAL then
+			laser.SpriteScale = Vector.One * 0.3
+		elseif laser.Variant == SpiritualWoundVariant.POLARITY_SHIFT then
+			laser.SpriteScale = Vector.One * 2
+		end
+	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_LASER_RENDER, mod.SpiritualWoundRender)
+
+Mod:AddCallback(ModCallbacks.MC_POST_LASER_RENDER, Mod.SpiritualWoundRender)
 
 local wasPaused = false
-function mod:ResumeSoundLoop()
-    local isPaused = game:IsPaused()
-    if isPaused == wasPaused then return end
-    wasPaused = isPaused
+function Mod:ResumeSoundLoop()
+	local isPaused = game:IsPaused()
+	if isPaused == wasPaused then return end
+	wasPaused = isPaused
 
-    if isPaused then return end
+	if isPaused then return end
 
-    local spiritualWoundPresent = false
-    for _, laser in ipairs(Isaac.FindByType(EntityType.ENTITY_LASER)) do
-        local data = mod:GetData(laser)
-        if data.IsSpiritualWound then
-            spiritualWoundPresent = true
-            break
-        end
-    end
+	local spiritualWoundPresent = false
+	for _, laser in ipairs(Isaac.FindByType(EntityType.ENTITY_LASER)) do
+		local data = Mod:GetData(laser)
+		if data.IsSpiritualWound then
+			spiritualWoundPresent = true
+			break
+		end
+	end
 
-    if not spiritualWoundPresent then return end
+	if not spiritualWoundPresent then return end
 
-    SFXManager():Play(SpiritualWoundSoundLoop, nil, nil, true)
+	SFXManager():Play(SpiritualWoundSoundLoop, nil, nil, true)
 end
-mod:AddCallback(ModCallbacks.MC_POST_RENDER, mod.ResumeSoundLoop)
 
-function mod:StopBrimtechSounds(laser)
-    local data = mod:GetData(laser)
-    if data.IsSpiritualWound then
-        SFXManager():Stop(SoundEffect.SOUND_BLOOD_LASER)
-        SFXManager():Stop(SoundEffect.SOUND_BLOOD_LASER_LOOP)
-    end
+Mod:AddCallback(ModCallbacks.MC_POST_RENDER, Mod.ResumeSoundLoop)
+
+function Mod:StopBrimtechSounds(laser)
+	local data = Mod:GetData(laser)
+	if data.IsSpiritualWound then
+		SFXManager():Stop(SoundEffect.SOUND_BLOOD_LASER)
+		SFXManager():Stop(SoundEffect.SOUND_BLOOD_LASER_LOOP)
+	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, mod.StopBrimtechSounds)
+
+Mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, Mod.StopBrimtechSounds)
 
 ---@param effect EntityEffect
-function mod:ReplaceBrimtechImpact(effect)
-    if effect.FrameCount ~= 0 then return end
+function Mod:ReplaceBrimtechImpact(effect)
+	if effect.FrameCount ~= 0 then return end
 
-    local laser = effect.Parent
-    if laser == nil then return end
+	local laser = effect.Parent
+	if laser == nil then return end
 
-    local laserData = mod:GetData(laser)
-    if not laserData.IsSpiritualWound then return end
+	local laserData = Mod:GetData(laser)
+	if not laserData.IsSpiritualWound then return end
 
-    local sprite = effect:GetSprite()
-    sprite:ReplaceSpritesheet(0, "gfx/effects/spiritual_wound_impact.png")
-    sprite:LoadGraphics()
+	local sprite = effect:GetSprite()
+	sprite:ReplaceSpritesheet(0, "gfx/effects/spiritual_wound_impact.png")
+	sprite:LoadGraphics()
 end
-mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, mod.ReplaceBrimtechImpact, EffectVariant.LASER_IMPACT)
+
+Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, Mod.ReplaceBrimtechImpact, EffectVariant.LASER_IMPACT)
 
 return RenderLasers

@@ -1,4 +1,4 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 local itemConfig = Isaac.GetItemConfig()
 
@@ -8,7 +8,7 @@ Furtherance:SaveModData({
 	ChironBooks = {}
 })
 
-function mod:GetBooks(isContinued)
+function Mod:GetBooks(isContinued)
 	if isContinued then return end
 	for i = 1, #itemConfig:GetCollectibles() - 1 do
 		local item = itemConfig:GetCollectible(i)
@@ -17,14 +17,14 @@ function mod:GetBooks(isContinued)
 			and item:HasTags(ItemConfig.TAG_OFFENSIVE)
 			and item:HasTags(ItemConfig.TAG_BOOK)
 		then
-			mod.ChironBooks[#mod.ChironBooks+1] = item.ID
+			Mod.ChironBooks[#Mod.ChironBooks + 1] = item.ID
 		end
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, mod.GetBooks)
+Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, Mod.GetBooks)
 
-function mod:ChironMapping() -- Apply a random map effect every floor
+function Mod:ChironMapping() -- Apply a random map effect every floor
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_CHIRON) then
@@ -42,9 +42,9 @@ function mod:ChironMapping() -- Apply a random map effect every floor
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, mod.ChironMapping)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, Mod.ChironMapping)
 
-function mod:BossDetection() -- If the room is a boss room
+function Mod:BossDetection() -- If the room is a boss room
 	local room = game:GetRoom()
 	if not room:IsCurrentRoomLastBoss() then
 		return
@@ -53,23 +53,23 @@ function mod:BossDetection() -- If the room is a boss room
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_CHIRON) and room:IsFirstVisit() == true and room:GetFrameCount() == 1 then -- Guwah you legend
-			mod:BossBook(player)                                                                                                        -- Use a random book
+			Mod:BossBook(player)                                                                                                  -- Use a random book
 		end
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_UPDATE, mod.BossDetection)
+Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, Mod.BossDetection)
 
 ---@param player EntityPlayer
-function mod:BossBook(player) -- Roll a random book effect
+function Mod:BossBook(player) -- Roll a random book effect
 	local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_CHIRON)
-	local rollBook = mod.ChironBooks[rng:RandomInt(#mod.ChironBooks) + 1]
+	local rollBook = Mod.ChironBooks[rng:RandomInt(#Mod.ChironBooks) + 1]
 	if rollBook then
 		player:UseActiveItem(rollBook, UseFlag.USE_NOANNOUNCER, -1)
 	end
 end
 
-function mod:GetChiron(player, cacheFlag)          -- Speed up
+function Mod:GetChiron(player, cacheFlag)    -- Speed up
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_CHIRON) then
 		if cacheFlag == CacheFlag.CACHE_SPEED then -- this is the correct way to compare bitflags :)
 			player.MoveSpeed = player.MoveSpeed + 0.2
@@ -77,4 +77,4 @@ function mod:GetChiron(player, cacheFlag)          -- Speed up
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.GetChiron)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.GetChiron)

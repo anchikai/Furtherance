@@ -1,18 +1,19 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
-mod:SavePlayerData({
+Mod:SavePlayerData({
 	ShiftDamageBonus = 0
 })
 
-function mod:UseShift(_, _, player)
-	mod:GetData(player).ShiftDamageBonus = 15
+function Mod:UseShift(_, _, player)
+	Mod:GetData(player).ShiftDamageBonus = 15
 	return true
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.UseShift, CollectibleType.COLLECTIBLE_SHIFT_KEY)
 
-function mod:ShiftUpdate(player)
-	local data = mod:GetData(player)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseShift, CollectibleType.COLLECTIBLE_SHIFT_KEY)
+
+function Mod:ShiftUpdate(player)
+	local data = Mod:GetData(player)
 	if data.ShiftDamageBonus == nil then
 		data.ShiftDamageBonus = 0
 		return
@@ -26,14 +27,16 @@ function mod:ShiftUpdate(player)
 		player:EvaluateItems()
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.ShiftUpdate)
 
-function mod:ShiftBuffs(player, flag)
-	local data = mod:GetData(player)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.ShiftUpdate)
+
+function Mod:ShiftBuffs(player, flag)
+	local data = Mod:GetData(player)
 	if data.ShiftDamageBonus == nil or data.ShiftDamageBonus <= 0 then return end
 
 	if flag == CacheFlag.CACHE_DAMAGE then
 		player.Damage = player.Damage + data.ShiftDamageBonus
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.ShiftBuffs)
+
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.ShiftBuffs)

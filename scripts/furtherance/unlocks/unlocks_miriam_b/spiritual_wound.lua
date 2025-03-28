@@ -1,4 +1,4 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
 local FindTargets = include("lua.items.collectibles.SpiritualWound.FindTargets")
@@ -9,12 +9,13 @@ local DamageEnemies = include("lua.items.collectibles.SpiritualWound.DamageEnemi
 local ItemLaserVariant = RenderLasers.ItemLaserVariant
 
 local function hasItem(player)
-    return player:HasCollectible(CollectibleType.COLLECTIBLE_SPIRITUAL_WOUND) or player:GetPlayerType() == PlayerType.PLAYER_MIRIAM_B
+	return player:HasCollectible(CollectibleType.COLLECTIBLE_SPIRITUAL_WOUND) or
+	player:GetPlayerType() == PlayerType.PLAYER_MIRIAM_B
 end
 
 local function setCanShoot(player, canShoot) -- Funciton Credit: im_tem
 	local oldchallenge = game.Challenge
-	if Isaac.GetChallenge() == 0 then -- Fix by anchikai
+	if Isaac.GetChallenge() == 0 then        -- Fix by anchikai
 		game.Challenge = canShoot and Challenge.CHALLENGE_NULL or Challenge.CHALLENGE_SOLAR_SYSTEM
 		player:UpdateCanShoot()
 		game.Challenge = oldchallenge
@@ -33,86 +34,87 @@ end
 ---@field LaserVariant int
 ---@field RNG RNG
 ---mapping of pointer hashes to lasers
----@field UntargetedLasers { [int]: EntityLaser } 
+---@field UntargetedLasers { [int]: EntityLaser }
 ---@field TargetedLasers EntityLaser[]
 ---@field HitCount int
 ---@field GetDamageMultiplier (fun(SpiritualWoundItemData): number)|nil
 
 local SYNERGIES = {
-    CollectibleType.COLLECTIBLE_CHOCOLATE_MILK,
-    CollectibleType.COLLECTIBLE_HAEMOLACRIA,
-    CollectibleType.COLLECTIBLE_CRICKETS_BODY,
-    CollectibleType.COLLECTIBLE_IPECAC,
+	CollectibleType.COLLECTIBLE_CHOCOLATE_MILK,
+	CollectibleType.COLLECTIBLE_HAEMOLACRIA,
+	CollectibleType.COLLECTIBLE_CRICKETS_BODY,
+	CollectibleType.COLLECTIBLE_IPECAC,
 }
 
 ---@param player EntityPlayer
 ---@return SpiritualWoundItemData
 local function createItemData(player)
-    local itemData = {
-        Owner = player,
-        Synergies = {},
-        TriggeredSynergies = {},
+	local itemData = {
+		Owner = player,
+		Synergies = {},
+		TriggeredSynergies = {},
 
-        -- focus data
-        SnapCooldown = 0,
-        WasDropPressed = false,
-        WasAttacking = false,
+		-- focus data
+		SnapCooldown = 0,
+		WasDropPressed = false,
+		WasAttacking = false,
 
-        -- laser data
-        OldLaserVariant = ItemLaserVariant.NORMAL,
-        LaserVariant = ItemLaserVariant.NORMAL,
-        RNG = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_SPIRITUAL_WOUND),
+		-- laser data
+		OldLaserVariant = ItemLaserVariant.NORMAL,
+		LaserVariant = ItemLaserVariant.NORMAL,
+		RNG = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_SPIRITUAL_WOUND),
 
-        -- damage data
-        UntargetedLasers = {},
-        TargetedLasers = {},
-        HitCount = 0,
-        GetDamageMultiplier = nil,
-    }
+		-- damage data
+		UntargetedLasers = {},
+		TargetedLasers = {},
+		HitCount = 0,
+		GetDamageMultiplier = nil,
+	}
 
-    for _, collectible in ipairs(SYNERGIES) do
-        itemData.Synergies[collectible] = player:GetCollectibleNum(collectible)
-    end
+	for _, collectible in ipairs(SYNERGIES) do
+		itemData.Synergies[collectible] = player:GetCollectibleNum(collectible)
+	end
 
-    return itemData
+	return itemData
 end
 
 ---@param player EntityPlayer
-function mod:SpiritualWoundUpdate(player)
-    local hasItemVar = hasItem(player)
-    setCanShoot(player, not hasItemVar)
-    if not hasItemVar then return end
+function Mod:SpiritualWoundUpdate(player)
+	local hasItemVar = hasItem(player)
+	setCanShoot(player, not hasItemVar)
+	if not hasItemVar then return end
 
-    local data = mod:GetData(player)
-    local itemData = data.SpiritualWound
-    if itemData == nil then
-        itemData = createItemData(player)
-        data.SpiritualWound = itemData
-    end
+	local data = Mod:GetData(player)
+	local itemData = data.SpiritualWound
+	if itemData == nil then
+		itemData = createItemData(player)
+		data.SpiritualWound = itemData
+	end
 
-    if player:IsDead() then
-        RenderLasers.RemoveLasers(itemData)
-        RenderLasers.StopLaserSounds()
-        UpdateFocus.RemoveFocus(itemData)
-        return
-    end
+	if player:IsDead() then
+		RenderLasers.RemoveLasers(itemData)
+		RenderLasers.StopLaserSounds()
+		UpdateFocus.RemoveFocus(itemData)
+		return
+	end
 
-    local triggeredSynergies = itemData.TriggeredSynergies
-    local synergies = itemData.Synergies
-    for collectible, oldCount in pairs(itemData.Synergies) do
-        local newCount = player:GetCollectibleNum(collectible)
-        local delta = newCount - oldCount
-        if delta ~= 0 then
-            triggeredSynergies[collectible] = delta
-        else
-            triggeredSynergies[collectible] = nil
-        end
-        synergies[collectible] = newCount
-    end
+	local triggeredSynergies = itemData.TriggeredSynergies
+	local synergies = itemData.Synergies
+	for collectible, oldCount in pairs(itemData.Synergies) do
+		local newCount = player:GetCollectibleNum(collectible)
+		local delta = newCount - oldCount
+		if delta ~= 0 then
+			triggeredSynergies[collectible] = delta
+		else
+			triggeredSynergies[collectible] = nil
+		end
+		synergies[collectible] = newCount
+	end
 
-    local targetQuery = FindTargets(itemData)
-    UpdateFocus(itemData, targetQuery)
-    RenderLasers(itemData, targetQuery)
-    DamageEnemies(itemData, targetQuery)
+	local targetQuery = FindTargets(itemData)
+	UpdateFocus(itemData, targetQuery)
+	RenderLasers(itemData, targetQuery)
+	DamageEnemies(itemData, targetQuery)
 end
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.SpiritualWoundUpdate)
+
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.SpiritualWoundUpdate)

@@ -1,4 +1,4 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
 local InfHP = false
@@ -6,7 +6,7 @@ local HighDamage = 0
 local InfCharge = false
 local HighLuck = 0
 local QuickKill = false
-function mod:UseTilde(_, _, player)
+function Mod:UseTilde(_, _, player)
 	local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_TILDE_KEY)
 	local randomDebug = rng:RandomInt(5)
 	local hud = game:GetHUD()
@@ -36,25 +36,28 @@ function mod:UseTilde(_, _, player)
 	player:EvaluateItems()
 	return true
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.UseTilde, CollectibleType.COLLECTIBLE_TILDE_KEY)
 
-function mod:InfiniteHealth(entity, amount, flag)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseTilde, CollectibleType.COLLECTIBLE_TILDE_KEY)
+
+function Mod:InfiniteHealth(entity, amount, flag)
 	local player = entity:ToPlayer()
 	if InfHP and flag & DamageFlag.DAMAGE_FAKE ~= DamageFlag.DAMAGE_FAKE then
 		player:UseActiveItem(CollectibleType.COLLECTIBLE_DULL_RAZOR, false, false, true, false, -1)
 		return false
 	end
 end
-mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.InfiniteHealth, EntityType.ENTITY_PLAYER)
 
-function mod:InfiniteCharge(_, _, player)
+Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, Mod.InfiniteHealth, EntityType.ENTITY_PLAYER)
+
+function Mod:InfiniteCharge(_, _, player)
 	if InfCharge then
 		ItemUsed = true
 	end
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.InfiniteCharge)
 
-function mod:DebugStats(player, flag)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.InfiniteCharge)
+
+function Mod:DebugStats(player, flag)
 	if flag == CacheFlag.CACHE_DAMAGE then
 		player.Damage = player.Damage + HighDamage
 	end
@@ -70,9 +73,10 @@ function mod:DebugStats(player, flag)
 		SFXManager():Stop(SoundEffect.SOUND_ITEMRECHARGE)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.DebugStats)
 
-function mod:ResetDebug()
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.DebugStats)
+
+function Mod:ResetDebug()
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
 		InfHP = false
@@ -85,4 +89,5 @@ function mod:ResetDebug()
 		player:EvaluateItems()
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.ResetDebug)
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.ResetDebug)

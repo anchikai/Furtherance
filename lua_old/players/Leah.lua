@@ -1,8 +1,8 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 local rng = RNG()
 
-mod:SavePlayerData({
+Mod:SavePlayerData({
 	LeahKills = 0,
 })
 
@@ -20,8 +20,8 @@ local function IsEnemyNear(player) -- Enemy detection
 	return false
 end
 
-function mod:OnInit(player)
-	local data = mod:GetData(player)
+function Mod:OnInit(player)
+	local data = Mod:GetData(player)
 	data.Init = true
 
 	if player:GetPlayerType() == PlayerType.PLAYER_LEAH then    -- If the player is Leah it will apply her hair
@@ -31,20 +31,20 @@ function mod:OnInit(player)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, mod.OnInit)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, Mod.OnInit)
 
-function mod:GiveLeahItems(player)
-	local data = mod:GetData(player)
+function Mod:GiveLeahItems(player)
+	local data = Mod:GetData(player)
 	if not data.Init then return end
 
 	if player:GetPlayerType() == PlayerType.PLAYER_LEAH then
-		if player.FrameCount == 1 and not mod.IsContinued then
+		if player.FrameCount == 1 and not Mod.IsContinued then
 			player:SetPocketActiveItem(CollectibleType.COLLECTIBLE_HEART_RENOVATOR, ActiveSlot.SLOT_POCKET, false)
 		elseif player.FrameCount > 1 then
 			data.Init = nil
 		end
 	elseif player:GetPlayerType() == PlayerType.PLAYER_LEAH_B then
-		if player.FrameCount == 1 and not mod.IsContinued then
+		if player.FrameCount == 1 and not Mod.IsContinued then
 			player:SetPocketActiveItem(CollectibleType.COLLECTIBLE_SHATTERED_HEART, ActiveSlot.SLOT_POCKET, false)
 		elseif player.FrameCount > 1 then
 			data.Init = nil
@@ -52,11 +52,11 @@ function mod:GiveLeahItems(player)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.GiveLeahItems)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.GiveLeahItems)
 
-function mod:OnUpdate(player)
+function Mod:OnUpdate(player)
 	local room = game:GetRoom()
-	local data = mod:GetData(player)
+	local data = Mod:GetData(player)
 
 	if player:GetPlayerType() == PlayerType.PLAYER_LEAH_B then
 		if data.LeahbPower == nil or data.LeahbPower < 0 then
@@ -112,9 +112,9 @@ function mod:OnUpdate(player)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.OnUpdate)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.OnUpdate)
 
-function mod:Hearts(entity, collider)
+function Mod:Hearts(entity, collider)
 	if collider:ToPlayer() then
 		local player = collider:ToPlayer()
 		if player:GetPlayerType() == PlayerType.PLAYER_LEAH_B then -- Prevent Tainted Leah from obtaining Red Health
@@ -134,10 +134,10 @@ function mod:Hearts(entity, collider)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, mod.Hearts, PickupVariant.PICKUP_HEART)
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, Mod.Hearts, PickupVariant.PICKUP_HEART)
 
-function mod:leahStats(player, flag)
-	local data = mod:GetData(player)
+function Mod:leahStats(player, flag)
+	local data = Mod:GetData(player)
 	if player:GetPlayerType() == PlayerType.PLAYER_LEAH then -- If the player is Leah it will apply her stats
 		if flag == CacheFlag.CACHE_FIREDELAY then
 			player.MaxFireDelay = player.MaxFireDelay + 1
@@ -196,12 +196,12 @@ function mod:leahStats(player, flag)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.leahStats)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.leahStats)
 
-function mod:LeahKill(entity)
+function Mod:LeahKill(entity)
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
-		local data = mod:GetData(player)
+		local data = Mod:GetData(player)
 		if player:GetPlayerType() == PlayerType.PLAYER_LEAH then
 			if rng:RandomFloat() <= 0.0625 then
 				Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_SCARED,
@@ -229,11 +229,11 @@ function mod:LeahKill(entity)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, mod.LeahKill)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, Mod.LeahKill)
 
-function mod:LeahbBrokenTears(tear)
+function Mod:LeahbBrokenTears(tear)
 	local player = tear.Parent:ToPlayer()
-	local data = mod:GetData(player)
+	local data = Mod:GetData(player)
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_SHATTERED_HEART) then -- % Chance to charm enemies based off how many broken hearts you have
 		local brokenRoll = rng:RandomInt(100) + 1
 		if brokenRoll <= (player:GetBrokenHearts() * 5 + 25) then
@@ -257,9 +257,9 @@ function mod:LeahbBrokenTears(tear)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.LeahbBrokenTears)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, Mod.LeahbBrokenTears)
 
-function mod:ClickerFix(_, _, player)
+function Mod:ClickerFix(_, _, player)
 	player:TryRemoveNullCostume(COSTUME_LEAH_A_HAIR)
 	player:TryRemoveNullCostume(COSTUME_LEAH_B_HAIR)
 	if player:GetPlayerType() == PlayerType.PLAYER_LEAH then
@@ -269,16 +269,16 @@ function mod:ClickerFix(_, _, player)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.ClickerFix, CollectibleType.COLLECTIBLE_CLICKER)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.ClickerFix, CollectibleType.COLLECTIBLE_CLICKER)
 
 
 
-function mod:TaintedLeahHome()
+function Mod:TaintedLeahHome()
 	local level = game:GetLevel()
 	local room = game:GetRoom()
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
-		if player:GetPlayerType() == PlayerType.PLAYER_LEAH and level:GetCurrentRoomIndex() == 94 and level:GetStage() == LevelStage.STAGE8 and mod.Unlocks.Leah.Tainted ~= true then
+		if player:GetPlayerType() == PlayerType.PLAYER_LEAH and level:GetCurrentRoomIndex() == 94 and level:GetStage() == LevelStage.STAGE8 and Mod.Unlocks.Leah.Tainted ~= true then
 			local RememberPocket = player:GetActiveCharge(ActiveSlot.SLOT_POCKET)
 			for _, entity in ipairs(Isaac.GetRoomEntities()) do
 				if (((entity.Type == EntityType.ENTITY_PICKUP and entity.Variant == PickupVariant.PICKUP_COLLECTIBLE)
@@ -296,15 +296,15 @@ function mod:TaintedLeahHome()
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.TaintedLeahHome)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.TaintedLeahHome)
 
-function mod:UnlockTaintedLeah(player)
-	if player:GetPlayerType() ~= PlayerType.PLAYER_LEAH or mod.Unlocks.Leah.Tainted then return end
+function Mod:UnlockTaintedLeah(player)
+	if player:GetPlayerType() ~= PlayerType.PLAYER_LEAH or Mod.Unlocks.Leah.Tainted then return end
 
 	for _, entity in ipairs(Isaac.FindByType(EntityType.ENTITY_SLOT, 14)) do
 		local sprite = entity:GetSprite()
 		if sprite:IsFinished("PayPrize") then
-			mod.Unlocks.Leah.Tainted = true
+			Mod.Unlocks.Leah.Tainted = true
 			GiantBookAPI.ShowAchievement("achievement_taintedleah.png")
 			for _, poof in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.POOF01)) do
 				poof:Remove()
@@ -314,4 +314,4 @@ function mod:UnlockTaintedLeah(player)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.UnlockTaintedLeah)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.UnlockTaintedLeah)

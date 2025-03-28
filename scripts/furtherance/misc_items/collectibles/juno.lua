@@ -1,4 +1,4 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 local rng = RNG()
 
@@ -6,7 +6,7 @@ local function clamp(value, min, max)
 	return math.min(math.max(value, min), max)
 end
 
-function mod:JunoTears(tear, collider)
+function Mod:JunoTears(tear, collider)
 	local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
 	if player and player:HasCollectible(CollectibleType.COLLECTIBLE_JUNO) then
 		if (collider:IsEnemy() and collider:IsVulnerableEnemy() and collider:IsActiveEnemy()) then
@@ -15,7 +15,7 @@ function mod:JunoTears(tear, collider)
 				chance = 1 - (1 - chance) ^ 2
 			end
 
-			local data = mod:GetData(player)
+			local data = Mod:GetData(player)
 			if rng:RandomFloat() <= chance and data.JunoTimer == 0 then
 				player:UseActiveItem(CollectibleType.COLLECTIBLE_ANIMA_SOLA, UseFlag.USE_NOANIM, -1)
 				data.JunoTimer = 300
@@ -23,15 +23,16 @@ function mod:JunoTears(tear, collider)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_TEAR_COLLISION, mod.JunoTears) -- Tears
-mod:AddCallback(ModCallbacks.MC_PRE_KNIFE_COLLISION, mod.JunoTears) -- Mom's Knife
 
-function mod:JunoLasers() -- Brimstone and other lasers
+Mod:AddCallback(ModCallbacks.MC_PRE_TEAR_COLLISION, Mod.JunoTears)  -- Tears
+Mod:AddCallback(ModCallbacks.MC_PRE_KNIFE_COLLISION, Mod.JunoTears) -- Mom's Knife
+
+function Mod:JunoLasers()                                           -- Brimstone and other lasers
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_JUNO) then
 			local rollJuno = rng:RandomInt(100)
-			local data = mod:GetData(player)
+			local data = Mod:GetData(player)
 			if player.Luck > 11 then
 				if rng:RandomInt(4) == 1 and data.JunoTimer == 0 then
 					player:UseActiveItem(CollectibleType.COLLECTIBLE_ANIMA_SOLA, UseFlag.USE_NOANIM, -1)
@@ -44,10 +45,11 @@ function mod:JunoLasers() -- Brimstone and other lasers
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_LASER_INIT, mod.JunoLasers)
 
-function mod:JunoUpdate(player)
-	local data = mod:GetData(player)
+Mod:AddCallback(ModCallbacks.MC_POST_LASER_INIT, Mod.JunoLasers)
+
+function Mod:JunoUpdate(player)
+	local data = Mod:GetData(player)
 	if data.JunoTimer == nil then
 		data.JunoTimer = 0
 	end
@@ -57,4 +59,5 @@ function mod:JunoUpdate(player)
 		data.JunoTimer = 0
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.JunoUpdate)
+
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.JunoUpdate)

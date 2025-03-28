@@ -1,4 +1,4 @@
-local mod = Furtherance
+local Mod = Furtherance
 local CorkPop = Isaac.GetSoundIdByName("Cork")
 local tearCount = 0
 
@@ -10,7 +10,7 @@ local corkAnimations = {
 	[Direction.DOWN] = "Down",
 }
 
-function mod:CorkTear(tear)
+function Mod:CorkTear(tear)
 	local player = tear.Parent:ToPlayer()
 	if player and player:HasCollectible(CollectibleType.COLLECTIBLE_WINE_BOTTLE) and player:GetPlayerType() ~= PlayerType.PLAYER_THEFORGOTTEN and player:GetPlayerType() ~= PlayerType.PLAYER_THEFORGOTTEN_B then
 		if tearCount > 16 then
@@ -27,7 +27,7 @@ function mod:CorkTear(tear)
 			sprite:Load("gfx/tear_cork.anm2", true)
 			local tearScale = Furtherance:TearScaleToSizeAnim(Cork)
 			--Tear size is normally 1-13 but cork only has 1-6, so half it and clamp it
-			local sizeAnim = tostring(mod:Clamp(math.floor(tonumber(tearScale) / 2), 1, 6))
+			local sizeAnim = tostring(Mod:Clamp(math.floor(tonumber(tearScale) / 2), 1, 6))
 			if tonumber(sizeAnim) > 6 then
 				sizeAnim = "6"
 			end
@@ -44,19 +44,19 @@ function mod:CorkTear(tear)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.CorkTear)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, Mod.CorkTear)
 
 ---@param tear EntityTear
-function mod:CorkTearRotation(tear)
+function Mod:CorkTearRotation(tear)
 	if tear:GetData().FR_CorkTear then
 		tear:GetSprite().Rotation = tear.Velocity:GetAngleDegrees()
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, mod.CorkTearRotation)
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, Mod.CorkTearRotation)
 
 local InputHeld = 0
-function mod:ForgorCork(player)
+function Mod:ForgorCork(player)
 	local b_left = Input.GetActionValue(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex)
 	local b_right = Input.GetActionValue(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex)
 	local b_up = Input.GetActionValue(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex)
@@ -85,12 +85,12 @@ function mod:ForgorCork(player)
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.ForgorCork)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.ForgorCork)
 
-function mod:ResetCork(continued)
+function Mod:ResetCork(continued)
 	if continued == false then
 		tearCount = 0
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, mod.ResetCork)
+Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, Mod.ResetCork)

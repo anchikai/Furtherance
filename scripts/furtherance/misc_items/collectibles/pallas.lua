@@ -1,6 +1,6 @@
-local mod = Furtherance
+local Mod = Furtherance
 
-function mod:GetPallas(player, flag)
+function Mod:GetPallas(player, flag)
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_PALLAS) then
 		if flag == CacheFlag.CACHE_TEARFLAG then
 			player.TearFlags = player.TearFlags | TearFlags.TEAR_HYDROBOUNCE | TearFlags.TEAR_POP
@@ -12,10 +12,11 @@ function mod:GetPallas(player, flag)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.GetPallas)
 
-function mod:TearSize(tear)
-    local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.GetPallas)
+
+function Mod:TearSize(tear)
+	local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
 	if player and player:HasCollectible(CollectibleType.COLLECTIBLE_PALLAS) then
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_FLAT_STONE) then
 			tear.Scale = tear.Scale * 2
@@ -24,4 +25,5 @@ function mod:TearSize(tear)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.TearSize, CollectibleType.COLLECTIBLE_PALLAS)
+
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, Mod.TearSize, CollectibleType.COLLECTIBLE_PALLAS)

@@ -1,4 +1,4 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
 local spareTime = 30 * 30
@@ -19,12 +19,12 @@ local finalBossIDs = {
 }
 
 local statObjs = {
-	{ Name = "Damage", Flag = CacheFlag.CACHE_DAMAGE, Buff = 0.5, TempBuff = 0.1 },
-	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = -0.5*5, TempBuff = -0.1*5 }, -- MaxFireDelay buffs should be negative!
-	{ Name = "TearRange", Flag = CacheFlag.CACHE_RANGE, Buff = 0.5*40, TempBuff = 0.1*40 },
-	{ Name = "ShotSpeed", Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.125, TempBuff = 0.025 },
-	{ Name = "MoveSpeed", Flag = CacheFlag.CACHE_SPEED, Buff = 0.5, TempBuff = 0.1 },
-	{ Name = "Luck", Flag = CacheFlag.CACHE_LUCK, Buff = 0.5, TempBuff = 0.1 }
+	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.5,    TempBuff = 0.1 },
+	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = -0.5 * 5, TempBuff = -0.1 * 5 }, -- MaxFireDelay buffs should be negative!
+	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.5 * 40, TempBuff = 0.1 * 40 },
+	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.125,  TempBuff = 0.025 },
+	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.5,    TempBuff = 0.1 },
+	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5,    TempBuff = 0.1 }
 }
 
 local ALL_BUFFED_FLAGS = 0
@@ -44,15 +44,15 @@ local function defaultBuffs()
 end
 
 
-mod:SavePlayerData({
+Mod:SavePlayerData({
 	KTTKBuffs = defaultBuffs,
-	KTTKTempBuffs = mod.SaveNil,
+	KTTKTempBuffs = Mod.SaveNil,
 })
 
 -- Blacklisted enemies --
 local function KTTKignores(enemy)
 	if not (
-		(enemy.Type == EntityType.ENTITY_VIS and enemy.Variant == 22)
+			(enemy.Type == EntityType.ENTITY_VIS and enemy.Variant == 22)
 			or (enemy.Type == EntityType.ENTITY_GEMINI and enemy.Variant == 20)
 			or (enemy.Type == EntityType.ENTITY_GRUB and enemy.Parent ~= nil)
 			or enemy.Type == EntityType.ENTITY_BLOOD_PUPPY
@@ -60,14 +60,13 @@ local function KTTKignores(enemy)
 				or enemy.Type == EntityType.ENTITY_BEGOTTEN or enemy.Type == EntityType.ENTITY_MR_MINE or enemy.Type == EntityType.ENTITY_BIG_BONY
 				or enemy.Type == EntityType.ENTITY_EVIS or enemy.Type == EntityType.ENTITY_VISAGE) and enemy.Variant == 10)
 		) then
-
 		return true
 	end
 end
 
 -- Determine effect --
-function mod:UseKTTK(_, _, player, _, slot, _)
-	local data = mod:GetData(player)
+function Mod:UseKTTK(_, _, player, _, slot, _)
+	local data = Mod:GetData(player)
 	local room = game:GetRoom()
 	local roomType = room:GetType()
 	local hasSpareTarget = false
@@ -82,24 +81,27 @@ function mod:UseKTTK(_, _, player, _, slot, _)
 		-- TODO: only make one item takeable
 		player:UseCard(Card.CARD_CREDIT, 257)
 
-	-- Get key piece / random item in Angel room
+		-- Get key piece / random item in Angel room
 	elseif roomType == RoomType.ROOM_ANGEL then
 		if not player:HasCollectible(CollectibleType.COLLECTIBLE_KEY_PIECE_1) then
-			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, CollectibleType.COLLECTIBLE_KEY_PIECE_1, Isaac.GetFreeNearPosition(room:GetCenterPos(), 0), Vector.Zero, player)
+			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE,
+				CollectibleType.COLLECTIBLE_KEY_PIECE_1, Isaac.GetFreeNearPosition(room:GetCenterPos(), 0), Vector.Zero,
+				player)
 		elseif not player:HasCollectible(CollectibleType.COLLECTIBLE_KEY_PIECE_2) then
-			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, CollectibleType.COLLECTIBLE_KEY_PIECE_2, Isaac.GetFreeNearPosition(room:GetCenterPos(), 0), Vector.Zero, player)
+			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE,
+				CollectibleType.COLLECTIBLE_KEY_PIECE_2, Isaac.GetFreeNearPosition(room:GetCenterPos(), 0), Vector.Zero,
+				player)
 		else -- Random item
-			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, 0, Isaac.GetFreeNearPosition(room:GetCenterPos(), 0), Vector.Zero, player)
+			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, 0,
+				Isaac.GetFreeNearPosition(room:GetCenterPos(), 0), Vector.Zero, player)
 		end
 
-	-- Give the charge back if the room is cleared
+		-- Give the charge back if the room is cleared
 	elseif room:GetAliveEnemiesCount() == 0 then
 		return { Discharge = false, ShowAnim = false, Remove = false }
-
 	else
-
 		-- Give Holy Mantle effect in final boss rooms and don't do anything else
-		if finalBossIDs[room:GetBossID()] 
+		if finalBossIDs[room:GetBossID()]
 			or #Isaac.FindByType(EntityType.ENTITY_DOGMA) > 0
 			or #Isaac.FindByType(EntityType.ENTITY_BEAST) > 0
 		then
@@ -117,21 +119,23 @@ function mod:UseKTTK(_, _, player, _, slot, _)
 			if enemy:IsActiveEnemy(false) and not enemy:IsInvincible() then -- This makes stonies and other fuckers not get spared so don't change it :)
 				-- Spare timer for bosses
 				if enemy:IsBoss() then
-					local enemyData = mod:GetData(enemy)
+					local enemyData = Mod:GetData(enemy)
 					if hasSpareTarget == false
 						and ((enemy.Type ~= EntityType.ENTITY_LARRYJR
 							and enemy.Type ~= EntityType.ENTITY_CHUB
 							and enemy.Type ~= EntityType.ENTITY_PIN
 							and enemy.Type ~= EntityType.ENTITY_TURDLET
-							) or enemy.Parent == nil
+						) or enemy.Parent == nil
 						) and not enemyData.spareTimer
 					then
 						enemyData.spareTimer = spareTime - SpareTimeOffset
 
 						-- Spotlight
 						if not enemyData.spareSpotlight then
-							local spareSpotlight = Isaac.Spawn(EntityType.ENTITY_EFFECT, 7887, 200, enemy.Position, Vector.Zero, nil):ToEffect()
-							spareSpotlight = Isaac.Spawn(EntityType.ENTITY_EFFECT, 7887, 200, enemy.Position, Vector.Zero, nil):ToEffect()
+							local spareSpotlight = Isaac.Spawn(EntityType.ENTITY_EFFECT, 7887, 200, enemy.Position,
+								Vector.Zero, nil):ToEffect()
+							spareSpotlight = Isaac.Spawn(EntityType.ENTITY_EFFECT, 7887, 200, enemy.Position, Vector
+							.Zero, nil):ToEffect()
 							spareSpotlight:GetSprite():Play("LightAppear", true)
 							spareSpotlight.Parent = enemy
 							spareSpotlight:FollowParent(enemy)
@@ -172,27 +176,28 @@ function mod:UseKTTK(_, _, player, _, slot, _)
 
 	return true
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.UseKTTK, CollectibleType.COLLECTIBLE_KEYS_TO_THE_KINGDOM)
+
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseKTTK, CollectibleType.COLLECTIBLE_KEYS_TO_THE_KINGDOM)
 
 -- Stats --
-function mod:KTTKbuffs(player, flag)
-    local data = mod:GetData(player)
-    if data.KTTKBuffs == nil then return end
+function Mod:KTTKbuffs(player, flag)
+	local data = Mod:GetData(player)
+	if data.KTTKBuffs == nil then return end
 
-    for i, buffCount in ipairs(data.KTTKBuffs) do
-        local stat = statObjs[i]
+	for i, buffCount in ipairs(data.KTTKBuffs) do
+		local stat = statObjs[i]
 
-        if stat.Flag == flag then
-            player[stat.Name] = player[stat.Name] + buffCount * stat.Buff
-            break
-        end
-    end
+		if stat.Flag == flag then
+			player[stat.Name] = player[stat.Name] + buffCount * stat.Buff
+			break
+		end
+	end
 end
 
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.KTTKbuffs)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.KTTKbuffs)
 
-function mod:KTTKTempbuffs(player, flag)
-	local data = mod:GetData(player)
+function Mod:KTTKTempbuffs(player, flag)
+	local data = Mod:GetData(player)
 	if data.KTTKTempBuffs == nil then return end
 
 	for i, buffCount in ipairs(data.KTTKTempBuffs) do
@@ -204,15 +209,17 @@ function mod:KTTKTempbuffs(player, flag)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.KTTKTempbuffs)
+
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.KTTKTempbuffs)
 
 local ignoreRemoveTBuffs = false
-function mod:IgnoreRemoveTBuffsOnGameStart()
+function Mod:IgnoreRemoveTBuffsOnGameStart()
 	ignoreRemoveTBuffs = true
 end
-mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, mod.IgnoreRemoveTBuffsOnGameStart)
 
-function mod:removeKTTKTbuffs()
+Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, Mod.IgnoreRemoveTBuffsOnGameStart)
+
+function Mod:removeKTTKTbuffs()
 	if ignoreRemoveTBuffs then
 		ignoreRemoveTBuffs = false
 		return
@@ -220,7 +227,7 @@ function mod:removeKTTKTbuffs()
 
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
-		local data = mod:GetData(player)
+		local data = Mod:GetData(player)
 
 		data.KTTKTempBuffs = nil
 
@@ -228,17 +235,17 @@ function mod:removeKTTKTbuffs()
 		player:EvaluateItems()
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, mod.removeKTTKTbuffs)
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, Mod.removeKTTKTbuffs)
 
 -- Spawn souls --
-function mod:kttkKills(entity)
+function Mod:kttkKills(entity)
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
 
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_KEYS_TO_THE_KINGDOM) then
 			if entity:IsBoss() then -- Bosses always give a soul with 3 charges
 				Isaac.Spawn(EntityType.ENTITY_EFFECT, 7887, 1, entity.Position, Vector.Zero, player):ToEffect()
-
 			elseif entity:IsActiveEnemy(true) and KTTKignores(entity) == true and not entity:IsInvincible() then
 				local kttkRNG = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_KEYS_TO_THE_KINGDOM)
 
@@ -249,10 +256,11 @@ function mod:kttkKills(entity)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, mod.kttkKills)
+
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, Mod.kttkKills)
 
 -- Effects --
-function mod:EnemySouls(effect)
+function Mod:EnemySouls(effect)
 	local sprite = effect:GetSprite()
 
 	-- Soul charge
@@ -272,7 +280,7 @@ function mod:EnemySouls(effect)
 
 		for i = 0, game:GetNumPlayers() - 1 do
 			local player = Isaac.GetPlayer(i)
-			local data = mod:GetData(player)
+			local data = Mod:GetData(player)
 
 			effect.Velocity = (effect.Velocity + (((player.Position - effect.Position):Normalized() * 20) - effect.Velocity) * 0.4)
 			sprite.Rotation = effect.Velocity:GetAngleDegrees() + 90
@@ -350,12 +358,13 @@ function mod:EnemySouls(effect)
 		effect:Remove()
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, mod.EnemySouls, 7887)
+
+Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, Mod.EnemySouls, 7887)
 
 -- Sparing --
-function mod:spareTimer(entity)
+function Mod:spareTimer(entity)
 	if entity:IsBoss() then
-		local data = mod:GetData(entity)
+		local data = Mod:GetData(entity)
 
 		-- Timer
 		if data.spareTimer then
@@ -364,14 +373,14 @@ function mod:spareTimer(entity)
 			if data.spareTimer <= 0 then
 				data.spared = true
 				data.spareTimer = nil
-
 			else
 				-- Shrink spotlight, whiten boss
 				data.spareTimer = data.spareTimer - 1
 				data.whiteColoring = 0.45 - (data.spareTimer / 2000)
 
 				data.spareSpotlight:GetSprite().Scale = Vector(0.75 + data.spareTimer * 0.001, 1.25)
-				entity:SetColor(Color(1, 1, 1, 1, data.whiteColoring, data.whiteColoring, data.whiteColoring), 5, 1, true, false)
+				entity:SetColor(Color(1, 1, 1, 1, data.whiteColoring, data.whiteColoring, data.whiteColoring), 5, 1, true,
+					false)
 
 				-- Extra coloring right before sparing
 				if data.spareTimer <= 3 then
@@ -424,7 +433,7 @@ function mod:spareTimer(entity)
 				local player = Isaac.GetPlayer(i)
 
 				if player:HasCollectible(CollectibleType.COLLECTIBLE_KEYS_TO_THE_KINGDOM) then
-					local pdata = mod:GetData(player)
+					local pdata = Mod:GetData(player)
 					local buffs = pdata.KTTKBuffs
 
 					local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_KEYS_TO_THE_KINGDOM)
@@ -451,12 +460,13 @@ function mod:spareTimer(entity)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.spareTimer)
+
+Mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, Mod.spareTimer)
 
 -- Reset timer --
-function mod:spareResetBoss(target, damageAmount, damageFlags, damageSource, damageCountdownFrames)
+function Mod:spareResetBoss(target, damageAmount, damageFlags, damageSource, damageCountdownFrames)
 	if target and target:IsBoss() then
-		local data = mod:GetData(target)
+		local data = Mod:GetData(target)
 
 		if data.spareTimer then
 			if damageSource.Entity and damageSource.Entity.SpawnerEntity then
@@ -468,17 +478,18 @@ function mod:spareResetBoss(target, damageAmount, damageFlags, damageSource, dam
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.spareResetBoss)
 
-function mod:spareResetPlayer(target, damageAmount, damageFlags, damageSource, damageCountdownFrames)
+Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, Mod.spareResetBoss)
+
+function Mod:spareResetPlayer(target, damageAmount, damageFlags, damageSource, damageCountdownFrames)
 	if damageSource.Entity and damageSource.Entity:IsBoss() then
 		local spareCancel = false
 		local data = nil
-		if mod:GetData(damageSource.Entity).spareTimer then
-			data = mod:GetData(damageSource.Entity)
+		if Mod:GetData(damageSource.Entity).spareTimer then
+			data = Mod:GetData(damageSource.Entity)
 			spareCancel = true
-		elseif damageSource.Entity.SpawnerEntity and mod:GetData(damageSource.Entity.SpawnerEntity).spareTimer then
-			data = mod:GetData(damageSource.Entity.SpawnerEntity)
+		elseif damageSource.Entity.SpawnerEntity and Mod:GetData(damageSource.Entity.SpawnerEntity).spareTimer then
+			data = Mod:GetData(damageSource.Entity.SpawnerEntity)
 			spareCancel = true
 		end
 
@@ -491,4 +502,5 @@ function mod:spareResetPlayer(target, damageAmount, damageFlags, damageSource, d
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.spareResetPlayer, EntityType.ENTITY_PLAYER)
+
+Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, Mod.spareResetPlayer, EntityType.ENTITY_PLAYER)

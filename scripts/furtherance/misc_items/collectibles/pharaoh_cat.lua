@@ -1,4 +1,4 @@
-local mod = Furtherance
+local Mod = Furtherance
 
 -- positional offset from original tear when shot to the right
 local TearPositions = {
@@ -10,20 +10,21 @@ local TearPositions = {
 }
 
 local function firePharaohCatTears(player, tear)
-	local data = mod:GetData(tear)
+	local data = Mod:GetData(tear)
 	local direction = tear.Velocity:GetAngleDegrees()
 	for _, position in ipairs(TearPositions) do
-		local extraTear = player:FireTear(tear.Position + position:Rotated(direction), tear.Velocity, true, false, true, player, 1)
+		local extraTear = player:FireTear(tear.Position + position:Rotated(direction), tear.Velocity, true, false, true,
+			player, 1)
 		extraTear:SetColor(tear.Color, 0, 0, false, false)
 
-		local extraData = mod:GetData(extraTear)
+		local extraData = Mod:GetData(extraTear)
 		extraData.AppliedTearFlags.PharaohCat = true
 		extraData.AppliedTearFlags.Flux = data.AppliedTearFlags.Flux
 	end
 end
 
-function mod:PyramidTears(tear)
-	local data = mod:GetData(tear)
+function Mod:PyramidTears(tear)
+	local data = Mod:GetData(tear)
 	if data.AppliedTearFlags == nil then
 		data.AppliedTearFlags = {}
 	end
@@ -37,7 +38,8 @@ function mod:PyramidTears(tear)
 
 	firePharaohCatTears(player, tear)
 end
-mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, mod.PyramidTears)
+
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, Mod.PyramidTears)
 
 -- I hate kidney stone so much
 local spamCollectibles = {
@@ -45,7 +47,7 @@ local spamCollectibles = {
 	CollectibleType.COLLECTIBLE_ALMOND_MILK,
 }
 
-function mod:ForgorCat(player)
+function Mod:ForgorCat(player)
 	if not player:HasCollectible(CollectibleType.COLLECTIBLE_PHARAOH_CAT) or (player:GetPlayerType() ~= PlayerType.PLAYER_THEFORGOTTEN and player:GetPlayerType() ~= PlayerType.PLAYER_THEFORGOTTEN) then return end
 
 	local b_left = Input.GetActionValue(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex)
@@ -54,7 +56,7 @@ function mod:ForgorCat(player)
 	local b_down = Input.GetActionValue(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex)
 	local isAttacking = (b_down + b_right + b_left + b_up) > 0
 
-	local data = mod:GetData(player)
+	local data = Mod:GetData(player)
 	local itemData = data.PharaohCat
 	if itemData == nil then
 		itemData = {
@@ -82,7 +84,8 @@ function mod:ForgorCat(player)
 
 	player:FireTear(player.Position, player:GetAimDirection() * 10 * player.ShotSpeed, true, false, true, player, 1)
 end
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.ForgorCat)
+
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.ForgorCat)
 
 -- directional offset from original direction when shot to the right
 local LaserDirections = {
@@ -91,7 +94,7 @@ local LaserDirections = {
 	Vector(4, 1),
 	Vector(4, -1),
 }
-function mod:PyramidLasers(laser)
+function Mod:PyramidLasers(laser)
 	if laser.FrameCount ~= 1 then return end
 
 	local player = laser.SpawnerEntity and laser.SpawnerEntity:ToPlayer()
@@ -103,13 +106,15 @@ function mod:PyramidLasers(laser)
 		end
 	elseif (player:HasCollectible(CollectibleType.COLLECTIBLE_TECHNOLOGY) or player:HasCollectible(CollectibleType.COLLECTIBLE_TECHNOLOGY_2) or player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_X)) then -- tech 1, tech 2 & tech x synergy
 		for _, direction in ipairs(LaserDirections) do
-			player:FireTechLaser(player.Position, LaserOffset.LASER_TECH1_OFFSET, direction:Rotated(laser.AngleDegrees), false, false, player, 1)
+			player:FireTechLaser(player.Position, LaserOffset.LASER_TECH1_OFFSET, direction:Rotated(laser.AngleDegrees),
+				false, false, player, 1)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, mod.PyramidLasers)
 
-function mod:PyramidBombs(bomb)
+Mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, Mod.PyramidLasers)
+
+function Mod:PyramidBombs(bomb)
 	local player = bomb.SpawnerEntity and bomb.SpawnerEntity:ToPlayer()
 	if player == nil or not player:HasCollectible(CollectibleType.COLLECTIBLE_PHARAOH_CAT) then return end
 
@@ -118,13 +123,15 @@ function mod:PyramidBombs(bomb)
 		player:FireTear(bomb.Position + Vector(30, 0):Rotated(direction), bomb.Velocity, true, false, true, player, 1)
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_BOMB_INIT, mod.PyramidBombs)
 
-function mod:PharaohCatDebuff(player, cacheFlag)
+Mod:AddCallback(ModCallbacks.MC_POST_BOMB_INIT, Mod.PyramidBombs)
+
+function Mod:PharaohCatDebuff(player, cacheFlag)
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_PHARAOH_CAT) then
 		if cacheFlag == CacheFlag.CACHE_FIREDELAY then
 			player.MaxFireDelay = player.MaxFireDelay + 20
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.PharaohCatDebuff)
+
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.PharaohCatDebuff)

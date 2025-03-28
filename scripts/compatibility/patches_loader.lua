@@ -8,22 +8,22 @@ local loader = {
 
 Furtherance.PatchesLoader = loader
 
--- Registers a mod patch
--- mod:string           Name of mod global
+-- Registers a Mod patch
+-- Mod:string           Name of Mod global
 -- patchFunc:function   Function that takes 0 arguments and applies the patch
 ---@function
-function loader:RegisterPatch(mod, patchFunc)
-	table.insert(loader.Patches, { Mod = mod, PatchFunc = patchFunc, Loaded = false })
-	--Isaac.DebugString(Dump({ Mod = mod, PatchFunc = patchFunc, Loaded = false }))
+function loader:RegisterPatch(Mod, patchFunc)
+	table.insert(loader.Patches, { Mod = Mod, PatchFunc = patchFunc, Loaded = false })
+	--Isaac.DebugString(Dump({ Mod = Mod, PatchFunc = patchFunc, Loaded = false }))
 end
 
 ---@function
 function loader:ApplyPatches()
 	for _, patch in pairs(loader.Patches) do
-		-- check if mod reference is valid by getting it by name from the table of globals
-		-- we cannot directly pass the mod reference to RegisterPatch
-		-- and then check for it because that mod reference will be nil
-		-- if that mod is loaded after ours
+		-- check if Mod reference is valid by getting it by name from the table of globals
+		-- we cannot directly pass the Mod reference to RegisterPatch
+		-- and then check for it because that Mod reference will be nil
+		-- if that Mod is loaded after ours
 		local modExists
 		if type(patch.Mod) == "function" then
 			modExists = patch.Mod()

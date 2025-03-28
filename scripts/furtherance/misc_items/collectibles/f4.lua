@@ -1,4 +1,4 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
 local allAllowedRooms = {
@@ -34,7 +34,7 @@ local allAllowedRooms = {
 	}
 }
 
-function mod:UseF4(_, _, player)
+function Mod:UseF4(_, _, player)
 	player:AnimateCollectible(CollectibleType.COLLECTIBLE_F4_KEY, "UseItem", "PlayerPickup")
 	if not player:HasCollectible(CollectibleType.COLLECTIBLE_ALT_KEY) then
 		-- Thanks for solving this problem Connor!
@@ -69,17 +69,17 @@ function mod:UseF4(_, _, player)
 			local roomIndex = unvisitedRooms[choice]
 			game:StartRoomTransition(roomIndex, Direction.NO_DIRECTION, 3)
 		else
-			mod:playFailSound()
+			Mod:playFailSound()
 			player:AnimateSad()
 		end
 	else -- Alt+F4 Synergy
 		local level = game:GetLevel()
 		local room = game:GetRoom()
-		local data = mod:GetData(player)
+		local data = Mod:GetData(player)
 		local stage = level:GetStage()
 		local stageType = level:GetStageType()
 		if room:IsCurrentRoomLastBoss() or (stage == LevelStage.STAGE4_3) or (stage == LevelStage.STAGE5) or (stage == LevelStage.STAGE6) or (stage == LevelStage.STAGE7) or (stage == LevelStage.STAGE8) or (stage == LevelStage.STAGE6_GREED) or (stage == LevelStage.STAGE7_GREED) or ((stage == LevelStage.STAGE4_2) and (stageType == StageType.STAGETYPE_REPENTANCE)) then
-			mod:playFailSound()
+			Mod:playFailSound()
 			player:AnimateSad()
 		else
 			player:RemoveCollectible(CollectibleType.COLLECTIBLE_F4_KEY)
@@ -91,10 +91,11 @@ function mod:UseF4(_, _, player)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.UseF4, CollectibleType.COLLECTIBLE_F4_KEY)
 
-function mod:RoomTransition(player)
-	local data = mod:GetData(player)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseF4, CollectibleType.COLLECTIBLE_F4_KEY)
+
+function Mod:RoomTransition(player)
+	local data = Mod:GetData(player)
 	local room = game:GetRoom()
 	local level = game:GetLevel()
 	if data.Transition == nil then
@@ -127,12 +128,13 @@ function mod:RoomTransition(player)
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.RoomTransition)
 
-function mod:UnJank()
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.RoomTransition)
+
+function Mod:UnJank()
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
-		local data = mod:GetData(player)
+		local data = Mod:GetData(player)
 		local level = game:GetLevel()
 		local room = game:GetRoom()
 
@@ -142,10 +144,12 @@ function mod:UnJank()
 		-- this "not" might be in the wrong spot, it only applies to the first stage condition...
 		if not (stage == LevelStage.STAGE4_3) or (stage == LevelStage.STAGE5) or (stage == LevelStage.STAGE6) or (stage == LevelStage.STAGE7) or (stage == LevelStage.STAGE8) or (stage == LevelStage.STAGE7_GREED) or ((stage == LevelStage.STAGE4_2) and (stageType == StageType.STAGETYPE_REPENTANCE)) then
 			if (data.Boss == true and room:IsCurrentRoomLastBoss()) or data.AltF4 == true then
-				game:StartRoomTransition(level:GetCurrentRoomIndex(), Direction.NO_DIRECTION, RoomTransitionAnim.WALK, player, RoomTransitionAnim.WALK)
+				game:StartRoomTransition(level:GetCurrentRoomIndex(), Direction.NO_DIRECTION, RoomTransitionAnim.WALK,
+					player, RoomTransitionAnim.WALK)
 				data.Boss = false
 			end
 		end
 	end
 end
-mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, mod.UnJank)
+
+Mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, Mod.UnJank)

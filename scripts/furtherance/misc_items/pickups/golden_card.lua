@@ -1,4 +1,4 @@
-local mod = Furtherance
+local Mod = Furtherance
 local game = Game()
 
 local allCards = {
@@ -96,7 +96,7 @@ end
 local processedCards = {}
 
 local skullGridIndex = nil
-function mod:SpawnGoldenCard(entityType, variant, subtype, position, _, spawner, seed)
+function Mod:SpawnGoldenCard(entityType, variant, subtype, position, _, spawner, seed)
 	if processedCards[seed] then return end
 	-- has to be a card that is a tarot card
 	if entityType ~= EntityType.ENTITY_PICKUP or variant ~= PickupVariant.PICKUP_TAROTCARD or not allCardsSet[subtype] then return end
@@ -116,17 +116,17 @@ function mod:SpawnGoldenCard(entityType, variant, subtype, position, _, spawner,
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, mod.SpawnGoldenCard)
+Mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, Mod.SpawnGoldenCard)
 
-function mod:ClearProcessedCards()
+function Mod:ClearProcessedCards()
 	for k in pairs(processedCards) do
 		processedCards[k] = nil
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, mod.ClearProcessedCards)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, Mod.ClearProcessedCards)
 
-function mod:UseGoldCard(card, player, flags)
+function Mod:UseGoldCard(card, player, flags)
 	local rng = player:GetCardRNG(CARD_GOLDEN)
 	if rng:RandomFloat() <= 0.5 then
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_BLANK_CARD) == false then
@@ -136,9 +136,9 @@ function mod:UseGoldCard(card, player, flags)
 	player:UseCard(pickCard(rng), UseFlag.USE_NOANIM)
 end
 
-mod:AddCallback(ModCallbacks.MC_USE_CARD, mod.UseGoldCard, CARD_GOLDEN)
+Mod:AddCallback(ModCallbacks.MC_USE_CARD, Mod.UseGoldCard, CARD_GOLDEN)
 
-function mod:CheckForFoolCard()
+function Mod:CheckForFoolCard()
 	-- only check in depths II
 	if game:GetLevel():GetStage() ~= LevelStage.STAGE3_2 then return end
 
@@ -151,4 +151,4 @@ function mod:CheckForFoolCard()
 	end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.CheckForFoolCard)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.CheckForFoolCard)
