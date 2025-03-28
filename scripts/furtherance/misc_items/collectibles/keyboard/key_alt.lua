@@ -1,11 +1,82 @@
 local Mod = Furtherance
-local game = Game()
+local game = Mod.Game
 
-function Mod:UseAlt(_, _, player)
-	local stage = game:GetLevel():GetStage()
-	local stageType = game:GetLevel():GetStageType()
+local ALT_KEY = {}
+
+Furtherance.Item.KEY_ALT = ALT_KEY
+
+ALT_KEY.ID = Isaac.GetItemIdByName("Alt Key")
+ALT_KEY.MAX_CHARGES = Mod.ItemConfig:GetCollectible(ALT_KEY.ID).MaxCharges
+
+---@param rng RNG
+---@param player EntityPlayer
+function ALT_KEY:OnUse(_, rng, player)
+	if game:IsGreedMode() then return end --TODO: Remember to blacklist the item from Greed Mode
 	local level = game:GetLevel()
-	local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_ALT_KEY)
+	local stage = level:GetStage()
+	local stageType = level:GetStageType()
+	local newStageType
+
+	if stageType == StageType.STAGETYPE_REPENTANCE or stageType == StageType.STAGETYPE_REPENTANCE_B then
+		newStageType = rng:RandomInt(StageType.STAGETYPE_AFTERBIRTH + 1)
+		print(stage, newStageType)
+	elseif stage <= LevelStage.STAGE3_2 and stageType < StageType.STAGETYPE_REPENTANCE then
+		newStageType = rng:RandomInt(2) + StageType.STAGETYPE_REPENTANCE
+	elseif stage <= LevelStage.STAGE4_2 and stageType < StageType.STAGETYPE_REPENTANCE then
+		newStageType = StageType.STAGETYPE_REPENTANCE
+	end
+	if newStageType then
+		local player_floor_save = Mod:FloorSave(player)
+		player_floor_save.SkipFloorRecharge = true
+		local floor_save = Mod:FloorSave()
+		floor_save.AltKeyNewStage = {stage, newStageType}
+		game:StartStageTransition(false, 0, player)
+	else
+		player:AnimateSad()
+		return false
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, ALT_KEY.OnUse, ALT_KEY.ID)
+
+function ALT_KEY:SelectNewLevel()
+	local floor_save = Mod:FloorSave()
+	if floor_save.AltKeyNewStage then
+		StageTransition.SetSameStage(true)
+		local stage, stageType = floor_save.AltKeyNewStage[1], floor_save.AltKeyNewStage[2]
+		floor_save.AltKeyNewStage  = nil
+		return {stage, stageType}
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_LEVEL_SELECT, ALT_KEY.SelectNewLevel)
+
+---Runs before POST_NEW_LEVEL when floor save data gets reset :P
+---@param player EntityPlayer
+function ALT_KEY:PreNewLevel(player)
+	local player_floor_save = Mod:FloorSave(player)
+	local slots = Mod:GetActiveItemSlots(player, ALT_KEY.ID)
+	if player_floor_save.SkipFloorRecharge then return end
+	local maxCharge = ALT_KEY.MAX_CHARGES
+	local hasBattery = player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY)
+	if player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY) then
+		maxCharge = maxCharge * 2
+	end
+	for _, slot in ipairs(slots) do
+		if player:GetActiveCharge(slot) < maxCharge then
+			player:AddActiveCharge(1, slot, true, hasBattery, true)
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_NEW_LEVEL, ALT_KEY.PreNewLevel)
+
+--[[
+function ALT_KEY:UseAlt(_, _, player)
+	local level = game:GetLevel()
+	local stage = level:GetStage()
+	local stageType = level:GetStageType()
+	local rng = player:GetCollectibleRNG(ALT_KEY.ID)
 	local randomAB = rng:RandomInt(3) + 1
 	local randomREP = rng:RandomInt(2) + 1
 	local data = Mod:GetData(player)
@@ -42,9 +113,9 @@ function Mod:UseAlt(_, _, player)
 	return true
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseAlt, CollectibleType.COLLECTIBLE_ALT_KEY)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, ALT_KEY.UseAlt, CollectibleType.COLLECTIBLE_ALT_KEY)
 
-function Mod:ChargeAlt()
+function ALT_KEY:ChargeAlt()
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
 		local data = Mod:GetData(player)
@@ -72,4 +143,5 @@ function Mod:ChargeAlt()
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, Mod.ChargeAlt)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, ALT_KEY.ChargeAlt)
+ ]]

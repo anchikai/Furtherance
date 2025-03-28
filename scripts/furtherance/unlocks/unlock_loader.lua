@@ -1,9 +1,11 @@
+local Mod = Furtherance
+
 ---@param tab table
 ---@param path string
 local function loopInclude(tab, path)
 	path = "scripts.furtherance.unlocks.unlocks_" .. path
 	for _, fileName in pairs(tab) do
-		Furtherance.Include(path .. "." .. fileName)
+		Mod.Include(path .. "." .. fileName)
 	end
 end
 
@@ -137,6 +139,6 @@ loopInclude(misc, "misc")
 
 --#endregion
 
-Furtherance.Include("scripts.furtherance.unlocks.unlock_table")
-Furtherance.Include("scripts.furtherance.unlocks.unlock_tracker_marks")
-Furtherance.Include("scripts.furtherance.unlocks.unlock_tracker_misc")
+Mod.Include("scripts.furtherance.unlocks.unlock_table")
+Mod.Include("scripts.furtherance.unlocks.unlock_tracker_marks")
+Mod.Include("scripts.furtherance.unlocks.unlock_tracker_misc")

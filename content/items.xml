@@ -10,7 +10,9 @@
 	<active id="7" name="C Key" description="Encyclopedia Support" gfx="c.png" maxcharges="6" initcharge="0" quality="3" />
 	<active id="8" name="Caps Key" description="Locked in size" gfx="caps.png" maxcharges="6" quality="3" />
 	<active id="9" name="Enter Key" description="Meet no boundaries" gfx="enter.png" maxcharges="12" initcharge="0" quality="3" />
-	<active id="10" cache="damage" name="Shift Key" description="Temporary DMG up" gfx="shift.png" maxcharges="12" quality="3" tags="offensive" />
+	<active id="10" cache="damage" name="Shift Key" description="Temporary DMG up" gfx="shift.png" maxcharges="12" quality="3" tags="offensive" persistent="true" cooldown="1800" />
+	<active id="31" name="F4 Key" description="Be careful..." gfx="f4.png" shopprice="30" devilprice="2" maxcharges="6" quality="4" />
+	<active id="32" name="Tab Key" description="Pretty useful!" gfx="tab.png" maxcharges="12" quality="4" />
 
 	<!-- Astrological Signs -->
 	<!-- Rework Concepts by Losfrail! -->
@@ -78,8 +80,6 @@
 	<active id="22" cache="range shotspeed tearflag" name="Book of Ambit" description="Temporary range up" gfx="book_of_ambit.png" maxcharges="4" quality="2" tags="book offensive lazarussharedglobal" />
 	<active id="25" name="Plug N' Play" description="Comes with 1000 games!" gfx="plug_n_play.png" maxcharges="6" quality="2" tags="nocantrip offensive" /> <!-- Concept by Freg! -->
 	<active id="29" cache = "damage range" name="Heart Renovator" description="Eternal triumph" gfx="heart_renovator.png" maxcharges="3" initcharge="3" quality="3" tags="angel nokeeper nolostbr" />
-	<active id="31" name="F4 Key" description="Be careful..." gfx="f4.png" shopprice="30" devilprice="2" maxcharges="6" quality="4" />
-	<active id="32" name="Tab Key" description="Pretty useful!" gfx="tab.png" maxcharges="12" quality="4" />
 	<active id="33" name="Shattered Heart" description="Eternal sorrow" gfx="shattered_heart.png" chargetype="normal" maxcharges="1" quality="2" tags="nokeeper nolostbr" />
 	<active id="34" name="Keys to the Kingdom" description="Divine control + strength in salvation" gfx="keys_to_the_kingdom.png" maxcharges="7" chargetype="special" quality="4" tags="angel" />
 	<active id="36" name="Muddled Cross" description="Flipped reality" gfx="muddled_cross.png" maxcharges="6" initcharge="6" devilprice="2" quality="4" />

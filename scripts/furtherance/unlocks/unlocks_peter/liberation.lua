@@ -34,4 +34,4 @@ function LIBERATION:ResetLiberation()
 	activatedLiberation = false
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_NEW_ROOM_TEMP_EFFECTS, LIBERATION.ResetLiberation)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, LIBERATION.ResetLiberation)

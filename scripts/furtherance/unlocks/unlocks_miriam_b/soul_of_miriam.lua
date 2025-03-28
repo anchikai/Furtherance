@@ -15,4 +15,4 @@ function SOUL_OF_MIRIAM:OnUse(card, player, flags)
 	Mod.Rune.ESSENCE_OF_DELUGE:OnUse(card, player, flags)
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_CARD, SOUL_OF_MIRIAM.OnUse)
+Mod:AddCallback(ModCallbacks.MC_USE_CARD, SOUL_OF_MIRIAM.OnUse, SOUL_OF_MIRIAM.ID)

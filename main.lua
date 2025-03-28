@@ -1,5 +1,6 @@
 ---@class ModReference
 _G.Furtherance = RegisterMod("Furtherance", 1)
+local Mod = Furtherance
 
 Furtherance.Version = "INDEV_REWRITE"
 
@@ -185,33 +186,32 @@ local challenges = {}
 
 loopInclude(challenges, "scripts.furtherance.challenes")
 
-Furtherance.Include("scripts.furtherance.unlocks.unlock_loader")
+Mod.Include("scripts.furtherance.unlocks.unlock_loader")
+Mod.Include("scripts.furtherance.misc_items.misc_items_loader")
 
 -- shader crash fix by AgentCucco
-Furtherance:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, function()
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, function()
 	if #Isaac.FindByType(EntityType.ENTITY_PLAYER) == 0 then
 		Isaac.ExecuteCommand("reloadshaders")
 	end
 end)
 
-function Furtherance:PeterFlip(name)
-	if name == 'Peter Flip' then
+Mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, function(_, shaderName)
+	if shaderName == 'Peter Flip' then
 		return { FlipFactor = 0 }
 	end
-end
-
-Furtherance:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, Furtherance.PeterFlip)
+end)
 
 --!End of file
 
-Furtherance.Include("scripts.compatibility.patches_loader")
+Mod.Include("scripts.compatibility.patches_loader")
 
-if Furtherance.FileLoadError then
-	Furtherance:Log("Mod failed to load! Report this to a coder in the dev server!")
-elseif Furtherance.InvalidPathError then
-	Furtherance:Log("One or more files were unable to be loaded. Report this to a coder in the dev server!")
+if Mod.FileLoadError then
+	Mod:Log("Mod failed to load! Report this to a coder in the dev server!")
+elseif Mod.InvalidPathError then
+	Mod:Log("One or more files were unable to be loaded. Report this to a coder in the dev server!")
 else
-	Furtherance:Log("v" .. Furtherance.Version .. " successfully loaded!")
+	Mod:Log("v" .. Mod.Version .. " successfully loaded!")
 end
 
 Furtherance.Include = nil
