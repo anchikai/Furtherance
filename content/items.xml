@@ -1,18 +1,18 @@
 <items gfxroot="gfx/items/" version="1" deathanm2="gfx/death items.anm2">
 	<!-- Isaac's Keyboard -->
-	<active id="24" name="Esc Key" description="I gotta get outta here!" gfx="esc.png" shopprice="30" devilprice="2" quality="3" />
-	<active id="1" name="Tilde Key" description="Dirty cheater" gfx="~.png" maxcharges="12" initcharge="0" quality="4" />
-	<active id="2" name="Alt Key" description="Reality" gfx="alt.png" maxcharges="2" chargetype="special" quality="4" />
-	<active id="3" name="Spacebar Key" description="Feedback loop" gfx="spacebar.png" maxcharges="12" quality="4" />
-	<active id="4" name="Backspace Key" description="No, go back!" gfx="backspace.png" maxcharges="1" quality="1" />
-	<active id="5" name="Q Key" description="Plagiarism" gfx="q.png" maxcharges="12" quality="4" />
-	<active id="6" name="E Key" description="Quite explosive" gfx="e.png" maxcharges="6" quality="3" />
-	<active id="7" name="C Key" description="Encyclopedia Support" gfx="c.png" maxcharges="6" initcharge="0" quality="3" />
-	<active id="8" name="Caps Key" description="Locked in size" gfx="caps.png" maxcharges="6" quality="3" />
-	<active id="9" name="Enter Key" description="Meet no boundaries" gfx="enter.png" maxcharges="12" initcharge="0" quality="3" />
-	<active id="10" cache="damage" name="Shift Key" description="Temporary DMG up" gfx="shift.png" maxcharges="12" quality="3" tags="offensive" persistent="true" cooldown="1800" />
-	<active id="31" name="F4 Key" description="Be careful..." gfx="f4.png" shopprice="30" devilprice="2" maxcharges="6" quality="4" />
-	<active id="32" name="Tab Key" description="Pretty useful!" gfx="tab.png" maxcharges="12" quality="4" />
+	<active id="24" name="Esc Key" description="I gotta get outta here!" gfx="key_esc.png" shopprice="30" devilprice="2" quality="3" />
+	<active id="1" name="Tilde Key" description="Dirty cheater" gfx="key_tilde.png" maxcharges="12" initcharge="0" quality="4" />
+	<active id="2" name="Alt Key" description="Reality" gfx="key_alt.png" maxcharges="2" chargetype="special" quality="4" />
+	<active id="3" name="Spacebar Key" description="Feedback loop" gfx="key_spacebar.png" maxcharges="12" quality="4" />
+	<active id="4" name="Backspace Key" description="No, go back!" gfx="key_backspace.png" maxcharges="1" quality="1" />
+	<active id="5" name="Q Key" description="Plagiarism" gfx="key_q.png" maxcharges="12" quality="4" />
+	<active id="6" name="E Key" description="Quite explosive" gfx="key_e.png" maxcharges="6" quality="3" />
+	<active id="7" name="C Key" description="Encyclopedia Support" gfx="key_c.png" maxcharges="6" initcharge="0" quality="3" />
+	<active id="8" name="Caps Key" description="Locked in size" gfx="key_caps.png" maxcharges="6" quality="3" />
+	<active id="9" name="Enter Key" description="Meet no boundaries" gfx="key_enter.png" maxcharges="12" initcharge="0" quality="3" />
+	<active id="10" cache="damage" name="Shift Key" description="Temporary DMG up" gfx="key_shift.png" maxcharges="12" quality="3" tags="offensive" persistent="true" cooldown="1800" />
+	<active id="31" name="F4 Key" description="Be careful..." gfx="key_f4.png" shopprice="30" devilprice="2" maxcharges="6" quality="4" />
+	<active id="32" name="Tab Key" description="Pretty useful!" gfx="key_tab.png" maxcharges="12" quality="4" />
 
 	<!-- Astrological Signs -->
 	<!-- Rework Concepts by Losfrail! -->
