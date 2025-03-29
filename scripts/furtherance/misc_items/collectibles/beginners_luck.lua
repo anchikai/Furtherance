@@ -1,47 +1,45 @@
 local Mod = Furtherance
-local game = Game()
 
-function Mod:PostNewLevel()
-	for p = 0, game:GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(p)
-		if player:HasCollectible(CollectibleType.COLLECTIBLE_BEGINNERS_LUCK) then
-			local data = Mod:GetData(player)
-			if data.BeginnersLuckBonus == nil then
-				data.BeginnersLuckBonus = 0
-			end
-			data.BeginnersLuckBonus = data.BeginnersLuckBonus + 11
-			player:AddCacheFlags(CacheFlag.CACHE_LUCK)
-			player:EvaluateItems()
-		end
+local BEGINNERS_LUCK = {}
+
+Furtherance.Item.BEGINNERS_LUCK = BEGINNERS_LUCK
+
+BEGINNERS_LUCK.ID = Isaac.GetItemIdByName("Beginner's Luck")
+
+BEGINNERS_LUCK.LUCK_BONUS = 10
+
+---@param player EntityPlayer
+function BEGINNERS_LUCK:BonusOnNewLevel(player)
+	if player:HasCollectible(BEGINNERS_LUCK.ID) then
+		local effects = player:GetEffects()
+		local numItems = player:GetCollectibleNum(BEGINNERS_LUCK.ID)
+		local numEffects = effects:GetCollectibleEffectNum(BEGINNERS_LUCK.ID)
+		local expectedNum = BEGINNERS_LUCK.LUCK_BONUS + (BEGINNERS_LUCK.LUCK_BONUS * 0.5 * (numItems - 1))
+		effects:AddCollectibleEffect(BEGINNERS_LUCK.ID, false, expectedNum - numEffects)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, Mod.PostNewLevel)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_NEW_LEVEL, BEGINNERS_LUCK.BonusOnNewLevel)
 
-function Mod:PostNewRoom()
-	local room = game:GetRoom()
-	if room:IsFirstVisit() then
-		for p = 0, game:GetNumPlayers() - 1 do
-			local player = Isaac.GetPlayer(p)
-			local data = Mod:GetData(player)
-			if data.BeginnersLuckBonus ~= nil and data.BeginnersLuckBonus > 0 then
-				data.BeginnersLuckBonus = data.BeginnersLuckBonus - 1
-				player:AddCacheFlags(CacheFlag.CACHE_LUCK)
-				player:EvaluateItems()
-			end
+function BEGINNERS_LUCK:PostNewExploredRoom()
+	local room = Mod.Room()
+	Mod:ForEachPlayer(function(player)
+		local effects = player:GetEffects()
+		if effects:HasCollectibleEffect(BEGINNERS_LUCK.ID) and room:IsFirstVisit() then
+			effects:RemoveCollectibleEffect(BEGINNERS_LUCK.ID)
 		end
+	end)
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, BEGINNERS_LUCK.PostNewExploredRoom)
+
+---@param player EntityPlayer
+function BEGINNERS_LUCK:GetBeginnersLuck(player, flag)
+	local effects = player:GetEffects()
+	if effects:HasCollectibleEffect(BEGINNERS_LUCK.ID) then
+		local effectNum = effects:GetCollectibleEffectNum(BEGINNERS_LUCK.ID)
+		player.Luck = player.Luck + effectNum
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.PostNewRoom)
-
-function Mod:GetBeginnersLuck(player, flag)
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_BEGINNERS_LUCK) then
-		local data = Mod:GetData(player)
-		if flag == CacheFlag.CACHE_LUCK and data.BeginnersLuckBonus ~= nil then
-			player.Luck = player.Luck + data.BeginnersLuckBonus
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.GetBeginnersLuck)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, BEGINNERS_LUCK.GetBeginnersLuck, CacheFlag.CACHE_LUCK)

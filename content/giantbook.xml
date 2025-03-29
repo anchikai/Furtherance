@@ -1,0 +1,5 @@
+<giantbook anm2root="gfx/ui/giantbook/">
+	<entry name="Book of Ambit" anm2="giantbook.anm2" anim="Appear" gfx="ambit.png" />
+	<entry name="Book of Books" anm2="giantbook.anm2" anim="Appear" gfx="books.png" />
+	<entry name="Book of Swiftness" anm2="giantbook.anm2" anim="Appear" gfx="swiftness.png" />
+</giantbook>

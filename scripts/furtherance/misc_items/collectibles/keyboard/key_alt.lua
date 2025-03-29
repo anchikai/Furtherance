@@ -11,15 +11,15 @@ ALT_KEY.MAX_CHARGES = Mod.ItemConfig:GetCollectible(ALT_KEY.ID).MaxCharges
 ---@param rng RNG
 ---@param player EntityPlayer
 function ALT_KEY:OnUse(_, rng, player)
-	if game:IsGreedMode() then return end --TODO: Remember to blacklist the item from Greed Mode
+	if game:IsGreedMode() then player:AnimateSad() return end --TODO: Remember to blacklist the item from Greed Mode
 	local level = game:GetLevel()
+	if level:IsAscent() then player:AnimateSad() return end
 	local stage = level:GetStage()
 	local stageType = level:GetStageType()
 	local newStageType
 
 	if stageType == StageType.STAGETYPE_REPENTANCE or stageType == StageType.STAGETYPE_REPENTANCE_B then
 		newStageType = rng:RandomInt(StageType.STAGETYPE_AFTERBIRTH + 1)
-		print(stage, newStageType)
 	elseif stage <= LevelStage.STAGE3_2 and stageType < StageType.STAGETYPE_REPENTANCE then
 		newStageType = rng:RandomInt(2) + StageType.STAGETYPE_REPENTANCE
 	elseif stage <= LevelStage.STAGE4_2 and stageType < StageType.STAGETYPE_REPENTANCE then

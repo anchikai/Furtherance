@@ -1,35 +1,75 @@
 local Mod = Furtherance
-local game = Game()
+local game = Mod.Game
 
-function Mod:UseAlternateReality(_, _, player)
-	local level = game:GetLevel()
-	local data = Mod:GetData(player)
-	local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_ALTERNATE_REALITY)
-	player:RemoveCollectible(CollectibleType.COLLECTIBLE_ALTERNATE_REALITY)
-	level:SetStage(rng:RandomInt(11) + 1, rng:RandomInt(3))
-	player:UseActiveItem(CollectibleType.COLLECTIBLE_FORGET_ME_NOW, false, false, true, false, -1)
-	data.ObervsUni = true
-	return true
+local ALTERNATE_REALITY = {}
+
+Furtherance.Item.ALTERNATE_REALITY = ALTERNATE_REALITY
+
+ALTERNATE_REALITY.ID = Isaac.GetItemIdByName("Alternate Reality")
+
+---@return {[1]: LevelStage, [2]: StageType}[]
+function ALTERNATE_REALITY:GetAvailableStages()
+	local level = Mod.Level()
+	local stageList = {}
+	for levelStage = LevelStage.STAGE1_1, LevelStage.STAGE6 do
+		local maxVariant = StageType.STAGETYPE_REPENTANCE_B
+		if levelStage == LevelStage.STAGE5 or levelStage == LevelStage.STAGE6 then
+			maxVariant = StageType.STAGETYPE_WOTL
+		elseif levelStage == LevelStage.STAGE4_3 then
+			maxVariant = StageType.STAGETYPE_ORIGINAL
+		end
+		for stageType = 0, maxVariant do
+			if stageType == StageType.STAGETYPE_GREEDMODE then goto skipGreed end
+			if level:IsStageAvailable(levelStage, stageType) then
+				Mod:Insert(stageList, {levelStage, stageType})
+			end
+
+			::skipGreed::
+		end
+	end
+	return stageList
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseAlternateReality, CollectibleType.COLLECTIBLE_ALTERNATE_REALITY)
-
-function Mod:NewReality()
+---@param rng RNG
+---@param player EntityPlayer
+function ALTERNATE_REALITY:OnUse(_, rng, player)
 	local level = game:GetLevel()
-	local room = game:GetRoom()
-	for i = 0, game:GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(i)
-		local data = Mod:GetData(player)
-		if data.ObervsUni == true then
-			data.ObervsUni = false
-			level.LeaveDoor = -1
-			game:ChangeRoom(level:GetRandomRoomIndex(false, room:GetSpawnSeed()))
-			level:ShowMap()
-			level:ApplyBlueMapEffect()
-			level:ApplyCompassEffect()
-			level:ApplyMapEffect()
-		end
+	if level:IsAscent() then player:AnimateSad() return end
+	local stageList = ALTERNATE_REALITY:GetAvailableStages()
+	local randomStage = stageList[rng:RandomInt(#stageList) + 1]
+	local floor_save = Mod:FloorSave()
+	floor_save.AlternateRealityNewStage = randomStage
+	Mod.Game:StartStageTransition(false, 0, player)
+	Mod:DelayOneFrame(function() player:AnimateAppear() end)
+	return {Discharge = true, Remove = true, ShowAnim = false}
+end
+
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, ALTERNATE_REALITY.OnUse, ALTERNATE_REALITY.ID)
+
+function ALTERNATE_REALITY:SelectNewLevel()
+local floor_save = Mod:FloorSave()
+	if floor_save.AlternateRealityNewStage then
+		local stage, stageType = floor_save.AlternateRealityNewStage[1], floor_save.AlternateRealityNewStage[2]
+		return {stage, stageType}
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, Mod.NewReality)
+Mod:AddCallback(ModCallbacks.MC_PRE_LEVEL_SELECT, ALTERNATE_REALITY.SelectNewLevel)
+
+--POST_NEW_LEVEL but before the floor data is reset
+function ALTERNATE_REALITY:NewReality()
+	local floor_save = Mod:FloorSave()
+	local room = game:GetRoom()
+	if floor_save.AlternateRealityNewStage then
+		local level = Mod.Level()
+		game:ChangeRoom(level:GetRandomRoomIndex(false, room:GetSpawnSeed()))
+		level:ShowMap()
+		level:ApplyBlueMapEffect()
+		level:ApplyCompassEffect(true)
+		level:ApplyMapEffect()
+		level.LeaveDoor = -1
+		floor_save.AlternateRealityNewStage = nil
+	end
+end
+
+Mod:AddCallback(Mod.SaveManager.SaveCallbacks.PRE_FLOOR_DATA_RESET, ALTERNATE_REALITY.NewReality)

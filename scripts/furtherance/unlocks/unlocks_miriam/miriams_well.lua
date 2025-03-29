@@ -8,27 +8,25 @@ MIRIAMS_WELL.ID = Isaac.GetItemIdByName("Miriam's Well")
 MIRIAMS_WELL.FAMILIAR = Isaac.GetEntityVariantByName("Miriam's Well")
 
 MIRIAMS_WELL.COOLDOWN = 240
-MIRIAMS_WELL.DIST = Vector(40, 40)
-MIRIAMS_WELL.SPEED = 0.03
+MIRIAMS_WELL.ORBIT_DISTANCE = Vector(40, 40)
+MIRIAMS_WELL.ORBIT_SPEED = 0.03
 
 ---@param player EntityPlayer
 function MIRIAMS_WELL:FamiliarCache(player)
 	local effects = player:GetEffects()
-	local numFamiliars = player:GetCollectibleNum(MIRIAMS_WELL.ID)
-		+ effects:GetCollectibleEffectNum(MIRIAMS_WELL.ID)
+	local numFamiliars = player:GetCollectibleNum(MIRIAMS_WELL.ID) + effects:GetCollectibleEffectNum(MIRIAMS_WELL.ID)
 	local rng = player:GetCollectibleRNG(MIRIAMS_WELL.ID)
 	rng:Next()
-	player:CheckFamiliar(MIRIAMS_WELL.FAMILIAR, numFamiliars, rng,
-		Mod.ItemConfig:GetCollectible(MIRIAMS_WELL.ID))
+	player:CheckFamiliar(MIRIAMS_WELL.FAMILIAR, numFamiliars, rng, Mod.ItemConfig:GetCollectible(MIRIAMS_WELL.ID))
 end
 
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, MIRIAMS_WELL.FamiliarCache, CacheFlag.CACHE_FAMILIARS)
 
 ---@param familiar EntityFamiliar
 function MIRIAMS_WELL:OnFamiliarInit(familiar)
-	familiar.OrbitLayer = 1
-	familiar.OrbitDistance = MIRIAMS_WELL.DIST
-	familiar.OrbitSpeed = 0.03
+	familiar:AddToOrbit(1)
+	familiar.OrbitDistance = MIRIAMS_WELL.ORBIT_DISTANCE
+	familiar.OrbitSpeed = MIRIAMS_WELL.ORBIT_SPEED
 	familiar:RecalculateOrbitOffset(familiar.OrbitLayer, true)
 end
 

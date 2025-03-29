@@ -1,17 +1,24 @@
 local Mod = Furtherance
 
-function Mod:UseBookOfAmbit(_Type, RNG, player)
-	if GiantBookAPI then
-		GiantBookAPI.playGiantBook("Appear", "ambit.png", Color(1, 1, 1, 1, 0, 0, 0), Color(1, 1, 1, 1, 0, 0, 0),
-			Color(1, 1, 1, 1, 0, 0, 0), SoundEffect.SOUND_BOOK_PAGE_TURN_12, false)
-	end
+local BOOK_OF_AMBIT = {}
+
+Furtherance.Item.BOOK_OF_AMBIT = BOOK_OF_AMBIT
+
+BOOK_OF_AMBIT.ID = Isaac.GetItemIdByName("Book of Ambit")
+
+BOOK_OF_AMBIT.GIANTBOOK = Isaac.GetGiantBookIdByName("Book of Ambit")
+
+function BOOK_OF_AMBIT:OnUse(_, _, player)
+	ItemOverlay.Show(BOOK_OF_AMBIT.GIANTBOOK, 3, player)
 	return true
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseBookOfAmbit, CollectibleType.COLLECTIBLE_BOOK_OF_AMBIT)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, BOOK_OF_AMBIT.OnUse, BOOK_OF_AMBIT.ID)
 
-function Mod:Ambit_CacheEval(player, flag)
-	local tempEffects = player:GetEffects():GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_BOOK_OF_AMBIT)
+---@param player EntityPlayer
+---@param flag CacheFlag
+function BOOK_OF_AMBIT:AmbitStats(player, flag)
+	local tempEffects = player:GetEffects():GetCollectibleEffectNum(BOOK_OF_AMBIT.ID)
 	if tempEffects > 0 then
 		if flag == CacheFlag.CACHE_RANGE then
 			player.TearRange = player.TearRange + tempEffects * 200
@@ -25,15 +32,20 @@ function Mod:Ambit_CacheEval(player, flag)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.Ambit_CacheEval)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, BOOK_OF_AMBIT.AmbitStats)
 
-function Mod:Ambit_InitTear(tear)
-	local player = Mod:GetPlayerFromTear(tear)
+---@param tear EntityTear
+function BOOK_OF_AMBIT:UpdateTearVariant(tear)
+	local player = Mod:TryGetPlayer(tear)
 	if player then
-		if player:GetEffects():GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_BOOK_OF_AMBIT) > 0 then
-			tear:ChangeVariant(TearVariant.CUPID_BLUE)
+		if player:GetEffects():GetCollectibleEffectNum(BOOK_OF_AMBIT.ID) > 0 then
+			local variant = TearVariant.CUPID_BLUE
+			if Furtherance:IsBloodTear(tear) then
+				variant = TearVariant.CUPID_BLOOD
+			end
+			tear:ChangeVariant(variant)
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, Mod.Ambit_InitTear)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, BOOK_OF_AMBIT.UpdateTearVariant)

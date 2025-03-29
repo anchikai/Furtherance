@@ -5,7 +5,6 @@ local REVERSE_HOPE = {}
 Furtherance.Card.REVERSE_HOPE = REVERSE_HOPE
 
 REVERSE_HOPE.ID = Isaac.GetCardIdByName("ReverseHope")
-REVERSE_HOPE.DOORS_REQUIRED = 1
 
 local MINES_MIN = 25
 local MINES_MAX = 32
@@ -18,8 +17,8 @@ function REVERSE_HOPE:OnUse(card, player, flag)
 	local roomVariant = 0
 	-- Attempt to find a valid challenge room. Done this way to support randomly grabbing modded ones!
 	for _ = 1, 100 do
-		local challengeRoom = RoomConfigHolder.GetRandomRoom(rng:GetSeed(), false, StbType.SPECIAL_ROOMS, RoomType.ROOM_CHALLENGE, RoomShape.ROOMSHAPE_1x1, -1, -1, 0, 10,
-			REVERSE_HOPE.DOORS_REQUIRED, REVERSE_HOPE.SUBTYPE, Mod:GetRoomMode())
+		local challengeRoom = RoomConfigHolder.GetRandomRoom(rng:GetSeed(), false, StbType.SPECIAL_ROOMS, RoomType.ROOM_CHALLENGE, RoomShape.ROOMSHAPE_1x1,
+			-1, -1, 0, 10, 1, -1, Mod:GetRoomMode())
 		rng:Next()
 		if challengeRoom.Subtype ~= 10
 			and (isMines or not isMines and (challengeRoom.Variant > MINES_MAX or challengeRoom.Variant < MINES_MIN))
@@ -31,7 +30,7 @@ function REVERSE_HOPE:OnUse(card, player, flag)
 	Isaac.ExecuteCommand("goto s.challenge." .. roomVariant)
 	local game = Mod.Game
 	level.LeaveDoor = -1
-	game:StartRoomTransition(-3, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT, player, -1)
+	game:StartRoomTransition(GridRooms.ROOM_DEBUG_IDX, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT, player)
 	-- If a challenge room was completed on the floor, or in a previous debug room, it will still be marked as done. Reset state when entering room
 	Mod:DelayOneFrame(function() level:GetCurrentRoomDesc().ChallengeDone = false end)
 end

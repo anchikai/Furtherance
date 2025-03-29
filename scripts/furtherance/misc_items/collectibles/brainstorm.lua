@@ -1,4 +1,6 @@
-local Mod = Furtherance
+--TODO: Appears to be unused
+
+--[[ local Mod = Furtherance
 local game = Game()
 
 local Braincell = Isaac.GetEntityVariantByName("Braincell")
@@ -45,3 +47,4 @@ function Mod:CellCache(player, flag)
 end
 
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.CellCache)
+ ]]

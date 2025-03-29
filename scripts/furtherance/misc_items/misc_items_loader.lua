@@ -12,7 +12,21 @@ end
 --#region Collectibles
 
 local collectibles = {
-
+	"alternate_reality",
+	"beginners_luck",
+	"blood_cyst",
+	"book_of_ambit",
+	"book_of_books",
+	"book_of_swiftness",
+	--"brainstorm",
+	"brunch",
+	"butterfly",
+	"cardiomyopathy",
+	--"ceres",
+	"chiron",
+	"cosmic_omnibus",
+	"crab_legs",
+	"d9"
 }
 
 loopInclude(collectibles, "collectibles")

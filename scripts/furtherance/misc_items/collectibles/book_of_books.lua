@@ -1,18 +1,33 @@
+--TODO: Insanely OP. Awaiting reply from anchikai
+
 local Mod = Furtherance
 
-function Mod:UseBookOfBooks(_, _, player)
-	for i = 1, Isaac.GetItemConfig():GetCollectibles().Size - 1 do
-		if i ~= 43 and i ~= 61 and i ~= 235 and i ~= 587 and i ~= 613 and i ~= 620 and i ~= 630 and i ~= 648 and i ~= 662 and i ~= 666 and i ~= 718 and i ~= CollectibleType.COLLECTIBLE_BOOK_OF_BOOKS then
-			if Isaac.GetItemConfig():GetCollectible(i).Tags & ItemConfig.TAG_BOOK == ItemConfig.TAG_BOOK then
-				player:UseActiveItem(i, false, false, true, true, -1)
-			end
+local BOOK_OF_BOOKS = {}
+
+Furtherance.Item.BOOK_OF_BOOKS = BOOK_OF_BOOKS
+
+BOOK_OF_BOOKS.ID = Isaac.GetItemIdByName("Book of Books")
+BOOK_OF_BOOKS.GIANTBOOK = Isaac.GetGiantBookIdByName("Book of Books")
+
+---@param player EntityPlayer
+function BOOK_OF_BOOKS:OnUse(_, _, player)
+	local bookItemConfigs = Mod.ItemConfig:GetTaggedItems(ItemConfig.TAG_BOOK)
+	local bookItemIDs = {}
+	for _, itemConfig in ipairs(bookItemConfigs) do
+		if itemConfig.Type == ItemType.ITEM_ACTIVE
+			and not itemConfig:HasTags(ItemConfig.TAG_QUEST)
+			and itemConfig.ID ~= BOOK_OF_BOOKS.ID
+		then
+			Mod:Insert(bookItemIDs)
 		end
 	end
-	if GiantBookAPI then
-		GiantBookAPI.playGiantBook("Appear", "books.png", Color(1, 1, 1, 1, 0, 0, 0), Color(1, 1, 1, 1, 0, 0, 0),
-			Color(1, 1, 1, 1, 0, 0, 0), SoundEffect.SOUND_BOOK_PAGE_TURN_12, false)
+	for _, itemID in ipairs(bookItemIDs) do
+		player:UseActiveItem(itemID, false, false, true, true, -1)
 	end
+
+	ItemOverlay.Show(BOOK_OF_BOOKS.GIANTBOOK)
+
 	return true
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseBookOfBooks, CollectibleType.COLLECTIBLE_BOOK_OF_BOOKS)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, BOOK_OF_BOOKS.OnUse, BOOK_OF_BOOKS.ID)

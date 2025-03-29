@@ -46,7 +46,9 @@ function HEART_RENOVATOR:GetMaxHeartCounter(player)
 	return maxCount
 end
 
-function HEART_RENOVATOR:OnUse(_, _, player)
+---@param player EntityPlayer
+---@param flags UseFlag
+function HEART_RENOVATOR:OnUse(_, _, player, flags)
 	if player:GetBrokenHearts() > 0 then
 		Mod.SFXMan:Play(SoundEffect.SOUND_HEARTBEAT)
 		player:AddBrokenHearts(-1)

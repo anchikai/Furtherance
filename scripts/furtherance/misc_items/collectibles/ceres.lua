@@ -1,4 +1,8 @@
 local Mod = Furtherance
+
+--TODO: Will revisit for tear modifier implementation
+
+--[[
 local game = Game()
 local rng = RNG()
 
@@ -85,8 +89,7 @@ function Mod:TouchCreep(effect) -- If an enemy walks over the creep
 	if not player or not effect:GetData().IsCeresCreep then return end
 	for _, ent in ipairs(Isaac.FindInRadius(effect.Position, effect.Size, EntityPartition.ENEMY)) do
 		if isValidTarget(ent) and not ent:GetData().CeresTentacle then
-			--[[ Isaac.Spawn(EntityType.ENTITY_FAMILIAR, FamiliarVariant.WORM_FRIEND, 0,
-			ent.Position, Vector.Zero, player) ]]
+			--worm friend
 			ent:AddSlowing(EntityRef(player), 30, 0.5, Color(0.75, 0.75, 0.75, 1, 0, 0, 0))
 			ent:GetData().CeresTentacle = true
 		end
@@ -94,3 +97,4 @@ function Mod:TouchCreep(effect) -- If an enemy walks over the creep
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, Mod.TouchCreep, EffectVariant.PLAYER_CREEP_GREEN)
+ ]]

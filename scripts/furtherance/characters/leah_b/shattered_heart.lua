@@ -1,6 +1,6 @@
 local Mod = Furtherance
 
-function Mod:UseHeartRen(_, _, player)
+function Mod:UseHeartRen(_, _, player, flags)
 	if player:GetBrokenHearts() > 0 then
 		SFXManager():Play(SoundEffect.SOUND_HEARTBEAT)
 		player:AddBrokenHearts(-1)

@@ -1,12 +1,18 @@
 local Mod = Furtherance
 
-function Mod:GetBrunch(player, flag)
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_BRUNCH) then
-		if flag == CacheFlag.CACHE_SHOTSPEED then
-			player.ShotSpeed = player.ShotSpeed +
-			(0.16 * player:GetCollectibleNum(CollectibleType.COLLECTIBLE_BRUNCH, false))
-		end
+local BRUNCH = {}
+
+Furtherance.Item.BRUNCH = BRUNCH
+
+BRUNCH.ID = Isaac.GetItemIdByName("Brunch")
+
+BRUNCH.SHOTSPEED = 0.16
+
+---@param player EntityPlayer
+function BRUNCH:GetBrunch(player)
+	if player:HasCollectible(BRUNCH.ID) then
+		player.ShotSpeed = player.ShotSpeed + (BRUNCH.SHOTSPEED * player:GetCollectibleNum(BRUNCH.ID))
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.GetBrunch)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, BRUNCH.GetBrunch, CacheFlag.CACHE_SHOTSPEED)

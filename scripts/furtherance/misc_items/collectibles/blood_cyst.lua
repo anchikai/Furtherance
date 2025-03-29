@@ -1,97 +1,87 @@
 local Mod = Furtherance
-local game = Game()
 
-local Cyst = Isaac.GetEntityVariantByName("Blood Cyst")
-local CystHitbox = Isaac.GetEntityVariantByName("Blood Cyst Hitbox")
+local BLOOD_CYST = {}
 
-function Mod:RespawnCyst()
-	local room = game:GetRoom()
+Furtherance.Item.BLOOD_CYST = BLOOD_CYST
 
-	-- the cyst hitbox gets automatically removed
-	for _, entity in ipairs(Isaac.GetRoomEntities()) do
-		if entity.Type == EntityType.ENTITY_FAMILIAR and entity.Variant == Cyst then
-			entity:Remove()
+BLOOD_CYST.ID = Isaac.GetItemIdByName("Blood Cyst")
+BLOOD_CYST.FAMILIAR = Isaac.GetEntityVariantByName("Blood Cyst")
+
+function BLOOD_CYST:RespawnCyst()
+	local room = Mod.Room()
+	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, BLOOD_CYST.FAMILIAR)) do
+		ent:Remove()
+	end
+	if room:IsClear() then return end
+	Mod:ForEachPlayer(function(player)
+		for _ = 1, player:GetCollectibleNum(BLOOD_CYST.ID) do
+			local position = Isaac.GetFreeNearPosition(room:GetRandomPosition(0), 40)
+			Isaac.Spawn(EntityType.ENTITY_FAMILIAR, BLOOD_CYST.FAMILIAR, 0, position, Vector.Zero, player)
 		end
-	end
-
-	for i = 0, game:GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(i)
-		if not room:IsClear() then
-			for _ = 1, player:GetCollectibleNum(CollectibleType.COLLECTIBLE_BLOOD_CYST) do
-				local position = Isaac.GetFreeNearPosition(room:GetRandomPosition(0), 40)
-				local bloodCyst = Isaac.Spawn(EntityType.ENTITY_FAMILIAR, Cyst, 0, position, Vector.Zero, player)
-				local data = Mod:GetData(bloodCyst)
-				data.SavedPosition = position
-
-				local hitbox = Isaac.Spawn(EntityType.ENTITY_BOIL, 0, 0, bloodCyst.Position, Vector.Zero, player):ToNPC()
-				hitbox.HitPoints = 0
-				hitbox.CanShutDoors = false
-				hitbox.EntityCollisionClass = EntityCollisionClass.ENTCOLL_PLAYEROBJECTS
-				hitbox:SetColor(Color(1, 1, 1, 0), 0, 1)
-
-				local hitboxData = Mod:GetData(hitbox)
-				hitboxData.IsBloodCystHitbox = true
-				hitboxData.BloodCyst = bloodCyst
-				hitboxData.SavedPosition = position
-			end
-		end
-	end
+	end)
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.RespawnCyst)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, BLOOD_CYST.RespawnCyst)
 
-function Mod:FreezePosition(bloodCyst)
-	local data = Mod:GetData(bloodCyst)
-	if data.SavedPosition == nil then return end
-
-	bloodCyst.Position = data.SavedPosition
-	bloodCyst.Velocity = Vector.Zero
+---@param familiar EntityFamiliar
+function BLOOD_CYST:OnFamiliarInit(familiar)
+	local hitbox = Isaac.Spawn(EntityType.ENTITY_BOIL, BLOOD_CYST.FAMILIAR, 0, familiar.Position, Vector.Zero, familiar):ToNPC()
+	---@cast hitbox EntityNPC
+	hitbox.HitPoints = 0
+	hitbox.CanShutDoors = false
+	hitbox.EntityCollisionClass = EntityCollisionClass.ENTCOLL_PLAYEROBJECTS
+	hitbox.Visible = false
+	hitbox.Mass = 9999
+	hitbox.CollisionDamage = 0
+	hitbox.Parent = familiar
+	hitbox:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
 end
 
-Mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, Mod.FreezePosition, Cyst)
+Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, BLOOD_CYST.OnFamiliarInit)
 
-function Mod:StopHitboxAI(boil)
-	local data = Mod:GetData(boil)
-	if not data.IsBloodCystHitbox then return false end
-
-	if data.SavedPosition ~= nil then
-		boil.Position = data.SavedPosition
-	end
-	boil.Velocity = Vector.Zero
-
-	return true
-end
-
-Mod:AddCallback(ModCallbacks.MC_PRE_NPC_UPDATE, Mod.StopHitboxAI, EntityType.ENTITY_BOIL)
-
-function Mod:IgnorePlayerCollisions(boil, collider)
-	local data = Mod:GetData(boil)
-	if data.IsBloodCystHitbox and collider and collider:ToPlayer() then
+---@param npc EntityNPC
+function BLOOD_CYST:StopBoilUpdate(npc)
+	if npc.Variant == BLOOD_CYST.FAMILIAR then
+		npc.Velocity = Vector.Zero
+		npc.HitPoints = 0
+		npc.Visible = false
 		return true
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_NPC_COLLISION, Mod.IgnorePlayerCollisions, EntityType.ENTITY_BOIL)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_UPDATE, CallbackPriority.IMPORTANT, BLOOD_CYST.StopBoilUpdate, EntityType.ENTITY_BOIL)
 
-function Mod:HitboxDied(boil)
-	local data = Mod:GetData(boil)
-	if not data.IsBloodCystHitbox then return end
-
-	local bloodCyst = data.BloodCyst
-	local player = bloodCyst.SpawnerEntity:ToPlayer()
-
-	bloodCyst:Die()
-	boil:Remove()
-
-	local hasBFFs = player:HasCollectible(CollectibleType.COLLECTIBLE_BFFS)
-	for i = 1, 8 do
-		local CystTears = Isaac.Spawn(EntityType.ENTITY_TEAR, TearVariant.BLOOD, 0, bloodCyst.Position,
-			Vector(8, 0):Rotated(i * 45), bloodCyst):ToTear()
-		if hasBFFs then
-			CystTears.CollisionDamage = 7
-			CystTears.Scale = 1.1
+---@param npc EntityNPC
+function BLOOD_CYST:KillFamiliar(npc)
+	if npc.Variant == BLOOD_CYST.FAMILIAR then
+		if npc.SpawnerEntity
+			and npc.SpawnerEntity:ToFamiliar()
+			and npc.SpawnerVariant == BLOOD_CYST.FAMILIAR
+			and npc.SpawnerEntity:Kill()
+		then
+			npc:Remove()
+			npc.SpawnerEntity:Kill()
 		end
+		return false
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, Mod.HitboxDied, EntityType.ENTITY_BOIL)
+Mod:AddPriorityCallback(ModCallbacks.MC_POST_ENTITY_KILL, CallbackPriority.IMPORTANT, BLOOD_CYST.KillFamiliar, EntityType.ENTITY_BOIL)
+
+---@param ent Entity
+function BLOOD_CYST:OnDeath(ent)
+	local familiar = ent:ToFamiliar()
+	---@cast familiar EntityFamiliar
+	for _ = 1, 20 do
+		local tear = Isaac.Spawn(EntityType.ENTITY_TEAR, TearVariant.BLOOD, 0, familiar.Position,
+			RandomVector():Resized(Mod:RandomNum(4, 8)), familiar):ToTear()
+		---@cast tear EntityTear
+		tear.FallingSpeed = Mod:RandomNum(-18, -13) - Mod:RandomNum()
+		tear.FallingAcceleration = 1 + Mod:RandomNum()
+		tear.CollisionDamage = tear.CollisionDamage * familiar:GetMultiplier()
+		tear:ResetSpriteScale(true)
+	end
+	Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BLOOD_EXPLOSION, 0, familiar.Position, Vector.Zero, familiar)
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, BLOOD_CYST.OnDeath, EntityType.ENTITY_FAMILIAR)
