@@ -12,8 +12,8 @@ PARASITIC_POOFER.PROC_CHANCE = 0.2
 
 function PARASITIC_POOFER:Parasite(entity)
 	local player = entity:ToPlayer()
-	local poofRNG = player:GetCollectibleRNG(PARASITIC_POOFER)
-	if player:HasCollectible(PARASITIC_POOFER) then
+	local poofRNG = player:GetCollectibleRNG(PARASITIC_POOFER.ID)
+	if player:HasCollectible(PARASITIC_POOFER.ID) then
 		if poofRNG:RandomFloat() <= PARASITIC_POOFER.PROC_CHANCE then
 			player:UseCard(Card.CARD_HEARTS_2, 257)
 			player:AddBrokenHearts(1)

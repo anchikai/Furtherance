@@ -80,7 +80,14 @@ loopInclude(keyboard, "collectibles.keyboard")
 --#region Trinkets
 
 local trinkets = {
-
+	"bi-84",
+	"cringe",
+	"escape_plan",
+	"glitched_penny",
+	"grass",
+	"hammerhead_worm",
+	"nil_num",
+	"slick_worm"
 }
 
 loopInclude(trinkets, "trinkets")

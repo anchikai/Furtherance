@@ -1,6 +1,14 @@
 local Mod = Furtherance
-local game = Game()
 
+local EPITAPH = {}
+
+Furtherance.Trinket.EPITAPH = EPITAPH
+
+EPITAPH.ID = Isaac.GetTrinketIdByName("Epitaph")
+
+EPITAPH.TOMBSTONE = include("scripts.furtherance.misc_items.trinkets.Epitaph.tombstone")
+
+--[[
 Mod:ShelvePlayerData({
 	EpitaphStage = Mod.SaveNil,
 	EpitaphFirstPassiveItem = Mod.SaveNil,
@@ -13,7 +21,7 @@ Mod:SavePlayerData({
 	EpitaphTombstonePosition = Mod:Serialize(Vector, Mod.SaveNil),
 	EpitaphTombstoneDestroyed = Mod.SaveNil,
 	OldCollectibles = function() return {} end
-})
+}) ]]
 
 local TombstoneVariant = Isaac.GetEntityVariantByName("Epitaph Tombstone")
 

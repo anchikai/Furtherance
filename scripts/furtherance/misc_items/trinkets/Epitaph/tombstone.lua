@@ -1,69 +1,63 @@
 local Mod = Furtherance
 
-local TombstoneVariant = Isaac.GetEntityVariantByName("Epitaph Tombstone")
+local TOMBSTONE = {}
 
-local Tombstone = {}
-Tombstone.__index = Tombstone
+TOMBSTONE.ID = Isaac.GetEntityVariantByName("Epitaph Tombstone")
 
-function Tombstone.new(owner, position)
-	local instance = Isaac.Spawn(EntityType.ENTITY_EFFECT, TombstoneVariant, 0, position, Vector.Zero, owner):ToEffect()
-
-	local self = Mod:GetData(instance)
-	self.Instance = instance
-	self.Owner = owner
-	self.Health = 3
-
-	setmetatable(self, Tombstone)
-	return self
+---@param player EntityPlayer
+function TOMBSTONE:SpawnTombstone(player)
+	local gridEffect
+	local grid_save = Mod:RoomSave()
 end
 
-function Tombstone:TakeDamage()
-	local sprite = self.Instance:GetSprite()
-	self.Health = math.max(self.Health - 1, -1)
-	if self.Health == 2 then
-		sprite:Play("Damaged1", true)
-	elseif self.Health == 1 then
-		sprite:Play("Damaged2", true)
-	elseif self.Health == 0 then
-		sprite:Play("Destroyed", true)
-		self:Die()
+---@param ent Entity
+---@param amount integer
+---@param flags DamageFlag
+---@param source EntityRef
+---@param countdown integer
+function TOMBSTONE:OnTakeDMG(ent, amount, flags, source, countdown)
+	if ent.Variant == TOMBSTONE.ID then
+		local sprite = ent:GetSprite()
+		if ent.HitPoints > 0 then
+			sprite:Play("Damaged" .. ent.HitPoints)
+		else
+			sprite:Play("Destroyed")
+		end
 	end
 end
 
-function Tombstone:Die()
-	local rng = self.Owner:GetTrinketRNG(TrinketType.TRINKET_EPITAPH)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, TOMBSTONE.OnTakeDMG, EntityType.ENTITY_EFFECT)
 
+---@param player EntityPlayer
+---@param effect EntityEffect
+function TOMBSTONE:Die(player, effect)
+	local rng = self.Owner:GetTrinketRNG(Mod.Trinket.EPITAPH.ID)
 	local coinCount = rng:RandomInt(3) + 3
+
 	for _ = 1, coinCount do
-		local velocity = 10 * Vector(
-			rng:RandomFloat() - 0.5,
-			rng:RandomFloat() - 0.5
-		)
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, CoinSubType.COIN_PENNY, self.Instance.Position,
-			velocity, self.Instance)
+		local velocity = EntityPickup.GetRandomPickupVelocity(effect.Position, rng)
+		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, CoinSubType.COIN_PENNY,
+			effect.Position, velocity, effect)
 	end
 
 	local keyCount = rng:RandomInt(2) + 2
 	for _ = 1, keyCount do
-		local velocity = 10 * Vector(
-			rng:RandomFloat() - 0.5,
-			rng:RandomFloat() - 0.5
-		)
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_KEY, KeySubType.KEY_NORMAL, self.Instance.Position,
-			velocity, self.Instance)
+		local velocity = EntityPickup.GetRandomPickupVelocity(effect.Position, rng)
+		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_KEY, KeySubType.KEY_NORMAL, effect.Position,
+			velocity, effect)
 	end
 
 	local ownerData = Mod:GetData(self.Owner)
 	if ownerData.EpitaphFirstPassiveItem then
 		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, ownerData.EpitaphFirstPassiveItem,
-			Isaac.GetFreeNearPosition(self.Instance.Position, 40), Vector.Zero, self.Instance)
+			Isaac.GetFreeNearPosition(effect.Position, 40), Vector.Zero, effect)
 	end
 	if ownerData.EpitaphLastPassiveItem then
 		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, ownerData.EpitaphLastPassiveItem,
-			Isaac.GetFreeNearPosition(self.Instance.Position, 40), Vector.Zero, self.Instance)
+			Isaac.GetFreeNearPosition(effect.Position, 40), Vector.Zero, effect)
 	end
 
 	ownerData.EpitaphTombstoneDestroyed = true
 end
 
-return Tombstone
+return TOMBSTONE

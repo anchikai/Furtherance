@@ -41,7 +41,7 @@ end
 
 ---Direct your criticism to IAG
 ---@param pos Vector
----@param range number
+---@param range? number
 ---@param dir Vector
 ---@param fov number multiply by 2 for actual angle
 ---@param occludeObstacles boolean
@@ -51,8 +51,14 @@ function Furtherance:GetClosestEnemyInView(pos, range, dir, fov, occludeObstacle
 	---@type EntityNPC | nil
 	local closestEnemy
 	local closestDistance
+	local entities = {}
+	if range then
+		entities = Isaac.FindInRadius(pos, range, EntityPartition.ENEMY)
+	else
+		entities = Isaac.GetRoomEntities()
+	end
 
-	for _, ent in pairs(Isaac.FindInRadius(pos, range, EntityPartition.ENEMY)) do
+	for _, ent in pairs(entities) do
 		local npc = ent:ToNPC()
 		if not Furtherance:IsValidEnemyTarget(npc) then goto continue end
 		---@cast npc EntityNPC

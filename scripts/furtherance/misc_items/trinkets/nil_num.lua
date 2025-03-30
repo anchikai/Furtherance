@@ -1,43 +1,34 @@
 local Mod = Furtherance
 
-function Shuffle(list)
-	local size, shuffled = #list, list
-	for i = size, 2, -1 do
-		local j = math.random(i)
-		shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
-	end
-	return shuffled
-end
+local NIL_NUM = {}
 
-function GetMaxCollectibleID()
-	return Isaac.GetItemConfig():GetCollectibles().Size - 1
-end
+Furtherance.Trinket.NIL_NUM = NIL_NUM
 
-function Mod:Duplicate(entity)
-	local player = entity:ToPlayer()
-	if player and player:HasTrinket(TrinketType.TRINKET_NIL_NUM) then
-		local rng = player:GetTrinketRNG(TrinketType.TRINKET_NIL_NUM)
-		if rng:RandomFloat() <= 0.02 then
-			if player:GetCollectibleCount() > 0 then
-				local playersItems = {}
-				for item = 1, GetMaxCollectibleID() do
-					local itemConf = Isaac.GetItemConfig():GetCollectible(item)
-					if player:HasCollectible(item) and (itemConf.Tags & ItemConfig.TAG_QUEST ~= ItemConfig.TAG_QUEST) then
-						for i = 1, player:GetCollectibleNum(item, true) do
-							table.insert(playersItems, item)
-						end
-					end
-				end
-				playersItems = Shuffle(playersItems)
-				if #playersItems > 0 then
-					Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE,
-						playersItems[rng:RandomInt(#playersItems) + 1], Isaac.GetFreeNearPosition(player.Position, 40),
-						Vector.Zero, player)
-					player:TryRemoveTrinket(TrinketType.TRINKET_NIL_NUM)
+NIL_NUM.ID = Isaac.GetTrinketIdByName("Nil Num")
+
+NIL_NUM.PROC_CHANCE = 0.02
+
+---@param ent Entity
+function NIL_NUM:Duplicate(ent)
+	local player = ent:ToPlayer()
+	if player and player:HasTrinket(NIL_NUM.ID) then
+		local rng = player:GetTrinketRNG(NIL_NUM.ID)
+		if rng:RandomFloat() <= NIL_NUM.PROC_CHANCE * player:GetTrinketMultiplier(NIL_NUM.ID) then
+			local inventory = player:GetHistory():GetCollectiblesHistory()
+			local itemIDs = {}
+			for _, historyItem in ipairs(inventory) do
+				if not historyItem:IsTrinket()
+					and not Mod.ItemConfig:GetCollectible(historyItem:GetItemID()):HasTags(ItemConfig.TAG_QUEST)
+				then
+					Mod:Insert(itemIDs, historyItem:GetItemID())
 				end
 			end
+			local itemID = itemIDs[rng:RandomInt(#itemIDs) + 1]
+			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, itemID,
+				Mod.Room():FindFreePickupSpawnPosition(player.Position, 40), Vector.Zero, player)
+			player:TryRemoveTrinket(NIL_NUM.ID)
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, Mod.Duplicate, EntityType.ENTITY_PLAYER)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, NIL_NUM.Duplicate, EntityType.ENTITY_PLAYER)

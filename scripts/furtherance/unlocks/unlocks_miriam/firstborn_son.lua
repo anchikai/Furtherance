@@ -238,12 +238,6 @@ function FIRSTBORN_SON:SpawnPurgatoryEffects(explosion)
 			EffectVariant.BLOOD_SPLAT
 		}
 		for _, variant in ipairs(effects) do
-			for _, poof in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, variant)) do
-				if poof.Position:DistanceSquared(explosion.Position) <= 0 then
-					poof:Remove()
-					break
-				end
-			end
 			local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, variant, 0, explosion.Position, Vector.Zero, explosion.SpawnerEntity)
 			FIRSTBORN_SON:ColorizeEffect(effect)
 			if variant == EffectVariant.POOF01 then

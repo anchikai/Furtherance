@@ -13,6 +13,7 @@ function PARASOL:BlockShots(proj, collider)
 		and familiar.Player:HasTrinket(PARASOL.ID)
 	then
 		proj:Die()
+		return true
 	end
 end
 

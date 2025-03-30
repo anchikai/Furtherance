@@ -1,31 +1,46 @@
 local Mod = Furtherance
-local laugh = Isaac.GetSoundIdByName("Sitcom_Laugh_Track")
 
-function Mod:Grass(player)
-	local data = Mod:GetData(player)
-	local goldenbox = player:GetTrinketMultiplier(TrinketType.TRINKET_GRASS)
-	if data.GrassTimer == nil then -- Set the timer
-		data.GrassTimer = 108000
-	end
-	if data.GrassTimer < 0 then -- do the dumb thing
-		data.GrassTimer = 108000
-		SFXManager():Play(laugh)
-		player:TryRemoveTrinket(TrinketType.TRINKET_GRASS)
+local GRASS = {}
+
+Furtherance.Trinket.GRASS = GRASS
+
+GRASS.ID = Isaac.GetTrinketIdByName("Grass")
+
+--30 minutes
+GRASS.TIMER = 30 * 60 * 30
+GRASS.LAUGH_SFX = Isaac.GetSoundIdByName("Sitcom_Laugh_Track")
+
+---@param player EntityPlayer
+function GRASS:Grass(player)
+	local player_run_save = Mod:RunSave(player)
+	local trinketMult = player:GetTrinketMultiplier(GRASS.ID)
+	if not player_run_save.GrassTimer then return end
+	if player_run_save.GrassTimer > 0 then
+		player_run_save.GrassTimer = player_run_save.GrassTimer - trinketMult
+	else
+		Mod.SFXMan:Play(GRASS.LAUGH_SFX)
 		player:AnimateHappy()
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, CollectibleType.COLLECTIBLE_GNAWED_LEAF,
-			Isaac.GetFreeNearPosition(player.Position, 50), Vector.Zero, player)
-	end
-	if player:HasTrinket(TrinketType.TRINKET_GRASS, false) then -- 1 hour countdown
-		if (goldenbox > 2 or goldenbox > 4) then             -- Golden Trinket + Mom's Box
-			data.GrassTimer = data.GrassTimer - 3
-		elseif goldenbox > 1 and goldenbox < 3 then          -- Golden Trinket or Mom's Box
-			data.GrassTimer = data.GrassTimer - 2
-		elseif goldenbox < 2 then                            -- Normal Trinket
-			data.GrassTimer = data.GrassTimer - 1
+		while player:HasTrinket(GRASS.ID) do
+			player:TryRemoveTrinket(GRASS.ID)
+			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, CollectibleType.COLLECTIBLE_GNAWED_LEAF,
+				Mod.Room():FindFreePickupSpawnPosition(player.Position, 40), Vector.Zero, player)
 		end
-	else -- Reset timer if you drop it
-		data.GrassTimer = 108000
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.Grass)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, GRASS.Grass)
+
+---@param player EntityPlayer
+function GRASS:UpdateGrass(player, trinketID)
+	local player_run_save = Mod:RunSave(player)
+	if player:HasTrinket(trinketID) then
+		if not player_run_save.GrassTimer then
+			player_run_save.GrassTimer = GRASS.TIMER
+		end
+	elseif not player:HasTrinket(trinketID) then
+		player_run_save.GrassTimer = nil
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_TRINKET_ADDED, GRASS.UpdateGrass)
+Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_TRINKET_REMOVED, GRASS.UpdateGrass)
