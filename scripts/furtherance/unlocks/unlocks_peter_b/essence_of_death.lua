@@ -9,11 +9,11 @@ ESSENCE_OF_DEATH.ID = Isaac.GetCardIdByName("Essence of Death")
 function ESSENCE_OF_DEATH:OnUse(card, player, flag)
 	local flies = 0
 	Mod:ForEachEnemy(function(npc)
-		if Mod:IsValidEnemyTarget(npc) and not npc:IsBoss() then
+		if not npc:IsBoss() then
 			npc:Kill()
 			flies = flies + 1
 		end
-	end)
+	end, true)
 	for i = 1, flies do
 		player:AddSwarmFlyOrbital(player.Position)
 	end

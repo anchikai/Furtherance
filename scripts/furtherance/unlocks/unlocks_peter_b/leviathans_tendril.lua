@@ -72,10 +72,10 @@ function LEVIATHANS_TENDRIL:FearEnemies(player)
 		end
 		local source = EntityRef(player)
 		Mod:ForEachEnemy(function(npc)
-			if Mod:IsValidEnemyTarget(npc) and rng:RandomFloat() <= fearChance then
+			if rng:RandomFloat() <= fearChance then
 				npc:AddFear(source, LEVIATHANS_TENDRIL.FEAR_DURATION)
 			end
-		end, player.Position, LEVIATHANS_TENDRIL.FEAR_RADIUS)
+		end, true, player.Position, LEVIATHANS_TENDRIL.FEAR_RADIUS)
 	end
 end
 

@@ -92,7 +92,6 @@ function FIRSTBORN_SON:TryFindValidTarget(source)
 
 	--Gather all valid enemies to target. If a non-boss is found, clear out the table and only insert non-bosses
 	Mod:ForEachEnemy(function(npc)
-		if not Mod:IsValidEnemyTarget(npc) then return end
 		if npc:IsBoss() and not foundNonBoss then
 			Mod:Insert(allValidTargets, npc)
 		elseif not npc:IsBoss() then
@@ -102,7 +101,7 @@ function FIRSTBORN_SON:TryFindValidTarget(source)
 			end
 			Mod:Insert(allValidTargets, npc)
 		end
-	end)
+	end, true)
 
 	--Find the highest HP enemy
 	local highestHP

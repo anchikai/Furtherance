@@ -10,10 +10,10 @@ function ESSENCE_OF_DROUGHT:OnUse()
 	local room = Mod.Game:GetRoom()
 	room:StopRain()
 	Mod:ForEachEnemy(function(npc)
-		if npc:IsVulnerableEnemy() and not npc:IsBoss() then
+		if not npc:IsBoss() then
 			npc:AddEntityFlags(EntityFlag.FLAG_BLEED_OUT | EntityFlag.FLAG_ICE)
 		end
-	end)
+	end, true)
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_CARD, ESSENCE_OF_DROUGHT.OnUse, ESSENCE_OF_DROUGHT.ID)

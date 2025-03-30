@@ -15,17 +15,15 @@ ESSENCE_OF_DELUGE.SLOW_VALUE = 0.5
 ---@param player EntityPlayer
 function ESSENCE_OF_DELUGE:OnUse(card, player, flag)
 	Mod:ForEachEnemy(function(npc)
-		if npc:IsVulnerableEnemy() then
-			local rainDrop = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.RAIN_DROP, 0,
-				npc.Position, Vector.Zero, player):ToEffect()
-			rainDrop.Parent = npc
-			---@cast rainDrop EntityEffect
-			rainDrop:FollowParent(npc)
-			local anim = RNG():RandomInt(4)
-			rainDrop:GetSprite():Play("Drop0" .. anim)
-			Mod:GetData(rainDrop).DelugeRainDrop = true
-		end
-	end)
+		local rainDrop = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.RAIN_DROP, 0,
+			npc.Position, Vector.Zero, player):ToEffect()
+		rainDrop.Parent = npc
+		---@cast rainDrop EntityEffect
+		rainDrop:FollowParent(npc)
+		local anim = RNG():RandomInt(4)
+		rainDrop:GetSprite():Play("Drop0" .. anim)
+		Mod:GetData(rainDrop).DelugeRainDrop = true
+	end, true)
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_CARD, ESSENCE_OF_DELUGE.OnUse, ESSENCE_OF_DELUGE.ID)

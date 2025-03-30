@@ -19,10 +19,8 @@ function UNSTABLE_CORE:OnUse(_, rng, player, flags)
 	Mod.SFXMan:Play(SoundEffect.SOUND_LASERRING_WEAK)
 	local source = EntityRef(player)
 	Mod:ForEachEnemy(function(npc)
-		if Mod:IsValidEnemyTarget(npc) then
-			npc:AddBurn(source, 90, 5)
-		end
-	end, player.Position, UNSTABLE_CORE.RADIUS)
+		npc:AddBurn(source, 90, 5)
+	end, true, player.Position, UNSTABLE_CORE.RADIUS)
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, UNSTABLE_CORE.OnUse)

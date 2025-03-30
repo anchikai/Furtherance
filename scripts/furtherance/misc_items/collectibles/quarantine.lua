@@ -16,12 +16,10 @@ function QUARANTINE:OnNewRoom(player)
 		player:GetEffects():AddCollectibleEffect(QUARANTINE.ID)
 		local source = EntityRef(player)
 		Mod:ForEachEnemy(function (npc)
-			if Mod:IsValidEnemyTarget(npc) then
-				npc:AddFear(source, QUARANTINE.FEAR_DURATION)
-				--Normal max of 5 seconds. Force to 6
-				npc:SetFearCountdown(QUARANTINE.FEAR_DURATION)
-			end
-		end)
+			npc:AddFear(source, QUARANTINE.FEAR_DURATION)
+			--Normal max of 5 seconds. Force to 6
+			npc:SetFearCountdown(QUARANTINE.FEAR_DURATION)
+		end, true)
 	end
 end
 
