@@ -144,7 +144,10 @@ function FIRSTBORN_SON:OnEffectUpdate(effect)
 			effect.SpriteOffset = Vector(0, Mod:Lerp(effect.SpriteOffset.Y, 0, 0.1))
 		end
 		if sprite:GetAnimation() == "Charge" and sprite:GetFrame() == 1 then
-			effect.Target = FIRSTBORN_SON:TryFindValidTarget(effect.Position)
+			local target = FIRSTBORN_SON:TryFindValidTarget(effect.Position)
+			if target then
+				effect.Target = target
+			end
 		end
 	end
 end
@@ -193,7 +196,6 @@ function FIRSTBORN_SON:DamageTarget(effect, target, isSplash)
 		end
 	end
 end
-
 
 --#endregion
 
@@ -282,7 +284,6 @@ function FIRSTBORN_SON:OnFamiliarInit(familiar)
 end
 
 Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, FIRSTBORN_SON.OnFamiliarInit, FIRSTBORN_SON.FAMILIAR)
-
 
 ---@param player EntityPlayer
 function FIRSTBORN_SON:OnFamiliarCache(player)

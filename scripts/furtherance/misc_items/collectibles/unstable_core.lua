@@ -1,19 +1,28 @@
 local Mod = Furtherance
-local game = Game()
 
-function Mod:HasCore(_, _, player, useFlags)
-	local room = game:GetRoom()
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_UNSTABLE_CORE) and useFlags == UseFlag.USE_OWNED then
-		game:Spawn(EntityType.ENTITY_EFFECT, EffectVariant.TEAR_POOF_A, player.Position, Vector.Zero, nil, 23,
-			room:GetSpawnSeed())
-		SFXManager():Play(SoundEffect.SOUND_LASERRING_WEAK)
-		for _, enemies in pairs(Isaac.FindInRadius(player.Position, 66)) do
-			if enemies:IsVulnerableEnemy() and enemies:IsActiveEnemy() and EntityRef(enemies).IsCharmed == false then
-				enemies:AddBurn(EntityRef(enemies), 90, 5)
-				return true
-			end
+local UNSTABLE_CORE = {}
+
+Furtherance.Item.UNSTABLE_CORE = UNSTABLE_CORE
+
+UNSTABLE_CORE.ID = Isaac.GetItemIdByName("Unstable Core")
+
+UNSTABLE_CORE.RADIUS = 66
+local TECH_SWORD_TEAR_POOF_SUBTYPE = 23
+
+---@param rng RNG
+---@param player EntityPlayer
+---@param flags UseFlag
+function UNSTABLE_CORE:OnUse(_, rng, player, flags)
+	--So that internal usage of using actives doesn't trigger this
+	if not player:HasCollectible(UNSTABLE_CORE.ID) or not Mod:HasBitFlags(flags, UseFlag.USE_OWNED) then return end
+	Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.TEAR_POOF_A, TECH_SWORD_TEAR_POOF_SUBTYPE, player.Position, Vector.Zero, nil)
+	Mod.SFXMan:Play(SoundEffect.SOUND_LASERRING_WEAK)
+	local source = EntityRef(player)
+	Mod:ForEachEnemy(function(npc)
+		if Mod:IsValidEnemyTarget(npc) then
+			npc:AddBurn(source, 90, 5)
 		end
-	end
+	end, player.Position, UNSTABLE_CORE.RADIUS)
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.HasCore)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, UNSTABLE_CORE.OnUse)

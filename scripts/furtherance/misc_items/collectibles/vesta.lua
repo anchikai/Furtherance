@@ -1,6 +1,14 @@
 local Mod = Furtherance
 
-function Mod:GetVesta(player, flag)
+local VESTA = {}
+
+Furtherance.Item.VESTA = VESTA
+
+VESTA.ID = Isaac.GetItemIdByName("Vesta")
+
+--TODO: Will revisit for tear modifier implementation...but also idk about this item as a whole
+
+--[[ function Mod:GetVesta(player, flag)
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_VESTA) then
 		local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_VESTA)
 		if rng:RandomInt(100) + 1 <= player.Luck * 10 + 10 then
@@ -34,3 +42,4 @@ function Mod:tearSize(tear)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, Mod.tearSize)
+ ]]

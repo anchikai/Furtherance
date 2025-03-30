@@ -1,6 +1,14 @@
 local Mod = Furtherance
 
----@param tear EntityTear
+local TECHNOLOGY_MINUS_1 = {}
+
+Furtherance.Item.TECHNOLOGY_MINUS_1 = TECHNOLOGY_MINUS_1
+
+TECHNOLOGY_MINUS_1.ID = Isaac.GetItemIdByName("Tech IX")
+
+--TODO: Revisit later
+
+--[[ ---@param tear EntityTear
 function Mod:Minus1Shots(tear)
 	local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
 	if player and player:HasCollectible(CollectibleType.COLLECTIBLE_TECHNOLOGY_MINUS_1) then
@@ -23,3 +31,4 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, Mod.Minus1Shots)
 Mod:AddCallback(ModCallbacks.MC_POST_KNIFE_UPDATE, Mod.Minus1Shots)
+ ]]

@@ -1,37 +1,41 @@
 local Mod = Furtherance
-local game = Game()
 
-function Mod:Covid()
-	for i = 0, game:GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(i)
-		local data = Mod:GetData(player)
-		if (player and player:HasCollectible(CollectibleType.COLLECTIBLE_QUARANTINE)) then
-			local entities = Isaac.GetRoomEntities()
-			for i, entity in ipairs(entities) do
-				if entity:IsActiveEnemy(false) and entity:IsVulnerableEnemy() then
-					entity:AddFear(EntityRef(player), 180)
-					data.poopooVirus = 180
-				end
+local QUARANTINE = {}
+
+Furtherance.Item.QUARANTINE = QUARANTINE
+
+QUARANTINE.ID = Isaac.GetItemIdByName("Quarantine")
+
+QUARANTINE.FEAR_DURATION = 180
+QUARANTINE.POISON_RADIUS = 80
+QUARANTINE.POISON_DURATION = 30
+
+---@param player EntityPlayer
+function QUARANTINE:OnNewRoom(player)
+	if player:HasCollectible(QUARANTINE.ID) then
+		player:GetEffects():AddCollectibleEffect(QUARANTINE.ID)
+		local source = EntityRef(player)
+		Mod:ForEachEnemy(function (npc)
+			if Mod:IsValidEnemyTarget(npc) then
+				npc:AddFear(source, QUARANTINE.FEAR_DURATION)
+				--Normal max of 5 seconds. Force to 6
+				npc:SetFearCountdown(QUARANTINE.FEAR_DURATION)
+			end
+		end)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_NEW_ROOM_TEMP_EFFECTS, QUARANTINE.OnNewRoom)
+
+---@param player EntityPlayer
+function QUARANTINE:NoMoreCovid(player)
+	if player:GetEffects():HasCollectibleEffect(QUARANTINE.ID) then
+		for _, ent in ipairs(Isaac.FindInRadius(player.Position, QUARANTINE.POISON_RADIUS * player.Size, EntityPartition.ENEMY)) do
+			if Mod:IsValidEnemyTarget(ent) and ent:HasEntityFlags(EntityFlag.FLAG_FEAR) then
+				ent:AddPoison(EntityRef(player), QUARANTINE.POISON_DURATION, 1)
 			end
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.Covid)
-
-function Mod:NoMoreCovid(player)
-	local data = Mod:GetData(player)
-	if data.poopooVirus == nil or data.poopooVirus < 0 then
-		data.poopooVirus = 0
-	elseif data.poopooVirus > 0 then
-		data.poopooVirus = data.poopooVirus - 1
-		local radius = Isaac.FindInRadius(player.Position, 80)
-		for i, entity in ipairs(radius) do
-			if entity:IsActiveEnemy(false) and entity:IsVulnerableEnemy() then
-				entity:AddPoison(EntityRef(player), 30, 1)
-			end
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.NoMoreCovid)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, QUARANTINE.NoMoreCovid)

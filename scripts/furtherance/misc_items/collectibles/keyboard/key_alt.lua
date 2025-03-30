@@ -15,26 +15,33 @@ function ALT_KEY:OnUse(_, rng, player)
 	local level = game:GetLevel()
 	if level:IsAscent() then player:AnimateSad() return end
 	local stage = level:GetStage()
+	local stageList = Mod.Item.ALTERNATE_REALITY:GetAvailableStages(stage)
 	local stageType = level:GetStageType()
-	local newStageType
-
-	if stageType == StageType.STAGETYPE_REPENTANCE or stageType == StageType.STAGETYPE_REPENTANCE_B then
-		newStageType = rng:RandomInt(StageType.STAGETYPE_AFTERBIRTH + 1)
-	elseif stage <= LevelStage.STAGE3_2 and stageType < StageType.STAGETYPE_REPENTANCE then
-		newStageType = rng:RandomInt(2) + StageType.STAGETYPE_REPENTANCE
-	elseif stage <= LevelStage.STAGE4_2 and stageType < StageType.STAGETYPE_REPENTANCE then
-		newStageType = StageType.STAGETYPE_REPENTANCE
-	end
-	if newStageType then
-		local player_floor_save = Mod:FloorSave(player)
-		player_floor_save.SkipFloorRecharge = true
-		local floor_save = Mod:FloorSave()
-		floor_save.AltKeyNewStage = {stage, newStageType}
-		game:StartStageTransition(false, 0, player)
-	else
+	if #stageList <= 1 then
 		player:AnimateSad()
 		return false
 	end
+	local useRepentance = false
+	if stage <= LevelStage.STAGE4_2 and stageType < StageType.STAGETYPE_REPENTANCE then
+		useRepentance = true
+	end
+	inverseiforeach(stageList, function(stageTable, i)
+		if useRepentance and stageTable[2] < StageType.STAGETYPE_REPENTANCE
+			or not useRepentance and stageTable[2] >= StageType.STAGETYPE_REPENTANCE
+		then
+			table.remove(stageTable, i)
+		end
+	end)
+	if #stageList <= 1 then
+		player:AnimateSad()
+		return false
+	end
+	local newStage = stageList[rng:RandomInt(#stageList) + 1]
+	local player_floor_save = Mod:FloorSave(player)
+	player_floor_save.SkipFloorRecharge = true
+	local floor_save = Mod:FloorSave()
+	floor_save.AltKeyNewStage = newStage
+	game:StartStageTransition(false, 0, player)
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, ALT_KEY.OnUse, ALT_KEY.ID)

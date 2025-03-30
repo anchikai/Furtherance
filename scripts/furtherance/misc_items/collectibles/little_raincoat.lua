@@ -1,32 +1,38 @@
 local Mod = Furtherance
 
-function Mod:GetRaincoat(player, flag)
-	local numRaincoats = player:GetCollectibleNum(CollectibleType.COLLECTIBLE_LITTLE_RAINCOAT)
+local LITTLE_RAINCOAT = {}
+
+Furtherance.Item.LITTLE_RAINCOAT = LITTLE_RAINCOAT
+
+LITTLE_RAINCOAT.ID = Isaac.GetItemIdByName("Little Raincoat")
+
+--TODO: Revisit for rework. Idea:
+--every 6 hits triggers power pill effect
+--increase power pill dmg to scale off of isaac's tear dmg with a bonus for every empty heart container
+--killing an enemy with power pill has a 6% chance to gain 1 empty red heart container
+--guarantees power pill will be in rotation
+--tick rate also scales off of empty heart containers
+
+--[[ function LITTLE_RAINCOAT:RaincoatSize(player, flag)
+	local numRaincoats = player:GetCollectibleNum(LITTLE_RAINCOAT.ID)
 	if numRaincoats > 0 then
 		player.SpriteScale = player.SpriteScale * 0.8 ^ numRaincoats
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.GetRaincoat, CacheFlag.CACHE_SIZE)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, LITTLE_RAINCOAT.RaincoatSize, CacheFlag.CACHE_SIZE)
 
-function Mod:RerollFood(pickup)
-	local rng = RNG()
-	local changeFood = rng:RandomFloat()
-	if changeFood <= 0.06 then
-		if Isaac.GetItemConfig():GetCollectible(pickup.SubType).Tags & ItemConfig.TAG_FOOD ~= 0 then
-			pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, CollectibleType.COLLECTIBLE_NULL,
-				false, false, false)
-		end
-	end
+function LITTLE_RAINCOAT:OnFirstPickup(item, charge, firstTime, slot, varData, player)
+
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, Mod.RerollFood, PickupVariant.PICKUP_COLLECTIBLE)
+Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, LITTLE_RAINCOAT.OnFirstPickup, LITTLE_RAINCOAT.ID)
 
-local damageCounter = 0
-function Mod:RaincoatDamage(entity)
-	local player = entity:ToPlayer()
-	if player and player:HasCollectible(CollectibleType.COLLECTIBLE_LITTLE_RAINCOAT) then
-		damageCounter = damageCounter + 1
+---@param ent Entity
+function LITTLE_RAINCOAT:RaincoatDamage(ent)
+	local player = ent:ToPlayer()
+	if player and player:HasCollectible(LITTLE_RAINCOAT.ID) then
+		local effects = player:GetEffects()
 		if damageCounter >= 6 then
 			player:UsePill(PillEffect.PILLEFFECT_POWER, PillColor.PILL_NULL,
 			UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER | UseFlag.USE_NOHUD)
@@ -35,12 +41,5 @@ function Mod:RaincoatDamage(entity)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, Mod.RaincoatDamage, EntityType.ENTITY_PLAYER)
-
-function Mod:ResetCounter(continued)
-	if continued == false then
-		damageCounter = 0
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, Mod.ResetCounter)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, LITTLE_RAINCOAT.RaincoatDamage, EntityType.ENTITY_PLAYER)
+ ]]

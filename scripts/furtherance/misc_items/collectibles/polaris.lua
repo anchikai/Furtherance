@@ -1,9 +1,14 @@
 local Mod = Furtherance
-local game = Game()
 
-local FamiliarVariantPolaris = Isaac.GetEntityVariantByName("Polaris")
+local POLARIS = {}
 
-local ColorEnum = {
+Furtherance.Item.POLARIS = POLARIS
+
+POLARIS.ID = Isaac.GetItemIdByName("Polaris")
+POLARIS.FAMILIAR = Isaac.GetEntityVariantByName("Polaris")
+
+---@enum PolarisColor
+POLARIS.COLOR = {
 	RED = 1,
 	ORANGE = 2,
 	YELLOW = 3,
@@ -11,166 +16,185 @@ local ColorEnum = {
 	BLUE = 5
 }
 
-local BuffWeights = {
-	{ Weight = 50, ColorEnum = ColorEnum.RED,    Color = Color(1, 0, 0, 1, 0, 0, 0) },
-	{ Weight = 33, ColorEnum = ColorEnum.ORANGE, Color = Color(1, 0.5, 0, 1, 0, 0, 0) },
-	{ Weight = 45, ColorEnum = ColorEnum.YELLOW, Color = Color(1, 0.8, 0, 1, 0, 0, 0) },
-	{ Weight = 26, ColorEnum = ColorEnum.WHITE,  Color = Color(1, 1, 1, 1, 0.5, 0.5, 0.5) },
-	{ Weight = 5,  ColorEnum = ColorEnum.BLUE,   Color = Color(0, 0, 1, 1, 0, 0, 0) }
+POLARIS.COLOR_STATS = {
+	[POLARIS.COLOR.RED] = {
+		Weight = 50,
+		Color = Color(1, 0, 0, 1, 0, 0, 0),
+		CacheFlags = {
+			[CacheFlag.CACHE_SHOTSPEED] = 2
+		},
+	},
+	[POLARIS.COLOR.ORANGE] = {
+		Weight = 33,
+		Color = Color(1, 0.5, 0, 1, 0, 0, 0),
+		CacheFlags = {
+			[CacheFlag.CACHE_SHOTSPEED] = 1.5,
+			[CacheFlag.CACHE_DAMAGE] = 0.5
+		},
+	},
+	[POLARIS.COLOR.YELLOW] = {
+		Weight = 45,
+		Color = Color(1, 0.8, 0, 1, 0, 0, 0),
+		CacheFlags = {
+			[CacheFlag.CACHE_SHOTSPEED] = 1,
+			[CacheFlag.CACHE_DAMAGE] = 1
+		},
+	},
+	[POLARIS.COLOR.WHITE] = {
+		Weight = 26,
+		Color = Color(1, 1, 1, 1, 0.5, 0.5, 0.5),
+		CacheFlags = {
+			[CacheFlag.CACHE_SHOTSPEED] = 0.5,
+			[CacheFlag.CACHE_DAMAGE] = 1.5
+		},
+	},
+	[POLARIS.COLOR.BLUE] = {
+		Weight = 5,
+		Color = Color(0, 0, 1, 1, 0, 0, 0),
+		CacheFlags = {
+			[CacheFlag.CACHE_DAMAGE] = 2
+		},
+	}
 }
 
-local TotalBuffWeight = 0
-for _, buff in ipairs(BuffWeights) do
-	TotalBuffWeight = TotalBuffWeight + buff.Weight
+local WOP = WeightedOutcomePicker()
+for i, colorTable in ipairs(POLARIS.COLOR_STATS) do
+	WOP:AddOutcomeWeight(i, colorTable.Weight)
 end
 
-local function pickColorBuff(player)
-	local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_POLARIS)
-	local buffChoice = rng:RandomFloat() * TotalBuffWeight
-	local chosenBuff
-	for _, buff in ipairs(BuffWeights) do
-		buffChoice = buffChoice - buff.Weight
-		if buffChoice <= 0 then
-			chosenBuff = buff
-			break
-		end
-	end
-	return chosenBuff
+POLARIS.WOP = WOP
+
+---@param player EntityPlayer
+function POLARIS:PickColorBuff(player)
+	local rng = player:GetCollectibleRNG(POLARIS.ID)
+	local buffChoice = WOP:PickOutcome(rng)
+	return buffChoice
 end
 
-local function updatePolarisBuffForPlayer(player)
-	local data = Mod:GetData(player)
+function POLARIS:PreUpdateBuff()
+	Mod:ForEachPlayer(function(player)
+		local effects = player:GetEffects()
+		local colorBuff = effects:GetCollectibleEffectNum(POLARIS.ID)
 
-	-- handling old state
-	if data.PolarisBuff ~= nil then
-		if data.PolarisBuff.ColorEnum == ColorEnum.YELLOW then
+		if colorBuff == POLARIS.COLOR.YELLOW then
 			player:AddMaxHearts(-1, false)
 		end
-	end
-	data.PolarisBuff = pickColorBuff(player)
-	-- handling new state
-	if data.PolarisBuff.ColorEnum == ColorEnum.YELLOW then
-		player:AddMaxHearts(1, false)
-		player:AddHearts(1)
-	end
+	end)
 end
 
-function Mod:UpdatePolarisBuffs()
-	local room = game:GetRoom()
-	if room:IsFirstVisit() then
-		for i = 0, game:GetNumPlayers() - 1 do
-			local player = Isaac.GetPlayer(i)
-			if player:HasCollectible(CollectibleType.COLLECTIBLE_POLARIS) then
-				updatePolarisBuffForPlayer(player)
-				player:AddCacheFlags(CacheFlag.CACHE_ALL)
-				player:EvaluateItems()
-			end
+Mod:AddCallback(ModCallbacks.MC_PRE_NEW_ROOM, POLARIS.PreUpdateBuff)
+
+---@param player EntityPlayer
+function POLARIS:PostUpdateBuff(player)
+	if player:HasCollectible(POLARIS.ID) then
+		local effects = player:GetEffects()
+		local colorBuff = POLARIS:PickColorBuff(player)
+		effects:AddCollectibleEffect(POLARIS.ID, false, colorBuff)
+
+		if colorBuff == POLARIS.COLOR.YELLOW then
+			player:AddMaxHearts(1, false)
+			player:AddHearts(1)
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.UpdatePolarisBuffs)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_NEW_ROOM_TEMP_EFFECTS, POLARIS.PostUpdateBuff)
 
-function Mod:AddPlayerBuffs(player, flag)
-	if flag == CacheFlag.CACHE_FAMILIARS then
-		player:CheckFamiliar(FamiliarVariantPolaris, player:GetCollectibleNum(CollectibleType.COLLECTIBLE_POLARIS, false),
-			player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_POLARIS),
-			Isaac.GetItemConfig():GetCollectible(CollectibleType.COLLECTIBLE_POLARIS), 0)
-	end
-	local data = Mod:GetData(player)
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_POLARIS) then
-		if data.PolarisBuff == nil then
-			updatePolarisBuffForPlayer(player)
-		end
-		local colorEnum = data.PolarisBuff.ColorEnum
-		if colorEnum == ColorEnum.RED then
-			if flag == CacheFlag.CACHE_SHOTSPEED then
-				player.ShotSpeed = player.ShotSpeed + 2
-			end
-		elseif colorEnum == ColorEnum.ORANGE then
-			if flag == CacheFlag.CACHE_SHOTSPEED then
-				player.ShotSpeed = player.ShotSpeed + 1.5
-			elseif flag == CacheFlag.CACHE_DAMAGE then
-				player.Damage = player.Damage + 0.5
-			end
-		elseif colorEnum == ColorEnum.YELLOW then
-			if flag == CacheFlag.CACHE_SHOTSPEED then
-				player.ShotSpeed = player.ShotSpeed + 1
-			elseif flag == CacheFlag.CACHE_DAMAGE then
-				player.Damage = player.Damage + 1
-			end
-		elseif colorEnum == ColorEnum.WHITE then
-			if flag == CacheFlag.CACHE_SHOTSPEED then
-				player.ShotSpeed = player.ShotSpeed + 0.5
-			elseif flag == CacheFlag.CACHE_DAMAGE then
-				player.Damage = player.Damage + 1.5
-			end
-		elseif colorEnum == ColorEnum.BLUE then
-			if flag == CacheFlag.CACHE_DAMAGE then
-				player.Damage = player.Damage + 2
-			end
-		end
-	else
-		data.PolarisBuff = nil
+---@param player EntityPlayer
+function POLARIS:OnPickup(itemID, charge, firstTime, slot, varData, player)
+	if not player:GetEffects():HasCollectibleEffect(POLARIS.ID) then
+		POLARIS:PostUpdateBuff(player)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.AddPlayerBuffs)
+Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, POLARIS.OnPickup, POLARIS.ID)
 
-function Mod:PolarisTearBuffs(tear)
+---@param player EntityPlayer
+function POLARIS:OnFamiliarCache(player)
+	local rng = player:GetCollectibleRNG(POLARIS.ID)
+	rng:Next()
+	local numFamiliars = math.min(1, player:GetCollectibleNum(POLARIS.ID) + player:GetEffects():GetCollectibleEffectNum(POLARIS.ID))
+	player:CheckFamiliar(POLARIS.FAMILIAR, numFamiliars, rng, Mod.ItemConfig:GetCollectible(POLARIS.ID))
+end
+
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, POLARIS.OnFamiliarCache, CacheFlag.CACHE_FAMILIARS)
+
+---@param player EntityPlayer
+---@param flag CacheFlag
+function POLARIS:AddPlayerBuffs(player, flag)
+	local effects = player:GetEffects()
+	if not effects:HasCollectibleEffect(POLARIS.ID) then return end
+	local colorBuff = POLARIS.COLOR_STATS[effects:GetCollectibleEffectNum(POLARIS.ID)]
+	if not colorBuff or not colorBuff.CacheFlags[flag] then return end
+
+	if flag == CacheFlag.CACHE_DAMAGE then
+		player.Damage = player.Damage + colorBuff.CacheFlags[flag]
+	elseif flag == CacheFlag.CACHE_SHOTSPEED then
+		player.ShotSpeed = player.ShotSpeed + colorBuff.CacheFlags[flag]
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, POLARIS.AddPlayerBuffs, CacheFlag.CACHE_DAMAGE)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, POLARIS.AddPlayerBuffs, CacheFlag.CACHE_SHOTSPEED)
+
+---@param tear EntityTear
+function POLARIS:PolarisTearBuffs(tear)
 	local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
-	if player == nil or not player:HasCollectible(CollectibleType.COLLECTIBLE_POLARIS) then return end
+	if not player then return end
+	local effects = player:GetEffects()
+	local colorBuff = effects:GetCollectibleEffectNum(POLARIS.ID)
+	if colorBuff == 0 then return end
+	local rng = player:GetCollectibleRNG(POLARIS.ID)
 
-	local data = Mod:GetData(player)
-	local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_POLARIS)
-	if data.PolarisBuff == nil then
-		updatePolarisBuffForPlayer(player)
-	end
-
-	if data.PolarisBuff.ColorEnum == ColorEnum.RED then
+	if colorBuff == POLARIS.COLOR.RED then
 		tear.Scale = tear.Scale * 0.5
-	elseif data.PolarisBuff.ColorEnum == ColorEnum.WHITE then
-		if rng:RandomFloat() <= 0.2 then
+	elseif colorBuff == POLARIS.COLOR.WHITE then
+		--TODO: Revisit for tear modifier implementation
+		--[[ if rng:RandomFloat() <= 0.2 then
 			tear:AddTearFlags(TearFlags.TEAR_LIGHT_FROM_HEAVEN)
-		end
-	elseif data.PolarisBuff.ColorEnum == ColorEnum.BLUE then
+		end ]]
+	elseif colorBuff == POLARIS.COLOR.BLUE then
 		tear.Scale = tear.Scale * 2
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, Mod.PolarisTearBuffs)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, POLARIS.PolarisTearBuffs)
 
-function Mod:PolarisTearHit(tear, collider)
-	local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
-	if player == nil or not player:HasCollectible(CollectibleType.COLLECTIBLE_POLARIS) then return end
+--TODO: Revisit for tear modifier implementation
+function POLARIS:PolarisTearHit(tear, collider)
+	--[[ local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
+	if player == nil or not player:HasCollectible(POLARIS.ID) then return end
 
 	local data = Mod:GetData(player)
 	if data.PolarisBuff == nil then
-		updatePolarisBuffForPlayer(player)
+		POLARIS:UpdatePlayerBuff(player)
 	end
-	if data.PolarisBuff.ColorEnum == ColorEnum.BLUE then
+	if data.PolarisBuff.ColorEnum == POLARIS.COLOR.BLUE then
 		if collider:IsActiveEnemy(false) and collider:IsVulnerableEnemy() then
 			collider:TakeDamage(10, DamageFlag.DAMAGE_FIRE, EntityRef(tear), 0)
 		end
-	end
+	end ]]
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_TEAR_COLLISION, Mod.PolarisTearHit)
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_COLLISION, POLARIS.PolarisTearHit)
 
-function Mod:PolarisFamiliarInit(familiar)
-	familiar.IsFollower = true
+---@param familiar EntityFamiliar
+function POLARIS:FamiliarInit(familiar)
+	familiar:AddToFollowers()
 end
 
-Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, Mod.PolarisFamiliarInit, FamiliarVariantPolaris)
+Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, POLARIS.FamiliarInit, POLARIS.FAMILIAR)
 
-function Mod:PolarisFamiliarUpdate(familiar)
-	local player = familiar.SpawnerEntity:ToPlayer()
-	local data = Mod:GetData(player)
-	if data.PolarisBuff == nil then
-		updatePolarisBuffForPlayer(player)
+---@param familiar EntityFamiliar
+function POLARIS:FamiliarUpdate(familiar)
+	local player = familiar.Player
+	local colorBuff = player:GetEffects():GetCollectibleEffectNum(POLARIS.ID)
+
+	if POLARIS.COLOR_STATS[colorBuff] then
+		familiar:SetColor(POLARIS.COLOR_STATS[colorBuff].Color, 2, 1, false, false)
 	end
-	familiar:SetColor(data.PolarisBuff.Color, 0, 0, false, false)
+
 	familiar:FollowParent()
 end
 
-Mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, Mod.PolarisFamiliarUpdate, FamiliarVariantPolaris)
+Mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, POLARIS.FamiliarUpdate, POLARIS.FAMILIAR)

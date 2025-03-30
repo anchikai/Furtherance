@@ -1,6 +1,14 @@
 local Mod = Furtherance
 
--- tear positions offset from original tear when shot to the right
+local TECH_IX = {}
+
+Furtherance.Item.TECH_IX = TECH_IX
+
+TECH_IX.ID = Isaac.GetItemIdByName("Tech IX")
+
+--TODO: Revisit later
+
+--[[ -- tear positions offset from original tear when shot to the right
 local pharaohCatPositions = {
 	Vector(0, 0),
 	Vector(-20, -5),
@@ -16,7 +24,7 @@ function Mod:IXShots(tear)
 	local player = tear.Parent and tear.Parent:ToPlayer()
 	if player == nil then return end
 
-	if ((player:HasCollectible(CollectibleType.COLLECTIBLE_POLYPHEMUS) or player:HasCollectible(CollectibleType.COLLECTIBLE_HAEMOLACRIA)) and player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_IX)) then -- [[BIG SHOT]] synergies
+	if ((player:HasCollectible(CollectibleType.COLLECTIBLE_POLYPHEMUS) or player:HasCollectible(CollectibleType.COLLECTIBLE_HAEMOLACRIA)) and player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_IX)) then
 		local laser = player:FireTechXLaser(tear.Position, tear.Velocity, 40, player, 0.66)
 		laser:SetColor(techIXColor, 0, 0, false, false)
 		tear:Remove()
@@ -60,3 +68,4 @@ function Mod:Synergies(player, flag)
 end
 
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.Synergies, CacheFlag.CACHE_TEARFLAG)
+ ]]

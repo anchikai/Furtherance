@@ -1,5 +1,15 @@
 local Mod = Furtherance
-local game = Game()
+
+local JUNO = {}
+
+Furtherance.Item.JUNO = JUNO
+
+JUNO.ID = Isaac.GetItemIdByName("Juno")
+
+--TODO: Revisit later for tear modifier implementation
+--ALSO make it chain the enemy you actually hit instead of just using Anima Sola
+
+--[[ local game = Game()
 local rng = RNG()
 
 local function clamp(value, min, max)
@@ -61,3 +71,4 @@ function Mod:JunoUpdate(player)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.JunoUpdate)
+ ]]

@@ -1,6 +1,14 @@
 local Mod = Furtherance
 
--- positional offset from original tear when shot to the right
+local PHARAOH_CAT = {}
+
+Furtherance.Item.PHARAOH_CAT = PHARAOH_CAT
+
+PHARAOH_CAT.ID = Isaac.GetItemIdByName("Pharaoh Cat")
+
+--TODO: Revisit later, this is a complicated one
+
+--[[ -- positional offset from original tear when shot to the right
 local TearPositions = {
 	Vector(-20, -5),
 	Vector(-20, 5),
@@ -135,3 +143,4 @@ function Mod:PharaohCatDebuff(player, cacheFlag)
 end
 
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.PharaohCatDebuff)
+ ]]

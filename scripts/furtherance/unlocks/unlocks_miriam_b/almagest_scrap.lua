@@ -6,6 +6,8 @@ Furtherance.Trinket.ALMAGEST_SCRAP = ALMAGEST_SCRAP
 
 ALMAGEST_SCRAP.ID = Isaac.GetTrinketIdByName("Almagest Scrap")
 
+--TODO: Planetarium Broken Heart price
+
 local function updateTreasureDoors(filename)
 	local room = Mod.Room()
 	for i = DoorSlot.NO_DOOR_SLOT + 1, DoorSlot.NUM_DOOR_SLOTS - 1 do

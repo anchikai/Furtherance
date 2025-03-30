@@ -42,7 +42,7 @@
 	<passive id="42" name="Kareth" description="Divine punishment" gfx="kareth.png" devilprice="1" quality="3" />
 	<passive id="43" name="Pillar of Fire" description="The path is illuminated" gfx="pillar_of_fire.png" quality="2" />
 	<passive id="44" name="Pillar of Clouds" description="The path is clouded" gfx="pillar_of_clouds.png" quality="2" />
-	<passive id="47" name="Quarantine" description="Social distancing" gfx="quarantine.png" quality="0" />
+	<passive id="47" name="Quarantine" description="Social distancing" gfx="quarantine.png" quality="0" cooldown="180" />
 	<passive id="53" name="Mandrake" description="Tropane alkaloids" gfx="mandrake.png" quality="2" tags="lazarussharedglobal" />
 	<!-- <passive id="54" name="Little Sister" description="Fiercely competitive" gfx="little_sister.png" quality="2" /> -->
 	<passive id="56" name="Butterfly" description="Loss of a loved one" gfx="butterfly.png" quality="1" />
@@ -94,7 +94,7 @@
 	<active id="65" name="D9" description="Reroll your journey" gfx="d9.png" maxcharges="4" quality="3" />
 	<active id="72" cache="speed firedelay" name="Polarity Shift" description="???" gfx="polarity_shift.png" chargetype="special" maxcharges="6" quality="2" />
 	<active id="73" name="Book of Books" description="Endless books!" gfx="book_of_books.png" maxcharges="12" quality="4" tags="book" /> <!-- Concept by retro100! -->
-	<active id="75" name="Servitude" description="7 years of labour" gfx="servitude.png" maxcharges="6" quality="2" />
+	<active id="75" name="Servitude" description="7 years of labour" gfx="servitude.png" maxcharges="8" quality="2" chargetype="special" />
 	<active id="78" name="Secret Diary" description="No one can know" gfx="secret_diary.png" maxcharges="6" quality="3" tags="book" />
 	<active id="79" name="D16" description="Reroll your health" gfx="d16.png" maxcharges="4" quality="1" />
 	<active id="91" name="Prayer Journal" description="Scripture" gfx="prayer_journal.png" maxcharges="4" quality="2" tags="book" />
@@ -129,6 +129,6 @@
 	<familiar id="46" name="Miriam's Well" description="Spew forth" gfx="miriams_well.png" quality="1" />
 	<!-- <familiar id="60" name="Brainstorm" description="Problem solving" gfx="brainstorm.png" quality="2" /> -->
 	<familiar id="63" name="Blood Cyst" description="It's about to pop" gfx="blood_cyst.png" quality="2" persistent="true" />
-	<familiar id="64" name="Polaris" description="May the star shine bright" gfx="polaris.png" quality="4" />
+	<familiar cache="familiars damage shotspeed cleareffectsonremove" id="64" name="Polaris" description="May the star shine bright" gfx="polaris.png" quality="4" tags="uniquefamiliar" />
 	<familiar id="80" name="Iron" description="Hot to the touch" gfx="iron.png" quality="3" />
 </items>

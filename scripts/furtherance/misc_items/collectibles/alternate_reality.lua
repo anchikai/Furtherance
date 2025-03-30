@@ -7,11 +7,23 @@ Furtherance.Item.ALTERNATE_REALITY = ALTERNATE_REALITY
 
 ALTERNATE_REALITY.ID = Isaac.GetItemIdByName("Alternate Reality")
 
+---Returns a table in order from Stage 1 (Basement I) to Stage 6 (Sheol/Cathedral) of all available stages and stage variants
+---
+---This goes by achievements, not specifically if the stage will be encountered in a run.
+---@param stage? LevelStage @Will provide available stage variants on the provided LevelStage.
 ---@return {[1]: LevelStage, [2]: StageType}[]
-function ALTERNATE_REALITY:GetAvailableStages()
+function ALTERNATE_REALITY:GetAvailableStages(stage)
 	local level = Mod.Level()
 	local stageList = {}
-	for levelStage = LevelStage.STAGE1_1, LevelStage.STAGE6 do
+	local stageStart, stageEnd
+	if stage == nil then
+		stageStart = LevelStage.STAGE1_1
+		stageEnd = LevelStage.STAGE6
+	else
+		stageStart = stage
+		stageEnd = stage
+	end
+	for levelStage = stageStart, stageEnd do
 		local maxVariant = StageType.STAGETYPE_REPENTANCE_B
 		if levelStage == LevelStage.STAGE5 or levelStage == LevelStage.STAGE6 then
 			maxVariant = StageType.STAGETYPE_WOTL

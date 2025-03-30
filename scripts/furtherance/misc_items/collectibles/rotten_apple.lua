@@ -1,32 +1,12 @@
 local Mod = Furtherance
 
---removes the player's current trinkets, gives the player the one you provided, uses the smelter, then gives the player back the original trinkets. (kittenchilly's code!)
-function Mod:AddSmeltedTrinket(player, trinket, firstTimePickingUp)
-	--get the trinkets they're currently holding
-	local trinket0 = player:GetTrinket(0)
-	local trinket1 = player:GetTrinket(1)
+local ROTTEN_APPLE = {}
 
-	--remove them
-	if trinket0 ~= 0 then
-		player:TryRemoveTrinket(trinket0)
-	end
-	if trinket1 ~= 0 then
-		player:TryRemoveTrinket(trinket1)
-	end
+Furtherance.Item.ROTTEN_APPLE = ROTTEN_APPLE
 
-	player:AddTrinket(trinket, firstTimePickingUp == nil and true or firstTimePickingUp) --add the trinket
-	player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, false, false, false, false) --smelt it
+ROTTEN_APPLE.ID = Isaac.GetItemIdByName("Rotten Apple")
 
-	--give their trinkets back
-	if trinket0 ~= 0 then
-		player:AddTrinket(trinket0, false)
-	end
-	if trinket1 ~= 0 then
-		player:AddTrinket(trinket1, false)
-	end
-end
-
-local allWorms = {
+ROTTEN_APPLE.WORMS = {
 	TrinketType.TRINKET_PULSE_WORM,
 	TrinketType.TRINKET_WIGGLE_WORM,
 	TrinketType.TRINKET_RING_WORM,
@@ -40,35 +20,29 @@ local allWorms = {
 	TrinketType.TRINKET_BRAIN_WORM,
 
 	-- Modded Worms
-	TrinketType.TRINKET_SLICK_WORM,
-	TrinketType.TRINKET_HAMMERHEAD_WORM,
+	--TODO: Add later in patch
+	--[[ TrinketType.TRINKET_SLICK_WORM,
+	TrinketType.TRINKET_HAMMERHEAD_WORM, ]]
 }
+ROTTEN_APPLE.DAMAGE_UP = 2
 
-function Mod:GiveWormOnPickUp(player)
-	local data = Mod:GetData(player)
-	if player.QueuedItem.Item
-		and not player.QueuedItem.Touched
-		and player.QueuedItem.Item.ID == CollectibleType.COLLECTIBLE_ROTTEN_APPLE
-		and not data.FR_RottenAppleGiveWorm
-	then
-		data.FR_RottenAppleGiveWorm = true
-	elseif not player.QueuedItem.Item and data.FR_RottenAppleGiveWorm then
-		local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_ROTTEN_APPLE)
-		local chosenWorm = allWorms[rng:RandomInt(#allWorms) + 1]
-		Mod:AddSmeltedTrinket(player, chosenWorm, true)
-		data.FR_RottenAppleGiveWorm = false
+---@param itemID CollectibleType
+---@param player EntityPlayer
+function ROTTEN_APPLE:OnFirstPickup(itemID, charge, firstTime, slot, varData, player)
+	if firstTime then
+		local rng = player:GetCollectibleRNG(itemID)
+		local chosenWorm = ROTTEN_APPLE.WORMS[rng:RandomInt(#ROTTEN_APPLE.WORMS) + 1]
+		player:AddSmeltedTrinket(chosenWorm, true)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.GiveWormOnPickUp)
+Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, ROTTEN_APPLE.OnFirstPickup, ROTTEN_APPLE.ID)
 
-function Mod:RottenAppleBuffs(player, flag)
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_ROTTEN_APPLE) then
-		if flag == CacheFlag.CACHE_DAMAGE then
-			player.Damage = player.Damage +
-				(2 * player:GetCollectibleNum(CollectibleType.COLLECTIBLE_ROTTEN_APPLE, false))
-		end
+---@param player EntityPlayer
+function ROTTEN_APPLE:DamageBuff(player)
+	if player:HasCollectible(ROTTEN_APPLE.ID) then
+		player.Damage = player.Damage + (ROTTEN_APPLE.DAMAGE_UP * player:GetCollectibleNum(ROTTEN_APPLE.ID))
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.RottenAppleBuffs)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, ROTTEN_APPLE.DamageBuff, CacheFlag.CACHE_DAMAGE)

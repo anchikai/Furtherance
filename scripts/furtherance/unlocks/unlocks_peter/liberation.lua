@@ -5,18 +5,17 @@ local LIBERATION = {}
 Furtherance.Item.LIBERATION = LIBERATION
 
 LIBERATION.ID = Isaac.GetItemIdByName("Liberation")
-LIBERATION.ACTIVATION_CHANCE = 1
-
-local activatedLiberation = false
+LIBERATION.PROC_CHANCE = 0.05
 
 function LIBERATION:TryActivateLiberation()
-	local chance = PlayerManager.GetNumCollectibles(LIBERATION.ID) * LIBERATION.ACTIVATION_CHANCE
-	if chance > 0 and not activatedLiberation then
+	local chance = PlayerManager.GetNumCollectibles(LIBERATION.ID) * LIBERATION.PROC_CHANCE
+	local effects = Mod.Room():GetEffects()
+	if chance > 0 and not effects:HasCollectibleEffect(LIBERATION.ID) then
 		local player = PlayerManager.FirstCollectibleOwner(LIBERATION.ID, false)
 		if not player then return end
 		local rng = player:GetCollectibleRNG(LIBERATION.ID)
-		if rng:RandomFloat() <= LIBERATION.ACTIVATION_CHANCE then
-			activatedLiberation = true
+		if rng:RandomFloat() <= LIBERATION.PROC_CHANCE then
+			effects:AddCollectibleEffect(LIBERATION.ID)
 			player:UseActiveItem(CollectibleType.COLLECTIBLE_DADS_KEY, false, false, true, false, -1)
 			Mod:ForEachPlayer(function(_player)
 				if _player:HasCollectible(LIBERATION.ID) then
@@ -29,9 +28,3 @@ function LIBERATION:TryActivateLiberation()
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, LIBERATION.TryActivateLiberation)
-
-function LIBERATION:ResetLiberation()
-	activatedLiberation = false
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, LIBERATION.ResetLiberation)

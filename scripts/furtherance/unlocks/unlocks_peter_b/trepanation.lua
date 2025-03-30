@@ -6,7 +6,7 @@ Furtherance.Item.TREPANATION = TREPANATION
 
 TREPANATION.ID = Isaac.GetItemIdByName("Trepanation")
 
-TREPANATION.FREQUENCY = 15
+TREPANATION.THRESHOLD = 15
 
 ---@param dir Vector
 ---@param amount integer
@@ -20,7 +20,7 @@ function TREPANATION:OnWeaponFire(dir, amount, owner, weapon)
 		dir = Mod:DirectionToVector(player:GetHeadDirection())
 	end
 
-	if (previousNum % TREPANATION.FREQUENCY) + amount >= TREPANATION.FREQUENCY then
+	if (previousNum % TREPANATION.THRESHOLD) + amount >= TREPANATION.THRESHOLD then
 		local velocity = Mod:AddTearVelocity(dir, player.ShotSpeed * 10, player)
 		local tear = player:FireTear(player.Position, velocity, false, false, true, player, 2)
 		tear:ChangeVariant(TearVariant.BALLOON)

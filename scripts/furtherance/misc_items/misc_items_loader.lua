@@ -26,7 +26,29 @@ local collectibles = {
 	"chiron",
 	"cosmic_omnibus",
 	"crab_legs",
-	"d9"
+	"d9",
+	"dads_wallet",
+	"flux",
+	"iron",
+	"juno",
+	"leaking_tank",
+	"little_raincoat",
+	"neass",
+	"old_camera",
+	"ophiuchus",
+	"pallas",
+	"parasitic_poofer",
+	--"pharaoh_cat",
+	"polaris",
+	"quarantine",
+	"rotten_apple",
+	"servitude",
+	"sunscreen",
+	--"tech_ix",
+	--"technology-1",
+	"unstable_core",
+	"wine_bottle",
+	"zzzzoptionszzzz"
 }
 
 loopInclude(collectibles, "collectibles")

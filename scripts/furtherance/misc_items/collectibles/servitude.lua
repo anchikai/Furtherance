@@ -1,20 +1,26 @@
+--#region Variables
+
 local Mod = Furtherance
-local game = Game()
 
-Mod:SavePlayerData({
-	CurrentServitudeItem = 0,
-	ServitudeCounter = 0,
-})
+local SERVITUDE = {}
 
-local function getNearestCollectible(player)
+Furtherance.Item.SERVITUDE = SERVITUDE
+
+SERVITUDE.ID = Isaac.GetItemIdByName("Servitude")
+
+--#endregion
+
+--#region Selecting collectibles
+
+---@param player EntityPlayer
+function SERVITUDE:GetNearestCollectible(player)
 	local nearestCollectible = nil
-	local nearestDistance = math.huge
+	local nearestDistance
 
 	for _, collectible in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
-		local delta = (player.Position - collectible.Position)
-		local distance = delta:LengthSquared()
+		local distance = player.Position:DistanceSquared(collectible.Position)
 		if collectible.SubType ~= CollectibleType.COLLECTIBLE_NULL then
-			if distance < nearestDistance then
+			if not nearestDistance or distance < nearestDistance then
 				nearestDistance = distance
 				nearestCollectible = collectible
 			end
@@ -24,104 +30,111 @@ local function getNearestCollectible(player)
 	return nearestCollectible
 end
 
-function Mod:UseServitude(_, _, player)
-	local data = Mod:GetData(player)
-	local item = getNearestCollectible(player)
-
-	if item and data.ServitudeCounter == 0 then
-		data.CurrentServitudeItem = item.SubType
-		data.ServitudeCounter = 7
-		return { Discharge = true, ShowAnim = true, Remove = false }
-	else
-		return { Discharge = false, ShowAnim = false, Remove = false }
+---@param player EntityPlayer
+---@param flags UseFlag
+---@param slot ActiveSlot
+function SERVITUDE:OnUse(_, _, player, flags, slot)
+	if Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY)
+		or not Mod:HasBitFlags(flags, UseFlag.USE_OWNED)
+		or player:GetActiveItem(slot) ~= SERVITUDE.ID
+	then
+		return
 	end
+	local item = SERVITUDE:GetNearestCollectible(player)
+	local player_run_save = Mod:RunSave(player)
+	local counter = player_run_save.ServitudeCounter
+	local foundItem = false
+
+	if item and (not counter or counter == 0) then
+		player:SetActiveVarData(item.SubType, slot)
+		player:SetActiveCharge(player:GetActiveCharge(slot) - 1, slot)
+		foundItem = true
+	end
+	return { Discharge = false, ShowAnim = foundItem, Remove = false }
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseServitude, CollectibleType.COLLECTIBLE_SERVITUDE)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, SERVITUDE.OnUse, SERVITUDE.ID)
 
-local function getActiveSlot(player, collType)
-	for _, slot in pairs(ActiveSlot) do
-		if player:GetActiveItem(slot) == collType then
-			return slot
+--#endregion
+
+--#region Control charge
+
+---@param player EntityPlayer
+function SERVITUDE:OnRoomClear(player)
+	local slots = Mod:GetActiveItemSlots(player, SERVITUDE.ID)
+	local chargeAmount = Mod.Room():GetRoomShape() >= RoomShape.ROOMSHAPE_2x2 and 2 or 1
+	for _, slot in ipairs(slots) do
+		local itemDesc = player:GetActiveItemDesc(slot)
+		if itemDesc.VarData == 0 then
+			player:AddActiveCharge(chargeAmount, slot, true, player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY), true)
+		else
+			local newCharge = player:GetActiveCharge(slot) - 1
+			player:SetActiveCharge(newCharge, slot)
+			if newCharge == 0 then
+				Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, itemDesc.VarData,
+					Isaac.GetFreeNearPosition(player.Position, 40), Vector.Zero, player)
+				player:SetActiveVarData(0, slot)
+			end
 		end
 	end
-
-	return nil
 end
 
-local function decrementServitudeCounter(player)
-	local data = Mod:GetData(player)
-	if data.ServitudeCounter == nil or data.ServitudeCounter == 0 then return end
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR, CallbackPriority.LATE, SERVITUDE.OnRoomClear)
 
-	local ServitudeSlot = getActiveSlot(player, CollectibleType.COLLECTIBLE_SERVITUDE)
-	if ServitudeSlot == nil then return end
+--#endregion
 
-	player:SetActiveCharge(player:GetActiveCharge(ServitudeSlot) - 1, ServitudeSlot)
+--#region Resset on taking damage
 
-	SFXManager():Stop(SoundEffect.SOUND_BEEP)
-	SFXManager():Stop(SoundEffect.SOUND_BATTERYCHARGE)
-	SFXManager():Stop(SoundEffect.SOUND_ITEMRECHARGE)
-
-	data.ServitudeCounter = data.ServitudeCounter - 1
-	if data.ServitudeCounter == 0 then
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, data.CurrentServitudeItem,
-			Isaac.GetFreeNearPosition(player.Position, 40), Vector.Zero, player)
-		data.CurrentServitudeItem = 0
+---@param ent Entity
+---@param flag DamageFlag
+function SERVITUDE:ResetServitude(ent, amount, flag)
+	local player = ent:ToPlayer()
+	if player
+		and player:HasCollectible(SERVITUDE.ID)
+		and (not Mod:HasBitFlags(flag, DamageFlag.DAMAGE_FAKE)
+		or not Mod:HasBitFlags(flag, DamageFlag.DAMAGE_RED_HEARTS))
+	then
+		local shouldPunish = false
+		local slots = Mod:GetActiveItemSlots(player, SERVITUDE.ID)
+		for _, slot in ipairs(slots) do
+			local itemDesc = player:GetActiveItemDesc(slot)
+			if itemDesc.VarData > 0 then
+				player:SetActiveCharge(0, slot)
+				player:SetActiveVarData(0, slot)
+				shouldPunish = true
+			end
+		end
+		if shouldPunish then
+			Mod.SFXMan:Play(SoundEffect.SOUND_THUMBS_DOWN)
+			player:AddBrokenHearts(1)
+		end
 	end
 end
 
-function Mod:ServitudeRoom(rng, pos)
-	for p = 0, game:GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(p)
-		decrementServitudeCounter(player)
-	end
+Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, SERVITUDE.ResetServitude, EntityType.ENTITY_PLAYER)
+
+--#endregion
+
+--#region Render target
+
+--[[ ---@param player EntityPlayer
+function SERVITUDE:SelectClosestCollectible(player)
+	if not player:HasCollectible(SERVITUDE.ID) or #Isaac.FindByType(5, 100) == 0 then return end
+	local item = SERVITUDE:GetNearestCollectible(player)
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, Mod.ServitudeRoom)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SERVITUDE.SelectClosestCollectible)
 
-function Mod:ResetServitude(entity, amount, flag)
-	local player = entity:ToPlayer()
-	local data = Mod:GetData(player)
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_SERVITUDE) and data.ServitudeCounter > 0 and flag & DamageFlag.DAMAGE_NO_PENALTIES == 0 then
-		data.ServitudeCounter = 0
-		data.CurrentServitudeItem = 0
-		SFXManager():Play(SoundEffect.SOUND_THUMBS_DOWN)
-		player:AddBrokenHearts(1)
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, Mod.ResetServitude, EntityType.ENTITY_PLAYER)
-
-function Mod:shouldDeHook()
-	return not game:GetHUD():IsVisible() or game:GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD)
-end
-
-function Mod:ServitudeCounter(player)
-	local data = Mod:GetData(player)
-	local room = game:GetRoom()
-	if Mod:shouldDeHook() then return end
-
-	data.ServitudeCounter = data.ServitudeCounter or 0
-	if data.ServitudeCounter > 0 then
-		local f = Font()
-		local WorldToScreen = room:WorldToScreenPosition(player.Position, Vector.Zero, Vector.Zero)
-		f:Load("font/pftempestasevencondensed.fnt")
-		f:DrawString(data.ServitudeCounter, WorldToScreen.X - 2, WorldToScreen.Y, KColor(1, 1, 1, 1), 0, false)
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, Mod.ServitudeCounter)
-
-function Mod:ServitudeTarget(pickup)
-	if Mod:shouldDeHook() then return end
+---@param pickup EntityPickup
+function SERVITUDE:ServitudeTarget(pickup)
 
 	local room = game:GetRoom()
 	for p = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(p)
 		local data = Mod:GetData(player)
 
-		local item = getNearestCollectible(player)
-		if player:HasCollectible(CollectibleType.COLLECTIBLE_SERVITUDE) and item ~= nil and data.ServitudeCounter == 0 then
+		local item = SERVITUDE:GetNearestCollectible(player)
+		if player:HasCollectible(SERVITUDE.ID) and item ~= nil and data.ServitudeCounter == 0 then
 			local sprite = Sprite()
 			sprite:Load("gfx/effect_spiritual_wound_target.anm2", true)
 			sprite:Play("Idle", true)
@@ -130,61 +143,27 @@ function Mod:ServitudeTarget(pickup)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_RENDER, Mod.ServitudeTarget)
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_RENDER, SERVITUDE.ServitudeTarget) ]]
 
-function Mod:RemoveCharge()
+--#endregion
 
-end
+--#region Render selcted item
 
-Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, Mod.RemoveCharge)
-
-local activeSlots = {
-	ActiveSlot.SLOT_PRIMARY,
-	ActiveSlot.SLOT_SECONDARY,
-	ActiveSlot.SLOT_POCKET,
-	ActiveSlot.SLOT_POCKET2,
-}
-
-local batteryCharges = {
-	[BatterySubType.BATTERY_MICRO] = 2,
-	[BatterySubType.BATTERY_NORMAL] = 6,
-	[BatterySubType.BATTERY_GOLDEN] = 6,
-	[BatterySubType.BATTERY_MEGA] = 24
-}
-
----@param battery EntityPickup
----@param collider Entity
-function Mod:IgnoreBatteries(battery, collider)
-	local player = collider and collider:ToPlayer()
-	if player == nil then return end
-
-	local data = Mod:GetData(player)
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_SERVITUDE) and data.ServitudeCounter > 0 then
-		local propagateCharge
-		for i, slot in ipairs(activeSlots) do
-			local item = player:GetActiveItem(slot)
-			if item == CollectibleType.COLLECTIBLE_SERVITUDE then
-				-- we still need to move the charge to a later item though!
-				propagateCharge = i + 1
-				break
-			elseif item ~= CollectibleType.COLLECTIBLE_SERVITUDE and item ~= CollectibleType.COLLECTIBLE_NULL and player:NeedsCharge(slot) then
-				return nil -- Don't ignore the collision if an item BEFORE Servitude needs a charge
-			end
-		end
-
-		if propagateCharge then
-			for i = propagateCharge, #activeSlots do
-				local slot = activeSlots[i]
-				local item = player:GetActiveItem(slot)
-				if item ~= CollectibleType.COLLECTIBLE_SERVITUDE and item ~= CollectibleType.COLLECTIBLE_NULL and player:NeedsCharge(slot) then
-					local charges = batteryCharges[battery.SubType]
-					player:SetActiveCharge(player:GetActiveCharge(slot) + charges, slot)
-				end
-			end
-		end
-
-		return false
+HudHelper.RegisterHUDElement({
+	Name = "Servitude Item Render",
+	Priority = HudHelper.Priority.NORMAL,
+	Condition = function(player, playerHUDIndex, hudLayout, slot)
+		---@cast slot ActiveSlot
+		return HudHelper.ShouldActiveBeDisplayed(player, SERVITUDE.ID, slot)
+			and player:GetActiveItemDesc(slot).VarData > 0
+			and not Mod.Room():HasCurseMist()
+	end,
+	OnRender = function(player, playerHUDIndex, hudLayout, position, alpha, scale, slot)
+		---@cast slot ActiveSlot
+		local itemID = player:GetActiveItemDesc(slot).VarData
+		HudHelper.RenderHUDItem(Mod.ItemConfig:GetCollectible(itemID).GfxFileName, position, scale * 0.5, alpha, false, false)
+		HudHelper.RenderHUDElements(HudHelper.HUDType.ACTIVE_ID, false, player, playerHUDIndex, hudLayout, position, alpha, scale * 0.5, slot)
 	end
-end
+}, HudHelper.HUDType.ACTIVE)
 
-Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, Mod.IgnoreBatteries, PickupVariant.PICKUP_LIL_BATTERY)
+--#endregion

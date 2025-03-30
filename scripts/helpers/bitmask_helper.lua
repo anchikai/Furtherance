@@ -24,7 +24,7 @@ function Furtherance:GetNamesInBitmask(flagTable, bitmask, maxInt)
 end
 
 ---Returns true if the first agument contains the second argument
----@generic flag : BitSet128 | integer | TearFlags
+---@generic flag
 ---@param flags flag
 ---@param checkFlag flag
 function Furtherance:HasBitFlags(flags, checkFlag)
@@ -35,7 +35,7 @@ function Furtherance:HasBitFlags(flags, checkFlag)
 end
 
 ---Returns true if the first argument contains any of the flags in the second argument. A looser version of HasBitFlags.
----@generic flag : BitSet128 | integer | TearFlags
+---@generic flag
 ---@param flags flag
 ---@param checkFlag flag
 function Furtherance:HasAnyBitFlags(flags, checkFlag)
@@ -43,7 +43,7 @@ function Furtherance:HasAnyBitFlags(flags, checkFlag)
 end
 
 ---Adds the second argument bitflag to the first
----@generic flag : BitSet128 | integer | TearFlags
+---@generic flag
 ---@param flags flag
 ---@param addFlag flag
 ---@return flag
@@ -53,7 +53,7 @@ function Furtherance:AddBitFlags(flags, addFlag)
 end
 
 ---Removes the second argument bitflag from the first. If it doesn't have it, it will remain the same
----@generic flag : BitSet128 | integer | TearFlags
+---@generic flag
 ---@param flags flag
 ---@param removeFlag flag
 ---@return flag

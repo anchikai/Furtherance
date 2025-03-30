@@ -29,11 +29,11 @@ function MANDRAKE:SpawnFamiliarItem()
 				rng:Next()
 
 				local mandrakeSpawn = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, ID,
-					room:FindFreePickupSpawnPosition(ent.Position + Vector(40, 0)), Vector.Zero, nil):ToPickup()
+					room:FindFreePickupSpawnPosition(pickup.Position + Vector(40, 0)), Vector.Zero, nil):ToPickup()
 				---@cast mandrakeSpawn EntityPickup
 				mandrakeSpawn.OptionsPickupIndex = optionIndex
 				Mod:GetData(mandrakeSpawn).MandrakeItem = true
-				if pickup.Price ~= 0 then
+				if pickup:IsShopItem() then
 					Isaac.CreateTimer(function() mandrakeSpawn.Price = pickup.Price
 						mandrakeSpawn.ShopItemId = -1
 					end, 1, 1, true)
