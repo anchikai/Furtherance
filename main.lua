@@ -107,6 +107,7 @@ Furtherance.Trinket = {}
 Furtherance.Pickup = {}
 Furtherance.Card = {}
 Furtherance.Rune = {}
+Furtherance.Pill = {}
 Furtherance.Challenge = {}
 Furtherance.Character = {}
 Furtherance.Misc = {}

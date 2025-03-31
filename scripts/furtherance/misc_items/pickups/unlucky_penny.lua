@@ -1,35 +1,49 @@
 local Mod = Furtherance
 
-Mod:SavePlayerData({
-	UnluckyPennyStat = 0
-})
+local UNLUCKY_PENNY = {}
 
-function Mod:UnluckyPenny(pickup, collider)
-	if collider:ToPlayer() then
-		local player = collider:ToPlayer()
-		local data = Mod:GetData(player)
-		if collider:ToPlayer() and pickup.SubType == CoinSubType.COIN_UNLUCKYPENNY then
-			SFXManager():Play(SoundEffect.SOUND_LUCKYPICKUP, 1, 2, false, 0.8)
-			data.UnluckyPennyStat = data.UnluckyPennyStat + 1
-			player:AddCacheFlags(CacheFlag.CACHE_DAMAGE)
-			player:AddCacheFlags(CacheFlag.CACHE_LUCK)
-			player:EvaluateItems()
-		end
+Furtherance.Pickup.UNLUCKY_PENNY = UNLUCKY_PENNY
+
+UNLUCKY_PENNY.ID = Isaac.GetEntitySubTypeByName("Unlucky Penny")
+
+---@param pickup EntityPickup
+---@param collider Entity
+function UNLUCKY_PENNY:UnluckyPenny(pickup, collider)
+	local player = collider:ToPlayer()
+	if player and pickup.SubType == UNLUCKY_PENNY.ID then
+		local player_run_save = Mod:RunSave(player)
+		Mod.SFXMan:Play(SoundEffect.SOUND_LUCKYPICKUP, 1, 2, false, 0.8)
+		player_run_save.UnluckyPennyStat = (player_run_save.UnluckyPennyStat or 0) + 1
+		player:AddCacheFlags(CacheFlag.CACHE_DAMAGE)
+		player:AddCacheFlags(CacheFlag.CACHE_LUCK)
+		player:EvaluateItems()
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, Mod.UnluckyPenny, PickupVariant.PICKUP_COIN)
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_COLLISION, UNLUCKY_PENNY.UnluckyPenny, PickupVariant.PICKUP_COIN)
 
-function Mod:Lucknt(player, flag)
-	local data = Mod:GetData(player)
-	if data.UnluckyPennyStat == nil then return end
+---@param pickup EntityPickup
+function UNLUCKY_PENNY:PickupSound(pickup)
+	if pickup:GetSprite():IsEventTriggered("DropSound") then
+		Mod.SFXMan:Play(SoundEffect.SOUND_PENNYDROP)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, UNLUCKY_PENNY.PickupSound)
+
+---@param player EntityPlayer
+---@param flag CacheFlag
+function UNLUCKY_PENNY:Lucknt(player, flag)
+	local player_run_save = Mod:RunSave(player)
+	if not player_run_save.UnluckyPennyStat then return end
 
 	if flag == CacheFlag.CACHE_DAMAGE then
-		player.Damage = player.Damage + (data.UnluckyPennyStat / 2)
+		player.Damage = player.Damage + (player_run_save.UnluckyPennyStat / 2)
 	end
 	if flag == CacheFlag.CACHE_LUCK then
-		player.Luck = player.Luck - data.UnluckyPennyStat
+		player.Luck = player.Luck - player_run_save.UnluckyPennyStat
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.Lucknt)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, UNLUCKY_PENNY.Lucknt, CacheFlag.CACHE_DAMAGE)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, UNLUCKY_PENNY.Lucknt, CacheFlag.CACHE_LUCK)

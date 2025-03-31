@@ -20,7 +20,7 @@ function GOLDEN_PORT:OnDischargedUse(player)
 		local itemConfig = Mod.ItemConfig:GetCollectible(activeItem)
 		if itemConfig.ChargeType == ItemConfig.CHARGE_SPECIAL then return end
 		player:AddCoins(-5)
-		player:AddActiveCharge(6, ActiveSlot.SLOT_PRIMARY, true, player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY), false)
+		player:AddActiveCharge(6, ActiveSlot.SLOT_PRIMARY, true, false, false)
 	end
 end
 

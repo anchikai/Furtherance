@@ -66,7 +66,7 @@ function SERVITUDE:OnRoomClear(player)
 	for _, slot in ipairs(slots) do
 		local itemDesc = player:GetActiveItemDesc(slot)
 		if itemDesc.VarData == 0 then
-			player:AddActiveCharge(chargeAmount, slot, true, player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY), true)
+			player:AddActiveCharge(chargeAmount, slot, true, false, true)
 		else
 			local newCharge = player:GetActiveCharge(slot) - 1
 			player:SetActiveCharge(newCharge, slot)

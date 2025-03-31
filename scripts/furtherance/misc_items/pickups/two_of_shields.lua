@@ -1,21 +1,22 @@
 local Mod = Furtherance
-local game = Game()
 
-function Mod:UseAceOfShields(card, player, flag)
-	if player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) > 0 then
-		if player:GetActiveCharge(ActiveSlot.SLOT_PRIMARY) == 0 then
-			player:SetActiveCharge(player:GetActiveCharge(ActiveSlot.SLOT_PRIMARY) + 2, ActiveSlot.SLOT_PRIMARY)
-		else
-			player:SetActiveCharge(player:GetActiveCharge(ActiveSlot.SLOT_PRIMARY) * 2, ActiveSlot.SLOT_PRIMARY)
-		end
-		game:GetHUD():FlashChargeBar(player, ActiveSlot.SLOT_PRIMARY)
-		if player:GetActiveCharge(ActiveSlot.SLOT_PRIMARY) < 6 then
-			SFXManager():Play(SoundEffect.SOUND_BEEP)
-		else
-			SFXManager():Play(SoundEffect.SOUND_BATTERYCHARGE)
-			SFXManager():Play(SoundEffect.SOUND_ITEMRECHARGE)
+local TWO_OF_SHIELDS = {}
+
+Furtherance.Item.TWO_OF_SHIELDS = TWO_OF_SHIELDS
+
+TWO_OF_SHIELDS.ID = Isaac.GetCardIdByName("Two of Shields")
+
+---@param player EntityPlayer
+function TWO_OF_SHIELDS:UseAceOfShields(_, player, _)
+	for slot = ActiveSlot.SLOT_PRIMARY, ActiveSlot.SLOT_POCKET do
+		if player:GetActiveItem(slot) ~= CollectibleType.COLLECTIBLE_NULL
+			and player:NeedsCharge(slot)
+		then
+			local charge = player:GetActiveCharge(slot)
+			player:AddActiveCharge(charge == charge and 2 or charge * 2, slot, true, false, false)
+			break
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_CARD, Mod.UseAceOfShields, CARD_TWO_OF_SHIELDS)
+Mod:AddCallback(ModCallbacks.MC_USE_CARD, TWO_OF_SHIELDS.UseAceOfShields, TWO_OF_SHIELDS.ID)

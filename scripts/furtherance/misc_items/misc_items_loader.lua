@@ -97,7 +97,17 @@ loopInclude(trinkets, "trinkets")
 --#region Pickups
 
 local pickups = {
-
+	"ace_of_shields",
+	"charged_bomb",
+	"charity",
+	"faith",
+	"golden_card",
+	"heartache",
+	"hope",
+	"key_card",
+	"trap_card",
+	"two_of_shields",
+	"unlucky_penny"
 }
 
 loopInclude(pickups, "pickups")

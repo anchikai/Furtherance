@@ -1,29 +1,32 @@
 local Mod = Furtherance
-local game = Game()
 
-local whitelistedPickupVariants = {
-	[PickupVariant.PICKUP_COLLECTIBLE] = true,
-	[PickupVariant.PICKUP_SHOPITEM] = true,
-	[PickupVariant.PICKUP_BIGCHEST] = true,
-	[PickupVariant.PICKUP_TROPHY] = true,
-	[PickupVariant.PICKUP_BED] = true,
-	[PickupVariant.PICKUP_MOMSCHEST] = true,
-	[PickupVariant.PICKUP_THROWABLEBOMB] = true,
-}
+local ACE_OF_SHIELDS = {}
 
-function Mod:UseAceOfShields(_, player)
-	local room = game:GetRoom()
-	for _, entity in ipairs(Isaac.GetRoomEntities()) do
-		local pickup = entity:ToPickup()
-		if pickup and not whitelistedPickupVariants[pickup.Variant] then
+Furtherance.Card.ACE_OF_SHIELDS = ACE_OF_SHIELDS
+
+ACE_OF_SHIELDS.ID = Isaac.GetCardIdByName("Ace of Shields")
+
+ACE_OF_SHIELDS.BlacklistedPickupVariants = Mod:Set({
+	PickupVariant.PICKUP_BROKEN_SHOVEL,
+	PickupVariant.PICKUP_BED,
+	PickupVariant.PICKUP_MOMSCHEST
+})
+
+function ACE_OF_SHIELDS:OnUse(_, player)
+	for _, ent in pairs(Isaac.FindByType(EntityType.ENTITY_PICKUP)) do
+		if not ACE_OF_SHIELDS.BlacklistedPickupVariants[ent.Variant] then
+			local pickup = ent:ToPickup()
+			---@cast pickup EntityPickup
 			pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_LIL_BATTERY, BatterySubType.BATTERY_MICRO)
-		elseif entity:IsActiveEnemy(false) and entity:IsVulnerableEnemy() and not entity:IsBoss() then
-			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_LIL_BATTERY, BatterySubType.BATTERY_MICRO,
-				entity.Position, Vector.Zero, nil)
-			entity:Remove()
 		end
-		room:SetClear(true)
 	end
+	Mod:ForEachEnemy(function(npc)
+		if not npc:IsBoss() then
+			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_LIL_BATTERY, BatterySubType.BATTERY_MICRO,
+				npc.Position, Vector.Zero, nil)
+			npc:Remove()
+		end
+	end, false)
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_CARD, Mod.UseAceOfShields, CARD_ACE_OF_SHIELDS)
+Mod:AddCallback(ModCallbacks.MC_USE_CARD, ACE_OF_SHIELDS.OnUse, ACE_OF_SHIELDS.ID)

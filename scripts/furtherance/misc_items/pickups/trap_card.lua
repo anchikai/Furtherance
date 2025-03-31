@@ -1,7 +1,13 @@
 local Mod = Furtherance
 
-function Mod:UseTrapCard(card, player, useflags)
+local TRAP_CARD = {}
+
+Furtherance.Card.TRAP_CARD = TRAP_CARD
+
+TRAP_CARD.ID = Isaac.GetItemIdByName("Trap Card")
+
+function TRAP_CARD:UseTrapCard(_, player, _)
 	player:UseActiveItem(CollectibleType.COLLECTIBLE_ANIMA_SOLA, UseFlag.USE_NOANIM, -1)
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_CARD, Mod.UseTrapCard, CARD_TRAP)
+Mod:AddCallback(ModCallbacks.MC_USE_CARD, TRAP_CARD.UseTrapCard, TRAP_CARD.ID)
