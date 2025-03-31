@@ -1,5 +1,12 @@
 local Mod = Furtherance
 
+local TAMBOURINE = {}
+
+Furtherance.Item.TAMBOURINE = TAMBOURINE
+
+TAMBOURINE.ID = Isaac.GetItemIdByName("Tambourine")
+
+--[[
 local TambourineMedium = Isaac.GetSoundIdByName("TambourineMedium")
 local WhirlpoolVariant = Isaac.GetEntityVariantByName("Miriam Whirlpool")
 
@@ -21,3 +28,4 @@ function Mod:UseTambourine(_, _, player, flags)
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseTambourine, CollectibleType.COLLECTIBLE_TAMBOURINE)
+ ]]

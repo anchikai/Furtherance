@@ -2,7 +2,7 @@ local Mod = Furtherance
 
 local SEVERED_EAR = {}
 
-Furtherance.Item.SeveredEar = SEVERED_EAR
+Furtherance.Item.SEVERED_EAR = SEVERED_EAR
 
 SEVERED_EAR.ID = Isaac.GetItemIdByName("Severed Ear")
 

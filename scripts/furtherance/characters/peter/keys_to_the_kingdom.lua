@@ -1,5 +1,12 @@
 local Mod = Furtherance
-local game = Game()
+
+local KEYS_TO_THE_KINGDOM = {}
+
+Furtherance.Item.KEYS_TO_THE_KINGDOM = KEYS_TO_THE_KINGDOM
+
+KEYS_TO_THE_KINGDOM.ID = Isaac.GetItemIdByName("Keys to the Kingdom")
+
+--[[ local game = Game()
 
 local spareTime = 30 * 30
 local finalBossIDs = {
@@ -504,3 +511,4 @@ function Mod:spareResetPlayer(target, damageAmount, damageFlags, damageSource, d
 end
 
 Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, Mod.spareResetPlayer, EntityType.ENTITY_PLAYER)
+ ]]

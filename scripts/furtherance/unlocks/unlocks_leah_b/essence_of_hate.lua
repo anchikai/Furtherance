@@ -1,12 +1,25 @@
 local Mod = Furtherance
 
-function Mod:UseEssenceOfHate(card, player, flag)
-	local BrokenHearts = 11 - player:GetBrokenHearts()
-	player:AddBrokenHearts(11 - player:GetBrokenHearts())
-	for i = 1, BrokenHearts do
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_NULL, 0,
-			Isaac.GetFreeNearPosition(player.Position, 40), Vector.Zero, player)
+local ESSENCE_OF_HATE = {}
+
+Furtherance.Rune.ESSENCE_OF_HATE = ESSENCE_OF_HATE
+
+ESSENCE_OF_HATE.ID = Isaac.GetCardIdByName("Essence of Hate")
+
+ESSENCE_OF_HATE.MAX_BROKEN_HEARTS = 11
+
+--TODO: This sucks, needs a rework
+
+---@param player EntityPlayer
+function ESSENCE_OF_HATE:OnUse(_, player, _)
+	local brokenHearts = player:GetBrokenHearts()
+	local numToAdd = ESSENCE_OF_HATE.MAX_BROKEN_HEARTS - brokenHearts
+	player:AddBrokenHearts(ESSENCE_OF_HATE.MAX_BROKEN_HEARTS - brokenHearts)
+	local room = Mod.Room()
+	for _ = 1, numToAdd do
+		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_NULL, NullPickupSubType.ANY,
+			room:FindFreePickupSpawnPosition(player.Position, 40), Vector.Zero, player)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_CARD, Mod.UseEssenceOfHate, RUNE_ESSENCE_OF_HATE)
+Mod:AddCallback(ModCallbacks.MC_USE_CARD, ESSENCE_OF_HATE.OnUse, ESSENCE_OF_HATE.ID)

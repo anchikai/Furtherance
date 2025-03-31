@@ -44,7 +44,7 @@ function PILLAR_OF_FIRE:FireTears(effect)
 	if data.PillarOfFireShootCooldown > 0 then
 		data.PillarOfFireShootCooldown = data.PillarOfFireShootCooldown - 1
 	else
-		local target = Mod:GetClosestEnemy(effect.Position, PILLAR_OF_FIRE.RADIUS, true, false)
+		local target = Mod:GetClosestEnemy(effect.Position, PILLAR_OF_FIRE.RADIUS)
 		if not target then return end
 		local velocity = (target.Position - effect.Position):Resized(PILLAR_OF_FIRE.PROJ_SPEED)
 		local tear = Isaac.Spawn(EntityType.ENTITY_TEAR, TearVariant.FIRE_MIND, 0, effect.Position, velocity, effect):ToTear()

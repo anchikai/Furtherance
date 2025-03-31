@@ -1,5 +1,12 @@
 local Mod = Furtherance
 
+local POLYDIPSIA = {}
+
+Furtherance.Item.POLYDIPSIA = POLYDIPSIA
+
+POLYDIPSIA.ID = Isaac.GetItemIdByName("Polydipsia")
+
+--[[
 local WhirlpoolVariant = Isaac.GetEntityVariantByName("Miriam Whirlpool")
 
 local allPuddles = {}
@@ -171,3 +178,4 @@ function Mod:PolyLasers(laser)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, Mod.PolyLasers)
+ ]]

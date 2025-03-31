@@ -35,10 +35,12 @@ loopInclude(leah, "leah")
 
 local leah_b = {
 	"soul_of_leah",
+	"cold_hearted",
 	"leahs_heart",
 	"rotten_love",
-	--essence_of_hate,
+	"essence_of_hate",
 	"reverse_hope",
+	"moon_hearts",
 }
 
 loopInclude(leah_b, "leah_b")
@@ -48,19 +50,19 @@ loopInclude(leah_b, "leah_b")
 --#region Peter
 
 local peter = {
-	"prayer_journal",
-	"pallium",
-	"severed_ear",
-	"chi_ro",
-	"book_of_leviticus",
+	"alabaster_scrap",
 	"altruism",
 	"astragali",
-	"alabaster_scrap",
+	"book_of_leviticus",
+	"chi_rho",
+	"prayer_journal",
+	"essence_of_life",
+	"golden_port",
+	"itching_powder",
 	"liberation",
 	"molten_gold",
-	"itching_powder",
-	"essence_of_life",
-	"golden_port"
+	"pallium",
+	"severed_ear",
 }
 
 loopInclude(peter, "peter")
@@ -70,11 +72,12 @@ loopInclude(peter, "peter")
 --#region Tainted Peter
 
 local peter_b = {
-	"soul_of_peter",
-	"leviathans_tendril",
-	"trepanation",
+	"essence_of_death",
 	"key_to_the_pit",
-	"essence_of_death"
+	"leviathans_tendril",
+	"reverse_faith",
+	"soul_of_peter",
+	"trepanation",
 }
 
 loopInclude(peter_b, "peter_b")
@@ -84,19 +87,18 @@ loopInclude(peter_b, "peter_b")
 --#region Miriam
 
 local miriam = {
-	"book_of_guidance",
 	"apocalypse",
+	"book_of_guidance",
+	"caduceus_staff",
+	"essence_of_deluge",
+	"firstborn_son",
 	"kareth",
+	"miriams_well",
 	"pillar_of_clouds",
 	"pillar_of_fire",
-	"wormwood_leaf",
-	"caduceus_staff",
-	"the_dreidel",
-	"firstborn_son",
-	"essence_of_deluge",
-	"essence_of_drought",
 	"saline_spray",
-	"miriams_well"
+	"the_dreidel",
+	"wormwood_leaf",
 }
 
 loopInclude(miriam, "miriam")
@@ -106,39 +108,19 @@ loopInclude(miriam, "miriam")
 --#region Tainted Miriam
 
 local miriam_b = {
-	"soul_of_miriam",
-	"almagest_scrap",
-	"golden_sack",
-	--"spiritual_wound",
 	"abyssal_penny",
+	"almagest_scrap",
+	"essence_of_drought",
+	"golden_sack",
 	"jar_of_manna",
-	"reverse_charity"
+	"reverse_charity",
+	"soul_of_miriam",
+	"spiritual_wound",
 }
 
 loopInclude(miriam_b, "miriam_b")
 
 --#endregion
 
---#region Challenges
-
-local challenges = {
-
-}
-
-loopInclude(challenges, "challenges")
-
---#endregion
-
---#region Misc
-
-local misc = {
-
-}
-
-loopInclude(misc, "misc")
-
---#endregion
-
 Mod.Include("scripts.furtherance.unlocks.unlock_table")
 Mod.Include("scripts.furtherance.unlocks.unlock_tracker_marks")
-Mod.Include("scripts.furtherance.unlocks.unlock_tracker_misc")

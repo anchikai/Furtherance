@@ -2,7 +2,7 @@ local Mod = Furtherance
 
 local ALTRUISM = {}
 
-Furtherance.Trinket.ALTRUISM = {}
+Furtherance.Trinket.ALTRUISM = ALTRUISM
 
 ALTRUISM.ID = Isaac.GetTrinketIdByName("Altruism")
 

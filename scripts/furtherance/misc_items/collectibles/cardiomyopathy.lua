@@ -4,7 +4,7 @@ local CARDIOMYOPATHY = {}
 
 Furtherance.Item.CARDIOMYOPATHY = CARDIOMYOPATHY
 
-CARDIOMYOPATHY.ID = Isaac.GetItemIdByName("Cardiomypathy")
+CARDIOMYOPATHY.ID = Isaac.GetItemIdByName("Cardiomyopathy")
 
 CARDIOMYOPATHY.HeartVariants = {
 	[HeartSubType.HEART_HALF] = true,

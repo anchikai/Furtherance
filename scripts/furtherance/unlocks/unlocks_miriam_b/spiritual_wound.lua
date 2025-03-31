@@ -1,5 +1,12 @@
 local Mod = Furtherance
-local game = Game()
+
+local SPIRITUAL_WOUND = {}
+
+Furtherance.Item.SPIRITUAL_WOUND = SPIRITUAL_WOUND
+
+SPIRITUAL_WOUND.ID = Isaac.GetItemIdByName("Spiritual Wound")
+
+--[[ local game = Game()
 
 local FindTargets = include("lua.items.collectibles.SpiritualWound.FindTargets")
 local UpdateFocus = include("lua.items.collectibles.SpiritualWound.UpdateFocus")
@@ -118,3 +125,4 @@ function Mod:SpiritualWoundUpdate(player)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.SpiritualWoundUpdate)
+ ]]

@@ -1,7 +1,3 @@
-Furtherance.PlayerTypeToCompletionTable = {
-
-}
-
 ---@param playerType PlayerType
 ---@param completionType CompletionType
 ---@return boolean @Returns if unlock was successful.

@@ -20,10 +20,10 @@
 		SoulPath
 		PolNegPath
 		MegaSatan
+		Greedier
 		Delirium
 		Mother
 		Beast
-		Greedier
 		FullCompletion
 	-->
 	<!-- Leah Unlocks -->
@@ -47,19 +47,17 @@
 	<achievement name="Soul of Leah" text='"Soul of Leah" has appeared in the basement' gfx="achievement_soulofleah.png" />
 	<achievement name="Leah&apos;s Heart" text='"Leah&apos;s Heart" has appeared in the basement' gfx="achievement_leahsheart.png" />
 	<!-- Mega Satan -->
+	<achievement name="Reverse Hope" text='"Hope" has appeared in the basement' gfx="achievement_reversehope.png" />
 	<achievement name="Shattered Heart" text='"Shattered Heart" has appeared in the basement' gfx="achievement_shatteredheart.png" />
 	<achievement name="Cold Hearted" text='"Cold Hearted" has appeared in the basement' gfx="achievement_coldhearted.png" />
-	<!-- Beast -->
-	<!-- Moon Hearts? -->
-	<!-- <achievement name="Rotten Love" text='"Rotten Love" has appeared in the basement' gfx="achievement_rottenlove.png" /> -->
-	<achievement name="Reverse Hope" text='"Hope" has appeared in the basement' gfx="achievement_reversehope.png" />
+	<achievement name="Moon Hearts" text='"Moon Hearts" have appeared in the basement' gfx="achievement_moonhearts.png" />
 	<achievement name="Essence of Hate" text='"Essence of Hate" has appeared in the basement' gfx="achievement_essenceofhate.png" />
 
 	<!-- Peter Unlocks -->
 	<achievement name="Prayer Journal" text='"Prayer Journal" has appeared in the basement' gfx="achievement_prayerjournal.png" />
 	<achievement name="Pallium" text='"Pallium" has appeared in the basement' gfx="achievement_pallium.png" />
 	<achievement name="Severed Ear" text='"Severed Ear" has appeared in the basement' gfx="achievement_severedear.png" />
-	<achievement name="Chirho" text='"Chirho" has appeared in the basement' gfx="achievement_chirho.png" />
+	<achievement name="Chi Rho" text='"Chi Rho" has appeared in the basement' gfx="achievement_chirho.png" />
 	<achievement name="Book of Leviticus" text='"Book of Leviticus" has appeared in the basement' gfx="achievement_bookofleviticus" />
 	<achievement name="Altruism" text='"Altruism" has appeared in the basement' gfx="achievement_altruism.png" />
 	<achievement name="Astragali" text='"Astragali" has appeared in the basement' gfx="achievement_astragali.png" />
@@ -76,12 +74,10 @@
 	<achievement name="Soul of Peter" text='"Soul of Peter" has appeared in the basement' gfx="achievement_soulofpeter.png" />
 	<achievement name="Leviathan&apos;s Tendril" text='"Leviathan&apos;s Tendril" has appeared in the basement' gfx="achievement_leviathanstendril.png" />
 	<!-- Mega Satan -->
+	<achievement name="Reverse Faith" text='"Faith" has appeared in the basement' gfx="achievement_reversefaith.png" />
 	<achievement name="Muddled Cross" text='"Muddled Cross" has appeared in the basement' gfx="achievement_muddledcross.png" />
 	<achievement name="Key to the Pit" text='"Key to the Pit" has appeared in the basement' gfx="achievement_keytothepit.png" />
-	<!-- Beast -->
-	<!-- Escort Beggar? -->
-	<!-- <achievement name="Trepanation" text='"Trepanation" has appeared in the basement' gfx="achievement_trepanation.png" /> -->
-	<achievement name="Reverse Faith" text='"Faith" has appeared in the basement' gfx="achievement_reversefaith.png" />
+	<achievement name="Escort Beggar" text='"Escort Beggar" has appeared in the basement' gfx="achievement_escortbeggar.png" />
 	<achievement name="Essence of Death" text='"Essence of Death" has appeared in the basement' gfx="achievement_essenceofdeath.png" />
 
 	<!-- Miriam Unlocks -->
@@ -99,18 +95,15 @@
 	<achievement name="Firstborn Son" text='"Firstborn Son" has appeared in the basement' gfx="achievement_firstbornson.png" />
 	<achievement name="Polydipsia" text='"Polydipsia" has appeared in the basement' gfx="achievement_polydipsia.png" />
 	<achievement name="The Condemned" text='You unlocked "Miriam"' gfx="achievement_taintedmiriam.png" />
-	<!-- Full Completion -->
-	<!-- <achievement name="Essence of Deluge" text='"Essence of Deluge" has appeared in the basement' gfx="achievement_essenceofdeluge" /> -->
-	<!-- <achievement name="Essence of Deluge + Drought" text='"Essence of Deluge + Drought" has appeared in the basement' gfx="achievement_essenceofdelugeanddrought" /> -->
+	<achievement name="Essence of Deluge" text='"Essence of Deluge" has appeared in the basement' gfx="achievement_essenceofdeluge" />
 
 	<!-- Tainted Miriam Unlocks -->
 	<achievement name="Soul of Miriam" text='"Soul of Miriam" has appeared in the basement' gfx="achievement_soulofmiriam.png" />
 	<achievement name="Almagest Scrap" text='"Almagest Scrap" has appeared in the basement' gfx="achievement_almagestscrap.png" />
 	<achievement name="Golden Sack" text='"Golden Sack" has appeared in the basement' gfx="achievement_goldensack.png" />
+	<achievement name="Reverse Charity" text='"Charity" has appeared in the basement' gfx="achievement_reversecharity.png" />
 	<achievement name="Spiritual Wound" text='"Spiritual Wound" has appeared in the basement' gfx="achievement_spiritualwound.png" />
 	<achievement name="Abyssal Penny" text='"Abyssal Penny" has appeared in the basement' gfx="achievement_abyssalpenny.png" />
 	<achievement name="Jar of Manna" text='"Jar of Manna" has appeared in the basement' gfx="achievement_jarofmanna.png" />
-	<achievement name="Reverse Charity" text='"Charity" has appeared in the basement' gfx="achievement_reversecharity.png" />
-	<!-- Full Completion -->
-	<!-- <achievement name="Essence of Drought" text='"Essence of Drought" has appeared in the basement' gfx="achievement_essenceofdrought" /> -->
+	<achievement name="Essence of Drought" text='"Essence of Drought" has appeared in the basement' gfx="achievement_essenceofdrought" />
 </achievements>

@@ -4,7 +4,7 @@ local FLUX = {}
 
 Furtherance.Item.FLUX = FLUX
 
-FLUX.ID = Isaac.GetItemIdByName("FLUX")
+FLUX.ID = Isaac.GetItemIdByName("Flux")
 
 FLUX.TEAR_COLOR = Color(0.1, 0.5, 0.75, 0.75, 0, 0, 0.25)
 

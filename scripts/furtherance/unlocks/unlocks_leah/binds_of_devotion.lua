@@ -2,7 +2,7 @@ local Mod = Furtherance
 
 local BINDS_OF_DEVOTION = {}
 
-Furtherance.Item.BINDS_OF_DEVOTION = {}
+Furtherance.Item.BINDS_OF_DEVOTION = BINDS_OF_DEVOTION
 
 BINDS_OF_DEVOTION.ID = Isaac.GetItemIdByName("Binds of Devotion")
 BINDS_OF_DEVOTION.PLAYER_FAKE_JACOB = Isaac.GetPlayerTypeByName("FR FakeJacob", false)

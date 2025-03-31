@@ -1,10 +1,10 @@
 local Mod = Furtherance
 
-local CHI_RO = {}
+local CHI_RHO = {}
 
-Furtherance.Item.CHI_RO = CHI_RO
+Furtherance.Item.CHI_RHO = CHI_RHO
 
-CHI_RO.ID = Isaac.GetItemIdByName("Chi Ro")
+CHI_RHO.ID = Isaac.GetItemIdByName("Chi Rho")
 
 --TODO: Definitely needs a redesign to be more compatible with other weapon types or something different altogether
 --[[ local LaserHomingType = {

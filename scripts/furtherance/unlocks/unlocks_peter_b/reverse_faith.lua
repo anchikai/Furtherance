@@ -1,10 +1,16 @@
 local Mod = Furtherance
 
-function Mod:UseReverseFaith(card, player, flag)
+local REVERSE_FAITH = {}
+
+Furtherance.Card.REVERSE_FAITH = REVERSE_FAITH
+
+REVERSE_FAITH.ID = Isaac.GetCardIdByName("ReverseFaith")
+
+function REVERSE_FAITH:UseReverseFaith(card, player, flag)
 	for _ = 1, 2 do
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_MOON,
+		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, Mod.Pickup.MOON_HEART.ID,
 			Isaac.GetFreeNearPosition(player.Position, 40), Vector.Zero, player)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_CARD, Mod.UseReverseFaith, CARD_REVERSE_FAITH)
+Mod:AddCallback(ModCallbacks.MC_USE_CARD, REVERSE_FAITH.UseReverseFaith, REVERSE_FAITH.ID)

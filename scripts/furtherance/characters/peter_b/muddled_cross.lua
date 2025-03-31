@@ -1,5 +1,12 @@
 local Mod = Furtherance
-local game = Game()
+
+local MUDDLED_CROSS = {}
+
+Furtherance.Item.MUDDLED_CROSS = MUDDLED_CROSS
+
+MUDDLED_CROSS.ID = Isaac.GetItemIdByName("Muddled Cross")
+
+--[[ local game = Game()
 
 Mod:SaveModData({
 	Flipped = false,
@@ -236,3 +243,4 @@ function Mod:ResetFlipped(continued)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, Mod.ResetFlipped)
+ ]]
