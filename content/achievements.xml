@@ -73,11 +73,11 @@
 	<!-- Tainted Peter Unlocks -->
 	<achievement name="Soul of Peter" text='"Soul of Peter" has appeared in the basement' gfx="achievement_soulofpeter.png" />
 	<achievement name="Leviathan&apos;s Tendril" text='"Leviathan&apos;s Tendril" has appeared in the basement' gfx="achievement_leviathanstendril.png" />
-	<!-- Mega Satan -->
+	<achievement name="Escort Beggar" text='"Escort Beggar" has appeared in the basement' gfx="achievement_escortbeggar.png" />
 	<achievement name="Reverse Faith" text='"Faith" has appeared in the basement' gfx="achievement_reversefaith.png" />
 	<achievement name="Muddled Cross" text='"Muddled Cross" has appeared in the basement' gfx="achievement_muddledcross.png" />
 	<achievement name="Key to the Pit" text='"Key to the Pit" has appeared in the basement' gfx="achievement_keytothepit.png" />
-	<achievement name="Escort Beggar" text='"Escort Beggar" has appeared in the basement' gfx="achievement_escortbeggar.png" />
+	<achievement name="Trepanation" text='"Trepanation" has appeared in the basement' gfx="achievement_trepanation.png" />
 	<achievement name="Essence of Death" text='"Essence of Death" has appeared in the basement' gfx="achievement_essenceofdeath.png" />
 
 	<!-- Miriam Unlocks -->

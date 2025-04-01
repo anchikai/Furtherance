@@ -39,7 +39,7 @@
 	<passive id="39" name="Spiritual Wound" description="Drain their lives" gfx="spiritual_wound.png" achievement="Spiritual Wound" cache="range" devilprice="2" quality="4" tags="devil" />
 	<passive id="40" name="Caduceus Staff" description="HP up + you feel great!" gfx="caduceus_staff.png" achievement="Caduceus Staff" soulhearts="4" quality="4" tags="angel" />
 	<passive id="41" name="Polydipsia" description="Tears down?!" gfx="polydipsia.png" achievement="Polydipsia" cache="range firedelay" quality="3" />
-	<passive id="42" name="Kareth" description="Divine punishment" gfx="kareth.png" achievement="Kareth" devilprice="1" quality="3" />
+	<passive id="42" name="Kareth" description="Divine punishment" gfx="kareth.png" achievement="Kareth" quality="3" />
 	<passive id="43" name="Pillar of Fire" description="The path is illuminated" gfx="pillar_of_fire.png" achievement="Pillar of Fire" quality="2" />
 	<passive id="44" name="Pillar of Clouds" description="The path is clouded" gfx="pillar_of_clouds.png" achievement="Pillar of Clouds" quality="2" />
 	<passive id="47" name="Quarantine" description="Social distancing" gfx="quarantine.png" quality="0" cooldown="180" />
@@ -59,9 +59,9 @@
 	<passive id="76" name="Cardiomyopathy" description="My chest hurts" gfx="cardiomyopathy.png" quality="2" />
 	<passive id="77" name="Sunscreen" description="A way to beat the heat!" gfx="sunscreen.png" quality="0" />
 	<passive id="81" name="Rotten Apple" description="Random worm + Damage up" gfx="rotten_apple.png" cache="damage" quality="3" />
-	<passive id="82" name="Beginner's Luck" description="Fading Fortune" gfx="beginners_luck.png" cache="luck" quality="2" persistent="true" />
+	<passive id="82" name="Beginner's Luck" description="Fading fortune" gfx="beginners_luck.png" cache="luck" quality="2" persistent="true" />
 	<passive id="83" name="Dad's Wallet" description="Father's wealth" gfx="dads_wallet.png" quality="2" />
-	<passive id="84" name="Chi Rho" description="technological!" gfx="chi_rho.png" achievement="Chi Rho" quality="3" />
+	<passive id="84" name="Chi Rho" description="Technological!" gfx="chi_rho.png" achievement="Chi Rho" quality="3" />
 	<passive id="85" name="Leah's Heart" description="Her heart beats" gfx="leahs_heart.png" achievement="Leah's Heart" cache="damage" devilprice="2" quality="3" />
 	<passive id="86" name="Pallium" description="Authority" gfx="pallium.png" achievement="Pallium" quality="4" tags="angel" />
 	<passive id="87" name="Cold Hearted" description="Icy touch" gfx="cold_hearted.png" achievement="Cold Hearted" quality="3" />
@@ -79,10 +79,10 @@
 	<active id="21" name="Book of Swiftness" description="Temporary speed up" gfx="book_of_swiftness.png" maxcharges="3" cache="speed" quality="3" tags="book offensive lazarussharedglobal" />
 	<active id="22" name="Book of Ambit" description="Temporary range up" gfx="book_of_ambit.png" maxcharges="4" cache="range shotspeed tearflag" quality="2" tags="book offensive lazarussharedglobal" />
 	<active id="25" name="Plug N' Play" description="Comes with 1000 games!" gfx="plug_n_play.png" maxcharges="6" quality="2" tags="nocantrip offensive" /> <!-- Concept by Freg! -->
-	<active id="29" name="Heart Renovator" description="Eternal triumph" gfx="heart_renovator.png" achievement="Heart Renovator" maxcharges="3" cache = "damage range" initcharge="3" quality="3" tags="angel nokeeper nolostbr" />
+	<active id="29" name="Heart Renovator" description="Eternal triumph" gfx="heart_renovator.png" achievement="Heart Renovator" maxcharges="3" cache = "damage range" quality="3" tags="angel nokeeper nolostbr" />
 	<active id="33" name="Shattered Heart" description="Eternal sorrow" gfx="shattered_heart.png" achievement="Shattered Heart" chargetype="normal" maxcharges="1" quality="2" tags="nokeeper nolostbr" />
 	<active id="34" name="Keys to the Kingdom" description="Divine control + strength in salvation" gfx="keys_to_the_kingdom.png" achievement="Keys to the Kingdom" maxcharges="7" chargetype="special" quality="4" tags="angel" />
-	<active id="36" name="Muddled Cross" description="Flipped reality" gfx="muddled_cross.png" achievement="Muddled Cross" maxcharges="6" initcharge="6" devilprice="2" quality="4" />
+	<active id="36" name="Muddled Cross" description="Flipped reality" gfx="muddled_cross.png" achievement="Muddled Cross" maxcharges="6" devilprice="2" quality="4" />
 	<active id="48" name="Book of Guidance" description="The exodus ends" gfx="book_of_guidance.png" achievement="Book of Guidance" maxcharges="12" quality="3" tags="book" />
 	<active id="49" name="Jar of Manna" description="Fill with faith" gfx="jar_of_manna.png" achievement="Jar of Manna" maxcharges="20" chargetype="special" quality="4" initcharge="0" />
 	<active id="50" name="Tambourine" description="It's rattling!" gfx="tambourine.png" achievement="Tambourine" chargetype="timed" maxcharges="300" quality="0" />

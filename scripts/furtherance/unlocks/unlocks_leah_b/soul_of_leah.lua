@@ -8,9 +8,11 @@ SOUL_OF_LEAH.ID = Isaac.GetCardIdByName("Soul of Leah")
 
 SOUL_OF_LEAH.DAMAGE_PER_BROKEN_HEART = 0.75
 
+--TODO: Kinda sucks, could use a rework
+
 ---@param player EntityPlayer
 function SOUL_OF_LEAH:UseSoulOfLeah(_, player, _)
-	Mod.SFXMan:Play(Isaac.GetSoundIdByName("BrokenHeartbeat"))
+	Mod.SFXMan:Play(Mod.Item.HEART_RENOVATOR.SFX_HEARTBEAT)
 	local player_run_save = Mod:RunSave(player)
 	local level = Mod.Level()
 	local roomsList = level:GetRooms()

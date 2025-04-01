@@ -6,7 +6,7 @@ Furtherance.Item.CADUCEUS_STAFF = CADUCEUS_STAFF
 
 CADUCEUS_STAFF.ID = Isaac.GetItemIdByName("Caduceus Staff")
 
-CADUCEUS_STAFF.SFX = Isaac.GetSoundIdByName("CaduceusActivate")
+CADUCEUS_STAFF.SFX = Isaac.GetSoundIdByName("Caduceus Activate")
 CADUCEUS_STAFF.BASE_CHANCE = 0.05
 CADUCEUS_STAFF.CHANCE_MULTIPLIER = 2
 

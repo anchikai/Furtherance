@@ -12,18 +12,6 @@ function BINDS_OF_DEVOTION:AddJacob(player)
 
 	jacob.Parent = player
 
-	-- remove all hearts
-	jacob:AddMaxHearts(-jacob:GetMaxHearts())
-	jacob:AddSoulHearts(-jacob:GetSoulHearts())
-	jacob:AddBoneHearts(-jacob:GetBoneHearts())
-	jacob:AddGoldenHearts(-jacob:GetGoldenHearts())
-	jacob:AddEternalHearts(-jacob:GetEternalHearts())
-	jacob:AddHearts(-jacob:GetHearts())
-
-	-- add hearts and max hearts
-	jacob:AddMaxHearts(6)
-	jacob:AddHearts(6)
-
 	Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, -1, jacob.Position, jacob.Velocity, jacob)
 	jacob.Position = player.Position
 	jacob:PlayExtraAnimation("Appear")

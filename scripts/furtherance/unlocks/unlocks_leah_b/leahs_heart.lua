@@ -25,8 +25,19 @@ Mod:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, CallbackPriority.EARLY, LEAHS_
 function LEAHS_HEART:HeartDamage(player)
 	local player_floor_save = Mod:FloorSave(player)
 	if player:HasCollectible(LEAHS_HEART.ID) and not player_floor_save.LeahsHeartUsedActive then
-		player.Damage = player.Damage * 1.2
+		player.Damage = player.Damage * LEAHS_HEART.DAMAGE_MULT
 	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, LEAHS_HEART.HeartDamage, CacheFlag.CACHE_DAMAGE)
+
+-- Done on this instead of MC_POST_PLAYER_NEW_LEVEL as it runs before floor save is reset
+function LEAHS_HEART:OnNewFloor()
+	Mod:ForEachPlayer(function(player)
+		if player:HasCollectible(LEAHS_HEART.ID) then
+			player:AddCacheFlags(CacheFlag.CACHE_DAMAGE, true)
+		end
+	end)
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, LEAHS_HEART.OnNewFloor)

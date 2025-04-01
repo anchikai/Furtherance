@@ -13,6 +13,7 @@ LEVIATHANS_TENDRIL.FEAR_RADIUS = 90 ^ 2
 LEVIATHANS_TENDRIL.FEAR_CHANCE = 0.1
 LEVIATHANS_TENDRIL.FEAR_DURATION = 90
 LEVIATHANS_TENDRIL.REFLECT_CHANCE = 0.25
+LEVIATHANS_TENDRIL.LEVIATHAN_CHANCE_BUFF = 0.05
 
 local wormFriendColor = Color(1, 1, 1)
 wormFriendColor:SetColorize(1, 1, 1, 1)
@@ -47,7 +48,7 @@ function LEVIATHANS_TENDRIL:PreProjectileCollision(proj, collider)
 		local rng = player:GetTrinketRNG(LEVIATHANS_TENDRIL.ID)
 		local reflectChance = LEVIATHANS_TENDRIL.REFLECT_CHANCE * player:GetTrinketMultiplier(LEVIATHANS_TENDRIL.ID)
 		if player:HasPlayerForm(PlayerForm.PLAYERFORM_EVIL_ANGEL) then
-			reflectChance = reflectChance + 0.05
+			reflectChance = reflectChance + LEVIATHANS_TENDRIL.LEVIATHAN_CHANCE_BUFF
 		end
 		if rng:RandomFloat() <= reflectChance then
 			redirectProjectile(player, proj, rng:RandomFloat() * 180 - 90)

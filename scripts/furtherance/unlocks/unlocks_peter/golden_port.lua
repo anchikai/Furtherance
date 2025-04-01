@@ -12,15 +12,13 @@ function GOLDEN_PORT:OnDischargedUse(player)
 	local activeItem = player:GetActiveItem(ActiveSlot.SLOT_PRIMARY)
 	if player:HasCollectible(GOLDEN_PORT.ID)
 		and activeItem ~= 0
-		and player:NeedsCharge(ActiveSlot.SLOT_PRIMARY)
+		and player:NeedsCharge(ActiveSlot.SLOT_PRIMARY) --Always false for special-chargetype actives
 		and player:GetNumCoins() >= 5
 		and player:IsExtraAnimationFinished()
 		and usedActive
 	then
-		local itemConfig = Mod.ItemConfig:GetCollectible(activeItem)
-		if itemConfig.ChargeType == ItemConfig.CHARGE_SPECIAL then return end
 		player:AddCoins(-5)
-		player:AddActiveCharge(6, ActiveSlot.SLOT_PRIMARY, true, false, false)
+		player:AddActiveCharge(6, ActiveSlot.SLOT_PRIMARY, true, true, false)
 	end
 end
 

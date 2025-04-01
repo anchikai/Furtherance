@@ -34,6 +34,12 @@ end)
 
 Furtherance.RANGE_BASE_MULT = 40
 
+Furtherance.REPLACER_EFFECT = Isaac.GetEntityVariantByName("Furtherance PRE_ENTITY_SPAWN Replacement")
+
+Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, function(_, effect)
+	effect:Remove()
+end, Furtherance.REPLACER_EFFECT)
+
 include("scripts.helpers.extra_enums")
 
 ---@type table[]
@@ -134,6 +140,7 @@ local helpers = {
 local tools = {
 	"debug_tools",
 	"hud_helper",
+	"status_effect_library",
 	"save_manager",
 	"pickups_tools"
 }

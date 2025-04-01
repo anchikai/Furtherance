@@ -15,7 +15,7 @@ function REVERSE_HOPE:OnUse(card, player, flag)
 	local level = Mod.Level()
 	local isMines = (level:GetStage() == LevelStage.STAGE2_2 or level:GetStage() == LevelStage.STAGE2_2) and level:GetStageType() >= StageType.STAGETYPE_REPENTANCE
 	local roomVariant = 0
-	-- Attempt to find a valid challenge room. Done this way to support randomly grabbing modded ones!
+	-- Attempt to find a valid challenge room. Done this way to avoid choosing the literal ambush wave rooms and mines-specific rooms
 	for _ = 1, 100 do
 		local challengeRoom = RoomConfigHolder.GetRandomRoom(rng:GetSeed(), false, StbType.SPECIAL_ROOMS, RoomType.ROOM_CHALLENGE, RoomShape.ROOMSHAPE_1x1,
 			-1, -1, 0, 10, 1, -1, Mod:GetRoomMode())

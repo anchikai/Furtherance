@@ -17,7 +17,7 @@ function OPHIUCHUS:OphiuchusStats(player, flag)
 			player.TearFlags = player.TearFlags | TearFlags.TEAR_WIGGLE | TearFlags.TEAR_SPECTRAL
 		end
 		if flag == CacheFlag.CACHE_DAMAGE then
-			player.Damage = player.Damage + (OPHIUCHUS.DAMAGE * player:GetCollectibleNum(OPHIUCHUS.ID))
+			player.Damage = player.Damage + (OPHIUCHUS.DAMAGE_UP * player:GetCollectibleNum(OPHIUCHUS.ID))
 		end
 		if flag == CacheFlag.CACHE_FIREDELAY then
 			player.MaxFireDelay = player.MaxFireDelay - (OPHIUCHUS.FIREDELAY_DOWN  * player:GetCollectibleNum(OPHIUCHUS.ID))

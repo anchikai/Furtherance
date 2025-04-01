@@ -6,12 +6,12 @@ Furtherance.Item.BRUNCH = BRUNCH
 
 BRUNCH.ID = Isaac.GetItemIdByName("Brunch")
 
-BRUNCH.SHOTSPEED = 0.16
+BRUNCH.SHOTSPEED_UP = 0.16
 
 ---@param player EntityPlayer
 function BRUNCH:GetBrunch(player)
 	if player:HasCollectible(BRUNCH.ID) then
-		player.ShotSpeed = player.ShotSpeed + (BRUNCH.SHOTSPEED * player:GetCollectibleNum(BRUNCH.ID))
+		player.ShotSpeed = player.ShotSpeed + (BRUNCH.SHOTSPEED_UP * player:GetCollectibleNum(BRUNCH.ID))
 	end
 end
 

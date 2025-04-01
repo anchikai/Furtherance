@@ -8,6 +8,7 @@ WORMWOOD_LEAF.ID = Isaac.GetTrinketIdByName("Wormwood Leaf")
 
 WORMWOOD_LEAF.CHANCE = 0.1
 
+---@param pos Vector
 local function rockCrumble(pos)
 	Mod.SFXMan:Play(SoundEffect.SOUND_ROCK_CRUMBLE)
 	for _ = 1, 5 do

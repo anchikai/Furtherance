@@ -29,7 +29,7 @@ function KARETH:ReplacePedestalWithTrinkets(pickup)
 	Mod:DelayOneFrame(function() pickup:Remove() end)
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, KARETH.ReplacePedestalWithTrinkets, PickupVariant.PICKUP_COLLECTIBLE)
+Mod:AddPriorityCallback(ModCallbacks.MC_POST_PICKUP_INIT, CallbackPriority.LATE, KARETH.ReplacePedestalWithTrinkets, PickupVariant.PICKUP_COLLECTIBLE)
 
 ---@param pickup EntityPickup
 ---@param collider Entity

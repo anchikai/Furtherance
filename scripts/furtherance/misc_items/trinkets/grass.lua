@@ -8,7 +8,7 @@ GRASS.ID = Isaac.GetTrinketIdByName("Grass")
 
 --30 minutes
 GRASS.TIMER = 30 * 60 * 30
-GRASS.LAUGH_SFX = Isaac.GetSoundIdByName("Sitcom_Laugh_Track")
+GRASS.LAUGH_SFX = Isaac.GetSoundIdByName("Sitcom Laugh Track")
 
 ---@param player EntityPlayer
 function GRASS:Grass(player)

@@ -12,10 +12,9 @@ CHARGED_BOMB.EXPLODE_CHANCE = 0.01
 ---@param entType EntityType
 ---@param variant PickupVariant
 ---@param subtype integer
----@param position Vector
 ---@param spawner Entity
 ---@param seed integer
-function CHARGED_BOMB:SpawnChargedBomb(entType, variant, subtype, position, _, spawner, seed)
+function CHARGED_BOMB:SpawnChargedBomb(entType, variant, subtype, _, _, spawner, seed)
 	if entType == EntityType.ENTITY_PICKUP
 		and variant == PickupVariant.PICKUP_BOMB
 		and subtype == BombSubType.BOMB_NORMAL

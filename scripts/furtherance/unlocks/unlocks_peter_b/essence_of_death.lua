@@ -6,7 +6,8 @@ Furtherance.Rune.ESSENCE_OF_DEATH = ESSENCE_OF_DEATH
 
 ESSENCE_OF_DEATH.ID = Isaac.GetCardIdByName("Essence of Death")
 
-function ESSENCE_OF_DEATH:OnUse(card, player, flag)
+---@param player EntityPlayer
+function ESSENCE_OF_DEATH:OnUse(_, player, _)
 	Mod:ForEachEnemy(function(npc)
 		if not npc:IsBoss() then
 			player:AddSwarmFlyOrbital(npc.Position)

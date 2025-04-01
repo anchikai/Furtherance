@@ -9,16 +9,20 @@ GOLDEN_SACK.ID = Isaac.GetEntitySubTypeByName("Golden Sack")
 GOLDEN_SACK.REPLACE_CHANCE = 0.1
 GOLDEN_SACK.DISAPPEAR_CHANCE = 0.2
 
-function GOLDEN_SACK:SpawnGoldenSack(entityType, variant, subType, _, _, _, seed)
-	if entityType == EntityType.ENTITY_PICKUP
+---@param entType EntityType
+---@param variant PickupVariant
+---@param subtype integer
+---@param seed integer
+function GOLDEN_SACK:SpawnGoldenSack(entType, variant, subtype, _, _, _, seed)
+	if entType == EntityType.ENTITY_PICKUP
 		and variant == PickupVariant.PICKUP_GRAB_BAG
-		and subType <= SackSubType.SACK_NORMAL
+		and subtype <= SackSubType.SACK_NORMAL
 		and Mod.PersistGameData:Unlocked(GOLDEN_SACK.ACHIEVEMENT)
 	then
 		--Even though this runs every time the entity spawns, the same seed will always produce the same resul
 		local rng = RNG(seed)
 		if rng:RandomFloat() <= GOLDEN_SACK.REPLACE_CHANCE then
-			return { entityType, variant, GOLDEN_SACK.ID, seed }
+			return { entType, variant, GOLDEN_SACK.ID, seed }
 		end
 	end
 end

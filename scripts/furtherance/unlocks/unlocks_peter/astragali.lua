@@ -37,7 +37,10 @@ ASTRAGALI.IsChest = Mod:Set(ASTRAGALI.Chests)
 
 --TODO: Achievement cache maybe? And allow a better system for modded checks & unlockable or not but we'll worry about that later
 
-function ASTRAGALI:UseAstragali(_, _, player)
+---@param player EntityPlayer
+---@param flags UseFlag
+function ASTRAGALI:UseAstragali(_, _, player, flags)
+	if Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) then return end
 	local rng = player:GetCollectibleRNG(ASTRAGALI.ID)
 	local rerollChestList = {}
 	for _, chestVariant in ipairs(ASTRAGALI.Chests) do

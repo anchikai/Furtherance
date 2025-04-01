@@ -5,7 +5,7 @@ local ALABASTER_SCRAP = {}
 Furtherance.Trinket.ALABASTER_SCRAP = ALABASTER_SCRAP
 
 ALABASTER_SCRAP.ID = Isaac.GetTrinketIdByName("Alabaster Scrap")
-ALABASTER_SCRAP.DAMAGE_MULT_UP = 0.5
+ALABASTER_SCRAP.DAMAGE_UP = 0.5
 
 ---@param itemID CollectibleType | TrinketType
 ---@param isTrinket boolean
@@ -53,7 +53,7 @@ function ALABASTER_SCRAP:DamageUp(player)
 	if player:HasTrinket(ALABASTER_SCRAP.ID) then
 		local mult = player:GetTrinketMultiplier(ALABASTER_SCRAP.ID)
 		local numAngel = player:GetEffects():GetTrinketEffectNum(ALABASTER_SCRAP.ID)
-		player.Damage = player.Damage + (numAngel * ALABASTER_SCRAP.DAMAGE_MULT_UP * mult)
+		player.Damage = player.Damage + (numAngel * ALABASTER_SCRAP.DAMAGE_UP * mult)
 	end
 end
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, ALABASTER_SCRAP.DamageUp, CacheFlag.CACHE_DAMAGE)
