@@ -32,7 +32,6 @@ end
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, TAB_KEY.OnUse, TAB_KEY.ID)
 
 function TAB_KEY:PauseGame(ent, hook, button)
-	local player = ent and ent:ToPlayer()
 	if funny
 		and button == ButtonAction.ACTION_PAUSE
 	then

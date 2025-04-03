@@ -16,7 +16,7 @@ function Q_KEY:OnUse(_, rng, player)
 	else
 		local pocketItem = player:GetPocketItem(PillCardSlot.PRIMARY)
 		local ID = pocketItem:GetSlot()
-		if ID == 0 then return end
+		if ID == 0 then return true end
 		if pocketItem:GetType() == PocketItemType.ACTIVE_ITEM then
 			player:UseActiveItem(player:GetActiveItem(ID), UseFlag.USE_MIMIC, ID)
 		elseif pocketItem:GetType() == PocketItemType.PILL then

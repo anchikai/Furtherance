@@ -19,8 +19,7 @@ Mod:AddCallback(ModCallbacks.MC_USE_ITEM, SHIFT_KEY.OnUse, SHIFT_KEY.ID)
 function SHIFT_KEY:DamageDecrease(player)
 	-- every 0.5 seconds
 	if player:GetEffects():HasCollectibleEffect(SHIFT_KEY.ID) and Mod.Game:GetFrameCount() % 15 == 0 then
-		player:AddCacheFlags(CacheFlag.CACHE_DAMAGE)
-		player:EvaluateItems()
+		player:AddCacheFlags(CacheFlag.CACHE_DAMAGE, true)
 	end
 end
 

@@ -22,21 +22,19 @@ local collectibles = {
 	"brunch",
 	"butterfly",
 	"cardiomyopathy",
-	--"ceres",
-	"chiron",
+
 	"cosmic_omnibus",
 	"crab_legs",
 	"d9",
 	"dads_wallet",
 	"flux",
 	"iron",
-	"juno",
+
 	"leaking_tank",
 	"little_raincoat",
 	"neass",
 	"old_camera",
-	"ophiuchus",
-	"pallas",
+
 	"parasitic_poofer",
 	--"pharaoh_cat",
 	"polaris",
@@ -55,7 +53,7 @@ loopInclude(collectibles, "collectibles")
 
 --#endregion
 
---#region Keyboard
+--#region Isaac's Keyboard
 
 local keyboard = {
 	"key_alt",
@@ -73,7 +71,22 @@ local keyboard = {
 	"key_tilde",
 }
 
-loopInclude(keyboard, "collectibles.keyboard")
+loopInclude(keyboard, "collectibles.isaacs_keyboard")
+
+--#endregion
+
+--#region Astrological Signs
+
+local astrological = {
+	"ceres",
+	"chiron",
+	"ophiuchus",
+	"pallas",
+	"juno",
+	"vesta"
+}
+
+loopInclude(astrological, "collectibles.astrological_signs")
 
 --#endregion
 
