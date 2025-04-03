@@ -1,6 +1,7 @@
 local heartsDamaged = {}
 
 function CustomHealthAPI.Helper.AddProcessTakeDamageCallback()
+---@diagnostic disable-next-line: param-type-mismatch
 	Isaac.AddPriorityCallback(CustomHealthAPI.Mod, ModCallbacks.MC_ENTITY_TAKE_DMG, CustomHealthAPI.Enums.CallbackPriorities.LATE, CustomHealthAPI.Mod.ProcessTakeDamageCallback, EntityType.ENTITY_PLAYER)
 end
 table.insert(CustomHealthAPI.CallbacksToAdd, CustomHealthAPI.Helper.AddProcessTakeDamageCallback)
@@ -36,8 +37,18 @@ function CustomHealthAPI.Mod:ProcessTakeDamageCallback(ent, amount, flags, sourc
 	
 	local callbacks = CustomHealthAPI.Helper.GetCallbacks(CustomHealthAPI.Enums.Callbacks.PRE_PLAYER_DAMAGE)
 	for _, callback in ipairs(callbacks) do
-		local prevent = callback.Function(player, amount, flags, source, countdown)
-		if prevent ~= nil then
+		local returnTable = callback.Function(player, amount, flags, source, countdown)
+		if type(returnTable) == "table" then
+			if returnTable.Amount ~= nil then
+				amount = returnTable.Amount
+			end
+			if returnTable.Flags ~= nil then
+				flags = returnTable.Flags
+			end
+			if returnTable.Prevent ~= nil then
+				return false
+			end
+		elseif returnTable ~= nil then
 			return false
 		end
 	end
@@ -47,7 +58,7 @@ function CustomHealthAPI.Mod:ProcessTakeDamageCallback(ent, amount, flags, sourc
 	   math.floor(amount + 0.5) < 1.0 or
 	   player:GetEffects():GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_ASTRAL_PROJECTION) == 1 or
 	   player:IsCoopGhost() or
-	   CustomHealthAPI.Helper.GetTotalHP(player) <= 0
+	   CustomHealthAPI.Helper.GetTotalHP(player, true) <= 0
 	then
 		return
 	end
@@ -72,7 +83,8 @@ function CustomHealthAPI.Mod:ProcessTakeDamageCallback(ent, amount, flags, sourc
 	player:GetData().CustomHealthAPIOtherData = player:GetData().CustomHealthAPIOtherData or {}
 	player:GetData().CustomHealthAPIOtherData.InDamageCallback = Isaac.GetFrameCount()
 	
-	if flags & DamageFlag.DAMAGE_RED_HEARTS ~= DamageFlag.DAMAGE_RED_HEARTS and 
+	if player:HasCollectible(CollectibleType.COLLECTIBLE_GLASS_CANNON) and
+	   flags & DamageFlag.DAMAGE_RED_HEARTS ~= DamageFlag.DAMAGE_RED_HEARTS and 
 	   flags & DamageFlag.DAMAGE_NO_PENALTIES ~= DamageFlag.DAMAGE_NO_PENALTIES
 	then
 		for i = 2, 0, -1 do
@@ -84,7 +96,7 @@ function CustomHealthAPI.Mod:ProcessTakeDamageCallback(ent, amount, flags, sourc
 				                                                                  false, 
 				                                                                  i, 
 				                                                                  0,
-																				  0)
+				                                                                  ItemPoolType.POOL_TREASURE)
 				player:GetData().CustomHealthAPISavedata.GlassCannonBroke = true
 			end
 		end
@@ -112,6 +124,7 @@ function CustomHealthAPI.Mod:ProcessTakeDamageCallback(ent, amount, flags, sourc
 end
 
 function CustomHealthAPI.Helper.AddHandleBloodOathCallback()
+---@diagnostic disable-next-line: param-type-mismatch
 	Isaac.AddPriorityCallback(CustomHealthAPI.Mod, ModCallbacks.MC_ENTITY_TAKE_DMG, -1 * math.huge, CustomHealthAPI.Mod.HandleBloodOathCallback, -1)
 end
 table.insert(CustomHealthAPI.CallbacksToAdd, CustomHealthAPI.Helper.AddHandleBloodOathCallback)
@@ -156,7 +169,7 @@ function CustomHealthAPI.Mod:HandleBloodOathCallback(ent, amount, flags, source,
 		   math.floor(amount + 0.5) < 1.0 or
 		   player:GetEffects():GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_ASTRAL_PROJECTION) == 1 or
 		   player:IsCoopGhost() or
-		   CustomHealthAPI.Helper.GetTotalHP(player) <= 0
+		   CustomHealthAPI.Helper.GetTotalHP(player, true) <= 0
 		then
 			return
 		end
@@ -201,10 +214,10 @@ function CustomHealthAPI.Mod:HandleBloodOathCallback(ent, amount, flags, source,
 			end
 			
 			bloodOath.Hearts = bloodOath.Hearts + 1
-		until ( CustomHealthAPI.Helper.GetTotalRedHP(player) <= 0 or
-		         (CustomHealthAPI.Helper.GetTotalRedHP(player, false, true) == 1 and
-		          CustomHealthAPI.Helper.GetTotalSoulHP(player) <= 0 and
-				  CustomHealthAPI.Helper.GetTotalBoneHP(player) <= 0))
+		until ( CustomHealthAPI.Helper.GetTotalRedHP(player, nil, nil, true) <= 0 or
+		         (CustomHealthAPI.Helper.GetTotalRedHP(player, false, true, true) == 1 and
+		          CustomHealthAPI.Helper.GetTotalSoulHP(player, nil, nil, true) <= 0 and
+				  CustomHealthAPI.Helper.GetTotalBoneHP(player, nil, true) <= 0))
 		
 		CustomHealthAPI.Helper.FinishDamageDesync(player)
 		data.Overlays["ETERNAL_HEART"] = numEternal
@@ -217,6 +230,7 @@ function CustomHealthAPI.Mod:HandleBloodOathCallback(ent, amount, flags, source,
 end
 
 function CustomHealthAPI.Helper.AddEndTakeDamageCallback()
+---@diagnostic disable-next-line: param-type-mismatch
 	Isaac.AddPriorityCallback(CustomHealthAPI.Mod, ModCallbacks.MC_ENTITY_TAKE_DMG, math.huge, CustomHealthAPI.Mod.EndTakeDamageCallback, -1)
 end
 table.insert(CustomHealthAPI.CallbacksToAdd, CustomHealthAPI.Helper.AddEndTakeDamageCallback)
@@ -275,10 +289,6 @@ function CustomHealthAPI.Helper.FinishDamageDesync(ent)
 		return false
 	end
 	
-	CustomHealthAPI.Helper.UpdateBasegameHealthState(player)
-	
-	player:ClearEntityFlags(EntityFlag.FLAG_BLEED_OUT)
-	
 	local amount = data.HandlingDamageAmount
 	local flags = data.HandlingDamageFlags
 	local source = data.HandlingDamageSource
@@ -292,21 +302,26 @@ function CustomHealthAPI.Helper.FinishDamageDesync(ent)
 	data.HandlingDamageCountdown = nil
 	data.HandlingDamageCanShackle = nil
 	
-	if flags & DamageFlag.DAMAGE_NOKILL == DamageFlag.DAMAGE_NOKILL and CustomHealthAPI.Helper.GetTotalHP(player) == 0 then
+	CustomHealthAPI.Helper.UpdateBasegameHealthState(player)
+	
+	player:ClearEntityFlags(EntityFlag.FLAG_BLEED_OUT)
+	
+	if flags & DamageFlag.DAMAGE_NOKILL == DamageFlag.DAMAGE_NOKILL and CustomHealthAPI.Helper.GetTotalHP(player, true) == 0 then
 		local playerType = player:GetPlayerType()
 		local key, hp
-		if CustomHealthAPI.Helper.GetTotalMaxHP(player) > 0 then
+		if CustomHealthAPI.Helper.GetTotalMaxHP(player, true) > 0 then
 			key = "RED_HEART"
 			hp = 1
-		elseif CustomHealthAPI.Helper.PlayerIsTheForgotten(player) then
+		elseif CustomHealthAPI.Helper.PlayerIsBoneHeartOnly(player) then
 			key = "BONE_HEART"
 			hp = 1
-		elseif playerType ~= PlayerType.PLAYER_KEEPER and playerType ~= PlayerType.PLAYER_KEEPER_B and playerType ~= PlayerType.PLAYER_BETHANY then
+		elseif not (CustomHealthAPI.Helper.PlayerHasCoinHealth(player)) and playerType ~= PlayerType.PLAYER_BETHANY then
 			key = "SOUL_HEART"
 			hp = 1
 		end
 		
 		if key ~= nil then
+			CustomHealthAPI.PersistentData.PreventGetHPCaching = true
 			local prevent = false
 			local callbacks = CustomHealthAPI.Helper.GetCallbacks(CustomHealthAPI.Enums.Callbacks.PRE_NOKILL_HEAL)
 			for _, callback in ipairs(callbacks) do
@@ -319,6 +334,7 @@ function CustomHealthAPI.Helper.FinishDamageDesync(ent)
 					hp = newHP or hp
 				end
 			end
+			CustomHealthAPI.PersistentData.PreventGetHPCaching = false
 			
 			if not prevent then
 				CustomHealthAPI.Library.AddHealth(player, key, hp, true, false, false, false, false, true, true, true)
@@ -326,25 +342,26 @@ function CustomHealthAPI.Helper.FinishDamageDesync(ent)
 		end
 	end
 	
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_HEARTBREAK) and CustomHealthAPI.Helper.GetTotalHP(player) == 0 then
+	if player:HasCollectible(CollectibleType.COLLECTIBLE_HEARTBREAK) and CustomHealthAPI.Helper.GetTotalHP(player, true) == 0 then
 		CustomHealthAPI.Library.AddHealth(player, "BROKEN_HEART", 2)
 		
 		local limit = math.ceil(CustomHealthAPI.PersistentData.OverriddenFunctions.GetHeartLimit(player) / 2)
 		if limit > 0 then
 			local playerType = player:GetPlayerType()
 			local key, hp
-			if CustomHealthAPI.Helper.GetTotalMaxHP(player) > 0 then
+			if CustomHealthAPI.Helper.GetTotalMaxHP(player, true) > 0 then
 				key = "RED_HEART"
 				hp = 1
-			elseif CustomHealthAPI.Helper.PlayerIsTheForgotten(player) then
+			elseif CustomHealthAPI.Helper.PlayerIsBoneHeartOnly(player) then
 				key = "BONE_HEART"
 				hp = 1
-			elseif playerType ~= PlayerType.PLAYER_KEEPER and playerType ~= PlayerType.PLAYER_KEEPER_B and playerType ~= PlayerType.PLAYER_BETHANY then
+			elseif not (CustomHealthAPI.Helper.PlayerHasCoinHealth(player)) and playerType ~= PlayerType.PLAYER_BETHANY then
 				key = "SOUL_HEART"
 				hp = 1
 			end
 		
 			if key ~= nil then
+				CustomHealthAPI.PersistentData.PreventGetHPCaching = true
 				local prevent = false
 				local callbacks = CustomHealthAPI.Helper.GetCallbacks(CustomHealthAPI.Enums.Callbacks.PRE_HEARTBREAK_HEAL)
 				for _, callback in ipairs(callbacks) do
@@ -357,6 +374,7 @@ function CustomHealthAPI.Helper.FinishDamageDesync(ent)
 						hp = newHP or hp
 					end
 				end
+				CustomHealthAPI.PersistentData.PreventGetHPCaching = false
 				
 				if not prevent then
 					CustomHealthAPI.Library.AddHealth(player, key, hp, true, false, false, false, false, true, true, true)
@@ -376,18 +394,19 @@ function CustomHealthAPI.Helper.FinishDamageDesync(ent)
 			end
 		else
 			local key, hp
-			if CustomHealthAPI.Helper.GetTotalMaxHP(player) > 0 then
+			if CustomHealthAPI.Helper.GetTotalMaxHP(player, true) > 0 then
 				key = "RED_HEART"
 				hp = 1
-			elseif CustomHealthAPI.Helper.PlayerIsTheForgotten(player) then
+			elseif CustomHealthAPI.Helper.PlayerIsBoneHeartOnly(player) then
 				key = "BONE_HEART"
 				hp = 1
-			elseif playerType ~= PlayerType.PLAYER_KEEPER and playerType ~= PlayerType.PLAYER_KEEPER_B and playerType ~= PlayerType.PLAYER_BETHANY then
+			elseif not (CustomHealthAPI.Helper.PlayerHasCoinHealth(player)) and playerType ~= PlayerType.PLAYER_BETHANY then
 				key = "SOUL_HEART"
 				hp = 1
 			end
 		
 			if key ~= nil then
+				CustomHealthAPI.PersistentData.PreventGetHPCaching = true
 				local prevent = false
 				local callbacks = CustomHealthAPI.Helper.GetCallbacks(CustomHealthAPI.Enums.Callbacks.PRE_SPIRIT_SHACKLES_HEAL)
 				for _, callback in ipairs(callbacks) do
@@ -400,6 +419,7 @@ function CustomHealthAPI.Helper.FinishDamageDesync(ent)
 						hp = newHP or hp
 					end
 				end
+				CustomHealthAPI.PersistentData.PreventGetHPCaching = false
 				
 				if not prevent then
 					CustomHealthAPI.Library.AddHealth(player, key, hp, true, false, false, false, false, true, true, true)
@@ -410,8 +430,8 @@ function CustomHealthAPI.Helper.FinishDamageDesync(ent)
 		player:GetData().CustomHealthAPIOtherData.ShacklesDisabled = true
 	end
 	
-	local remainingRedHP = CustomHealthAPI.Helper.GetTotalRedHP(player, true)
-	local remainingSoulHP = CustomHealthAPI.Helper.GetTotalSoulHP(player, true)
+	local remainingRedHP = CustomHealthAPI.Helper.GetTotalRedHP(player, true, nil, true)
+	local remainingSoulHP = CustomHealthAPI.Helper.GetTotalSoulHP(player, true, nil, true)
 	
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_SCAPULAR) and remainingRedHP + remainingSoulHP == 1 then
 		player:GetData().CustomHealthAPIOtherData = player:GetData().CustomHealthAPIOtherData or {}
@@ -469,7 +489,7 @@ function CustomHealthAPI.Helper.HandleGlassCannonOnBreaking(player)
 		SFXManager():Play(SoundEffect.SOUND_GLASS_BREAK)
 		player:GetEffects():AddCollectibleEffect(CollectibleType.COLLECTIBLE_ANEMIC, true)
 		
-		if CustomHealthAPI.Helper.GetTotalHP(player) > 0 then
+		if CustomHealthAPI.Helper.GetTotalHP(player, true) > 0 then
 			local glassFlags = DamageFlag.DAMAGE_NOKILL | DamageFlag.DAMAGE_INVINCIBLE | DamageFlag.DAMAGE_ISSAC_HEART | DamageFlag.DAMAGE_NO_MODIFIERS
 			player:ResetDamageCooldown() -- WHY IS DAMAGE_INVINCIBLE NOT WORKING
 			player:TakeDamage(2, glassFlags, EntityRef(player), 30)
@@ -482,21 +502,22 @@ function CustomHealthAPI.Helper.HandleGlassCannonOnBreaking(player)
 			local redMasks = data.RedHealthMasks
 			local otherMasks = data.OtherHealthMasks
 			
-			if CustomHealthAPI.Helper.GetTotalHP(player) <= 0 then
+			if CustomHealthAPI.Helper.GetTotalHP(player, true) <= 0 then
 				local playerType = player:GetPlayerType()
 				local key, hp
-				if CustomHealthAPI.Helper.GetTotalMaxHP(player) > 0 then
+				if CustomHealthAPI.Helper.GetTotalMaxHP(player, true) > 0 then
 					key = "RED_HEART"
 					hp = 1
-				elseif CustomHealthAPI.Helper.PlayerIsTheForgotten(player) then
+				elseif CustomHealthAPI.Helper.PlayerIsBoneHeartOnly(player) then
 					key = "BONE_HEART"
 					hp = 1
-				elseif playerType ~= PlayerType.PLAYER_KEEPER and playerType ~= PlayerType.PLAYER_KEEPER_B and playerType ~= PlayerType.PLAYER_BETHANY then
+				elseif not (CustomHealthAPI.Helper.PlayerHasCoinHealth(player)) and playerType ~= PlayerType.PLAYER_BETHANY then
 					key = "SOUL_HEART"
 					hp = 1
 				end
 			
 				if key ~= nil then
+					CustomHealthAPI.PersistentData.PreventGetHPCaching = true
 					local prevent = false
 					local callbacks = CustomHealthAPI.Helper.GetCallbacks(CustomHealthAPI.Enums.Callbacks.PRE_GLASS_CANNON_HEAL)
 					for _, callback in ipairs(callbacks) do
@@ -509,6 +530,7 @@ function CustomHealthAPI.Helper.HandleGlassCannonOnBreaking(player)
 							hp = newHP or hp
 						end
 					end
+					CustomHealthAPI.PersistentData.PreventGetHPCaching = false
 					
 					if not prevent then
 						CustomHealthAPI.Helper.UpdateHealthMasks(player, key, hp, true, false, true, true, true)
@@ -518,6 +540,30 @@ function CustomHealthAPI.Helper.HandleGlassCannonOnBreaking(player)
 			end
 		end
 	end
+end
+
+if REPENTOGON then
+
+function CustomHealthAPI.Helper.AddPostTakeDamageCallback()
+	Isaac.AddPriorityCallback(CustomHealthAPI.Mod, ModCallbacks.MC_POST_ENTITY_TAKE_DMG, CustomHealthAPI.Enums.CallbackPriorities.EARLY, CustomHealthAPI.Mod.PostTakeDamageCallback, EntityType.ENTITY_PLAYER)
+end
+table.insert(CustomHealthAPI.CallbacksToAdd, CustomHealthAPI.Helper.AddPostTakeDamageCallback)
+
+function CustomHealthAPI.Helper.RemovePostTakeDamageCallback()
+	CustomHealthAPI.Mod:RemoveCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, CustomHealthAPI.Mod.PostTakeDamageCallback)
+end
+table.insert(CustomHealthAPI.CallbacksToRemove, CustomHealthAPI.Helper.RemovePostTakeDamageCallback)
+
+function CustomHealthAPI.Mod:PostTakeDamageCallback(ent, damage, flags, source, countdown)
+	local player = ent:ToPlayer()
+	if not player then return end
+
+	CustomHealthAPI.Helper.CheckIfHealthOrderSet()
+	CustomHealthAPI.Helper.CheckHealthIsInitializedForPlayer(player)
+	CustomHealthAPI.Helper.CheckSubPlayerInfoOfPlayer(player)
+	CustomHealthAPI.Helper.FinishDamageDesync(player)
+end
+
 end
 
 function CustomHealthAPI.Helper.AddHandleDebugThreeCallback()
@@ -550,8 +596,8 @@ function CustomHealthAPI.Helper.HandleDamageDesync(player) --, compensationFunc)
 	player:GetData().CustomHealthAPIPersistent.EnabledDebugThreeForDamage = Isaac.GetFrameCount()
 	
 	player:ClearEntityFlags(EntityFlag.FLAG_BLEED_OUT)
-	if CustomHealthAPI.Helper.GetTotalRedHP(player, true) > 0 and 
-	   CustomHealthAPI.Helper.GetTotalHP(player) > 1 and 
+	if CustomHealthAPI.Helper.GetTotalRedHP(player, true, nil, true) > 0 and 
+	   CustomHealthAPI.Helper.GetTotalHP(player, true) > 1 and 
 	   not player:GetEffects():HasNullEffect(NullItemID.ID_LOST_CURSE) and
 	   player:HasCollectible(CollectibleType.COLLECTIBLE_SHARD_OF_GLASS)
 	then
@@ -571,8 +617,10 @@ function CustomHealthAPI.Helper.HandleRedEternalDamage(player, flags, heartsBrok
 	
 	if data.Overlays["ETERNAL_HEART"] > 0 and
 	   (flags & DamageFlag.DAMAGE_RED_HEARTS ~= DamageFlag.DAMAGE_RED_HEARTS or
-	    CustomHealthAPI.Helper.GetTotalHP(player) == 0)
+	    CustomHealthAPI.Helper.GetTotalHP(player, true) == 0)
 	then
+		CustomHealthAPI.PersistentData.PreventGetHPCaching = true
+		
 		local key = "RED_HEART"
 		local hp = 1
 		
@@ -588,6 +636,8 @@ function CustomHealthAPI.Helper.HandleRedEternalDamage(player, flags, heartsBrok
 				hp = newHP or hp
 			end
 		end
+		
+		CustomHealthAPI.PersistentData.PreventGetHPCaching = false
 				
 		if not prevent then
 			CustomHealthAPI.Helper.UpdateHealthMasks(player, key, hp, true, false, true, true, true)
@@ -606,7 +656,9 @@ function CustomHealthAPI.Helper.HandleSoulEternalDamage(player, heartsBroken)
 	local data = player:GetData().CustomHealthAPISavedata
 	local otherMasks = data.OtherHealthMasks
 	
-	if data.Overlays["ETERNAL_HEART"] > 0 and CustomHealthAPI.Helper.GetTotalHP(player) == 0 then
+	if data.Overlays["ETERNAL_HEART"] > 0 and CustomHealthAPI.Helper.GetTotalHP(player, true) == 0 then
+		CustomHealthAPI.PersistentData.PreventGetHPCaching = true
+		
 		local key = "SOUL_HEART"
 		local hp = 1
 		
@@ -622,6 +674,8 @@ function CustomHealthAPI.Helper.HandleSoulEternalDamage(player, heartsBroken)
 				hp = newHP or hp
 			end
 		end
+		
+		CustomHealthAPI.PersistentData.PreventGetHPCaching = false
 				
 		if not prevent then
 			CustomHealthAPI.Helper.UpdateHealthMasks(player, key, hp, true, false, true, true, true)
@@ -640,7 +694,9 @@ function CustomHealthAPI.Helper.HandleBoneEternalDamage(player, heartsBroken, ke
 	local data = player:GetData().CustomHealthAPISavedata
 	local otherMasks = data.OtherHealthMasks
 	
-	if data.Overlays["ETERNAL_HEART"] > 0 and CustomHealthAPI.Helper.GetTotalHP(player) == 0 then
+	if data.Overlays["ETERNAL_HEART"] > 0 and CustomHealthAPI.Helper.GetTotalHP(player, true) == 0 then
+		CustomHealthAPI.PersistentData.PreventGetHPCaching = true
+		
 		local key = keyBroken
 		local hp = 1
 		
@@ -656,6 +712,8 @@ function CustomHealthAPI.Helper.HandleBoneEternalDamage(player, heartsBroken, ke
 				hp = newHP or hp
 			end
 		end
+		
+		CustomHealthAPI.PersistentData.PreventGetHPCaching = false
 				
 		if not prevent then
 			CustomHealthAPI.Helper.UpdateHealthMasks(player, key, hp, true, false, true, true, true)
@@ -844,7 +902,7 @@ function CustomHealthAPI.Helper.HealthHasTaintedMaggieProtection(player, redHeal
 	return isTaintedMaggie and isBleedingContainer
 end
 
-function CustomHealthAPI.Helper.HandleForcedRedDamage(player, amount, flags, source, countdown)
+function CustomHealthAPI.Helper.HandleForcedRedDamage(player, amount, flags, source, countdown, prioritizeEternal)
 	local data = player:GetData().CustomHealthAPISavedata
 	local redMasks = data.RedHealthMasks
 	local otherMasks = data.OtherHealthMasks
@@ -856,7 +914,40 @@ function CustomHealthAPI.Helper.HandleForcedRedDamage(player, amount, flags, sou
 	local damagedDevilDeal = 0
 	local heartsBroken = {}
 	local didDamage = false
+	
+	if prioritizeEternal and data.Overlays["ETERNAL_HEART"] > 0 then
+		while toRemove > 0 and data.Overlays["ETERNAL_HEART"] > 0 do
+			data.Overlays["ETERNAL_HEART"] = math.max(0, data.Overlays["ETERNAL_HEART"] - 1)
+			toRemove = toRemove - 1
+			
+			heartsBroken["ETERNAL_HEART"] = (heartsBroken["ETERNAL_HEART"] or 0) + 1
+			table.insert(heartsDamaged, {Key = "ETERNAL_HEART", HP = 1, Broken = true})
+			
+			damagedDevilDeal = damagedDevilDeal - 1
+			didDamage = true
+		end
+	end
+	
+	if toRemove <= 0 then
+		return isRedDamage, damagedDevilDeal > 0, heartsBroken, didDamage
+	end
+	
 	if #streamOfRed > 0 then
+		if REPENTOGON then
+			-- Red health damage is the ONLY one that actually calls the corresponding AddHearts function internally, and in turn triggers this callback. Cool!
+			CustomHealthAPI.PersistentData.AllowAddHeartsCallback = CustomHealthAPI.PersistentData.AllowAddHeartsCallback + 1
+			local result = Isaac.RunCallbackWithParam(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, AddHealthType.RED, player, -toRemove, AddHealthType.RED, false)
+			if result then
+				if result >= 0 then
+					if result > 0 then  -- Yeah, this can happen
+						CustomHealthAPI.Library.AddHealth(player, "RED_HEART", result, nil, nil, nil, nil, nil, nil, nil, nil, true)
+					end
+					return isRedDamage, damagedDevilDeal > 0, heartsBroken, didDamage
+				end
+				toRemove = -result
+			end
+		end
+		
 		local amountToRemove = toRemove
 		for i = 1, #streamOfRed do
 			local redIndices = streamOfRed[i].Red
@@ -864,6 +955,7 @@ function CustomHealthAPI.Helper.HandleForcedRedDamage(player, amount, flags, sou
 			local health = redMasks[redIndices[1]][redIndices[2]]
 			local otherHealth = otherMasks[otherIndices[1]][otherIndices[2]]
 	
+			CustomHealthAPI.PersistentData.PreventGetHPCaching = true
 			local prevent = false
 			local callbacks = CustomHealthAPI.Helper.GetCallbacks(CustomHealthAPI.Enums.Callbacks.PRE_HEALTH_DAMAGED)
 			for _, callback in ipairs(callbacks) do
@@ -880,6 +972,7 @@ function CustomHealthAPI.Helper.HandleForcedRedDamage(player, amount, flags, sou
 					break
 				end
 			end
+			CustomHealthAPI.PersistentData.PreventGetHPCaching = false
 			
 			if prevent or amountToRemove <= 0 then
 				break
@@ -925,6 +1018,12 @@ function CustomHealthAPI.Helper.HandleForcedRedDamage(player, amount, flags, sou
 			damagedDevilDeal = damagedDevilDeal - 1
 		end
 		
+		if REPENTOGON then
+			-- Red health damage is the ONLY one that actually calls the corresponding AddHearts function internally, and in turn triggers this callback. Cool!
+			CustomHealthAPI.PersistentData.AllowAddHeartsCallback = CustomHealthAPI.PersistentData.AllowAddHeartsCallback + 1
+			Isaac.RunCallbackWithParam(ModCallbacks.MC_POST_PLAYER_ADD_HEARTS, AddHealthType.RED, player, -toRemove, AddHealthType.RED, false)
+		end
+		
 		isRedDamage = true
 	else
 		print("Custom Health API ERROR: CustomHealthAPI.Helper.HandleForcedRedDamage; No hearts to damage.")
@@ -934,7 +1033,7 @@ function CustomHealthAPI.Helper.HandleForcedRedDamage(player, amount, flags, sou
 	return isRedDamage, damagedDevilDeal > 0, heartsBroken, didDamage
 end
 
-function CustomHealthAPI.Helper.HandleRegularDamage(player, amount, flags, source, countdown)
+function CustomHealthAPI.Helper.HandleRegularDamage(player, amount, flags, source, countdown, prioritizeEternal)
 	local data = player:GetData().CustomHealthAPISavedata
 	local redMasks = data.RedHealthMasks
 	local otherMasks = data.OtherHealthMasks
@@ -947,6 +1046,38 @@ function CustomHealthAPI.Helper.HandleRegularDamage(player, amount, flags, sourc
 	local heartsBroken = {}
 	local didDamage = false
 	if #streamOfRed > 0 then
+		if prioritizeEternal and data.Overlays["ETERNAL_HEART"] > 0 then
+			while toRemove > 0 and data.Overlays["ETERNAL_HEART"] > 0 do
+				data.Overlays["ETERNAL_HEART"] = math.max(0, data.Overlays["ETERNAL_HEART"] - 1)
+				toRemove = toRemove - 1
+				
+				heartsBroken["ETERNAL_HEART"] = (heartsBroken["ETERNAL_HEART"] or 0) + 1
+				table.insert(heartsDamaged, {Key = "ETERNAL_HEART", HP = 1, Broken = true})
+				
+				damagedDevilDeal = damagedDevilDeal - 1
+				didDamage = true
+			end
+		end
+		
+		if toRemove <= 0 then
+			return isRedDamage, damagedDevilDeal > 0, heartsBroken, didDamage
+		end
+		
+		if REPENTOGON then
+			-- Red health damage is the ONLY one that actually calls the corresponding AddHearts function internally, and in turn triggers this callback. Cool!
+			CustomHealthAPI.PersistentData.AllowAddHeartsCallback = CustomHealthAPI.PersistentData.AllowAddHeartsCallback + 1
+			local result = Isaac.RunCallbackWithParam(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, AddHealthType.RED, player, -toRemove, AddHealthType.RED, false)
+			if result then
+				if result >= 0 then
+					if result > 0 then  -- Yeah, this can happen
+						CustomHealthAPI.Library.AddHealth(player, "RED_HEART", result, nil, nil, nil, nil, nil, nil, nil, nil, true)
+					end
+					return isRedDamage, damagedDevilDeal > 0, heartsBroken, didDamage
+				end
+				toRemove = -result
+			end
+		end
+		
 		local amountToRemove = toRemove
 		for i = 1, #streamOfRed do
 			local redIndices = streamOfRed[i].Red
@@ -954,6 +1085,7 @@ function CustomHealthAPI.Helper.HandleRegularDamage(player, amount, flags, sourc
 			local health = redMasks[redIndices[1]][redIndices[2]]
 			local otherHealth = otherMasks[otherIndices[1]][otherIndices[2]]
 	
+			CustomHealthAPI.PersistentData.PreventGetHPCaching = true
 			local prevent = false
 			local callbacks = CustomHealthAPI.Helper.GetCallbacks(CustomHealthAPI.Enums.Callbacks.PRE_HEALTH_DAMAGED)
 			for _, callback in ipairs(callbacks) do
@@ -970,6 +1102,7 @@ function CustomHealthAPI.Helper.HandleRegularDamage(player, amount, flags, sourc
 					break
 				end
 			end
+			CustomHealthAPI.PersistentData.PreventGetHPCaching = false
 			
 			if prevent or amountToRemove <= 0 then
 				break
@@ -1015,13 +1148,41 @@ function CustomHealthAPI.Helper.HandleRegularDamage(player, amount, flags, sourc
 			damagedDevilDeal = damagedDevilDeal - 1
 		end
 		
+		if REPENTOGON then
+			-- Red health damage is the ONLY one that actually calls the corresponding AddHearts function internally, and in turn triggers this callback. Cool!
+			CustomHealthAPI.PersistentData.AllowAddHeartsCallback = CustomHealthAPI.PersistentData.AllowAddHeartsCallback + 1
+			Isaac.RunCallbackWithParam(ModCallbacks.MC_POST_PLAYER_ADD_HEARTS, AddHealthType.RED, player, -toRemove, AddHealthType.RED, false)
+		end
+		
 		isRedDamage = true
 	elseif #streamOfSouls > 0 then
 		local amountToRemove = toRemove
 		for i = 1, #streamOfSouls do
+			if prioritizeEternal and data.Overlays["ETERNAL_HEART"] > 0 and
+			   CustomHealthAPI.Helper.GetTotalRedHP(player, nil, nil, true) + CustomHealthAPI.Helper.GetTotalBoneHP(player, nil, true) <= 0 and 
+			   CustomHealthAPI.Helper.GetTotalSoulHP(player, true, nil, true) <= 2 and
+			   CustomHealthAPI.Helper.GetTotalSoulHP(player, nil, nil, true) <= amountToRemove
+			then
+				while amountToRemove > 0 and data.Overlays["ETERNAL_HEART"] > 0 do
+					data.Overlays["ETERNAL_HEART"] = math.max(0, data.Overlays["ETERNAL_HEART"] - 1)
+					amountToRemove = amountToRemove - 1
+					
+					heartsBroken["ETERNAL_HEART"] = (heartsBroken["ETERNAL_HEART"] or 0) + 1
+					table.insert(heartsDamaged, {Key = "ETERNAL_HEART", HP = 1, Broken = true})
+					
+					damagedDevilDeal = damagedDevilDeal - 1
+					didDamage = true
+				end
+			end
+			
+			if amountToRemove <= 0 then
+				return isRedDamage, damagedDevilDeal > 0, heartsBroken, didDamage
+			end
+			
 			local otherIndices = streamOfSouls[i].Other
 			local health = otherMasks[otherIndices[1]][otherIndices[2]]
 	
+			CustomHealthAPI.PersistentData.PreventGetHPCaching = true
 			local prevent = false
 			local callbacks = CustomHealthAPI.Helper.GetCallbacks(CustomHealthAPI.Enums.Callbacks.PRE_HEALTH_DAMAGED)
 			for _, callback in ipairs(callbacks) do
@@ -1038,6 +1199,7 @@ function CustomHealthAPI.Helper.HandleRegularDamage(player, amount, flags, sourc
 					break
 				end
 			end
+			CustomHealthAPI.PersistentData.PreventGetHPCaching = false
 			
 			if prevent or amountToRemove <= 0 then
 				break
@@ -1074,9 +1236,27 @@ function CustomHealthAPI.Helper.HandleRegularDamage(player, amount, flags, sourc
 		local amountToRemove = toRemove
 		
 		if redIndices ~= nil then
+			if prioritizeEternal and data.Overlays["ETERNAL_HEART"] > 0 then
+				while toRemove > 0 and data.Overlays["ETERNAL_HEART"] > 0 do
+					data.Overlays["ETERNAL_HEART"] = math.max(0, data.Overlays["ETERNAL_HEART"] - 1)
+					toRemove = toRemove - 1
+					
+					heartsBroken["ETERNAL_HEART"] = (heartsBroken["ETERNAL_HEART"] or 0) + 1
+					table.insert(heartsDamaged, {Key = "ETERNAL_HEART", HP = 1, Broken = true})
+					
+					damagedDevilDeal = damagedDevilDeal - 1
+					didDamage = true
+				end
+			end
+			
+			if toRemove <= 0 then
+				return isRedDamage, damagedDevilDeal > 0, heartsBroken, didDamage
+			end
+			
 			local health = redMasks[redIndices[1]][redIndices[2]]
 			local otherHealth = otherMasks[otherIndices[1]][otherIndices[2]]
 	
+			CustomHealthAPI.PersistentData.PreventGetHPCaching = true
 			local prevent = false
 			local callbacks = CustomHealthAPI.Helper.GetCallbacks(CustomHealthAPI.Enums.Callbacks.PRE_HEALTH_DAMAGED)
 			for _, callback in ipairs(callbacks) do
@@ -1093,6 +1273,7 @@ function CustomHealthAPI.Helper.HandleRegularDamage(player, amount, flags, sourc
 					break
 				end
 			end
+			CustomHealthAPI.PersistentData.PreventGetHPCaching = false
 			
 			if not (prevent or amountToRemove <= 0) then
 				if amountToRemove >= health.HP then
@@ -1130,8 +1311,29 @@ function CustomHealthAPI.Helper.HandleRegularDamage(player, amount, flags, sourc
 				isRedDamage = true
 			end
 		else
+			if prioritizeEternal and data.Overlays["ETERNAL_HEART"] > 0 and
+			   CustomHealthAPI.Helper.GetTotalRedHP(player, nil, nil, true) + CustomHealthAPI.Helper.GetTotalSoulHP(player, nil, nil, true) <= 0 and 
+			   CustomHealthAPI.Helper.GetTotalBoneHP(player, true, true) <= 1
+			then
+				while amountToRemove > 0 and data.Overlays["ETERNAL_HEART"] > 0 do
+					data.Overlays["ETERNAL_HEART"] = math.max(0, data.Overlays["ETERNAL_HEART"] - 1)
+					amountToRemove = amountToRemove - 1
+					
+					heartsBroken["ETERNAL_HEART"] = (heartsBroken["ETERNAL_HEART"] or 0) + 1
+					table.insert(heartsDamaged, {Key = "ETERNAL_HEART", HP = 1, Broken = true})
+					
+					damagedDevilDeal = damagedDevilDeal - 1
+					didDamage = true
+				end
+			end
+			
+			if amountToRemove <= 0 then
+				return isRedDamage, damagedDevilDeal > 0, heartsBroken, didDamage
+			end
+			
 			local otherHealth = otherMasks[otherIndices[1]][otherIndices[2]]
 	
+			CustomHealthAPI.PersistentData.PreventGetHPCaching = true
 			local prevent = false
 			local callbacks = CustomHealthAPI.Helper.GetCallbacks(CustomHealthAPI.Enums.Callbacks.PRE_HEALTH_DAMAGED)
 			for _, callback in ipairs(callbacks) do
@@ -1148,6 +1350,7 @@ function CustomHealthAPI.Helper.HandleRegularDamage(player, amount, flags, sourc
 					break
 				end
 			end
+			CustomHealthAPI.PersistentData.PreventGetHPCaching = false
 			
 			if not (prevent or amountToRemove <= 0) then
 				if amountToRemove >= otherHealth.HP then
@@ -1186,9 +1389,9 @@ function CustomHealthAPI.Helper.HandleDamage(player, amount, flags, source, coun
 	local otherMasks = data.OtherHealthMasks
 	local toRemove = math.floor(amount + 0.5)
 	
-	local currentCustomRedHP = CustomHealthAPI.Helper.GetTotalRedHP(player, false)
-	local currentBasegameRedHP = CustomHealthAPI.Helper.GetTotalRedHP(player, true)
-	local currentRedHP = math.max(CustomHealthAPI.Helper.GetTotalRedHP(player, false), CustomHealthAPI.Helper.GetTotalRedHP(player, true))
+	local currentCustomRedHP = CustomHealthAPI.Helper.GetTotalRedHP(player, false, nil, true)
+	local currentBasegameRedHP = CustomHealthAPI.Helper.GetTotalRedHP(player, true, nil, true)
+	local currentRedHP = math.max(CustomHealthAPI.Helper.GetTotalRedHP(player, false, nil, true), CustomHealthAPI.Helper.GetTotalRedHP(player, true, nil, true))
 	local forcedRedDamage = currentRedHP >= toRemove and 
 	                        (flags & DamageFlag.DAMAGE_RED_HEARTS == DamageFlag.DAMAGE_RED_HEARTS or player:HasTrinket(TrinketType.TRINKET_CROW_HEART))
 	
@@ -1204,6 +1407,7 @@ function CustomHealthAPI.Helper.HandleDamage(player, amount, flags, source, coun
 		return false
 	end
 	
+	CustomHealthAPI.PersistentData.PreventGetHPCaching = true
 	for i = 1, #heartsDamaged do
 		local health = heartsDamaged[i]
 		
@@ -1212,6 +1416,7 @@ function CustomHealthAPI.Helper.HandleDamage(player, amount, flags, source, coun
 			callback.Function(player, flags, health.Key, health.HP, health.Broken, i == #heartsDamaged)
 		end
 	end
+	CustomHealthAPI.PersistentData.PreventGetHPCaching = false
 	heartsDamaged = {}
 	
 	--handle desync
@@ -1243,7 +1448,9 @@ function CustomHealthAPI.Helper.HandleDamage(player, amount, flags, source, coun
 			processedBrittleBones = true
 		end
 		
-		if player:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN then
+		if CustomHealthAPI.Helper.PlayerIsTheForgotten(player) then
+			-- you'd think this would be tied to the healthtype but it's not in basegame
+			-- still tempted to change that
 			damagedDevilDeal = true
 		end
 	end
@@ -1263,4 +1470,90 @@ function CustomHealthAPI.Helper.HandleDamage(player, amount, flags, source, coun
 	end
 	
 	return true
+end
+
+function CustomHealthAPI.Library.RemoveHealthInDamageOrder(player, amount, tryForceRedDamage, prioritizeEternal)
+	if not (player and player:ToPlayer()) then
+		return {}
+	end
+	
+	if player:IsCoopGhost() then
+		return {}
+	end
+	
+	local playerType = player:GetPlayerType()
+	if playerType == PlayerType.PLAYER_THESOUL_B and player:GetOtherTwin() then
+		return CustomHealthAPI.Library.RemoveHealthInDamageOrder(player:GetOtherTwin(), amount, tryForceRedDamage, prioritizeEternal)
+	elseif CustomHealthAPI.Helper.PlayerIsHealthless(player) or CustomHealthAPI.Helper.IsFoundSoul(player) then
+		local returnHearts = {}
+		if CustomHealthAPI.PersistentData.OverriddenFunctions.GetGoldenHearts(player) > 0 then
+			table.insert(returnHearts, {Key = "GOLDEN_HEART", HP = 1})
+			CustomHealthAPI.PersistentData.OverriddenFunctions.AddGoldenHearts(player, -99)
+		end
+		table.insert(returnHearts, {Key = "SOUL_HEART", HP = 1})
+		CustomHealthAPI.PersistentData.OverriddenFunctions.AddSoulHearts(player, -99)
+		return returnHearts
+	elseif CustomHealthAPI.Helper.PlayerHasCoinHealth(player) then
+		local returnHearts = {}
+		local toRemove = math.floor(amount + 0.5)
+		while CustomHealthAPI.PersistentData.OverriddenFunctions.GetHearts(player) > 0 and toRemove > 0 do
+			local hearts = math.ceil(CustomHealthAPI.PersistentData.OverriddenFunctions.GetHearts(player) / 2)
+			local goldenHearts = CustomHealthAPI.PersistentData.OverriddenFunctions.GetGoldenHearts(player)
+			
+			if goldenHearts > hearts - 1 then
+				table.insert(returnHearts, {Key = "GOLDEN_HEART", HP = 1})
+				CustomHealthAPI.PersistentData.OverriddenFunctions.AddGoldenHearts(player, -1)
+			end
+			
+			table.insert(returnHearts, {Key = "COIN_HEART", HP = 2})
+			CustomHealthAPI.PersistentData.OverriddenFunctions.AddHearts(player, -2)
+			toRemove = toRemove - 2
+		end
+		return returnHearts
+	end
+	
+	
+	local data = player:GetData().CustomHealthAPISavedata
+	local redMasks = data.RedHealthMasks
+	local otherMasks = data.OtherHealthMasks
+	local toRemove = math.floor(amount + 0.5)
+	
+	local currentCustomRedHP = CustomHealthAPI.Helper.GetTotalRedHP(player, false, nil, true)
+	local currentBasegameRedHP = CustomHealthAPI.Helper.GetTotalRedHP(player, true, nil, true)
+	local currentRedHP = math.max(CustomHealthAPI.Helper.GetTotalRedHP(player, false, nil, true), CustomHealthAPI.Helper.GetTotalRedHP(player, true, nil, true))
+	local forcedRedDamage = currentRedHP >= toRemove and 
+	                        (tryForceRedDamage or player:HasTrinket(TrinketType.TRINKET_CROW_HEART))
+	
+	local handleFunc = CustomHealthAPI.Helper.HandleRegularDamage
+	if forcedRedDamage then
+		handleFunc = CustomHealthAPI.Helper.HandleForcedRedDamage
+	end
+	
+	local flags = 0
+	if tryForceRedDamage then
+		flags = DamageFlag.DAMAGE_RED_HEARTS
+	end
+---@diagnostic disable-next-line: param-type-mismatch
+	local isRedDamage, damagedDevilDeal, heartsBroken, didDamage = handleFunc(player, amount, flags, EntityRef(nil), 0, prioritizeEternal)
+	
+	if heartsBroken == nil then
+		return {}
+	elseif not didDamage then
+		return {}
+	end
+	
+	local returnHearts = {}
+	for i = 1, #heartsDamaged do
+		table.insert(returnHearts, heartsDamaged[i])
+	end
+	heartsDamaged = {}
+	
+	if heartsBroken["GOLDEN_HEART"] then
+		table.insert(returnHearts, {Key = "GOLDEN_HEART", HP = 1})
+	end
+	
+	--update hp
+	CustomHealthAPI.Helper.UpdateBasegameHealthState(player)
+	
+	return returnHearts
 end

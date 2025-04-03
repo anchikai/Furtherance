@@ -1,4 +1,5 @@
 function CustomHealthAPI.Helper.AddHeartSpikesCostCallback()
+---@diagnostic disable-next-line: param-type-mismatch
 	Isaac.AddPriorityCallback(CustomHealthAPI.Mod, ModCallbacks.MC_PRE_PICKUP_COLLISION, -1 * math.huge, CustomHealthAPI.Mod.HeartSpikesCostCallback, PickupVariant.PICKUP_HEART)
 end
 table.insert(CustomHealthAPI.CallbacksToAdd, CustomHealthAPI.Helper.AddHeartSpikesCostCallback)
@@ -14,6 +15,7 @@ function CustomHealthAPI.Mod:HeartSpikesCostCallback(pickup, collider)
 end
 
 function CustomHealthAPI.Helper.AddHeartCollisionCallback()
+---@diagnostic disable-next-line: param-type-mismatch
 	Isaac.AddPriorityCallback(CustomHealthAPI.Mod, ModCallbacks.MC_PRE_PICKUP_COLLISION, CustomHealthAPI.Enums.CallbackPriorities.LATE, CustomHealthAPI.Mod.HeartCollisionCallback, PickupVariant.PICKUP_HEART)
 end
 table.insert(CustomHealthAPI.CallbacksToAdd, CustomHealthAPI.Helper.AddHeartCollisionCallback)
@@ -73,6 +75,8 @@ function CustomHealthAPI.Helper.CheckIfHeartShouldUseCustomLogic(player, pickup)
 		end
 	elseif hearttype == HeartSubType.HEART_BLACK then
 		return CustomHealthAPI.Helper.CheckIfBlackShouldUseCustomLogic(player, 2)
+	elseif hearttype == HeartSubType.HEART_GOLDEN then
+		return CustomHealthAPI.Helper.CheckIfGoldenShouldUseCustomLogic(player)
 	elseif hearttype == HeartSubType.HEART_HALF_SOUL then
 		return CustomHealthAPI.Helper.CheckIfSoulShouldUseCustomLogic(player, 1)
 	elseif hearttype == HeartSubType.HEART_SCARED then
@@ -91,7 +95,9 @@ function CustomHealthAPI.Helper.CheckIfHeartShouldUseCustomLogic(player, pickup)
 end
 
 function CustomHealthAPI.Helper.CheckIfRedShouldUseCustomLogic(player, hp)
-	if player:GetPlayerType() == PlayerType.PLAYER_THESOUL then
+	if CustomHealthAPI.PersistentData.OverriddenFunctions.CanPickRedHearts(player) ~= CustomHealthAPI.Helper.CanPickKey(player, "RED_HEART") then
+		return true
+	elseif player:GetPlayerType() == PlayerType.PLAYER_THESOUL then
 		if player:GetSubPlayer() ~= nil then
 			return CustomHealthAPI.Helper.CheckIfRedShouldUseCustomLogic(player:GetSubPlayer(), hp)
 		end
@@ -103,7 +109,7 @@ function CustomHealthAPI.Helper.CheckIfRedShouldUseCustomLogic(player, hp)
 		return false
 	elseif CustomHealthAPI.Helper.PlayerIsIgnored(player) then
 		return false
-	elseif CustomHealthAPI.PersistentData.CharactersThatCantHaveRedHealth[player:GetPlayerType()] then
+	elseif CustomHealthAPI.Helper.PlayerIsRedHealthless(player, true) then
 		return false
 	end
 	
@@ -143,7 +149,9 @@ function CustomHealthAPI.Helper.CheckIfRedShouldUseCustomLogic(player, hp)
 end
 
 function CustomHealthAPI.Helper.CheckIfRottenShouldUseCustomLogic(player, hp)
-	if player:GetPlayerType() == PlayerType.PLAYER_THESOUL then
+	if CustomHealthAPI.PersistentData.OverriddenFunctions.CanPickRottenHearts(player) ~= CustomHealthAPI.Helper.CanPickKey(player, "ROTTEN_HEART") then
+		return true
+	elseif player:GetPlayerType() == PlayerType.PLAYER_THESOUL then
 		if player:GetSubPlayer() ~= nil then
 			return CustomHealthAPI.Helper.CheckIfRottenShouldUseCustomLogic(player:GetSubPlayer(), hp)
 		end
@@ -155,18 +163,17 @@ function CustomHealthAPI.Helper.CheckIfRottenShouldUseCustomLogic(player, hp)
 		return false
 	elseif CustomHealthAPI.Helper.PlayerIsIgnored(player) then
 		return false
-	elseif CustomHealthAPI.PersistentData.CharactersThatCantHaveRedHealth[player:GetPlayerType()] then
+	elseif CustomHealthAPI.Helper.PlayerIsRedHealthless(player, true) then
 		return false
 	end
 	
-	if CustomHealthAPI.PersistentData.OverriddenFunctions.CanPickRottenHearts(player) ~= CustomHealthAPI.Helper.CanPickKey(player, "ROTTEN_HEART") then
-		return true
-	end
 	return false
 end
 
 function CustomHealthAPI.Helper.CheckIfSoulShouldUseCustomLogic(player, hp)
-	if player:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN then
+	if CustomHealthAPI.PersistentData.OverriddenFunctions.CanPickSoulHearts(player) ~= CustomHealthAPI.Helper.CanPickKey(player, "SOUL_HEART") then
+		return true
+	elseif player:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN then
 		if player:GetSubPlayer() ~= nil then
 			return CustomHealthAPI.Helper.CheckIfSoulShouldUseCustomLogic(player:GetSubPlayer(), hp)
 		end
@@ -240,7 +247,9 @@ function CustomHealthAPI.Helper.CheckIfSoulShouldUseCustomLogic(player, hp)
 end
 
 function CustomHealthAPI.Helper.CheckIfBlackShouldUseCustomLogic(player, hp)
-	if player:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN then
+	if CustomHealthAPI.PersistentData.OverriddenFunctions.CanPickBlackHearts(player) ~= CustomHealthAPI.Helper.CanPickKey(player, "BLACK_HEART") then
+		return true
+	elseif player:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN then
 		if player:GetSubPlayer() ~= nil then
 			return CustomHealthAPI.Helper.CheckIfBlackShouldUseCustomLogic(player:GetSubPlayer(), hp)
 		end
@@ -275,14 +284,13 @@ function CustomHealthAPI.Helper.CheckIfBlackShouldUseCustomLogic(player, hp)
 		hp = hp - 2
 	end
 	
-	if CustomHealthAPI.PersistentData.OverriddenFunctions.CanPickBlackHearts(player) ~= CustomHealthAPI.Helper.CanPickKey(player, "BLACK_HEART") then
-		return true
-	end
 	return false
 end
 
 function CustomHealthAPI.Helper.CheckIfEternalShouldUseCustomLogic(player, hp)
-	if player:GetPlayerType() == PlayerType.PLAYER_THESOUL_B then
+	if not CustomHealthAPI.Helper.CanPickKey(player, "ETERNAL_HEART") then
+		return true
+	elseif player:GetPlayerType() == PlayerType.PLAYER_THESOUL_B then
 		if player:GetOtherTwin() ~= nil then
 			return CustomHealthAPI.Helper.CheckIfEternalShouldUseCustomLogic(player:GetOtherTwin(), hp)
 		end
@@ -300,7 +308,9 @@ function CustomHealthAPI.Helper.CheckIfEternalShouldUseCustomLogic(player, hp)
 end
 
 function CustomHealthAPI.Helper.CheckIfBoneShouldUseCustomLogic(player, hp)
-	if player:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN then
+	if CustomHealthAPI.PersistentData.OverriddenFunctions.CanPickBoneHearts(player) ~= CustomHealthAPI.Helper.CanPickKey(player, "BONE_HEART") then
+		return true
+	elseif player:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN then
 		if player:GetSubPlayer() ~= nil then
 			return CustomHealthAPI.Helper.CheckIfBoneShouldUseCustomLogic(player:GetSubPlayer(), hp)
 		end
@@ -340,6 +350,10 @@ function CustomHealthAPI.Helper.CheckIfBoneShouldUseCustomLogic(player, hp)
 	end
 	
 	return true
+end
+
+function CustomHealthAPI.Helper.CheckIfGoldenShouldUseCustomLogic(player)
+	return not CustomHealthAPI.Helper.CanPickKey(player, "GOLDEN_HEART")
 end
 
 function CustomHealthAPI.Library.GetRedHPToBeSpent(p, hpToAdd)
@@ -421,9 +435,7 @@ function CustomHealthAPI.Library.GetSoulHPToBeSpent(p, hpToAdd, heartKey)
 		end
 		
 		return 0
-	elseif playerType == PlayerType.PLAYER_THELOST or playerType == PlayerType.PLAYER_THELOST_B or 
-	       playerType == PlayerType.PLAYER_KEEPER or playerType == PlayerType.PLAYER_KEEPER_B
-	then
+	elseif CustomHealthAPI.Helper.PlayerIsHealthless(player, true) or CustomHealthAPI.Helper.PlayerHasCoinHealth(player) then
 		local numShacklesDisabled = player:GetEffects():GetNullEffectNum(NullItemID.ID_SPIRIT_SHACKLES_DISABLED)
 		local hpSpentReactivatingShackles = math.max(0, maxHpOfSoul * numShacklesDisabled)
 	
@@ -439,7 +451,7 @@ function CustomHealthAPI.Library.GetSoulHPToBeSpent(p, hpToAdd, heartKey)
 		player = player:GetSubPlayer()
 		if player == nil then
 			player = p:ToPlayer()
-			
+
 			local numShacklesDisabled = player:GetEffects():GetNullEffectNum(NullItemID.ID_SPIRIT_SHACKLES_DISABLED)
 			local hpSpentReactivatingShackles = math.max(0, maxHpOfSoul * numShacklesDisabled)
 		
@@ -596,6 +608,55 @@ function CustomHealthAPI.Library.AddSoulLocketBonus(pl, locketsToAdd, seed)
 	end
 end
 
+function CustomHealthAPI.Library.IncrementImmaculateConception(pl, amount, seed)
+	if not REPENTOGON or amount <= 0 then
+		return
+	end
+	
+	local player = pl:ToPlayer()
+	if player == nil or not player:HasCollectible(CollectibleType.COLLECTIBLE_IMMACULATE_CONCEPTION) then
+		return
+	end
+
+	local heartsCollected = player:GetImmaculateConceptionState() + amount
+	while heartsCollected >= 15 do
+		local flags = player:GetConceptionFamiliarFlags()
+		local availableFamiliars = {}
+		if flags & ConceptionFamiliarFlag.GUARDIAN_ANGEL ~= ConceptionFamiliarFlag.GUARDIAN_ANGEL then
+			table.insert(availableFamiliars, ConceptionFamiliarFlag.GUARDIAN_ANGEL)
+		end
+		if flags & ConceptionFamiliarFlag.HOLY_WATER ~= ConceptionFamiliarFlag.HOLY_WATER then
+			table.insert(availableFamiliars, ConceptionFamiliarFlag.HOLY_WATER)
+		end
+		if flags & ConceptionFamiliarFlag.RELIC ~= ConceptionFamiliarFlag.RELIC then
+			table.insert(availableFamiliars, ConceptionFamiliarFlag.RELIC)
+		end
+		if flags & ConceptionFamiliarFlag.SWORN_PROTECTOR ~= ConceptionFamiliarFlag.SWORN_PROTECTOR then
+			table.insert(availableFamiliars, ConceptionFamiliarFlag.SWORN_PROTECTOR)
+		end
+		if flags & ConceptionFamiliarFlag.SERAPHIM ~= ConceptionFamiliarFlag.SERAPHIM then
+			table.insert(availableFamiliars, ConceptionFamiliarFlag.SERAPHIM)
+		end
+		if #availableFamiliars > 0 then
+			local rng = RNG()
+			rng:SetSeed(seed, 40)
+			
+			local flag = availableFamiliars[rng:RandomInt(#availableFamiliars) + 1]
+			local continue = Isaac.RunCallback(ModCallbacks.MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE, player, flag)
+			if continue ~= false then
+				player:SetConceptionFamiliarFlags(flags | flag)
+				player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
+			end
+		end
+		
+		Isaac.Spawn(5, 10, 3, Game():GetRoom():FindFreePickupSpawnPosition(player.Position), Vector.Zero, player)
+		
+		heartsCollected = heartsCollected - 15
+	end
+	player:SetImmaculateConceptionState(heartsCollected)
+	player:UpdateIsaacPregnancy(false)
+end
+
 function CustomHealthAPI.Mod:HeartCollisionCallback(pickup, collider)
 	if collider.Type == EntityType.ENTITY_PLAYER then
 		local player = collider:ToPlayer()
@@ -607,11 +668,7 @@ function CustomHealthAPI.Mod:HeartCollisionCallback(pickup, collider)
 		local hasSodomApple = player:HasTrinket(TrinketType.TRINKET_APPLE_OF_SODOM)
 		
 		local data = pickup:GetData()
-		if hearttype < 1 or 
-		   hearttype > 12 or 
-		   player:GetPlayerType() == PlayerType.PLAYER_THELOST or 
-		   player:GetPlayerType() == PlayerType.PLAYER_THELOST_B 
-		then
+		if hearttype < 1 or hearttype > 12 or CustomHealthAPI.Helper.PlayerIsHealthless(player, true) then
 			return
 		elseif player:GetPlayerType() == PlayerType.PLAYER_THESOUL_B and CustomHealthAPI.Helper.IsHoldingTaintedForgotten(player) then
 			return CustomHealthAPI.Mod:HeartCollisionCallback(pickup, player:GetOtherTwin())
@@ -632,9 +689,13 @@ function CustomHealthAPI.Mod:HeartCollisionCallback(pickup, collider)
 			local redHealthBefore = player:GetHearts()
 			local soulHealthBefore = player:GetSoulHearts()
 			
-			if pickup.Price == PickupPrice.PRICE_SPIKES and not data.CHAPIHeartPickupSpentSpikesCostAlready then
+			if pickup.Price == PickupPrice.PRICE_SPIKES and 
+			   not (data.CHAPIHeartPickupSpentSpikesCostAlready or 
+			        player:GetPlayerType() == PlayerType.PLAYER_JACOB2_B or 
+			        player:GetEffects():HasNullEffect(NullItemID.ID_LOST_CURSE))
+			then
 ---@diagnostic disable-next-line: param-type-mismatch
-				local tookDamage = player:TakeDamage(2.0, 268435584, EntityRef(nil), 30)
+				local tookDamage = player:TakeDamage(2.0, DamageFlag.DAMAGE_SPIKES | DamageFlag.DAMAGE_NO_PENALTIES, EntityRef(nil), 30)
 				if not tookDamage then
 					return pickup:IsShopItem()
 				end
@@ -690,7 +751,7 @@ function CustomHealthAPI.Mod:HeartCollisionCallback(pickup, collider)
 			elseif hearttype == HeartSubType.HEART_SOUL and CustomHealthAPI.Helper.CanPickKey(player, "SOUL_HEART") then
 				CustomHealthAPI.Library.AddHealth(player, "SOUL_HEART", 2, true)
 				SFXManager():Play(SoundEffect.SOUND_HOLY, 1, 0, false, 1.0)
-			elseif hearttype == HeartSubType.HEART_ETERNAL then
+			elseif hearttype == HeartSubType.HEART_ETERNAL and CustomHealthAPI.Helper.CanPickKey(player, "ETERNAL_HEART") then
 				CustomHealthAPI.Library.AddHealth(player, "ETERNAL_HEART", 1, true)
 				SFXManager():Play(SoundEffect.SOUND_SUPERHOLY, 1, 0, false, 1.0)
 			elseif hearttype == HeartSubType.HEART_DOUBLEPACK and CustomHealthAPI.Helper.CanPickKey(player, "RED_HEART") then
@@ -818,6 +879,11 @@ function CustomHealthAPI.Mod:HeartCollisionCallback(pickup, collider)
 			
 			CustomHealthAPI.Library.AddCandyHeartBonus(player, redHealthAfter - redHealthBefore, pickup.InitSeed)
 			CustomHealthAPI.Library.AddSoulLocketBonus(player, soulHealthAfter - soulHealthBefore, pickup.InitSeed)
+			
+			if hearttype ~= HeartSubType.HEART_GOLDEN and hearttype ~= HeartSubType.HEART_BLENDED then
+				-- its clearly an oversight by basegame that these don't work but lol not my problem
+				CustomHealthAPI.Library.IncrementImmaculateConception(collider, 1, pickup.InitSeed)
+			end
 
 			if pickup.OptionsPickupIndex ~= 0 then
 				local pickups = Isaac.FindByType(EntityType.ENTITY_PICKUP)
@@ -912,6 +978,7 @@ local function tearsUp(firedelay, val)
 end
 
 function CustomHealthAPI.Helper.AddCandiesAndLocketsCacheCallback()
+---@diagnostic disable-next-line: param-type-mismatch
 	Isaac.AddPriorityCallback(CustomHealthAPI.Mod, ModCallbacks.MC_EVALUATE_CACHE, CallbackPriority.IMPORTANT, CustomHealthAPI.Mod.CandiesAndLocketsCacheCallback, -1)
 end
 table.insert(CustomHealthAPI.CallbacksToAdd, CustomHealthAPI.Helper.AddCandiesAndLocketsCacheCallback)
@@ -947,6 +1014,7 @@ function CustomHealthAPI.Mod:CandiesAndLocketsCacheCallback(player, flag)
 end
 
 function CustomHealthAPI.Helper.AddClearCandiesAndLocketsCallback()
+---@diagnostic disable-next-line: param-type-mismatch
 	Isaac.AddPriorityCallback(CustomHealthAPI.Mod, ModCallbacks.MC_PRE_USE_ITEM, CustomHealthAPI.Enums.CallbackPriorities.LATE, CustomHealthAPI.Mod.ClearCandiesAndLocketsCallback, CollectibleType.COLLECTIBLE_D4)
 end
 table.insert(CustomHealthAPI.CallbacksToAdd, CustomHealthAPI.Helper.AddClearCandiesAndLocketsCallback)

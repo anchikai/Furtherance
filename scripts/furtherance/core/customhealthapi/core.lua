@@ -1,10 +1,10 @@
--- sorry for the lack of documentation atm
--- this isn't version 1.0 for a reason
+local version = 0.96
 
-local version = 0.948
-local root = "ffscripts.customhealthapi."
-local modname = "Custom Health API (Fiend Folio)"
-local modinitials = "FF"
+local root = "scripts.furtherance.core.customhealthapi."
+
+local modname = "Custom Health API (Furtherance)"
+
+local modinitials = "FUR"
 
 CustomHealthAPI = CustomHealthAPI or {}
 
@@ -77,6 +77,10 @@ if shouldLoadMod then
 	CustomHealthAPI.PersistentData.OriginalAddCallback = CustomHealthAPI.PersistentData.OriginalAddCallback or Isaac.AddCallback
 	CustomHealthAPI.CallbacksToAdd = CustomHealthAPI.CallbacksToAdd or {}
 	CustomHealthAPI.CallbacksToRemove = CustomHealthAPI.CallbacksToRemove or {}
+	
+	if REPENTOGON then
+		CustomHealthAPI.PersistentData.DoManualHallowedGroundChecking = false -- Sets whether Hallowed Ground detection is manual or uses REPENTOGON features
+	end
 	
 	for k,_ in pairs(CustomHealthAPI.CallbacksToAdd) do
 		CustomHealthAPI.CallbacksToAdd[k] = nil
@@ -167,49 +171,51 @@ if shouldLoadMod then
 	include(root .. "misc")
 	include(root .. "savingandloading")
 	
-	function CustomHealthAPI.Helper.CheckBadLoad()
-		local anm2TestSprite = Sprite()
-		anm2TestSprite:Load("gfx/ui/ui_hearts.anm2", true)
-		anm2TestSprite:Play("RedHeartFull", true)
+	if not REPENTOGON then
+		function CustomHealthAPI.Helper.CheckBadLoad()
+			local anm2TestSprite = Sprite()
+			anm2TestSprite:Load("gfx/ui/ui_hearts.anm2", true)
+			anm2TestSprite:Play("RedHeartFull", true)
 
-		anm2TestSprite:SetFrame("RedHeartFull", 0)
-		anm2TestSprite:SetLastFrame()
-		return anm2TestSprite:GetFrame() ~= 3
-	end
-	
-	function CustomHealthAPI.Helper.AddTestBadLoadCallback()
-		Isaac.AddCallback(CustomHealthAPI.Mod, ModCallbacks.MC_POST_RENDER, CustomHealthAPI.Mod.TestBadLoadCallback, -1)
-	end
-	table.insert(CustomHealthAPI.CallbacksToAdd, CustomHealthAPI.Helper.AddTestBadLoadCallback)
+			anm2TestSprite:SetFrame("RedHeartFull", 0)
+			anm2TestSprite:SetLastFrame()
+			return anm2TestSprite:GetFrame() ~= 3
+		end
+		
+		function CustomHealthAPI.Helper.AddTestBadLoadCallback()
+			Isaac.AddCallback(CustomHealthAPI.Mod, ModCallbacks.MC_POST_RENDER, CustomHealthAPI.Mod.TestBadLoadCallback, -1)
+		end
+		table.insert(CustomHealthAPI.CallbacksToAdd, CustomHealthAPI.Helper.AddTestBadLoadCallback)
 
-	function CustomHealthAPI.Helper.RemoveTestBadLoadCallback()
-		CustomHealthAPI.Mod:RemoveCallback(ModCallbacks.MC_POST_RENDER, CustomHealthAPI.Mod.TestBadLoadCallback)
-	end
-	table.insert(CustomHealthAPI.CallbacksToRemove, CustomHealthAPI.Helper.RemoveTestBadLoadCallback)
+		function CustomHealthAPI.Helper.RemoveTestBadLoadCallback()
+			CustomHealthAPI.Mod:RemoveCallback(ModCallbacks.MC_POST_RENDER, CustomHealthAPI.Mod.TestBadLoadCallback)
+		end
+		table.insert(CustomHealthAPI.CallbacksToRemove, CustomHealthAPI.Helper.RemoveTestBadLoadCallback)
 
-	function CustomHealthAPI.Mod:TestBadLoadCallback()
-		if hasBadLoad == true or (hasBadLoad == nil and CustomHealthAPI.Helper.CheckBadLoad()) then
-			hasBadLoad = true
+		function CustomHealthAPI.Mod:TestBadLoadCallback()
+			if hasBadLoad == true or (hasBadLoad == nil and CustomHealthAPI.Helper.CheckBadLoad()) then
+				hasBadLoad = true
 
-			local font = Font()
-			font:Load("font/pftempestasevencondensed.fnt")
-			local fontColor = KColor(1,0.5,0.5,1)
-			
-			if modinitials ~= nil then
-				font:DrawString("[" .. modinitials .. "] Custom Health API animation files failed to load.",70,100,fontColor,0,false)
+				local font = Font()
+				font:Load("font/pftempestasevencondensed.fnt")
+				local fontColor = KColor(1,0.5,0.5,1)
+				
+				if modinitials ~= nil then
+					font:DrawString("[" .. modinitials .. "] Custom Health API animation files failed to load.",70,100,fontColor,0,false)
+				else
+					font:DrawString("Custom Health API animation files failed to load.",70,100,fontColor,0,false)
+				end
+				font:DrawString("Restart your game!",70,110,fontColor,0,false)
+				
+				font:DrawString("(This tends to happen when the mod is first installed, or when",70,120,fontColor,0,false)
+				font:DrawString("it is re-enabled via the mod menu.)",70,130,fontColor,0,false)
+				font:DrawString("If the issue persists, you may be experiencing a download failure",70,140,fontColor,0,false)
+				font:DrawString("or mod incompatibility.",70,150,fontColor,0,false)
+				
+				font:DrawString("You will also need to restart the game after disabling the mod.",70,160,fontColor,0,false)
 			else
-				font:DrawString("Custom Health API animation files failed to load.",70,100,fontColor,0,false)
+				hasBadLoad = false
 			end
-			font:DrawString("Restart your game!",70,110,fontColor,0,false)
-			
-			font:DrawString("(This tends to happen when the mod is first installed, or when",70,120,fontColor,0,false)
-			font:DrawString("it is re-enabled via the mod menu.)",70,130,fontColor,0,false)
-			font:DrawString("If the issue persists, you may be experiencing a download failure",70,140,fontColor,0,false)
-			font:DrawString("or mod incompatibility.",70,150,fontColor,0,false)
-			
-			font:DrawString("You will also need to restart the game after disabling the mod.",70,160,fontColor,0,false)
-		else
-			hasBadLoad = false
 		end
 	end
 

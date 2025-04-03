@@ -147,7 +147,8 @@ local tools = {
 }
 
 local core = {
-	"hearts"
+	"hearts",
+	"customhealthapi.core"
 }
 
 local config = {

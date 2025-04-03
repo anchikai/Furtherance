@@ -1,7 +1,7 @@
 local redHealthOrder = nil
 local otherHealthOrder = nil
 
-function CustomHealthAPI.Library.GetHealthInOrder(player, ignoreResyncing)
+function CustomHealthAPI.Library.GetHealthInOrder(player, ignoreResyncing, ignoreCache)
 	CustomHealthAPI.Helper.CheckIfHealthOrderSet()
 	CustomHealthAPI.Helper.CheckHealthIsInitializedForPlayer(player)
 	CustomHealthAPI.Helper.CheckSubPlayerInfoOfPlayer(player)
@@ -22,6 +22,11 @@ function CustomHealthAPI.Library.GetHealthInOrder(player, ignoreResyncing)
 	end
 	
 	local data = player:GetData().CustomHealthAPISavedata
+	data.Cached = data.Cached or {}
+	if data.Cached.HealthInOrder and not ignoreCache then
+		return data.Cached.HealthInOrder
+	end
+	
 	local redMasks = data.RedHealthMasks
 	local otherMasks = data.OtherHealthMasks
 	
@@ -86,6 +91,7 @@ function CustomHealthAPI.Library.GetHealthInOrder(player, ignoreResyncing)
 		end
 	end
 	
+	data.Cached.HealthInOrder = healthOrder
 	return healthOrder
 end
 

@@ -1,4 +1,5 @@
 function CustomHealthAPI.Helper.AddGenesisAndGlowingHourglassOnNewRoomCallback()
+---@diagnostic disable-next-line: param-type-mismatch
 	Isaac.AddPriorityCallback(CustomHealthAPI.Mod, ModCallbacks.MC_POST_NEW_ROOM, CustomHealthAPI.Enums.CallbackPriorities.LATE, CustomHealthAPI.Mod.GenesisAndGlowingHourglassOnNewRoomCallback, -1)
 end
 table.insert(CustomHealthAPI.CallbacksToAdd, CustomHealthAPI.Helper.AddGenesisAndGlowingHourglassOnNewRoomCallback)
@@ -22,6 +23,7 @@ function CustomHealthAPI.Mod:GenesisAndGlowingHourglassOnNewRoomCallback()
 end
 
 function CustomHealthAPI.Helper.AddUseItemCallback()
+---@diagnostic disable-next-line: param-type-mismatch
 	Isaac.AddPriorityCallback(CustomHealthAPI.Mod, ModCallbacks.MC_USE_ITEM, CallbackPriority.IMPORTANT, CustomHealthAPI.Mod.UseItemCallback, -1)
 end
 table.insert(CustomHealthAPI.CallbacksToAdd, CustomHealthAPI.Helper.AddUseItemCallback)
@@ -52,7 +54,7 @@ function CustomHealthAPI.Mod:UseItemCallback(collectible, rng, player, useflags)
 		CustomHealthAPI.Helper.UpdateBasegameHealthState(player)
 	elseif collectible == CollectibleType.COLLECTIBLE_CONVERTER then
 		-- removes 1 soul heart; adds a heart container and heals a red heart
-		if CustomHealthAPI.Helper.GetTotalSoulHP(player, true) >= 2 then
+		if CustomHealthAPI.Helper.GetTotalSoulHP(player, true, nil, true) >= 2 then
 			local hp = 2
 			--if doubled then 
 			--	hp = hp * 2
@@ -64,7 +66,7 @@ function CustomHealthAPI.Mod:UseItemCallback(collectible, rng, player, useflags)
 		CustomHealthAPI.Helper.UpdateBasegameHealthState(player)
 	elseif collectible == CollectibleType.COLLECTIBLE_GUPPYS_PAW then
 		-- removes 1 non-bone container; adds 3 soul hearts
-		if CustomHealthAPI.Helper.GetTotalMaxHP(player) >= 2 then
+		if CustomHealthAPI.Helper.GetTotalMaxHP(player, true) >= 2 then
 			--if doubled then
 			--	CustomHealthAPI.Helper.UpdateHealthMasks(player, "EMPTY_HEART", -4, false, true)
 			--	CustomHealthAPI.Helper.UpdateHealthMasks(player, "SOUL_HEART", 12)
@@ -114,7 +116,7 @@ function CustomHealthAPI.Mod:UseItemCallback(collectible, rng, player, useflags)
 		end			
 	elseif collectible == CollectibleType.COLLECTIBLE_POTATO_PEELER then
 		-- removes 1 non-bone container
-		if CustomHealthAPI.Helper.GetTotalMaxHP(player) >= 2 then
+		if CustomHealthAPI.Helper.GetTotalMaxHP(player, true) >= 2 then
 			local hp = -2
 			--if doubled then 
 			--	hp = hp * 2
@@ -124,7 +126,7 @@ function CustomHealthAPI.Mod:UseItemCallback(collectible, rng, player, useflags)
 		CustomHealthAPI.Helper.UpdateBasegameHealthState(player)
 	elseif collectible == CollectibleType.COLLECTIBLE_MAGIC_SKIN then
 		-- gives a broken heart in exchange for 1 container, or if no containers two souls
-		if math.ceil(CustomHealthAPI.Helper.GetTotalMaxHP(player) / 2) + CustomHealthAPI.Helper.GetTotalBoneHP(player, true) > 0 then
+		if math.ceil(CustomHealthAPI.Helper.GetTotalMaxHP(player, true) / 2) + CustomHealthAPI.Helper.GetTotalBoneHP(player, true, true) > 0 then
 			local hp = -2
 			--if doubled then 
 			--	hp = hp * 2
