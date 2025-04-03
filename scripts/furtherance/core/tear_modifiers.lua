@@ -231,7 +231,7 @@ function TearModifier:GetResetColor(object)
 	if object:ToLaser() then
 		return player.LaserColor
 	else
-		return player:GetTearHitParams(player:GetWeapon(0):GetWeaponType()).TearColor
+		return player:GetTearHitParams(player:GetWeapon(1):GetWeaponType()).TearColor
 	end
 end
 
@@ -316,16 +316,15 @@ function TearModifier.New(params)
 		if not tear.SpawnerEntity or data[modInitial .. self.Name .. "_Disabled"] then
 			return
 		end
-
 		if tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then
 			local player = Mod:TryGetPlayer(tear.SpawnerEntity)
 			if player and self:CheckKnifeLaserAffected(player, tear, true) then
 				local sprite = tear:GetSprite()
+				data[modInitial .. self.Name] = true
+
 				if self.Color then
 					sprite.Color = self.Color
 				end
-
-				data[modInitial .. self.Name] = true
 			elseif data[modInitial .. self.Name] then
 				data[modInitial .. self.Name] = false
 				tear:GetSprite().Color = self:GetResetColor(tear)

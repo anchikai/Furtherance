@@ -17,6 +17,19 @@ SALINE_SPRAY.TEAR_MODIFIER = Mod.TearModifier.New({
 
 local modifier = SALINE_SPRAY.TEAR_MODIFIER
 
+local tearCheck = modifier.CheckTearAffected
+local knifeLaserCheck = modifier.CheckKnifeLaserAffected
+
+function modifier:CheckTearAffected(player, ignoreTeardrop)
+	if Mod:HasBitFlags(player.TearFlags, TearFlags.TEAR_ICE) then return false end
+	return tearCheck(modifier, player, ignoreTeardrop)
+end
+
+function modifier:CheckKnifeLaserAffected(player, weapon, ignoreTeardrop)
+	if Mod:HasBitFlags(player.TearFlags, TearFlags.TEAR_ICE) then return false end
+	return knifeLaserCheck(modifier, player, weapon, ignoreTeardrop)
+end
+
 function modifier:PostFire(object)
 	if object:ToTear() or object:ToBomb() then
 		local player = Mod:TryGetPlayer(object)

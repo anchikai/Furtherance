@@ -6,28 +6,41 @@ Furtherance.Item.OWLS_EYE = OWLS_EYE
 
 OWLS_EYE.ID = Isaac.GetItemIdByName("Owl's Eye")
 
---TODO: Will revisit for tear modifier implementation
+OWLS_EYE.COLOR = Color(1, 1, 1, 1, 0, 0, 0, 3, 1, 0, 1)
 
---[[ function Mod:OwlTear(tear)
-	local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
-	if player and player:HasCollectible(OWLS_EYE.ID) then
-		local rng = player:GetCollectibleRNG(OWLS_EYE.ID)
+OWLS_EYE.TEAR_MODIFIER = Mod.TearModifier.New({
+	Name = "Owl's Eye",
+	Items = {OWLS_EYE.ID},
+	MinChance = 0.08,
+	MaxChance = 1,
+	MinLuck = 0,
+	MaxLuck = 12,
+	ShouldAffectBombs = true,
+	Color = OWLS_EYE.COLOR
+})
 
-		local chance = Mod:Clamp(player.Luck * 0.08 + 0.08, 0, 12)
-		if player:HasTrinket(TrinketType.TRINKET_TEARDROP_CHARM) then
-			chance = 1 - (1 - chance) ^ 2
-		end
+local modifier = OWLS_EYE.TEAR_MODIFIER
 
-		if rng:RandomFloat() <= chance then
-			tear:ChangeVariant(TearVariant.CUPID_BLUE)
-			tear.CollisionDamage = tear.CollisionDamage * 2
-
-			local OwlColor = Color(1, 1, 1, 1, 0, 0, 0)
-			OwlColor:SetColorize(3, 1, 0, 1)
-			tear:SetColor(OwlColor, 0, 0, false, false)
-			tear:AddTearFlags(TearFlags.TEAR_PIERCING | TearFlags.TEAR_HOMING)
+function modifier:PostFire(object)
+	if object:ToTear() or object:ToBomb() then
+		local player = Mod:TryGetPlayer(object)
+		if not player then return end
+		object:AddTearFlags(TearFlags.TEAR_HOMING | TearFlags.TEAR_PIERCING)
+		if object:ToTear() then
+			object.CollisionDamage = object.CollisionDamage * 2
+			---@cast object EntityTear
+			local isBlood = Mod:TryChangeTearToBloodVariant(object)
+			if isBlood then
+				object:ChangeVariant(TearVariant.CUPID_BLOOD)
+			else
+				object:ChangeVariant(TearVariant.CUPID_BLUE)
+			end
+			object:ResetSpriteScale(true)
+		else
+			---@cast object EntityBomb
+			object.ExplosionDamage = object.ExplosionDamage * 2
+			object:SetScale(object.ExplosionDamage / 35)
+			object:SetLoadCostumes(true)
 		end
 	end
 end
-
-Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, Mod.OwlTear) ]]

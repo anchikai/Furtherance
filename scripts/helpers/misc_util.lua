@@ -328,7 +328,9 @@ local bloodTearTable = {
 function Furtherance:TryChangeTearToBloodVariant(tear)
 	if bloodTearTable[tear.Variant] then
 		tear:ChangeVariant(bloodTearTable[tear.Variant])
+		return true
 	end
+	return false
 end
 
 local inverseTearTable = Furtherance:Invert(bloodTearTable)
