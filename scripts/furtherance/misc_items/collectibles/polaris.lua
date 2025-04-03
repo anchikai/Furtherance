@@ -173,7 +173,8 @@ POLARIS.WHITE_MODIFIER = Mod.TearModifier.New({
 	MinLuck = 0,
 	MaxLuck = 9,
 	MinChance = 0.1,
-	MaxChance = 0.5
+	MaxChance = 0.5,
+	ShouldAffectBombs = true
 })
 
 function POLARIS.WHITE_MODIFIER:PostFire(object)
@@ -208,7 +209,8 @@ POLARIS.BLUE_MODIFIER = Mod.TearModifier.New({
 	MinLuck = 0,
 	MaxLuck = 1,
 	MinChance = 1,
-	MaxChance = 1
+	MaxChance = 1,
+	ShouldAffectBombs = true
 })
 
 function POLARIS.BLUE_MODIFIER:PostNpcHit(hitter, npc)

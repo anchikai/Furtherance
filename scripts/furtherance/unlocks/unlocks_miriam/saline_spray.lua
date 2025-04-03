@@ -5,30 +5,40 @@ local SALINE_SPRAY = {}
 Furtherance.Trinket.SALINE_SPRAY = SALINE_SPRAY
 
 SALINE_SPRAY.ID = Isaac.GetTrinketIdByName("Saline Spray")
-SALINE_SPRAY.PROC_CHANCE = 0.05
 
---TODO: Will revisit for tear modifier implementation
+SALINE_SPRAY.TEAR_MODIFIER = Mod.TearModifier.New({
+	Name = "Saline Spray",
+	Trinkets = { SALINE_SPRAY.ID },
+	MinChance = 0.05,
+	MaxChance = 1,
+	LaserColor = Color(1, 1, 1, 1, 0.1, 0.1, 0.1, 4, 4.4, 6, 1),
+	ShouldAffectBombs = true
+})
 
----@param weaponEnt EntityTear | EntityKnife | EntityLaser | EntityBomb
-function SALINE_SPRAY:TryApplyIceOnFire(weaponEnt)
-	local player = weaponEnt.SpawnerEntity:ToPlayer()
-	if player and player:HasTrinket(SALINE_SPRAY.ID) then
-		local rng = player:GetTrinketRNG(SALINE_SPRAY.ID)
+local modifier = SALINE_SPRAY.TEAR_MODIFIER
 
-		local chance = SALINE_SPRAY.PROC_CHANCE
-		if player:HasTrinket(TrinketType.TRINKET_TEARDROP_CHARM) then
-			chance = 1 - (1 - chance) ^ 2
-		end
-
-		if rng:RandomFloat() <= chance then
-			weaponEnt.TearFlags = weaponEnt.TearFlags | TearFlags.TEAR_ICE
-			weaponEnt:ChangeVariant(TearVariant.ICE)
+function modifier:PostFire(object)
+	if object:ToTear() or object:ToBomb() then
+		local player = Mod:TryGetPlayer(object)
+		if not player then return end
+		object:AddTearFlags(TearFlags.TEAR_ICE)
+		if object:ToTear() then
+			object:ChangeVariant(TearVariant.ICE)
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, SALINE_SPRAY.TryApplyIceOnFire)
-Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BRIMSTONE, SALINE_SPRAY.TryApplyIceOnFire)
-Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BRIMSTONE_BALL, SALINE_SPRAY.TryApplyIceOnFire)
-Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BOMB, SALINE_SPRAY.TryApplyIceOnFire)
-Mod:AddCallback(ModCallbacks.MC_POST_FIRE_KNIFE, SALINE_SPRAY.TryApplyIceOnFire)
+function modifier:PostUpdate(object)
+	if object:ToLaser() or object:ToKnife() then
+		local player = Mod:TryGetPlayer(object)
+		if not player then return end
+	end
+end
+
+function modifier:PostNpcHit(hitter, npc)
+	if not hitter:ToTear() and not hitter:ToBomb() then
+		if hitter:HasTearFlags(TearFlags.TEAR_ICE) then
+			npc:AddEntityFlags(EntityFlag.FLAG_ICE)
+		end
+	end
+end

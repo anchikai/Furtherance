@@ -31,11 +31,12 @@ end
 ---@field MaxLuck number @The maximum luck for calculating chance-based tear modifiers.
 ---@field MinChance number @The minimum chance of proccing for chance-based tear modifiers. Affected by the luck variables.
 ---@field MaxChance number @The maximum chance of proccing for chance-based tear modifiers. Affected by the luck variables.
----@field LastRoll integer @The last chance roll made. Only set when using the default GetChance.
+---@field LastRoll integer @The last chance roll made.
 ---@field ShouldAffectBombs boolean @Whether Dr and Epic fetus are affected by this modifier.
 ---@field Cooldown Cooldown
 ---@field GFX string? @The anm2 to use for the tear.
 ---@field Color Color? @The color to use for the tear.
+---@field LaserColor Color? @The color to use for the laser
 local TearModifier = {}
 TearModifier.__index = TearModifier
 
@@ -128,8 +129,12 @@ end
 ---@param ignoreTeardrop? boolean
 function TearModifier:CheckTearAffected(player, ignoreTeardrop)
 	local rng = self:TryGetItemRNG(player)
+	if not rng then
+		return false
+	end
+	self.LastRoll = rng:RandomFloat()
 
-	return rng and rng:RandomFloat() < self:GetChance(player, ignoreTeardrop)
+	return self.LastRoll < self:GetChance(player, ignoreTeardrop)
 end
 
 ---Only called for knives, lasers, samson's punch, and Ludovico, this checks if the TearModifier should be applied.
@@ -218,6 +223,18 @@ function TearModifier:PrintChanceLine(luck, teardropCharm)
 		" for the " .. self.Name .. " TearModifier to activate at " .. luckString .. " luck")
 end
 
+---When the affected ludo tear, laser, or knife loses its effect and needs to reset back to its expected color
+---@param object EntityTear | EntityKnife | EntityLaser
+function TearModifier:GetResetColor(object)
+	local player = Mod:TryGetPlayer(object)
+	if not player then return Color.Default end
+	if object:ToLaser() then
+		return player.LaserColor
+	else
+		return player:GetTearHitParams(player:GetWeapon(0):GetWeaponType()).TearColor
+	end
+end
+
 ---@class TearModifierParams
 ---@field Name string @The string identifier for this TearModifier.
 ---@field Items CollectibleType[]? @List of items that cause this TearModifier to activate.
@@ -229,6 +246,7 @@ end
 ---@field MaxChance number? @The maximum chance of proccing for chance-based tear modifiers. Affected by the luck variables. 0.25 by default.
 ---@field GFX string? @The anm2 to use for a tear. Leave nil to let the game decide.
 ---@field Color Color? @The color to use for a tear, knife, or laser. Leave nil to let the game decide.
+---@field LaserColor Color? @The color to use for only lasers. If `Color` is defined, this will override it
 ---@field ShouldAffectBombs boolean? @If Dr and Epic Fetus should be affected. By default, this is false.
 ---@field Cooldown CooldownParams?
 
@@ -253,6 +271,7 @@ function TearModifier.New(params)
 
 	self.GFX = params.GFX
 	self.Color = params.Color
+	self.LaserColor = params.LaserColor
 
 	self.ShouldAffectBombs = params.ShouldAffectBombs or false
 
@@ -276,6 +295,9 @@ function TearModifier.New(params)
 		local player = Mod:TryGetPlayer(tear.SpawnerEntity)
 		if player and self:CheckTearAffected(player, true) then
 			local sprite = tear:GetSprite()
+			data[modInitial .. self.Name] = true
+			self:PostFire(tear)
+
 			if self.GFX then
 				sprite:Load(self.GFX, true)
 				sprite:Play(sprite:GetDefaultAnimation(), true)
@@ -284,9 +306,6 @@ function TearModifier.New(params)
 			if self.Color then
 				sprite.Color = self.Color
 			end
-
-			data[modInitial .. self.Name] = true
-			self:PostFire(tear)
 		end
 	end)
 
@@ -309,7 +328,7 @@ function TearModifier.New(params)
 				data[modInitial .. self.Name] = true
 			elseif data[modInitial .. self.Name] then
 				data[modInitial .. self.Name] = false
-				tear:GetSprite().Color = Color.Default ---@diagnostic disable-line: undefined-field
+				tear:GetSprite().Color = self:GetResetColor(tear)
 			end
 		end
 	end)
@@ -336,7 +355,7 @@ function TearModifier.New(params)
 				data[modInitial .. self.Name] = true
 			elseif data[modInitial .. self.Name] then
 				data[modInitial .. self.Name] = false
-				tear:GetSprite().Color = Color.Default ---@diagnostic disable-line: undefined-field
+				tear:GetSprite().Color = self:GetResetColor(tear)
 				self:PostLoseEffects(tear)
 			end
 		end
@@ -390,12 +409,13 @@ function TearModifier.New(params)
 		local player = Mod:TryGetPlayer(knife.SpawnerEntity)
 		if player and self:CheckKnifeLaserAffected(player, knife, true) then
 			local sprite = knife:GetSprite()
+			data[modInitial .. self.Name] = true
+			self:PostFire(knife)
+
 			if self.Color then
 				sprite.Color = self.Color
 			end
 
-			data[modInitial .. self.Name] = true
-			self:PostFire(knife)
 		end
 	end
 	Mod:AddCallback(ModCallbacks.MC_POST_FIRE_KNIFE, fireKnife)
@@ -420,7 +440,7 @@ function TearModifier.New(params)
 			data[modInitial .. self.Name] = true
 		elseif data[modInitial .. self.Name] then
 			data[modInitial .. self.Name] = false
-			knife:GetSprite().Color = Color.Default ---@diagnostic disable-line: undefined-field
+			knife:GetSprite().Color = self:GetResetColor(knife)
 			self:PostLoseEffects(knife)
 		end
 
@@ -492,15 +512,19 @@ function TearModifier.New(params)
 
 		local player = Mod:TryGetPlayer(laser.SpawnerEntity)
 		if player and self:CheckKnifeLaserAffected(player, laser, true) then
-			if self.Color then
-				local c = laser:GetSprite().Color
-				local newC = Color(c.R, c.G, c.B, 1)
-				newC:SetColorize(self.Color.R + 0.3, self.Color.G + 0.2, self.Color.B + 0.2, 1)
-				laser:GetSprite().Color = newC
-			end
-
 			data[modInitial .. self.Name] = true
 			self:PostFire(laser)
+			local newColor = self.LaserColor or self.Color
+
+			if newColor then
+				local c = laser:GetSprite().Color
+				local newC = newColor
+				if not self.LaserColor then
+					newC = Color(c.R, c.G, c.B, 1)
+					newC:SetColorize(self.Color.R + 0.3, self.Color.G + 0.2, self.Color.B + 0.2, 1)
+				end
+				laser:GetSprite().Color = newC
+			end
 		end
 	end
 
@@ -523,17 +547,21 @@ function TearModifier.New(params)
 		local player = Mod:TryGetPlayer(laser.SpawnerEntity)
 		if player and self:CheckKnifeLaserAffected(player, laser) then
 			--Laser's Color in GetSprite is const. Use Entity Color instead.
-			if self.Color then
+			local newColor = self.LaserColor or self.Color
+			if newColor then
 				local c = laser:GetSprite().Color
-				local newC = Color(c.R, c.G, c.B, 1)
-				newC:SetColorize(self.Color.R + 0.3, self.Color.G + 0.2, self.Color.B + 0.2, 1)
+				local newC = newColor
+				if not self.LaserColor then
+					newC = Color(c.R, c.G, c.B, 1)
+					newC:SetColorize(self.Color.R + 0.3, self.Color.G + 0.2, self.Color.B + 0.2, 1)
+				end
 				laser:GetSprite().Color = newC
 			end
 
 			data[modInitial .. self.Name] = true
 		elseif player and data[modInitial .. self.Name] then
 			data[modInitial .. self.Name] = false
-			laser:GetSprite().Color = player.LaserColor or Color.Default ---@diagnostic disable-line: undefined-field
+			laser:GetSprite().Color = self:GetResetColor(laser)
 			self:PostLoseEffects(laser)
 			-- I added this to fix a nil check when there is no spawner entity
 		elseif data[modInitial .. self.Name] then
@@ -610,13 +638,12 @@ function TearModifier.New(params)
 			local player = TbData.PlayerOwner
 			if player and self:CheckTearAffected(player) then
 				local sprite = bag:GetSprite()
+				TbData[modInitial .. self.Name] = true
+				self:PostFire(bag)
 
 				if self.Color then
 					sprite.Color = self.Color
 				end
-
-				TbData[modInitial .. self.Name] = true
-				self:PostFire(bag)
 			end
 		end)
 
@@ -641,13 +668,13 @@ function TearModifier.New(params)
 			local player = Mod:TryGetPlayer(effect.SpawnerEntity)
 			if player and self:CheckTearAffected(player) then
 				local sprite = effect:GetSprite()
+				local data = getData(effect)
+				data[modInitial .. self.Name] = true
+				self:PostFire(effect)
+
 				if self.Color then
 					sprite.Color = self.Color
 				end
-				local data = getData(effect)
-
-				data[modInitial .. self.Name] = true
-				self:PostFire(effect)
 			end
 		end, EffectVariant.ROCKET)
 
@@ -660,12 +687,12 @@ function TearModifier.New(params)
 			local player = Mod:TryGetPlayer(bomb.SpawnerEntity)
 			if player and self:CheckTearAffected(player, true) then
 				local sprite = bomb:GetSprite()
+				data[modInitial .. self.Name] = true
+				self:PostFire(bomb)
+
 				if self.Color then
 					sprite.Color = self.Color
 				end
-
-				data[modInitial .. self.Name] = true
-				self:PostFire(bomb)
 			end
 		end)
 
