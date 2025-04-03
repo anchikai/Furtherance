@@ -7,7 +7,7 @@ Furtherance.Item.OPHIUCHUS = OPHIUCHUS
 OPHIUCHUS.ID = Isaac.GetItemIdByName("Ophiuchus")
 
 OPHIUCHUS.DAMAGE_UP = 0.3
-OPHIUCHUS.FIREDELAY_UP = 0.4
+OPHIUCHUS.FIREDELAY_DOWN = 0.4
 
 ---@param player EntityPlayer
 ---@param flag CacheFlag
@@ -20,7 +20,7 @@ function OPHIUCHUS:OphiuchusStats(player, flag)
 			player.Damage = player.Damage + (OPHIUCHUS.DAMAGE_UP * player:GetCollectibleNum(OPHIUCHUS.ID))
 		end
 		if flag == CacheFlag.CACHE_FIREDELAY then
-			player.MaxFireDelay = player.MaxFireDelay + (OPHIUCHUS.FIREDELAY_UP * player:GetCollectibleNum(OPHIUCHUS.ID))
+			player.MaxFireDelay = player.MaxFireDelay - (OPHIUCHUS.FIREDELAY_DOWN  * player:GetCollectibleNum(OPHIUCHUS.ID))
 		end
 	end
 end
