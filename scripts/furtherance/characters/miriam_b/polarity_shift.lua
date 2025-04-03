@@ -1,3 +1,9 @@
+local POLARITY_SHIFT = {}
+
+Furtherance.Item.POLARITY_SHIFT = POLARITY_SHIFT
+
+POLARITY_SHIFT.ID = Isaac.GetItemIdByName("Polarity Shift")
+
 --[[
 
 - Tainted Miriam now has a pocket active item, "Polarity Shift". This item
@@ -18,7 +24,7 @@
 
 --]]
 
-local LaserVariant = {
+--[[ local LaserVariant = {
 	BRIMSTONE = 1,
 	TECHNOLOGY = 2,
 	SHOOP_DA_WHOOP = 3,
@@ -110,3 +116,4 @@ function Mod:ResetPolarityShiftBuffs()
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.ResetPolarityShiftBuffs)
+ ]]
