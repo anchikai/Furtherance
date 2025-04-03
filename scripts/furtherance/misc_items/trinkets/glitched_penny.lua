@@ -25,7 +25,7 @@ function GLITCHED_PENNY:GlitchedPennyProc(coin, collider)
 				GetCollectibleFlag.BAN_PASSIVES | GetCollectibleFlag.IGNORE_MODIFIERS)
 			rng:Next()
 			local itemConfig = Isaac.GetItemConfig():GetCollectible(ID)
-		until (not itemConfig:HasTags(ItemConfig.TAG_QUEST) and itemConfig.ChargeType ~= ItemConfig.CHARGE_SPECIAL)
+		until (not itemConfig:HasTags(ItemConfig.TAG_QUEST) and itemConfig.ChargeType ~= ItemConfig.CHARGE_SPECIAL and itemConfig.MaxCharges ~= 0)
 		player:UseActiveItem(ID, true, false, false, false)
 	end
 end

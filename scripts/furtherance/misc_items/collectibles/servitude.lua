@@ -92,26 +92,26 @@ function SERVITUDE:ResetServitude(ent, amount, flag)
 	if player
 		and player:HasCollectible(SERVITUDE.ID)
 		and (not Mod:HasBitFlags(flag, DamageFlag.DAMAGE_FAKE)
-		or not Mod:HasBitFlags(flag, DamageFlag.DAMAGE_RED_HEARTS))
+		or not Mod:HasBitFlags(flag, DamageFlag.DAMAGE_NO_PENALTIES))
 	then
-		local shouldPunish = false
+		local punished = false
 		local slots = Mod:GetActiveItemSlots(player, SERVITUDE.ID)
 		for _, slot in ipairs(slots) do
 			local itemDesc = player:GetActiveItemDesc(slot)
 			if itemDesc.VarData > 0 then
 				player:SetActiveCharge(0, slot)
 				player:SetActiveVarData(0, slot)
-				shouldPunish = true
+				player:AddBrokenHearts(1)
+				punished = true
 			end
 		end
-		if shouldPunish then
+		if punished then
 			Mod.SFXMan:Play(SoundEffect.SOUND_THUMBS_DOWN)
-			player:AddBrokenHearts(1)
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, SERVITUDE.ResetServitude, EntityType.ENTITY_PLAYER)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, SERVITUDE.ResetServitude, EntityType.ENTITY_PLAYER)
 
 --#endregion
 
@@ -161,7 +161,7 @@ HudHelper.RegisterHUDElement({
 	OnRender = function(player, playerHUDIndex, hudLayout, position, alpha, scale, slot)
 		---@cast slot ActiveSlot
 		local itemID = player:GetActiveItemDesc(slot).VarData
-		HudHelper.RenderHUDItem(Mod.ItemConfig:GetCollectible(itemID).GfxFileName, position, scale * 0.5, alpha, false, false)
+		HudHelper.RenderHUDItem(Mod.ItemConfig:GetCollectible(itemID).GfxFileName, position, scale, alpha, false, false)
 		HudHelper.RenderHUDElements(HudHelper.HUDType.ACTIVE_ID, false, player, playerHUDIndex, hudLayout, position, alpha, scale * 0.5, slot)
 	end
 }, HudHelper.HUDType.ACTIVE)

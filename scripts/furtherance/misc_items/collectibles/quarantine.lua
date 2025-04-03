@@ -17,7 +17,7 @@ function QUARANTINE:OnNewRoom(player)
 		local source = EntityRef(player)
 		Mod:ForEachEnemy(function (npc)
 			npc:AddFear(source, QUARANTINE.FEAR_DURATION)
-			--Normal max of 5 seconds. Force to 6
+			--Normal max of 5 seconds. Force new duration
 			npc:SetFearCountdown(QUARANTINE.FEAR_DURATION)
 		end, true)
 	end
@@ -28,11 +28,10 @@ Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_NEW_ROOM_TEMP_EFFECTS, QUARANTINE.On
 ---@param player EntityPlayer
 function QUARANTINE:NoMoreCovid(player)
 	if player:GetEffects():HasCollectibleEffect(QUARANTINE.ID) then
-		for _, ent in ipairs(Isaac.FindInRadius(player.Position, QUARANTINE.POISON_RADIUS * player.Size, EntityPartition.ENEMY)) do
-			if Mod:IsValidEnemyTarget(ent) and ent:HasEntityFlags(EntityFlag.FLAG_FEAR) then
-				ent:AddPoison(EntityRef(player), QUARANTINE.POISON_DURATION, 1)
-			end
-		end
+		local source = EntityRef(player)
+		Mod:ForEachEnemy(function (npc)
+			npc:AddPoison(source, QUARANTINE.POISON_DURATION, player.Damage * 2)
+		end, true, player.Position, QUARANTINE.POISON_RADIUS * player.Size)
 	end
 end
 

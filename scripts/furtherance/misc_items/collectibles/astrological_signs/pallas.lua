@@ -25,7 +25,8 @@ function PALLAS:GetPallas(player, flag)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, PALLAS.GetPallas)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, PALLAS.GetPallas, CacheFlag.CACHE_DAMAGE)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, PALLAS.GetPallas, CacheFlag.CACHE_TEARFLAG)
 
 function PALLAS:TearSize(tear)
 	local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()

@@ -11,8 +11,11 @@ Q_KEY.ID = Isaac.GetItemIdByName("Q Key")
 function Q_KEY:OnUse(_, rng, player)
 	if (player:GetCard(0) == Card.CARD_QUESTIONMARK) then
 		player:SetCard(0, Card.CARD_NULL)
-		Mod.Game:StartRoomTransition(Mod.Level():QueryRoomTypeIndex(RoomType.ROOM_ERROR, false, rng),
-			Direction.NO_DIRECTION, 3)
+		if Mod.Item.SPACEBAR_KEY:IsEndStage() then
+			Isaac.Spawn(EntityType.ENTITY_SHOPKEEPER, 2, 0, player.Position, Vector.Zero, nil)
+		else
+			Mod.Game:StartRoomTransition(Mod.Level():QueryRoomTypeIndex(RoomType.ROOM_ERROR, false, rng), Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT)
+		end
 	else
 		local pocketItem = player:GetPocketItem(PillCardSlot.PRIMARY)
 		local ID = pocketItem:GetSlot()

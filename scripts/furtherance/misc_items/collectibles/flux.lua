@@ -7,6 +7,7 @@ Furtherance.Item.FLUX = FLUX
 FLUX.ID = Isaac.GetItemIdByName("Flux")
 
 FLUX.TEAR_COLOR = Color(0.1, 0.5, 0.75, 0.75, 0, 0, 0.25)
+FLUX.RANGE_UP = 9.75
 
 ---@param dir Vector
 ---@param amount integer
@@ -37,7 +38,7 @@ function FLUX:ManageTearVelocity(tear)
 	if not data.BackwardsFluxTear and player:HasCollectible(FLUX.ID) then
 		tear.Velocity = player.Velocity * (2 + player.ShotSpeed * 1.25)
 	elseif data.BackwardsFluxTear then
-		tear.Velocity = player.Velocity * (2 + -player.ShotSpeed * 1.25)
+		tear.Velocity = -player.Velocity * (2 + player.ShotSpeed * 1.25)
 	end
 end
 
@@ -50,7 +51,7 @@ function FLUX:FluxStats(player, flag)
 		if flag == CacheFlag.CACHE_TEARFLAG then
 			player.TearFlags = player.TearFlags | TearFlags.TEAR_SPECTRAL
 		elseif flag == CacheFlag.CACHE_RANGE then
-			player.TearRange = player.TearRange + 390
+			player.TearRange = player.TearRange + (FLUX.RANGE_UP * 40)
 		end
 	end
 end

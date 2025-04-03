@@ -6,7 +6,7 @@ Furtherance.Item.CHIRON = CHIRON
 
 CHIRON.ID = Isaac.GetItemIdByName("Chiron")
 
-CHIRON.SPEED = 0.2
+CHIRON.SPEED_UP = 0.2
 
 -- Thank you for all the fixes manaphoenix!
 
@@ -49,6 +49,7 @@ function CHIRON:GetOffensiveBooks()
 		if itemConfig.Type == ItemType.ITEM_ACTIVE
 			and itemConfig:HasTags(ItemConfig.TAG_OFFENSIVE)
 			and not itemConfig:HasTags(ItemConfig.TAG_QUEST)
+			and Mod.PersistGameData:Unlocked(itemConfig.AchievementID)
 		then
 			Mod:Insert(validBooks)
 		end
@@ -68,7 +69,7 @@ end
 ---@param player EntityPlayer
 function CHIRON:GetChiron(player)
 	if player:HasCollectible(CHIRON.ID) then
-		player.MoveSpeed = player.MoveSpeed + (CHIRON.SPEED * player:GetCollectibleNum(CHIRON.ID))
+		player.MoveSpeed = player.MoveSpeed + (CHIRON.SPEED_UP * player:GetCollectibleNum(CHIRON.ID))
 	end
 end
 
