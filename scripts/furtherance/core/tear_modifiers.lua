@@ -125,16 +125,18 @@ end
 
 ---Only called for tears and bombs, this checks if the TearModifier should be applied.
 ---@param player EntityPlayer
-function TearModifier:CheckTearAffected(player)
+---@param ignoreTeardrop? boolean
+function TearModifier:CheckTearAffected(player, ignoreTeardrop)
 	local rng = self:TryGetItemRNG(player)
 
-	return rng and rng:RandomFloat() < self:GetChance(player)
+	return rng and rng:RandomFloat() < self:GetChance(player, ignoreTeardrop)
 end
 
 ---Only called for knives, lasers, samson's punch, and Ludovico, this checks if the TearModifier should be applied.
 ---@param player EntityPlayer
 ---@param weapon EntityKnife | EntityLaser | EntityTear | nil Nil if a samson punch.
-function TearModifier:CheckKnifeLaserAffected(player, weapon)
+---@param ignoreTeardrop? boolean
+function TearModifier:CheckKnifeLaserAffected(player, weapon, ignoreTeardrop)
 	local rng = self:TryGetItemRNG(player)
 	if not rng then
 		return false
@@ -146,13 +148,28 @@ function TearModifier:CheckKnifeLaserAffected(player, weapon)
 		self.LastRoll = rng:RandomFloat()
 	end
 
-	return self.LastRoll < self:GetChance(player)
+	return self.LastRoll < self:GetChance(player, ignoreTeardrop)
+end
+
+---Credit to Epiphany
+---Gives the player's luck accounting for teardrop charm
+---@param player EntityPlayer
+---@param ignoreTeardrop? boolean @Set to true to ignore Teardrop Charm. This is for the purposes of INIT/POST_FIRE callbacks so as to not double stack the luck chance. The game adds the charm's luck bonus directly into player.Luck during these callbacks and is reset immediately afterwards
+---@return integer
+local function getTearModifierLuck(player, ignoreTeardrop)
+	local luck = player.Luck
+	if not ignoreTeardrop and player:HasTrinket(TrinketType.TRINKET_TEARDROP_CHARM) then
+		local mult = player:GetTrinketMultiplier(TrinketType.TRINKET_TEARDROP_CHARM)
+		luck = luck + (mult + mult + 2)
+	end
+	return luck
 end
 
 ---A percentage float chance to be used with an RNG object.
 ---@param player EntityPlayer
-function TearModifier:GetChance(player)
-	local luck = player.Luck
+---@param ignoreTeardrop? boolean
+function TearModifier:GetChance(player, ignoreTeardrop)
+	local luck = getTearModifierLuck(player, ignoreTeardrop)
 	luck = Mod:Clamp(luck, self.MinLuck, self.MaxLuck)
 
 	local deltaX = self.MaxLuck - self.MinLuck
@@ -187,7 +204,7 @@ end
 ---@param teardropCharm boolean @Act as if teardrop charm is enabled.
 function TearModifier:PrintChanceLine(luck, teardropCharm)
 	if teardropCharm then
-		luck = luck + 3
+		luck = luck + 4
 	end
 	luck = Mod:Clamp(luck, self.MinLuck, self.MaxLuck)
 
@@ -251,14 +268,13 @@ function TearModifier.New(params)
 	--#region TEAR CODE
 	---@param tear EntityTear
 	Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, function(_, tear)
-		print(Isaac.GetPlayer().Luck)
 		local data = getData(tear)
 		if not tear.SpawnerEntity or data[modInitial .. self.Name .. "_Disabled"] then
 			return
 		end
 
 		local player = Mod:TryGetPlayer(tear.SpawnerEntity)
-		if player and self:CheckTearAffected(player) then
+		if player and self:CheckTearAffected(player, true) then
 			local sprite = tear:GetSprite()
 			if self.GFX then
 				sprite:Load(self.GFX, true)
@@ -284,7 +300,7 @@ function TearModifier.New(params)
 
 		if tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then
 			local player = Mod:TryGetPlayer(tear.SpawnerEntity)
-			if player and self:CheckKnifeLaserAffected(player, tear) then
+			if player and self:CheckKnifeLaserAffected(player, tear, true) then
 				local sprite = tear:GetSprite()
 				if self.Color then
 					sprite.Color = self.Color
@@ -372,7 +388,7 @@ function TearModifier.New(params)
 		end
 
 		local player = Mod:TryGetPlayer(knife.SpawnerEntity)
-		if player and self:CheckKnifeLaserAffected(player, knife) then
+		if player and self:CheckKnifeLaserAffected(player, knife, true) then
 			local sprite = knife:GetSprite()
 			if self.Color then
 				sprite.Color = self.Color
@@ -475,7 +491,7 @@ function TearModifier.New(params)
 		end
 
 		local player = Mod:TryGetPlayer(laser.SpawnerEntity)
-		if player and self:CheckKnifeLaserAffected(player, laser) then
+		if player and self:CheckKnifeLaserAffected(player, laser, true) then
 			if self.Color then
 				local c = laser:GetSprite().Color
 				local newC = Color(c.R, c.G, c.B, 1)
@@ -614,7 +630,6 @@ function TearModifier.New(params)
 		--#endregion
 	end
 
-
 	--#region Bomb code (the easy one)
 	if self.ShouldAffectBombs then
 		---@param effect EntityEffect
@@ -636,15 +651,14 @@ function TearModifier.New(params)
 			end
 		end, EffectVariant.ROCKET)
 
-		---@param bomb EntityBomb
-		Mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, function(_, bomb)
-			if not bomb.IsFetus then
+		Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BOMB, function(_, bomb)
+			local data = getData(bomb)
+			if not bomb.SpawnerEntity or data[modInitial .. self.Name .. "_Disabled"] then
 				return
 			end
-			local data = getData(bomb)
 
 			local player = Mod:TryGetPlayer(bomb.SpawnerEntity)
-			if bomb.FrameCount == 1 and player and self:CheckTearAffected(player) then
+			if player and self:CheckTearAffected(player, true) then
 				local sprite = bomb:GetSprite()
 				if self.Color then
 					sprite.Color = self.Color
@@ -653,7 +667,14 @@ function TearModifier.New(params)
 				data[modInitial .. self.Name] = true
 				self:PostFire(bomb)
 			end
+		end)
 
+		---@param bomb EntityBomb
+		Mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, function(_, bomb)
+			if not bomb.IsFetus then
+				return
+			end
+			local data = getData(bomb)
 			if not bomb.SpawnerEntity or data[modInitial .. self.Name .. "_Disabled"] then
 				return
 			end

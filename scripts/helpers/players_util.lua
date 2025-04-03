@@ -228,18 +228,6 @@ function Furtherance:IsFoundSoul(player)
 	end
 end
 
----Credit to Epiphany
----Gives the player's luck accounting for teardrop charm
----@param player EntityPlayer
----@return integer
-function Furtherance:GetTearModifierLuck(player)
-	local luck = player.Luck
-	if player:HasTrinket(TrinketType.TRINKET_TEARDROP_CHARM) then
-		luck = luck + (player:GetTrinketMultiplier(TrinketType.TRINKET_TEARDROP_CHARM) * 4)
-	end
-	return luck
-end
-
 ---Returns a list of all active slots that contain given item.
 ---@param player EntityPlayer
 ---@param item CollectibleType
