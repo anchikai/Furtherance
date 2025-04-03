@@ -437,6 +437,7 @@ local function InitFunctions()
 	---@param ignoreFlags? EntityFlag | integer #Any EntityFlag status effects this status effect should ignore when choosing whether to apply or not
 	---@param customTargetCheck? boolean #Bypass the default check that runs before a status effect is applied
 	---@param staticIconPosition? boolean #If your icon should be moved when other status effects are present
+	---@return StatusConfig
 	function StatusEffectLibrary.RegisterStatusEffect(identifier, icon, color, ignoreFlags, customTargetCheck, staticIconPosition)
 		local statusEffects = StatusEffectLibrary.Utils.ToList(StatusEffectLibrary.StatusFlag)
 		table.sort(statusEffects)

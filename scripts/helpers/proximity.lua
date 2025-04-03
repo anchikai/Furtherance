@@ -6,6 +6,7 @@ function Furtherance:IsValidEnemyTarget(ent)
 	and ent:IsVulnerableEnemy()
 	and not ent:HasEntityFlags(EntityFlag.FLAG_CHARM | EntityFlag.FLAG_FRIENDLY)
 	and ent.EntityCollisionClass ~= EntityCollisionClass.ENTCOLL_NONE
+	and ent:ToNPC().CanShutDoors
 end
 
 --Thank you piber!
