@@ -4,7 +4,7 @@ local TRAP_CARD = {}
 
 Furtherance.Card.TRAP_CARD = TRAP_CARD
 
-TRAP_CARD.ID = Isaac.GetItemIdByName("Trap Card")
+TRAP_CARD.ID = Isaac.GetCardIdByName("Trap Card")
 
 function TRAP_CARD:UseTrapCard(_, player, _)
 	player:UseActiveItem(CollectibleType.COLLECTIBLE_ANIMA_SOLA, UseFlag.USE_NOANIM, -1)

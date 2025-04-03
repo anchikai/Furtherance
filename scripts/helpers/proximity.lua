@@ -26,15 +26,15 @@ function Furtherance:GetClosestEnemy(pos, range, filter)
 
 	for _, ent in ipairs(entities) do
 		local npc = ent:ToNPC()
-		if npc and (not filter and Furtherance:IsValidEnemyTarget(npc) or filter and filter(npc)) then goto continue end
-		---@cast npc EntityNPC
-		local npcDistance = npc.Position:DistanceSquared(pos)
+		if npc and (not filter and Furtherance:IsValidEnemyTarget(npc) or filter and filter(npc)) then
+			---@cast npc EntityNPC
+			local npcDistance = npc.Position:DistanceSquared(pos)
 
-		if not closestEnemy or npcDistance < closestDistance then
-			closestEnemy = npc
-			closestDistance = npcDistance
+			if not closestEnemy or npcDistance < closestDistance then
+				closestEnemy = npc
+				closestDistance = npcDistance
+			end
 		end
-		::continue::
 	end
 	return closestEnemy
 end

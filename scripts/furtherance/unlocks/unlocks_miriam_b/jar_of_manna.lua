@@ -40,7 +40,6 @@ function JAR_OF_MANNA:OnUse(_, _, player)
 		local playerStats = {}
 		for _, statInfo in ipairs(JAR_OF_MANNA.StatTable) do
 			local score = Furtherance:GetStatScore(player, statInfo.Flag)
-			print(statInfo.Name, score)
 			Furtherance:Insert(playerStats, score)
 		end
 		local lowestStats = {}

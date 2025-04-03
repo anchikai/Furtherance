@@ -5,39 +5,29 @@ local SOUL_OF_LEAH = {}
 Furtherance.Rune.SOUL_OF_LEAH = SOUL_OF_LEAH
 
 SOUL_OF_LEAH.ID = Isaac.GetCardIdByName("Soul of Leah")
+SOUL_OF_LEAH.NULL_ID = Isaac.GetNullItemIdByName("soul of leah")
 
-SOUL_OF_LEAH.DAMAGE_PER_BROKEN_HEART = 0.75
+SOUL_OF_LEAH.HEARTS_PER_USE = 3
 
 --TODO: Kinda sucks, could use a rework
 
 ---@param player EntityPlayer
 function SOUL_OF_LEAH:UseSoulOfLeah(_, player, _)
-	Mod.SFXMan:Play(Mod.Item.HEART_RENOVATOR.SFX_HEARTBEAT)
-	local player_run_save = Mod:RunSave(player)
-	local level = Mod.Level()
-	local roomsList = level:GetRooms()
-	for i = 0, roomsList.Size - 1 do
-		local room = roomsList:Get(i)
-		if room.Data.Type ~= RoomType.ROOM_SUPERSECRET and room.Data.Type ~= RoomType.ROOM_ULTRASECRET then -- based off of world card which doesn't reveal these
-			if not room.Clear then
-				player:AddBrokenHearts(1)
-				player_run_save.SoulOfLeahDamage = (player_run_save.SoulOfLeahDamage or 0) + 0.75
-				if player:GetBrokenHearts() == 12 then
-					break
-				end
-			end
-		end
-	end
-	player:AddCacheFlags(CacheFlag.CACHE_DAMAGE)
-	player:EvaluateItems()
+	player:GetEffects():AddNullEffect(SOUL_OF_LEAH.NULL_ID, false, SOUL_OF_LEAH.HEARTS_PER_USE)
+	player:AddBrokenHearts(SOUL_OF_LEAH.HEARTS_PER_USE)
 end
 Mod:AddCallback(ModCallbacks.MC_USE_CARD, SOUL_OF_LEAH.UseSoulOfLeah, SOUL_OF_LEAH.ID)
 
+local floor = math.floor
+
 ---@param player EntityPlayer
-function SOUL_OF_LEAH:SoulDamage(player, flag)
-	local player_run_save = Mod:RunSave(player)
-	if player_run_save.SoulOfLeahDamage then
-		player.Damage = player.Damage + player_run_save.SoulOfLeahDamage
-	end
+---@param heartLimit integer
+---@param isKeeper boolean
+function SOUL_OF_LEAH:IncreaseHeartCap(player, heartLimit, isKeeper)
+	local effectNum = player:GetEffects():GetNullEffectNum(SOUL_OF_LEAH.NULL_ID)
+	if effectNum == 0 then return end
+	local numHearts = isKeeper and floor(effectNum / SOUL_OF_LEAH.HEARTS_PER_USE) or effectNum
+	return heartLimit + (numHearts * 2)
 end
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, SOUL_OF_LEAH.SoulDamage, CacheFlag.CACHE_DAMAGE)
+
+Mod:AddCallback(ModCallbacks.MC_PLAYER_GET_HEART_LIMIT, SOUL_OF_LEAH.IncreaseHeartCap)

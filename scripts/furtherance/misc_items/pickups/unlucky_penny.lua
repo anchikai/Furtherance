@@ -24,12 +24,12 @@ Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_COLLISION, UNLUCKY_PENNY.UnluckyPenn
 
 ---@param pickup EntityPickup
 function UNLUCKY_PENNY:PickupSound(pickup)
-	if pickup:GetSprite():IsEventTriggered("DropSound") then
+	if pickup.SubType == UNLUCKY_PENNY.ID and pickup:GetSprite():IsEventTriggered("DropSound") then
 		Mod.SFXMan:Play(SoundEffect.SOUND_PENNYDROP)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, UNLUCKY_PENNY.PickupSound)
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, UNLUCKY_PENNY.PickupSound, PickupVariant.PICKUP_COIN)
 
 ---@param player EntityPlayer
 ---@param flag CacheFlag

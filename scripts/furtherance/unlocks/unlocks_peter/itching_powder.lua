@@ -16,7 +16,7 @@ function ITCHING_POWDER:DelayFakeDamage(ent, amount, flags, source, countdown)
 	---@cast player EntityPlayer
 
 	if player:HasCollectible(ITCHING_POWDER.ID) and not Mod:HasBitFlags(flags, DamageFlag.DAMAGE_FAKE) then
-		Isaac.CreateTimer(function() player:TakeDamage(0, flags | DamageFlag.DAMAGE_FAKE, EntityRef(player), countdown) end, 30, 1, true)
+		Isaac.CreateTimer(function() player:TakeDamage(0, flags | DamageFlag.DAMAGE_FAKE | DamageFlag.DAMAGE_NO_PENALTIES, EntityRef(player), countdown) end, 30, 1, true)
 	end
 end
 

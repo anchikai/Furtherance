@@ -51,6 +51,7 @@ local getData = {}
 ---@param ent Entity
 ---@return table
 function Furtherance:GetData(ent)
+	if not ent then return {} end
 	local ptrHash = GetPtrHash(ent)
 	local data = getData[ptrHash]
 	if not data then
@@ -162,6 +163,8 @@ InputHelper = include("scripts.helpers.vendor.inputhelper")
 loopInclude(tools, "scripts.tools")
 loopInclude(core, "scripts.furtherance.core")
 loopInclude(config, "scripts.furtherance.config")
+
+Furtherance.TearModifier = include("scripts.furtherance.core.tear_modifiers")
 
 Furtherance.PlayerType = {
 	LEAH = Isaac.GetPlayerTypeByName("Laeh", false),

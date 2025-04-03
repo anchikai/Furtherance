@@ -23,7 +23,7 @@ function CADUCEUS_STAFF:CaduceusDamage(ent, _, flags, _, _)
 			Mod.SFXMan:Play(CADUCEUS_STAFF.SFX)
 			Mod:GetData(player).CaduceusDamageHeal = true
 			Mod:DelayOneFrame(function() Mod:GetData(player).CaduceusDamageHeal = false end)
-			return {Damage = 0, DamageFlags = flags | DamageFlag.DAMAGE_FAKE}
+			return {Damage = 0, DamageFlags = flags | DamageFlag.DAMAGE_FAKE | DamageFlag.DAMAGE_NO_PENALTIES}
 		else
 			effects:AddCollectibleEffect(CADUCEUS_STAFF.ID)
 		end

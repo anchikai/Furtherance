@@ -29,7 +29,7 @@ function THE_DREIDEL:OnUse(_, rng, player)
 		selectedStats[key] = true
 		player_run_save.DreidelStatDowns[tostring(key)] = (player_run_save.DreidelStatDowns[tostring(key)] or 0) + 1
 	end
-	print(numStatsToReduce)
+
 	local itemPool = Mod.Game:GetItemPool()
 	local itemID
 	for _ = 1, 100 do

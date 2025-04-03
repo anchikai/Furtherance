@@ -1,0 +1,726 @@
+--Full credit to Epiphany which I was granted permission to use
+local Mod = Furtherance
+local modInitial = "FR_"
+local game = Mod.Game
+
+local function getData(ent)
+	return Mod:GetData(ent)
+end
+
+---@class Cooldown
+---@field Laser integer
+---@field KnifeHit integer
+---@field KnifeSwing integer
+---@field Ludovico integer
+---@field CSection integer
+
+---@class CooldownParams
+---@field Laser integer?
+---@field KnifeHit integer?
+---@field KnifeSwing integer?
+---@field Ludovico integer?
+---@field CSection integer?
+
+---@class TearModifier
+---@field Name string @The string identifier for this TearModifier.
+---@field Items CollectibleType[] @List of items that cause this TearModifier to activate.
+---@field Trinkets TrinketType[] @List of trinkets that cause this TearModifier to activate.
+---@field RngGetter (fun(player:EntityPlayer): RNG?)? @A function that returns the rng to use for the chance calculation. Overrides the item/trinket checks.
+---@field IsTrinket boolean @If `Item` is a `TrinketType`.
+---@field MinLuck number @The minimum luck for calculating chance-based tear modifiers.
+---@field MaxLuck number @The maximum luck for calculating chance-based tear modifiers.
+---@field MinChance number @The minimum chance of proccing for chance-based tear modifiers. Affected by the luck variables.
+---@field MaxChance number @The maximum chance of proccing for chance-based tear modifiers. Affected by the luck variables.
+---@field LastRoll integer @The last chance roll made. Only set when using the default GetChance.
+---@field ShouldAffectBombs boolean @Whether Dr and Epic fetus are affected by this modifier.
+---@field Cooldown Cooldown
+---@field GFX string? @The anm2 to use for the tear.
+---@field Color Color? @The color to use for the tear.
+local TearModifier = {}
+TearModifier.__index = TearModifier
+
+
+---Before an affected tear, bomb, knife, or laser collides with an entity. If not a laser, return "true" to cancel the collision, "false" to collide but not execute internal code, or nothing to pass.
+---For performance reasons, when a laser this only activates for pickups, NPCs, and projectiles.
+---Does not affect Epic Fetus.
+---@param object EntityTear | EntityKnife | EntityLaser | EntityBomb
+---@param collider Entity
+---@param low boolean
+function TearModifier:PreEntityCollision(object, collider, low)
+
+end
+
+---Before an affected tear, bomb, knife, or laser hits an NPC. `hitter` will be an EntityEffect if Epic Fetus.
+---@param hitter EntityTear | EntityKnife | EntityLaser | EntityBomb | EntityEffect
+---@param npc EntityNPC
+---@param isKnifeSwing boolean? This will be true or nil. True means it came from a swinging knife, a la bone clubs.
+---@param isSamsonPunch boolean? This will be true or nil. True means it was a Samson punch, and `hitter` is the player.
+---@param isCainBag boolean? This will be true or nil. True means it was a Cain's bag, and `hitter` is the bag.
+function TearModifier:PostNpcHit(hitter, npc, isKnifeSwing, isSamsonPunch, isCainBag)
+
+end
+
+---After an affected tear, knife, bomb, or laser collides with a grid entity. Called after but in the same frame as PostUpdate. Does not affect Epic Fetus.
+---@param object EntityTear | EntityKnife | EntityLaser | EntityBomb
+---@param collidePosition Vector
+function TearModifier:PostGridCollision(object, collidePosition)
+
+end
+
+---After an affected tear, knife, bomb, or laser updates. Does not affect Epic Fetus.
+---@param object EntityTear | EntityKnife | EntityLaser  | EntityBomb
+function TearModifier:PostUpdate(object)
+
+end
+
+---After an affected tear, knife, bomb, or laser renders. Does not affect Epic Fetus.
+---@param object EntityTear | EntityKnife | EntityLaser | EntityBomb
+---@param renderOffset Vector
+function TearModifier:PostRender(object, renderOffset)
+
+end
+
+---After an affected tear spawns, a laser fires, an Epic/Dr Fetus bomb fires, or a knife fires. Keep in mind that affected lasers and knives may not be affected for the rest of their lifespan.
+---`object` is an EntityEffect if Epic Fetus.
+---@param object EntityTear | EntityLaser | EntityKnife | EntityBomb | EntityEffect
+function TearModifier:PostFire(object)
+
+end
+
+---After a ludovico tear, a laser or knife loses the chance based effects
+---`object` is an EntityEffect if Epic Fetus.
+---@param object EntityTear | EntityLaser | EntityKnife | EntityBomb | EntityEffect
+function TearModifier:PostLoseEffects(object)
+
+end
+
+---After a Dr Fetus bomb explodes.
+---Can't get it to work for Epic Fetus at this time.
+---@param bomb EntityBomb
+function TearModifier:PostExplode(bomb)
+
+end
+
+---Returns the RNG object for the item or trinket that causes this TearModifier to activate.
+---Returns nil if the player doesn't have any items or trinkets that contribute to the tear modifier.
+---@param player EntityPlayer
+---@return RNG?
+function TearModifier:TryGetItemRNG(player)
+	if self.RngGetter then
+		return self.RngGetter(player)
+	end
+
+	for i = 1, #self.Items do
+		if player:HasCollectible(self.Items[i]) then
+			return player:GetCollectibleRNG(self.Items[i])
+		end
+	end
+
+	for i = 1, #self.Trinkets do
+		if player:HasTrinket(self.Trinkets[i], false) then
+			return player:GetTrinketRNG(self.Trinkets[i])
+		end
+	end
+end
+
+---Only called for tears and bombs, this checks if the TearModifier should be applied.
+---@param player EntityPlayer
+function TearModifier:CheckTearAffected(player)
+	local rng = self:TryGetItemRNG(player)
+
+	return rng and rng:RandomFloat() < self:GetChance(player)
+end
+
+---Only called for knives, lasers, samson's punch, and Ludovico, this checks if the TearModifier should be applied.
+---@param player EntityPlayer
+---@param weapon EntityKnife | EntityLaser | EntityTear | nil Nil if a samson punch.
+function TearModifier:CheckKnifeLaserAffected(player, weapon)
+	local rng = self:TryGetItemRNG(player)
+	if not rng then
+		return false
+	end
+
+	local frameCount = weapon and weapon.FrameCount or 0
+
+	if frameCount == 0 or frameCount % 6 == 0 then
+		self.LastRoll = rng:RandomFloat()
+	end
+
+	return self.LastRoll < self:GetChance(player)
+end
+
+---A percentage float chance to be used with an RNG object.
+---@param player EntityPlayer
+function TearModifier:GetChance(player)
+	local luck = player.Luck
+	luck = Mod:Clamp(luck, self.MinLuck, self.MaxLuck)
+
+	local deltaX = self.MaxLuck - self.MinLuck
+	local rngRequirement = ((self.MaxChance - self.MinChance) / deltaX) * luck +
+		(self.MaxLuck * self.MinChance - self.MinLuck * self.MaxChance) / deltaX
+
+	return rngRequirement
+end
+
+---Checks and Adds a Cooldown to the modifier
+---@param entity Entity
+---@param addDelay integer
+---@return boolean
+function TearModifier:IsOnCooldown(entity, addDelay)
+	local frame = Mod.Game:GetFrameCount()
+	local data = getData(entity)
+	local dataName = modInitial .. self.Name .. "_Frame"
+	if data[dataName]
+		and data[dataName] > frame
+	then
+		return true
+	end
+
+	if addDelay then
+		data[dataName] = frame + addDelay
+	end
+	return false
+end
+
+---Prints the percentage chance the player would have at any given luck, with or without tear drop charm.
+---@param luck number
+---@param teardropCharm boolean @Act as if teardrop charm is enabled.
+function TearModifier:PrintChanceLine(luck, teardropCharm)
+	if teardropCharm then
+		luck = luck + 3
+	end
+	luck = Mod:Clamp(luck, self.MinLuck, self.MaxLuck)
+
+	local deltaX = self.MaxLuck - self.MinLuck
+	local rngRequirement = ((self.MaxChance - self.MinChance) / deltaX) * luck +
+		(self.MaxLuck * self.MinChance - self.MinLuck * self.MaxChance) / deltaX
+	local luckString = teardropCharm and (tostring(luck - 3) .. " (+3 from teardrop charm)") or tostring(luck)
+
+	Epiphany:DebugLog("The player has a " ..
+		string.format("%.2f%%", rngRequirement * 100) ..
+		" for the " .. self.Name .. " TearModifier to activate at " .. luckString .. " luck")
+end
+
+---@class TearModifierParams
+---@field Name string @The string identifier for this TearModifier.
+---@field Items CollectibleType[]? @List of items that cause this TearModifier to activate.
+---@field Trinkets TrinketType[]? @List of trinkets that cause this TearModifier to activate.
+---@field RngGetter (fun(player:EntityPlayer): RNG?)? @A function that returns the rng to use for the chance calculation. Overrides the item/trinket checks.
+---@field MinLuck number? @The minimum luck for calculating chance-based tear modifiers. 0 by default.
+---@field MaxLuck number? @The maximum luck for calculating chance-based tear modifiers. 10 by default.
+---@field MinChance number? @The minimum chance of proccing for chance-based tear modifiers. Affected by the luck variables. 0 by default.
+---@field MaxChance number? @The maximum chance of proccing for chance-based tear modifiers. Affected by the luck variables. 0.25 by default.
+---@field GFX string? @The anm2 to use for a tear. Leave nil to let the game decide.
+---@field Color Color? @The color to use for a tear, knife, or laser. Leave nil to let the game decide.
+---@field ShouldAffectBombs boolean? @If Dr and Epic Fetus should be affected. By default, this is false.
+---@field Cooldown CooldownParams?
+
+---Constructs a new TearModifier. Use this for deciding the luck stuff: https://www.desmos.com/calculator/b9x583q0md
+---@param params TearModifierParams
+---@return TearModifier
+function TearModifier.New(params)
+	local self = setmetatable({}, TearModifier)
+	self.Name = params.Name or error('Field "Name" is required for TearModifier', 2)
+	self.Items = params.Items or {}
+	self.Trinkets = params.Trinkets or {}
+	self.RngGetter = params.RngGetter
+	if #self.Items == 0 and #self.Trinkets == 0 and not self.RngGetter then
+		error('Both "Items" and "Trinkets" are empty', 2)
+	end
+
+	self.MinLuck = params.MinLuck or 0
+	self.MaxLuck = params.MaxLuck or 10
+	self.MinChance = params.MinChance or 0
+	self.MaxChance = params.MaxChance or 0.25
+	self.LastRoll = 0
+
+	self.GFX = params.GFX
+	self.Color = params.Color
+
+	self.ShouldAffectBombs = params.ShouldAffectBombs or false
+
+	local values = params.Cooldown
+	self.Cooldown = {
+		Laser = values and values.Laser or 3,
+		KnifeHit = values and values.KnifeHit or 2,
+		KnifeSwing = values and values.KnifeSwing or 4,
+		Ludovico = values and values.Ludovico or 7,
+		CSection = values and values.CSection or 6
+	}
+
+	--#region TEAR CODE
+	---@param tear EntityTear
+	Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, function(_, tear)
+		print(Isaac.GetPlayer().Luck)
+		local data = getData(tear)
+		if not tear.SpawnerEntity or data[modInitial .. self.Name .. "_Disabled"] then
+			return
+		end
+
+		local player = Mod:TryGetPlayer(tear.SpawnerEntity)
+		if player and self:CheckTearAffected(player) then
+			local sprite = tear:GetSprite()
+			if self.GFX then
+				sprite:Load(self.GFX, true)
+				sprite:Play(sprite:GetDefaultAnimation(), true)
+			end
+
+			if self.Color then
+				sprite.Color = self.Color
+			end
+
+			data[modInitial .. self.Name] = true
+			self:PostFire(tear)
+		end
+	end)
+
+	--Ludo
+	---@param tear EntityTear
+	Mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, function(_, tear)
+		local data = getData(tear)
+		if not tear.SpawnerEntity or data[modInitial .. self.Name .. "_Disabled"] then
+			return
+		end
+
+		if tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then
+			local player = Mod:TryGetPlayer(tear.SpawnerEntity)
+			if player and self:CheckKnifeLaserAffected(player, tear) then
+				local sprite = tear:GetSprite()
+				if self.Color then
+					sprite.Color = self.Color
+				end
+
+				data[modInitial .. self.Name] = true
+			elseif data[modInitial .. self.Name] then
+				data[modInitial .. self.Name] = false
+				tear:GetSprite().Color = Color.Default ---@diagnostic disable-line: undefined-field
+			end
+		end
+	end)
+
+	---@param tear EntityTear
+	Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, function(_, tear)
+		local data = getData(tear)
+		if data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
+			self:PostUpdate(tear)
+
+			if tear:CollidesWithGrid() then
+				self:PostGridCollision(tear, tear.Position)
+			end
+		end
+
+		if not data[modInitial .. self.Name .. "_Disabled"] and tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then
+			local player = Mod:TryGetPlayer(tear.SpawnerEntity)
+			if player and self:CheckKnifeLaserAffected(player, tear) then
+				local sprite = tear:GetSprite()
+				if self.Color then
+					sprite.Color = self.Color
+				end
+
+				data[modInitial .. self.Name] = true
+			elseif data[modInitial .. self.Name] then
+				data[modInitial .. self.Name] = false
+				tear:GetSprite().Color = Color.Default ---@diagnostic disable-line: undefined-field
+				self:PostLoseEffects(tear)
+			end
+		end
+	end)
+
+	---@param tear EntityTear
+	---@param offset Vector
+	Mod:AddCallback(ModCallbacks.MC_POST_TEAR_RENDER, function(_, tear, offset)
+		local data = getData(tear)
+		if data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
+			self:PostRender(tear, offset)
+		end
+	end)
+
+
+	---@param collider Entity
+	Mod:AddCallback(ModCallbacks.MC_PRE_TEAR_COLLISION, function(_, tear, collider, low)
+		local data = getData(tear)
+		if data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
+			local npc = collider:ToNPC()
+			if npc and not npc:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) then
+				-- I know it's ugly but the logic is making my brain melt
+				local skip = false
+				if tear:HasTearFlags(TearFlags.TEAR_LUDOVICO)
+					and self:IsOnCooldown(tear, self.Cooldown.Ludovico) then
+					skip = true
+				end
+				if tear:HasTearFlags(TearFlags.TEAR_FETUS)
+					and self:IsOnCooldown(tear, self.Cooldown.CSection) then
+					skip = true
+				end
+
+				if not skip then
+					self:PostNpcHit(tear, npc)
+				end
+			end
+
+			return self:PreEntityCollision(tear, collider, low)
+		end
+	end)
+	--#endregion
+
+	--#region KNIFE CODE
+	---@param knife EntityKnife
+	local function fireKnife(_, knife)
+		local data = getData(knife)
+		if not knife.SpawnerEntity or data[modInitial .. self.Name .. "_Disabled"] then
+			return
+		end
+
+		local player = Mod:TryGetPlayer(knife.SpawnerEntity)
+		if player and self:CheckKnifeLaserAffected(player, knife) then
+			local sprite = knife:GetSprite()
+			if self.Color then
+				sprite.Color = self.Color
+			end
+
+			data[modInitial .. self.Name] = true
+			self:PostFire(knife)
+		end
+	end
+	Mod:AddCallback(ModCallbacks.MC_POST_FIRE_KNIFE, fireKnife)
+	Mod:AddCallback(ModCallbacks.MC_POST_FIRE_SWORD, fireKnife)
+	Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BONE_CLUB, fireKnife)
+
+	---@param knife EntityKnife
+	Mod:AddCallback(ModCallbacks.MC_POST_KNIFE_UPDATE, function(_, knife)
+		local data = getData(knife)
+		if not knife.SpawnerEntity or data[modInitial .. self.Name .. "_Disabled"] then
+			return
+		end
+
+		local player = Mod:TryGetPlayer(knife)
+		if not player then return end
+		if self:CheckKnifeLaserAffected(player, knife) then
+			local sprite = knife:GetSprite()
+			if self.Color then
+				sprite.Color = self.Color
+			end
+
+			data[modInitial .. self.Name] = true
+		elseif data[modInitial .. self.Name] then
+			data[modInitial .. self.Name] = false
+			knife:GetSprite().Color = Color.Default ---@diagnostic disable-line: undefined-field
+			self:PostLoseEffects(knife)
+		end
+
+		if data[modInitial .. self.Name] then
+			self:PostUpdate(knife)
+
+			if knife:CollidesWithGrid() then
+				self:PostGridCollision(knife, knife.Position)
+			end
+			local dataName = modInitial .. "EntityCollisionMap"
+
+			data[dataName] = data[dataName] or {}
+
+
+			if knife:GetIsSwinging() or knife:GetIsSpinAttack() then
+				for _, enemy in ipairs(Epiphany.KnifeUtil:GetEntitiesInSwing(player, knife)) do
+					if not data[dataName][GetPtrHash(enemy)] then
+						data[dataName][GetPtrHash(enemy)] = true
+						if enemy:ToNPC() then
+							local npc = enemy:ToNPC() ---@cast npc EntityNPC
+							if not self:IsOnCooldown(npc, self.Cooldown.KnifeSwing) then
+								self:PostNpcHit(knife, npc, true)
+							end
+						else
+							self:PreEntityCollision(knife, enemy, false)
+						end
+					end
+				end
+			else
+				data[dataName] = {}
+			end
+		end
+	end)
+
+	---@param knife EntityKnife
+	Mod:AddCallback(ModCallbacks.MC_POST_KNIFE_RENDER, function(_, knife, offset)
+		local data = getData(knife)
+		if data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
+			self:PostRender(knife, offset)
+		end
+	end)
+
+	---@param collider Entity
+	Mod:AddCallback(ModCallbacks.MC_PRE_KNIFE_COLLISION, function(_, knife, collider, low)
+		local data = getData(knife)
+		if data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
+			local npc = collider:ToNPC()
+			if npc then
+				-- normal knife and sumptorium knife
+				if knife.Variant == KnifeVariant.MOMS_KNIFE or knife.Variant == KnifeVariant.SUMPTORIUM then
+					if not self:IsOnCooldown(npc, self.Cooldown.KnifeHit) then
+						self:PostNpcHit(knife, npc)
+					end
+				end
+			end
+
+			return self:PreEntityCollision(knife, collider, low)
+		end
+	end)
+	--#endregion
+
+	--#region LASER CODE (the scary one)
+	---@param laser EntityLaser
+	local function laserFire(_, laser)
+		local data = getData(laser)
+		if not laser.SpawnerEntity or data[modInitial .. self.Name .. "_Disabled"] then
+			return
+		end
+
+		local player = Mod:TryGetPlayer(laser.SpawnerEntity)
+		if player and self:CheckKnifeLaserAffected(player, laser) then
+			if self.Color then
+				local c = laser:GetSprite().Color
+				local newC = Color(c.R, c.G, c.B, 1)
+				newC:SetColorize(self.Color.R + 0.3, self.Color.G + 0.2, self.Color.B + 0.2, 1)
+				laser:GetSprite().Color = newC
+			end
+
+			data[modInitial .. self.Name] = true
+			self:PostFire(laser)
+		end
+	end
+
+	Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BRIMSTONE, laserFire)
+	Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BRIMSTONE_BALL, laserFire)
+	Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TECH_LASER, laserFire)
+	Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TECH_X_LASER, laserFire)
+
+	---@param laser EntityLaser
+	Mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, function(_, laser)
+		local data = getData(laser)
+		if not laser.SpawnerEntity or data[modInitial .. self.Name .. "_Disabled"] then
+			return
+		end
+
+		if laser.Variant == LaserVariant.SHOOP and laser.MaxDistance == 0 then -- shoop da whoop
+			return
+		end
+
+		local player = Mod:TryGetPlayer(laser.SpawnerEntity)
+		if player and self:CheckKnifeLaserAffected(player, laser) then
+			--Laser's Color in GetSprite is const. Use Entity Color instead.
+			if self.Color then
+				local c = laser:GetSprite().Color
+				local newC = Color(c.R, c.G, c.B, 1)
+				newC:SetColorize(self.Color.R + 0.3, self.Color.G + 0.2, self.Color.B + 0.2, 1)
+				laser:GetSprite().Color = newC
+			end
+
+			data[modInitial .. self.Name] = true
+		elseif player and data[modInitial .. self.Name] then
+			data[modInitial .. self.Name] = false
+			laser:GetSprite().Color = player.LaserColor or Color.Default ---@diagnostic disable-line: undefined-field
+			self:PostLoseEffects(laser)
+			-- I added this to fix a nil check when there is no spawner entity
+		elseif data[modInitial .. self.Name] then
+			data[modInitial .. self.Name] = false
+			self:PostLoseEffects(laser)
+		end
+
+		if not data[modInitial .. self.Name] then return end
+		self:PostUpdate(laser)
+
+		local room = game:GetRoom()
+		local samples = laser:GetNonOptimizedSamples()
+		local collidedWidthGrid = {}
+		local collidedWithEntity = {}
+		for i = 0, #samples - 1 do
+			local point = samples:Get(i) ---@diagnostic disable-line: undefined-field
+			local gridEnt = room:GetGridEntityFromPos(point)
+			if gridEnt and not collidedWidthGrid[gridEnt:GetGridIndex()] then
+				self:PostGridCollision(laser, point)
+				collidedWidthGrid[gridEnt:GetGridIndex()] = true
+			end
+
+			for _, entity in ipairs(Isaac.FindInRadius(point, laser.Size, EntityPartition.ENEMY)) do
+				local npc = entity:ToNPC()
+				if not npc then goto continue end
+
+				if not collidedWithEntity[GetPtrHash(npc)] then
+					if not self:PreEntityCollision(laser, npc, false) then
+						collidedWithEntity[GetPtrHash(npc)] = true
+					end
+
+					if self:IsOnCooldown(npc, self.Cooldown.Laser) then
+						break
+					end
+
+					self:PostNpcHit(laser, npc)
+				end
+
+				::continue::
+			end
+		end
+	end)
+
+	---@param laser EntityLaser
+	Mod:AddCallback(ModCallbacks.MC_POST_LASER_RENDER, function(_, laser, offset)
+		local data = getData(laser)
+		if data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
+			self:PostRender(laser, offset)
+		end
+	end)
+	--#endregion
+
+	if Epiphany then
+		--#region Samson code !!
+		Epiphany:AddExtraCallback(Epiphany.ExtraCallbacks.SAMSON_PUNCH_ENTITY, function(player, npc, isSlam, point)
+			if player and self:CheckKnifeLaserAffected(player, nil) then
+				self:PostNpcHit(player, npc, false, true)
+			end
+		end)
+		--#endregion
+
+		--#region Cain Bag code
+		Epiphany:AddExtraCallback(Epiphany.ExtraCallbacks.CAIN_POST_SWING_HIT, function(_, bag, entity, player, SbData, dmgDealt)
+			if player and entity:ToNPC() and self:CheckTearAffected(player) then
+				self:PostNpcHit(bag, entity:ToNPC(), nil, nil, true)
+			end
+		end)
+
+		Epiphany:AddExtraCallback(Epiphany.ExtraCallbacks.CAIN_POST_BAG_THROW, function(_, bag, TbData)
+			if not TbData.PlayerOwner or TbData[modInitial .. self.Name .. "_Disabled"] then
+				return
+			end
+
+			local player = TbData.PlayerOwner
+			if player and self:CheckTearAffected(player) then
+				local sprite = bag:GetSprite()
+
+				if self.Color then
+					sprite.Color = self.Color
+				end
+
+				TbData[modInitial .. self.Name] = true
+				self:PostFire(bag)
+			end
+		end)
+
+		Epiphany:AddExtraCallback(Epiphany.ExtraCallbacks.CAIN_POST_BAG_HIT, function(_, bag, entity, TbData, dmgDealt)
+			if TbData[modInitial .. self.Name] and not TbData[modInitial .. self.Name .. "_Disabled"] then
+				if entity:ToNPC() then
+					self:PostNpcHit(bag, entity:ToNPC(), nil, nil, true)
+				end
+			end
+		end)
+		--#endregion
+	end
+
+
+	--#region Bomb code (the easy one)
+	if self.ShouldAffectBombs then
+		---@param effect EntityEffect
+		Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, function(_, effect)
+			if not effect.SpawnerEntity then
+				return
+			end
+
+			local player = Mod:TryGetPlayer(effect.SpawnerEntity)
+			if player and self:CheckTearAffected(player) then
+				local sprite = effect:GetSprite()
+				if self.Color then
+					sprite.Color = self.Color
+				end
+				local data = getData(effect)
+
+				data[modInitial .. self.Name] = true
+				self:PostFire(effect)
+			end
+		end, EffectVariant.ROCKET)
+
+		---@param bomb EntityBomb
+		Mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, function(_, bomb)
+			if not bomb.IsFetus then
+				return
+			end
+			local data = getData(bomb)
+
+			local player = Mod:TryGetPlayer(bomb.SpawnerEntity)
+			if bomb.FrameCount == 1 and player and self:CheckTearAffected(player) then
+				local sprite = bomb:GetSprite()
+				if self.Color then
+					sprite.Color = self.Color
+				end
+
+				data[modInitial .. self.Name] = true
+				self:PostFire(bomb)
+			end
+
+			if not bomb.SpawnerEntity or data[modInitial .. self.Name .. "_Disabled"] then
+				return
+			end
+
+			if data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
+				self:PostUpdate(bomb)
+
+				if bomb:CollidesWithGrid() then
+					self:PostGridCollision(bomb, bomb.Position)
+				end
+
+				if bomb:GetSprite():IsPlaying("Explode") and not data[modInitial .. self.Name .. "_BombExploded"] then
+					self:PostExplode(bomb)
+					data[modInitial .. self.Name .. "_BombExploded"] = true
+				end
+			end
+		end)
+
+		---@param entity Entity
+		---@param source EntityRef
+		Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function(_, entity, _, _, source)
+			local bomb = source.Entity and source.Entity:ToBomb()
+			local effect = source.Entity and source.Entity:ToEffect()
+			local data = getData(bomb)
+			if bomb and data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
+				local npc = entity:ToNPC()
+				if bomb.IsFetus and npc then
+					self:PostNpcHit(bomb, npc)
+				end
+			end
+			local eData = getData(effect)
+			if effect and eData[modInitial .. self.Name] and not eData[modInitial .. self.Name .. "_Disabled"] then
+				local npc = entity:ToNPC()
+				if npc then
+					self:PostNpcHit(effect, npc)
+				end
+			end
+		end)
+
+		---@param collider Entity
+		Mod:AddCallback(ModCallbacks.MC_PRE_BOMB_COLLISION, function(_, bomb, collider, low)
+			local data = getData(bomb)
+			if data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
+				if not bomb.IsFetus then
+					return
+				end
+
+				local npc = collider:ToNPC()
+				if npc then
+					self:PostNpcHit(bomb, npc)
+				end
+
+				return self:PreEntityCollision(bomb, collider, low)
+			end
+		end)
+
+		---@param bomb EntityBomb
+		Mod:AddCallback(ModCallbacks.MC_POST_BOMB_RENDER, function(_, bomb, offset)
+			local data = getData(bomb)
+			if data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
+				self:PostRender(bomb, offset)
+			end
+		end)
+	end
+	--#endregion
+
+	return self
+end
+
+return TearModifier

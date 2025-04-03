@@ -6,8 +6,6 @@ Furtherance.Item.D9 = D9
 
 D9.ID = Isaac.GetItemIdByName("D9")
 
---Accept defeat that there are no original dice anymore
-
 function D9:UseD9()
 	local itemPool = Mod.Game:GetItemPool()
 	for _, entity in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TRINKET)) do
