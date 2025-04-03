@@ -42,12 +42,12 @@ KEYS_TO_THE_KINGDOM.MAX_CHARGES = Mod.ItemConfig:GetCollectible(KEYS_TO_THE_KING
 KEYS_TO_THE_KINGDOM.COLLECTION_DISTANCE = 20 ^ 2
 
 KEYS_TO_THE_KINGDOM.StatTable = {
-	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.5,    TempBuff = 0.1 },
+	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.5,      TempBuff = 0.1 },
 	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = -0.5 * 5, TempBuff = -0.1 * 5 }, -- MaxFireDelay buffs should be negative!
 	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.5 * 40, TempBuff = 0.1 * 40 },
-	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.125,  TempBuff = 0.025 },
-	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.5,    TempBuff = 0.1 },
-	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5,    TempBuff = 0.1 }
+	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.125,    TempBuff = 0.025 },
+	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.5,      TempBuff = 0.1 },
+	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5,      TempBuff = 0.1 }
 }
 
 local identifier = "FR_RAPTURE"
@@ -120,7 +120,6 @@ function KEYS_TO_THE_KINGDOM:RaptureEnemy(ent)
 		end
 	end
 	if ent:IsBoss() then
-		print("rapture plz")
 		Mod:GetData(ent).Raptured = true
 		currentEnt:AddEntityFlags(EntityFlag.FLAG_NO_BLOOD_SPLASH)
 		currentEnt:Die()
@@ -174,17 +173,24 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 
 	room:GetEffects():AddCollectibleEffect(KEYS_TO_THE_KINGDOM.ID)
 
-	if roomType == RoomType.ROOM_ANGEL then
+	if roomType == RoomType.ROOM_ANGEL
+		and not (
+			player:HasCollectible(CollectibleType.COLLECTIBLE_KEY_PIECE_1)
+			and player:HasCollectible(CollectibleType.COLLECTIBLE_KEY_PIECE_2)
+		)
+	then
 		if not player:HasCollectible(CollectibleType.COLLECTIBLE_KEY_PIECE_1) then
-			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, CollectibleType.COLLECTIBLE_KEY_PIECE_1,
+			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE,
+				CollectibleType.COLLECTIBLE_KEY_PIECE_1,
 				room:FindFreePickupSpawnPosition(player.Position, 40), Vector.Zero, player)
 		elseif not player:HasCollectible(CollectibleType.COLLECTIBLE_KEY_PIECE_2) then
-			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, CollectibleType.COLLECTIBLE_KEY_PIECE_2,
+			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE,
+				CollectibleType.COLLECTIBLE_KEY_PIECE_2,
 				room:FindFreePickupSpawnPosition(player.Position, 40), Vector.Zero, player)
 		end
 	elseif room:GetAliveEnemiesCount() == 0 then
 		return { Discharge = false, ShowAnim = false, Remove = false }
-	elseif KEYS_TO_THE_KINGDOM.STORY_BOSS_IDS[room:GetBossID()]	then
+	elseif KEYS_TO_THE_KINGDOM.STORY_BOSS_IDS[room:GetBossID()] then
 		player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_HOLY_MANTLE, true)
 		return true
 	else
@@ -196,12 +202,14 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 		inverseiforeach(Isaac.GetRoomEntities(), function(ent)
 			local canSpare = KEYS_TO_THE_KINGDOM:CanSpare(ent)
 			if canSpare and ent:IsBoss() then
-				local spotlight = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT, KEYS_TO_THE_KINGDOM.SPOTLIGHT,
-				ent.Position, Vector.Zero, ent):ToEffect()
+				local spotlight = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
+					KEYS_TO_THE_KINGDOM.SPOTLIGHT,
+					ent.Position, Vector.Zero, ent):ToEffect()
 				---@cast spotlight EntityEffect
 				spotlight.Parent = ent
 				spotlight:FollowParent(ent)
-				SEL:AddStatusEffect(ent, KEYS_TO_THE_KINGDOM.RAPTURE_STATUS, raptureCountdown, source, nil, {Spotlight = spotlight})
+				SEL:AddStatusEffect(ent, KEYS_TO_THE_KINGDOM.RAPTURE_STATUS, raptureCountdown, source, nil,
+					{ Spotlight = spotlight })
 			elseif canSpare and ent:Exists() then
 				KEYS_TO_THE_KINGDOM:RaptureEnemy(ent)
 				KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, false)
@@ -271,12 +279,13 @@ Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_NEW_LEVEL, KEYS_TO_THE_KINGDOM.OnNew
 function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 	if not KEYS_TO_THE_KINGDOM:CanSpare(npc, true) then return end
 	if npc:IsBoss() then
-		Mod:ForEachPlayer(function (player)
+		Mod:ForEachPlayer(function(player)
 			local slots = Mod:GetActiveItemCharges(player, KEYS_TO_THE_KINGDOM.ID)
 			if #slots == 0 then return end
 			for _, slotData in ipairs(slots) do
 				if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES then
-					local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT, KEYS_TO_THE_KINGDOM.SOUL_BOSS,
+					local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
+						KEYS_TO_THE_KINGDOM.SOUL_BOSS,
 						npc.Position, RandomVector():Resized(5), npc)
 					effect.Target = player
 					break
@@ -284,7 +293,7 @@ function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 			end
 		end)
 	else
-		Mod:ForEachPlayer(function (player)
+		Mod:ForEachPlayer(function(player)
 			local slots = Mod:GetActiveItemCharges(player, KEYS_TO_THE_KINGDOM.ID)
 			if #slots == 0 then return end
 			for _, slotData in ipairs(slots) do
@@ -293,7 +302,8 @@ function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 					local chance = rng:RandomFloat()
 					local maxChance = (npc.MaxHitPoints * 2.5) / 100
 					if chance <= maxChance then
-						local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT, KEYS_TO_THE_KINGDOM.SOUL,
+						local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
+							KEYS_TO_THE_KINGDOM.SOUL,
 							npc.Position, RandomVector():Resized(5), npc)
 						effect.Target = player
 					end
@@ -315,7 +325,10 @@ Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, KEYS_TO_THE_KINGDOM.OnDeath)
 ---@param effect EntityEffect
 function KEYS_TO_THE_KINGDOM:SoulUpdate(effect)
 	local player = effect.Target and effect.Target:ToPlayer()
-	if not player then effect:Remove() return end
+	if not player then
+		effect:Remove()
+		return
+	end
 
 	effect.Velocity = (effect.Velocity + (((player.Position - effect.Position):Normalized() * 20) - effect.Velocity) * 0.4)
 
@@ -486,7 +499,8 @@ function KEYS_TO_THE_KINGDOM:RaptureBossUpdate(npc)
 	end
 end
 
-SEL.Callbacks.AddCallback(SEL.Callbacks.ID.ENTITY_STATUS_EFFECT_UPDATE, KEYS_TO_THE_KINGDOM.RaptureBossUpdate, KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
+SEL.Callbacks.AddCallback(SEL.Callbacks.ID.ENTITY_STATUS_EFFECT_UPDATE, KEYS_TO_THE_KINGDOM.RaptureBossUpdate,
+	KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
 
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
@@ -494,7 +508,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	Mod.SFXMan:Play(SoundEffect.SOUND_LIGHTBOLT, 2)
 	local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.CRACK_THE_SKY, 10, npc.Position, Vector.Zero, nil)
 	effect.SpriteScale = Vector(3, 3)
-	Mod:ForEachPlayer(function (player)
+	Mod:ForEachPlayer(function(player)
 		if player:HasCollectible(KEYS_TO_THE_KINGDOM.ID) then
 			KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), true)
 			player:AddCacheFlags(CacheFlag.CACHE_ALL, true)
@@ -502,7 +516,8 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	end)
 end
 
-SEL.Callbacks.AddCallback(SEL.Callbacks.ID.POST_REMOVE_ENTITY_STATUS_EFFECT, KEYS_TO_THE_KINGDOM.RaptureBoss, KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
+SEL.Callbacks.AddCallback(SEL.Callbacks.ID.POST_REMOVE_ENTITY_STATUS_EFFECT, KEYS_TO_THE_KINGDOM.RaptureBoss,
+	KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
 
 ---@param ent Entity
 ---@param source EntityRef
@@ -535,7 +550,8 @@ function KEYS_TO_THE_KINGDOM:ResetRaptureStatusOnDamage(ent, _, _, source, _)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.ResetRaptureStatusOnDamage, EntityType.ENTITY_PLAYER)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.ResetRaptureStatusOnDamage,
+	EntityType.ENTITY_PLAYER)
 
 --#endregion
 
@@ -562,12 +578,13 @@ function KEYS_TO_THE_KINGDOM:KrampusRapture(npc)
 		for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
 			if ent.FrameCount == 0
 				and (ent.SubType == CollectibleType.COLLECTIBLE_LUMP_OF_COAL
-				or ent.SubType == CollectibleType.COLLECTIBLE_HEAD_OF_KRAMPUS)
+					or ent.SubType == CollectibleType.COLLECTIBLE_HEAD_OF_KRAMPUS)
 			then
 				local itemPool = Mod.Game:GetItemPool()
 				local pickup = ent:ToPickup()
 				---@cast pickup EntityPickup
-				local newItem = itemPool:GetCollectible(ItemPoolType.POOL_DEVIL, true, npc.DropSeed, CollectibleType.COLLECTIBLE_LUMP_OF_COAL)
+				local newItem = itemPool:GetCollectible(ItemPoolType.POOL_DEVIL, true, npc.DropSeed,
+					CollectibleType.COLLECTIBLE_LUMP_OF_COAL)
 				pickup:Morph(ent.Type, ent.Variant, newItem)
 				break
 			end
