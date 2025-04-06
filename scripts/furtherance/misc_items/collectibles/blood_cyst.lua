@@ -12,7 +12,7 @@ function BLOOD_CYST:RespawnCyst()
 	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, BLOOD_CYST.FAMILIAR)) do
 		ent:Remove()
 	end
-	if room:IsClear() then return end
+	if room:IsClear() or not PlayerManager.AnyoneHasCollectible(BLOOD_CYST.ID) then return end
 	Mod:ForEachPlayer(function(player)
 		for _ = 1, player:GetCollectibleNum(BLOOD_CYST.ID) do
 			local position = Isaac.GetFreeNearPosition(room:GetRandomPosition(0), 40)
@@ -37,7 +37,7 @@ function BLOOD_CYST:OnFamiliarInit(familiar)
 	hitbox:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
 end
 
-Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, BLOOD_CYST.OnFamiliarInit)
+Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, BLOOD_CYST.OnFamiliarInit, BLOOD_CYST.FAMILIAR)
 
 ---@param npc EntityNPC
 function BLOOD_CYST:StopBoilUpdate(npc)
@@ -70,6 +70,7 @@ Mod:AddPriorityCallback(ModCallbacks.MC_POST_ENTITY_KILL, CallbackPriority.IMPOR
 
 ---@param ent Entity
 function BLOOD_CYST:OnDeath(ent)
+	if ent.Variant ~= BLOOD_CYST.FAMILIAR then return end
 	local familiar = ent:ToFamiliar()
 	---@cast familiar EntityFamiliar
 	for _ = 1, 20 do

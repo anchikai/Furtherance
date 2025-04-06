@@ -11,9 +11,15 @@ ALT_KEY.MAX_CHARGES = Mod.ItemConfig:GetCollectible(ALT_KEY.ID).MaxCharges
 ---@param rng RNG
 ---@param player EntityPlayer
 function ALT_KEY:OnUse(_, rng, player)
-	if game:IsGreedMode() then player:AnimateSad() return end --TODO: Remember to blacklist the item from Greed Mode
+	if game:IsGreedMode() then
+		player:AnimateSad()
+		return
+	end --TODO: Remember to blacklist the item from Greed Mode
 	local level = game:GetLevel()
-	if level:IsAscent() then player:AnimateSad() return end
+	if level:IsAscent() then
+		player:AnimateSad()
+		return
+	end
 	local stage = level:GetStage()
 	local stageList = Mod.Item.ALTERNATE_REALITY:GetAvailableStages(stage)
 	local stageType = level:GetStageType()
@@ -25,7 +31,7 @@ function ALT_KEY:OnUse(_, rng, player)
 	if stage <= LevelStage.STAGE4_2 and stageType < StageType.STAGETYPE_REPENTANCE then
 		useRepentance = true
 	end
-	inverseiforeach(stageList, function(stageTable, i)
+	Mod:inverseiforeach(stageList, function(stageTable, i)
 		if useRepentance and stageTable[2] < StageType.STAGETYPE_REPENTANCE
 			or not useRepentance and stageTable[2] >= StageType.STAGETYPE_REPENTANCE
 		then
@@ -50,9 +56,9 @@ function ALT_KEY:SelectNewLevel()
 	local floor_save = Mod:FloorSave()
 	if floor_save.AltKeyNewStage then
 		StageTransition.SetSameStage(true)
-		local stage, stageType = floor_save.AltKeyNewStage[1], floor_save.AltKeyNewStage[2]
-		floor_save.AltKeyNewStage  = nil
-		return {stage, stageType}
+		local stage, stageType    = floor_save.AltKeyNewStage[1], floor_save.AltKeyNewStage[2]
+		floor_save.AltKeyNewStage = nil
+		return { stage, stageType }
 	end
 end
 

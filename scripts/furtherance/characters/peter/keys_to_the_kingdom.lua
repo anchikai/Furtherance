@@ -199,7 +199,7 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 			raptureCountdown = raptureCountdown * 0.5
 		end
 		local source = EntityRef(player)
-		inverseiforeach(Isaac.GetRoomEntities(), function(ent)
+		Mod:inverseiforeach(Isaac.GetRoomEntities(), function(ent)
 			local canSpare = KEYS_TO_THE_KINGDOM:CanSpare(ent)
 			if canSpare and ent:IsBoss() then
 				local spotlight = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,

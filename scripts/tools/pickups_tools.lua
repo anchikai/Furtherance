@@ -16,7 +16,7 @@ end
 ---@function
 function Furtherance:KillChoice(pickup)
 	if pickup.OptionsPickupIndex ~= 0 then
-		inverseiforeach(Isaac.FindByType(EntityType.ENTITY_PICKUP), function(ent)
+		Mod:inverseiforeach(Isaac.FindByType(EntityType.ENTITY_PICKUP), function(ent)
 			if pickup.OptionsPickupIndex == ent:ToPickup().OptionsPickupIndex and GetPtrHash(pickup) ~= GetPtrHash(ent) then
 				Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, ent.Position, Vector.Zero, nil)
 				ent:Remove()
@@ -70,7 +70,8 @@ function Furtherance:PickupShopKill(player, pickup, sound)
 		local pickupprice = pickup.Price
 		local shopid = pickup.ShopItemId
 		Isaac.CreateTimer(function()
-			local NewPickup = Isaac.Spawn(EntityType.ENTITY_PICKUP, pickupvariant, pickupsubtype, pickupposition, Vector.Zero, nil)
+			local NewPickup = Isaac.Spawn(EntityType.ENTITY_PICKUP, pickupvariant, pickupsubtype, pickupposition,
+					Vector.Zero, nil)
 				:ToPickup()
 			Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, pickupposition, Vector.Zero, NewPickup)
 			NewPickup.Price = pickupprice
@@ -87,7 +88,8 @@ function Furtherance:PickupShopKill(player, pickup, sound)
 		local pickupsubtype = pickup.SubType
 		local shopid = pickup.ShopItemId
 		Isaac.CreateTimer(function()
-			local NewPickup = Isaac.Spawn(EntityType.ENTITY_PICKUP, pickupvariant, pickupsubtype, pickupposition, Vector.Zero, nil)
+			local NewPickup = Isaac.Spawn(EntityType.ENTITY_PICKUP, pickupvariant, pickupsubtype, pickupposition,
+					Vector.Zero, nil)
 				:ToPickup()
 			Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, pickupposition, Vector.Zero, NewPickup)
 			NewPickup.Price = pickupprice
@@ -193,7 +195,7 @@ function Furtherance:KillDevilPedestals(ignoredPickup, filter)
 	local level = Mod.Level()
 	local isDarkRoom = level:GetStage() == LevelStage.STAGE6 and level:GetStageType() == StageType.STAGETYPE_ORIGINAL
 
-	inverseiforeach(Isaac.FindByType(EntityType.ENTITY_PICKUP), function(ent)
+	Mod(Isaac.FindByType(EntityType.ENTITY_PICKUP), function(ent)
 		local pickup = ent:ToPickup() ---@cast pickup EntityPickup
 		if GetPtrHash(pickup) ~= ignoredHash
 			and (Mod:IsDevilDealItem(pickup)
