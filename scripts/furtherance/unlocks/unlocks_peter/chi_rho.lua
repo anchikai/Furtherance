@@ -6,51 +6,44 @@ Furtherance.Item.CHI_RHO = CHI_RHO
 
 CHI_RHO.ID = Isaac.GetItemIdByName("Chi Rho")
 
---TODO: Definitely needs a redesign to be more compatible with other weapon types or something different altogether
---[[ local LaserHomingType = {
-	NORMAL = 0,
-	FREEZE = 1,
-	FREEZE_HEAD = 2
-}
+CHI_RHO.MinLuck = 0
+CHI_RHO.MaxLuck = 15
+CHI_RHO.MinChance = 0.02
+CHI_RHO.MaxChance = 0.15
 
-local LaserVariant = {
-	BRIMSTONE = 1,
-	TECHNOLOGY = 2,
-	SHOOP_DA_WHOOP = 3,
-	PRIDE = 4,
-	LIGHT_BEAM = 5,
-	MEGA_BLAST = 6,
-	TRACTOR_BEAM = 7,
-	LIGHT_RING = 8, -- crashes if you run this with homing
-	BRIMTECH = 9,
-	JACOBS_LADDER = 10,
-	BIG_BRIMSTONE = 11,
-	DIARRHEASTONE = 12,
-	MEGA_BRIMTECH = 13,
-	BIG_BRIMTECH = 14,
-	BIGGER_BRIMTECH = 15,
-}
+---A percentage float chance to be used with an RNG object.
+---@param player EntityPlayer
+function CHI_RHO:GetChance(player)
+	local luck = player.Luck
+	luck = Mod:Clamp(luck, self.MinLuck, self.MaxLuck)
 
--- something along the lines of upgrading existing lasers...
--- all lasers home
----@param laser EntityLaser
-function Mod:PostLaserInit(laser)
-	local player = laser.SpawnerEntity and laser.SpawnerEntity:ToPlayer()
-	if player == nil or not player:HasCollectible(CollectibleType.COLLECTIBLE_CHI_RHO) then return end
+	local deltaX = self.MaxLuck - self.MinLuck
+	local rngRequirement = ((self.MaxChance - self.MinChance) / deltaX) * luck +
+		(self.MaxLuck * self.MinChance - self.MinLuck * self.MaxChance) / deltaX
 
-	local room = game:GetRoom()
-	if room:IsClear() then return end
-
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_TECHNOLOGY_2) then
-		laser:SetHomingType(LaserHomingType.NORMAL)
-	else
-		laser:SetHomingType(LaserHomingType.FREEZE)
-	end
-	if not laser:IsCircleLaser() then
-		laser:AddTearFlags(TearFlags.TEAR_HOMING)
-	end
-	laser.DisableFollowParent = true
+	return rngRequirement
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_LASER_INIT, Mod.PostLaserInit)
- ]]
+---@param dir Vector
+---@param amount integer
+---@param owner EntityPlayer | EntityFamiliar
+---@param weapon Weapon
+function CHI_RHO:OnWeaponFire(dir, amount, owner, weapon)
+	local player = Mod:TryGetPlayer(owner)
+	if not player then return end
+	if player:GetFireDirection() == Direction.NO_DIRECTION then
+		dir = Mod:DirectionToVector(player:GetHeadDirection())
+	end
+
+	if player:HasCollectible(CHI_RHO.ID) then
+		local rng = player:GetCollectibleRNG(CHI_RHO.ID)
+		for _ = 1, amount do
+			if rng:RandomFloat() <= CHI_RHO:GetChance(player) then
+				EntityLaser.ShootAngle(LaserVariant.LIGHT_BEAM, owner.Position, dir:GetAngleDegrees(), 7, player:GetLaserOffset(LaserOffset.LASER_BRIMSTONE_OFFSET, dir), owner)
+				break
+			end
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_WEAPON_FIRED, CHI_RHO.OnWeaponFire)
