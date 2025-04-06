@@ -1,3 +1,5 @@
+--#region Variables
+
 local Mod = Furtherance
 
 local F4_KEY = {}
@@ -5,6 +7,10 @@ local F4_KEY = {}
 Furtherance.Item.KEY_F4 = F4_KEY
 
 F4_KEY.ID = Isaac.GetItemIdByName("F4 Key")
+
+F4_KEY.POWER_DOWN = Isaac.GetSoundIdByName("Power Down")
+
+local isPoweredDown = true
 
 F4_KEY.ALLOWED_ROOMS = {
 	Equal = Mod:Set({
@@ -38,9 +44,54 @@ F4_KEY.ALLOWED_ROOMS = {
 		RoomType.ROOM_PLANETARIUM
 	})
 }
+
+local stopSomeLoopingSFX = {
+	SoundEffect.SOUND_INSECT_SWARM_LOOP,
+	SoundEffect.SOUND_PORTAL_LOOP,
+	SoundEffect.SOUND_TAR_LOOP,
+	SoundEffect.SOUND_WATER_FLOW_LOOP,
+	SoundEffect.SOUND_LAVA_LOOP,
+	SoundEffect.SOUND_CHAIN_LOOP,
+	SoundEffect.SOUND_MINECART_LOOP,
+	SoundEffect.SOUND_FLAMETHROWER_LOOP,
+	SoundEffect.SOUND_BALL_AND_CHAIN_LOOP
+}
+
+local collisionCallbacks = {
+	ModCallbacks.MC_PRE_PLAYER_COLLISION,
+	ModCallbacks.MC_PRE_TEAR_COLLISION,
+	ModCallbacks.MC_PRE_FAMILIAR_COLLISION,
+	ModCallbacks.MC_PRE_NPC_COLLISION,
+	ModCallbacks.MC_PRE_BOMB_COLLISION,
+	ModCallbacks.MC_PRE_KNIFE_COLLISION,
+	ModCallbacks.MC_PRE_PROJECTILE_COLLISION
+}
+
+local initCallbacks = {
+	ModCallbacks.MC_POST_NPC_INIT,
+	ModCallbacks.MC_POST_PROJECTILE_INIT
+}
+
+local preUpdateCallbacks = {
+	"MC_PRE_NPC_UPDATE",
+	"MC_PRE_PROJECTILE_UPDATE",
+	"MC_PRE_GRID_ENTITY_FIRE_UPDATE",
+	"MC_PRE_GRID_ENTITY_PIT_UPDATE",
+	"MC_PRE_GRID_ENTITY_POOP_UPDATE",
+	"MC_PRE_GRID_ENTITY_PRESSUREPLATE_UPDATE",
+	"MC_PRE_GRID_ENTITY_SPIKES_UPDATE",
+	"MC_PRE_GRID_ENTITY_STATUE_UPDATE",
+	"MC_PRE_GRID_ENTITY_WEB_UPDATE",
+	"MC_PRE_GRID_ENTITY_TNT_UPDATE"
+}
+
+--#endregion
+
+--#region On use
+
 -- Thanks for solving this problem Connor!
----@param rng RNG
 ---@param player EntityPlayer
+---@param rng RNG
 function F4_KEY:OnRegularUse(player, rng)
 	local level = Mod.Level()
 	local roomsList = level:GetRooms()
@@ -78,11 +129,39 @@ function F4_KEY:OnRegularUse(player, rng)
 	end
 end
 
---TODO: Will do later
+function F4_KEY:UpdateDoorsAndShadow()
+	local room = Mod.Room()
+	local fxParams = room:GetFXParams()
+	fxParams.ShadowAlpha = 2
+	fxParams.LightColor = KColor(1, 1, 1, 0)
+	for i = DoorSlot.NO_DOOR_SLOT + 1, DoorSlot.NUM_DOOR_SLOTS - 1 do
+		local door = room:GetDoor(i)
+		if door and not door:IsLocked() then
+			door:Open()
+			if door:IsOpen() then
+				door:GetSprite():Play(door.OpenAnimation)
+				door:GetSprite():SetLastFrame()
+			end
+		end
+	end
+end
+
 ---@param player EntityPlayer
 function F4_KEY:OnAltSynergyUse(player)
 	local floor_save = Mod:FloorSave()
 	floor_save.AltF4Shutdown = true
+	isPoweredDown = true
+	Mod.SFXMan:Play(F4_KEY.POWER_DOWN)
+	F4_KEY:UpdateDoorsAndShadow()
+	for _, ent in ipairs(Isaac.GetRoomEntities()) do
+		local sprite = ent:GetSprite()
+		sprite:Stop()
+	end
+	Mod.MusicMan:Pause()
+	for _, sfx in ipairs(stopSomeLoopingSFX) do
+		Mod.SFXMan:Stop(sfx)
+	end
+	return true
 end
 
 ---@param rng RNG
@@ -90,28 +169,180 @@ end
 function F4_KEY:OnUse(_, rng, player)
 	if not player:HasCollectible(Mod.Item.KEY_ALT.ID) then
 		return F4_KEY:OnRegularUse(player, rng)
-	else -- Alt+F4 Synergy
-		--F4_KEY:OnAltSynergyUse(player)
-		--[[ local level = game:GetLevel()
-		local room = game:GetRoom()
-		local data = Mod:GetData(player)
-		local stage = level:GetStage()
-		local stageType = level:GetStageType()
-		if room:IsCurrentRoomLastBoss() or (stage == LevelStage.STAGE4_3) or (stage == LevelStage.STAGE5) or (stage == LevelStage.STAGE6) or (stage == LevelStage.STAGE7) or (stage == LevelStage.STAGE8) or (stage == LevelStage.STAGE6_GREED) or (stage == LevelStage.STAGE7_GREED) or ((stage == LevelStage.STAGE4_2) and (stageType == StageType.STAGETYPE_REPENTANCE)) then
-			Mod:playFailSound()
-			player:AnimateSad()
-		else
-			player:RemoveCollectible(CollectibleType.COLLECTIBLE_F4_KEY)
-			player:RemoveCollectible(CollectibleType.COLLECTIBLE_ALT_KEY)
-			MusicManager():Fadeout(0.01)
-			player:AddNullCostume(NullItemID.ID_WAVY_CAP_3)
-			data.Transition = 4
-			data.AltF4 = true
-		end ]]
+	else
+		local roomType = Mod.Room():GetType()
+		if roomType ~= RoomType.ROOM_BOSS then
+			local slots = Mod:GetActiveItemSlots(player, Mod.Item.KEY_ALT.ID)
+			for _, slot in ipairs(slots) do
+				if not player:NeedsCharge(slot) then
+					player:DischargeActiveItem(slot)
+					return F4_KEY:OnAltSynergyUse(player)
+				end
+			end
+		end
 	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, F4_KEY.OnUse, F4_KEY.ID)
+
+--#endregion
+
+function F4_KEY:DarkenScreen(shaderName)
+	if shaderName == "AltF4PowerDown" then
+		return { PowerValue = isPoweredDown and 0.5 or 0 }
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, F4_KEY.DarkenScreen)
+
+function F4_KEY:StopAltF4()
+	local floor_save = Mod:FloorSave()
+	isPoweredDown = false
+	floor_save.AltF4Shutdown = nil
+	local fxParams = Mod.Room():GetFXParams()
+	fxParams.ShadowAlpha = 0
+	fxParams.LightColor = KColor(1, 1, 1, 1)
+end
+
+function F4_KEY:OnNewRoom()
+	if Mod.Room():GetType() == RoomType.ROOM_BOSS then return end
+	local floor_save = Mod:FloorSave()
+	if floor_save.AltF4Shutdown then
+		isPoweredDown = true
+		F4_KEY:UpdateDoorsAndShadow()
+		Mod.SFXMan:Stop(SoundEffect.SOUND_UNLOCK00)
+		Mod.SFXMan:Stop(SoundEffect.SOUND_DOOR_HEAVY_CLOSE)
+		Mod.SFXMan:Stop(SoundEffect.SOUND_DOOR_HEAVY_OPEN)
+		Mod.SFXMan:Stop(SoundEffect.SOUND_METAL_DOOR_CLOSE)
+		Mod.SFXMan:Stop(SoundEffect.SOUND_METAL_DOOR_OPEN)
+	elseif isPoweredDown then
+		F4_KEY:StopAltF4()
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, F4_KEY.OnNewRoom)
+
+---@param room? Room
+function F4_KEY:ShouldNilBoss(room)
+	room = room or Mod.Room()
+	if room:GetType() ~= RoomType.ROOM_BOSS then return false end
+	local level = Mod.Level()
+	local stage = level:GetStage()
+	local labyrinth = Mod:HasBitFlags(level:GetCurses(), LevelCurse.CURSE_OF_LABYRINTH)
+	return Mod.Game:IsGreedMode() and (
+		--If within a normal run, allow Pre-Mom and Womb I
+		(labyrinth and stage == LevelStage.STAGE3_1 and not room:IsCurrentRoomLastBoss())
+		or stage < LevelStage.STAGE3_2
+		or (stage == LevelStage.STAGE4_1 and not labyrinth and not room:IsCurrentRoomLastBoss())
+		--Otherwise, allow Pre-Ultra Greed
+	) or stage < LevelStage.STAGE7_GREED
+end
+
+function F4_KEY:ShouldEndEffectEarly(room)
+	if isPoweredDown
+		and room:GetType() == RoomType.ROOM_BOSS
+		and not F4_KEY:ShouldNilBoss(room)
+	then
+		F4_KEY:StopAltF4()
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_NEW_ROOM, F4_KEY.ShouldEndEffectEarly)
+
+function F4_KEY:HideBossPortraitAndName()
+	if isPoweredDown and F4_KEY:ShouldNilBoss() then
+		local sprite = RoomTransition.GetVersusScreenSprite()
+		sprite:GetLayer(4):SetVisible(false) --Boss portrait
+		sprite:GetLayer(9):SetVisible(false) --Second Boss portrait (Double Trouble)
+		sprite:GetLayer(7):SetVisible(false) --Boss name
+	end
+end
+
+Mod:AddPriorityCallback(ModCallbacks.MC_POST_BOSS_INTRO_SHOW, CallbackPriority.LATE, F4_KEY.HideBossPortraitAndName)
+
+---Doing PRE_ENTITY_SPAWN or NPC_INIT apparently just freezes the game when this is attempted
+---and we stop early on PRE_NPC_UPDATE, so do a delay on NPC_INIT
+function F4_KEY:Error404BossNotFound(ent)
+	if isPoweredDown and F4_KEY:ShouldNilBoss() then
+		Mod:DelayOneFrame(function()
+			ent:Remove()
+			Isaac.Spawn(EntityType.ENTITY_SHOPKEEPER, 2, 0, ent.Position, Vector.Zero, nil)
+		end)
+	end
+end
+
+Mod:AddPriorityCallback(ModCallbacks.MC_POST_NPC_INIT, CallbackPriority.IMPORTANT, F4_KEY.Error404BossNotFound)
+
+function F4_KEY:EndAltF4Effect()
+	if Mod.Room():IsCurrentRoomLastBoss() then
+		F4_KEY:StopAltF4()
+	end
+end
+
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, CallbackPriority.IMPORTANT, F4_KEY.EndAltF4Effect)
+
+--#region Pause a lot of things
+
+for _, callback in ipairs(preUpdateCallbacks) do
+	Mod:AddPriorityCallback(ModCallbacks[callback], CallbackPriority.IMPORTANT - 1000, function(_, ent)
+		if isPoweredDown then
+			if string.find(callback, "GRID") then
+				return false
+				--Let them update once for initiating their sprite at minimum
+			elseif ent.FrameCount >= 1 then
+				ent.Velocity = Vector.Zero
+				ent:GetSprite():Stop()
+				return true
+			end
+		end
+	end)
+end
+
+local environmentEffects = {
+	EffectVariant.WALL_BUG,
+	EffectVariant.TINY_BUG,
+	EffectVariant.WISP
+}
+
+for _, variant in ipairs(environmentEffects) do
+	Mod:AddCallback(ModCallbacks.MC_PRE_EFFECT_UPDATE, function(_, ent)
+		ent.Velocity = Vector.Zero
+		ent:GetSprite():Stop()
+	end, variant)
+end
+
+for _, callback in ipairs(initCallbacks) do
+	---@param ent Entity
+	Mod:AddPriorityCallback(callback, CallbackPriority.LATE + 1000, function(_, ent)
+		if isPoweredDown then
+			ent:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
+			ent.Friction = 0
+		end
+	end)
+end
+
+for _, callback in ipairs(collisionCallbacks) do
+	Mod:AddPriorityCallback(callback, CallbackPriority.IMPORTANT - 1000, function()
+		if isPoweredDown then
+			return true
+		end
+	end)
+end
+
+for _, sfx in ipairs(stopSomeLoopingSFX) do
+	Mod:AddCallback(ModCallbacks.MC_PRE_SFX_PLAY, function()
+		return false
+	end, sfx)
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_MUSIC_PLAY, function()
+	if isPoweredDown then
+		return false
+	end
+end)
+
+--#endregion
+
 --[[
 function Mod:RoomTransition(player)
 	local data = Mod:GetData(player)

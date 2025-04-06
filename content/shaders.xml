@@ -5,42 +5,42 @@
         </parameters>
         <vertex>
             <![CDATA[
-            attribute vec3 Position;                                        
-            attribute vec4 Color;                                           
-            attribute vec2 TexCoord;                                        
-            attribute vec4 RenderData;                                                                  
+            attribute vec3 Position;
+            attribute vec4 Color;
+            attribute vec2 TexCoord;
+            attribute vec4 RenderData;
             attribute float Scale;
-            varying vec4 Color0;                                            
-            varying vec2 TexCoord0;                                     
-            varying vec4 RenderDataOut; 
+            varying vec4 Color0;
+            varying vec2 TexCoord0;
+            varying vec4 RenderDataOut;
             varying float ScaleOut;
 			attribute float FlipFactor;
 			varying float FlipFactorOut;
-            uniform mat4 Transform;                                     
-            void main(void)                                             
-            {                                                               
-                RenderDataOut = RenderData;                             
-                ScaleOut = Scale;         // Passing data to fragment shader 
-				
+            uniform mat4 Transform;
+            void main(void)
+            {
+                RenderDataOut = RenderData;
+                ScaleOut = Scale;         // Passing data to fragment shader
+
 				FlipFactorOut = FlipFactor;
-				
+
                 Color0 = Color;
                 TexCoord0 = TexCoord;
-                gl_Position = Transform * vec4(Position.xyz, 1.0);          
+                gl_Position = Transform * vec4(Position.xyz, 1.0);
             }
         ]]>
         </vertex>
         <fragment>
             <![CDATA[#version 150
-            varying lowp vec4 Color0;  			
-            varying mediump vec2 TexCoord0;  			
+            varying lowp vec4 Color0;
+            varying mediump vec2 TexCoord0;
             varying lowp vec4 RenderDataOut;
             varying lowp float ScaleOut;
 			varying lowp float FlipFactorOut;
-			
-            uniform sampler2D Texture0;                       
 
-            void main(void)                                             
+            uniform sampler2D Texture0;
+
+            void main(void)
             {
                 float partone = TexCoord0.y * (1-FlipFactorOut);
                 float parttwo = ((RenderDataOut.y/RenderDataOut.z)-TexCoord0.y) * FlipFactorOut;
@@ -54,5 +54,39 @@
             }
         ]]>
         </fragment>
+    </shader>
+	 <shader name="AltF4PowerDown">
+         <parameters>
+            <param name="PowerValue" type="float" />
+        </parameters>
+        <vertex><![CDATA[
+            attribute vec3 Position;
+            attribute vec4 Color;
+            attribute vec2 TexCoord;
+			attribute float PowerValue;
+            varying vec4 Color0;
+            varying vec2 TexCoord0;
+			varying float PowerValue0;
+            uniform mat4 Transform;
+            void main(void) {
+                Color0 = Color;
+                TexCoord0 = TexCoord;
+				PowerValue0 = PowerValue;
+                gl_Position = Transform * vec4(Position.xyz, 1.0);
+            }
+        ]]></vertex>
+        <fragment><![CDATA[
+            varying lowp vec4 Color0;
+            varying mediump vec2 TexCoord0;
+			varying lowp float PowerValue0;
+            uniform sampler2D Texture0;
+            void main(void) {
+                vec4 Color = Color0 * texture2D(Texture0, TexCoord0);
+				Color.r *= 1.0f - PowerValue0;
+				Color.g *= 1.0f - PowerValue0;
+				Color.b *= 1.0f - PowerValue0;
+                gl_FragColor = Color;
+            }
+        ]]></fragment>
     </shader>
 </shaders>
