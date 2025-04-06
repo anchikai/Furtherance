@@ -155,7 +155,7 @@ function F4_KEY:OnAltSynergyUse(player)
 	local floor_save = Mod:FloorSave()
 	floor_save.AltF4Shutdown = true
 	isPoweredDown = true
-	Mod.SFXMan:Play(F4_KEY.POWER_DOWN)
+	Mod.SFXMan:Play(F4_KEY.POWER_DOWN, 2)
 	F4_KEY:UpdateDoorsAndShadow()
 	for _, ent in ipairs(Isaac.GetRoomEntities()) do
 		local sprite = ent:GetSprite()
@@ -280,6 +280,8 @@ Mod:AddPriorityCallback(ModCallbacks.MC_POST_NPC_INIT, CallbackPriority.IMPORTAN
 function F4_KEY:EndAltF4Effect()
 	if Mod.Room():IsCurrentRoomLastBoss() then
 		F4_KEY:StopAltF4()
+		Mod.MusicMan:Play(Music.MUSIC_BOSS_OVER, 1)
+		Mod.MusicMan:UpdateVolume()
 	end
 end
 
