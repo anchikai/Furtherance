@@ -27,6 +27,7 @@ local collectibles = {
 	"crab_legs",
 	"d9",
 	"dads_wallet",
+	"epitaph",
 	"flux",
 	"iron",
 
@@ -46,7 +47,7 @@ local collectibles = {
 	--"technology-1",
 	"unstable_core",
 	"wine_bottle",
-	"zzzzoptionszzzz"
+	"zzzzoptionszzzz",
 }
 
 loopInclude(collectibles, "collectibles")

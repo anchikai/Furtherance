@@ -1,11 +1,11 @@
 <items gfxroot="gfx/items/" version="1" deathanm2="gfx/death items.anm2">
 	<!-- Isaac's Keyboard -->
 	<active id="24" name="Esc Key" description="I gotta get outta here!" gfx="key_esc.png" shopprice="30" devilprice="2" quality="3" />
-	<active id="1" name="Tilde Key" description="Dirty cheater" gfx="key_tilde.png" maxcharges="12" initcharge="0" quality="4" />
+	<active id="1" name="Tilde Key" description="Dirty cheater" gfx="key_tilde.png" maxcharges="12" initcharge="0" quality="0" />
 	<active id="2" name="Alt Key" description="Reality" gfx="key_alt.png" maxcharges="2" chargetype="special" quality="4" tags="nocantrip nochallenge" />
 	<active id="3" name="Spacebar Key" description="Feedback loop" gfx="key_spacebar.png" maxcharges="12" quality="4" tags="nocantrip" />
-	<active id="4" name="Backspace Key" description="No, go back!" gfx="key_backspace.png" maxcharges="1" quality="1" tags="offensive nocantrip" />
-	<active id="5" name="Q Key" description="Plagiarism" gfx="key_q.png" maxcharges="12" quality="4" tags="nocantrip offensive" />
+	<active id="4" name="Backspace Key" description="No, go back!" gfx="key_backspace.png" maxcharges="2" quality="1" tags="offensive nocantrip" />
+	<active id="5" name="Q Key" description="Plagiarism" gfx="key_q.png" maxcharges="6" quality="4" tags="nocantrip offensive" />
 	<active id="6" name="E Key" description="Quite explosive" gfx="key_e.png" maxcharges="6" quality="3" tags="nocantrip offensive" />
 	<active id="7" name="C Key" description="Encyclopedia Support" gfx="key_c.png" maxcharges="6" initcharge="0" quality="3" tags="nocantrip offensive" />
 	<active id="8" name="Caps Key" description="Locked in size" gfx="key_caps.png" maxcharges="6" quality="3" tags="nocantrip offensive" />
@@ -74,6 +74,7 @@
 	<passive id="97" name="Severed Ear" description="Battle trophy" gfx="severed_ear.png" achievement="Severed Ear" cache="damage firedelay range shotspeed" quality="2" />
 	<passive id="98" name="Golden Port" description="Money charge" gfx="golden_port.png" achievement="Golden Port" quality="3" />
 	<passive id="99" name="Itching Powder" description="Double damage?" gfx="itching_powder.png" achievement="Itching Powder" quality="1" />
+	<passive id="100" name="Epitaph" description="You will remember this name" gfx="epitaph.png" quality="2" tags="lazarusshared offensive" /> <!-- Concept by DLNT! -->
 
 	<!-- Active Items -->
 	<active id="21" name="Book of Swiftness" description="Temporary speed up" gfx="book_of_swiftness.png" maxcharges="3" cache="speed" quality="2" tags="book offensive" />
@@ -113,7 +114,6 @@
 	<trinket id="8" name="Almagest Scrap" description="Chart the stars" gfx="almagest_scrap.png" achievement="Almagest Scrap" />
 	<trinket id="9" name="Wormwood Leaf" description="Tastes bitter" gfx="wormwood_leaf.png" achievement="Wormwood Leaf" cooldown="60" addcostumeonpickup="false" />
 	<trinket id="10" name="Escape Plan" description="When the going gets tough" gfx="escape_plan.png" />
-	<trinket id="11" name="Epitaph" description="You will remember this name." gfx="epitaph.png" /> <!-- Concept by DLNT! -->
 	<trinket id="12" name="Leviathan's Tendril" description="An instrument to control the waves" gfx="leviathans_tendril.png" achievement="Leviathan's Tendril" tags="devil" />
 	<trinket id="13" name="Altruism" description="Blessing of charity" gfx="altruism.png" achievement="Altruism" />
 	<trinket id="14" name="Nil Num" description="Q" gfx="nil_num.png" />
