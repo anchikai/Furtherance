@@ -10,7 +10,7 @@ F4_KEY.ID = Isaac.GetItemIdByName("F4 Key")
 
 F4_KEY.POWER_DOWN = Isaac.GetSoundIdByName("Power Down")
 
-local isPoweredDown = true
+local isPoweredDown = false
 
 F4_KEY.ALLOWED_ROOMS = {
 	Equal = Mod:Set({
