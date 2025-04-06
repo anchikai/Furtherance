@@ -66,7 +66,6 @@ function EPITAPH:PostRevive(player)
 	if player:HasCollectible(EPITAPH.ID) then
 		local player_run_save = Mod:RunSave(player)
 		Mod:DelayOneFrame(function()
-			print("ello")
 			if player:IsCoopGhost() and player_run_save.EpitaphInventory then
 				player_run_save.EpitaphCheckCoopGhostMorph = true
 				Mod:DebugLog("Player is a Co-Op Ghost. Mark for tracking revival")
@@ -102,7 +101,6 @@ function EPITAPH:OnGameOver(isGameOver)
 	if isGameOver then
 		local game_save = Mod:GameSave()
 		Mod:ForEachPlayer(function(player)
-			print("yipee")
 			local player_run_save = Mod:RunSave(player)
 			if player_run_save.EpitaphInventory then
 				game_save.EpitaphTombstones = game_save.EpitaphTombstones or {}
