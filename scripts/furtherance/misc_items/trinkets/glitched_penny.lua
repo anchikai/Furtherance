@@ -30,4 +30,4 @@ function GLITCHED_PENNY:GlitchedPennyProc(coin, collider)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, GLITCHED_PENNY.GlitchedPennyProc, PickupVariant.PICKUP_COIN)
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_COLLISION, GLITCHED_PENNY.GlitchedPennyProc, PickupVariant.PICKUP_COIN)

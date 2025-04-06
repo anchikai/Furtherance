@@ -6,9 +6,9 @@ Furtherance.Card.GOLDEN_CARD = GOLDEN_CARD
 
 GOLDEN_CARD.ID = Isaac.GetCardIdByName("Golden Card")
 
---2.5%
 GOLDEN_CARD.REPLACE_CHANCE = 0.025
 
+---Especially important to do all these checks as the card can be picked back up and dropped again, giving it a new InitSeed
 ---@param entType EntityType
 ---@param variant PickupVariant
 ---@param subtype integer
@@ -29,6 +29,16 @@ function GOLDEN_CARD:SpawnGoldenCard(entType, variant, subtype, position, _, spa
 			return
 		end
 		if (spawner and spawner:ToPlayer()) then
+			floor_save.CheckedGoldenCard[key] = true
+			return
+		end
+		local level = Mod.Level()
+		local room = Mod.Room()
+		if level:IsAscent()
+			and room:IsFirstVisit()
+			and (
+			room:GetType() == RoomType.ROOM_TREASURE or room:GetType() == RoomType.ROOM_BOSS
+		) then
 			floor_save.CheckedGoldenCard[key] = true
 			return
 		end

@@ -19,7 +19,7 @@ function GOLDEN_SACK:SpawnGoldenSack(entType, variant, subtype, _, _, _, seed)
 		and subtype <= SackSubType.SACK_NORMAL
 		and Mod.PersistGameData:Unlocked(GOLDEN_SACK.ACHIEVEMENT)
 	then
-		--Even though this runs every time the entity spawns, the same seed will always produce the same resul
+		--Even though this runs every time the entity spawns, the same seed will always produce the same result
 		local rng = RNG(seed)
 		if rng:RandomFloat() <= GOLDEN_SACK.REPLACE_CHANCE then
 			return { entType, variant, GOLDEN_SACK.ID, seed }

@@ -54,7 +54,8 @@ local stopSomeLoopingSFX = {
 	SoundEffect.SOUND_CHAIN_LOOP,
 	SoundEffect.SOUND_MINECART_LOOP,
 	SoundEffect.SOUND_FLAMETHROWER_LOOP,
-	SoundEffect.SOUND_BALL_AND_CHAIN_LOOP
+	SoundEffect.SOUND_BALL_AND_CHAIN_LOOP,
+	SoundEffect.SOUND_FIRE_BURN
 }
 
 local collisionCallbacks = {
@@ -76,13 +77,16 @@ local preUpdateCallbacks = {
 	"MC_PRE_NPC_UPDATE",
 	"MC_PRE_PROJECTILE_UPDATE",
 	"MC_PRE_GRID_ENTITY_FIRE_UPDATE",
-	"MC_PRE_GRID_ENTITY_PIT_UPDATE",
-	"MC_PRE_GRID_ENTITY_POOP_UPDATE",
-	"MC_PRE_GRID_ENTITY_PRESSUREPLATE_UPDATE",
 	"MC_PRE_GRID_ENTITY_SPIKES_UPDATE",
-	"MC_PRE_GRID_ENTITY_STATUE_UPDATE",
 	"MC_PRE_GRID_ENTITY_WEB_UPDATE",
-	"MC_PRE_GRID_ENTITY_TNT_UPDATE"
+	"MC_PRE_GRID_ENTITY_TNT_UPDATE",
+}
+
+local environmentEffects = {
+	EffectVariant.WALL_BUG,
+	EffectVariant.TINY_BUG,
+	EffectVariant.TINY_FLY,
+	EffectVariant.WISP
 }
 
 --#endregion
@@ -298,11 +302,19 @@ for _, callback in ipairs(preUpdateCallbacks) do
 	end)
 end
 
-local environmentEffects = {
-	EffectVariant.WALL_BUG,
-	EffectVariant.TINY_BUG,
-	EffectVariant.WISP
-}
+--Special exceptions to red poops and spiked rocks
+---@param gridEnt GridEntityRock
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_GRID_ENTITY_ROCK_UPDATE, CallbackPriority.IMPORTANT - 1000, function(_, gridEnt)
+	if isPoweredDown and gridEnt:GetType() == GridEntityType.GRID_ROCK_SPIKED then
+		return false
+	end
+end)
+---@param gridEnt GridEntityRock
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_GRID_ENTITY_POOP_UPDATE, CallbackPriority.IMPORTANT - 1000, function(_, gridEnt)
+	if isPoweredDown and gridEnt:GetType() == GridEntityType.GRID_POOP and gridEnt:GetVariant() == GridPoopVariant.RED then
+		return false
+	end
+end)
 
 for _, variant in ipairs(environmentEffects) do
 	Mod:AddCallback(ModCallbacks.MC_PRE_EFFECT_UPDATE, function(_, ent)

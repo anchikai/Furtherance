@@ -19,21 +19,9 @@ function CHARGED_BOMB:SpawnChargedBomb(entType, variant, subtype, _, _, spawner,
 		and variant == PickupVariant.PICKUP_BOMB
 		and subtype == BombSubType.BOMB_NORMAL
 	then
-		local floor_save = Mod:FloorSave()
-		floor_save.CheckedChargedBomb = floor_save.CheckedChargedBomb or {}
-		local key = tostring(seed)
-		if floor_save.CheckedChargedBomb[key] then
-			return
-		end
-		if (spawner and spawner:ToPlayer()) then
-			floor_save.CheckedChargedBomb[key] = true
-			return
-		end
 		local rng = RNG(seed)
 		if rng:RandomFloat() <= CHARGED_BOMB.REPLACE_CHANCE then
 			return { entType, variant, CHARGED_BOMB.ID, seed }
-		else
-			floor_save.CheckedChargedBomb[key] = true
 		end
 	end
 end
@@ -57,7 +45,7 @@ function CHARGED_BOMB:CollectChargedBomb(pickup, collider)
 		if pickup.OptionsPickupIndex > 0 then
 			Mod:KillChoice(pickup)
 		end
-		if rng:RandomFloat() <= CHARGED_BOMB.EXPLODE_CHANCE then
+		if rng:RandomFloat() <= CHARGED_BOMB.EXPLODE_CHANCE and Mod:GetEffectiveHitPoints(player) > 1 then
 			Isaac.Explode(pickup.Position, pickup, 100)
 		end
 	end
