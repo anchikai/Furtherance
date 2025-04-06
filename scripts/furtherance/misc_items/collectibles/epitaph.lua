@@ -9,6 +9,10 @@ EPITAPH.ID = Isaac.GetItemIdByName("Epitaph")
 EPITAPH.TOMBSTONE_GRID_VARIANT = 349
 EPITAPH.TOMBSTONE_MAX_HITS = 3
 
+EPITAPH.NPC_REVIVE_CHANCE = 0.1
+
+local reviveLocations = {}
+
 --#region Track items on death
 
 ---No active items, no trinkets, no starting items
@@ -308,5 +312,97 @@ function EPITAPH:DestroyTombstone(gridEnt)
 	gridEnt:SetType(1)
 	gridEnt:Destroy(true)
 end
+
+--#endregion
+
+--#region Passive Book of the Dead-like effect
+
+--Shoutout to the wiki for the exact specifications of what enemy can spawn from Book of the Dead
+
+---@param npc EntityNPC
+function EPITAPH:TryMarkReviveLocation(npc)
+	if PlayerManager.AnyoneHasCollectible(EPITAPH.ID) then
+		local rng = PlayerManager.FirstCollectibleOwner(EPITAPH.ID):GetCollectibleRNG(EPITAPH.ID)
+		if rng:RandomFloat() <= EPITAPH.NPC_REVIVE_CHANCE then
+			Mod:Insert(reviveLocations, npc)
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, EPITAPH.TryMarkReviveLocation)
+
+local ENEMY_CHANCE = 0.2
+local MAX_ENEMIES = 8
+local BLACK_BONY_CHANCE = 0.25
+local BIG_BONY_CHANCE = 0.25
+local BONE_FLY_CHANCE = 0.25
+local REVENANT_CHANCE = 0.01
+local min = math.min
+
+---@param npc EntityNPC
+local function canBecomeBigBony(npc)
+	local entityConfig = npc:GetEntityConfigEntity()
+	local floor = Mod.Level():GetStage()
+	local baseHP = entityConfig:GetBaseHP()
+	local stageHP = entityConfig:GetStageHP()
+	return baseHP + floor * stageHP * min(floor, 10) * 0.8 > 18 + floor * 3 * min(floor, 10) * 0.8
+end
+
+local function getRevenantBonusChance()
+	local level = Mod.Level()
+	local stage = level:GetStage()
+	local stageType = level:GetStageType()
+	--Sheol, Dark Room, Mausoleum, or Gehenna
+	if stage == LevelStage.STAGE5 and stageType == StageType.STAGETYPE_ORIGINAL
+		or stage == LevelStage.STAGE6 and stageType == StageType.STAGETYPE_ORIGINAL
+		or (stage == LevelStage.STAGE3_1 or stage == LevelStage.STAGE3_2)
+		and stageType >= StageType.STAGETYPE_REPENTANCE
+	then
+		return 8.33
+	end
+	return 0
+end
+
+function EPITAPH:ReviveEnemies()
+	if PlayerManager.AnyoneHasCollectible(EPITAPH.ID) then
+		local rng = PlayerManager.FirstCollectibleOwner(EPITAPH.ID):GetCollectibleRNG(EPITAPH.ID)
+		local numEnemies = 0
+		for _, npc in ipairs(reviveLocations) do
+			local randomPlayer = PlayerManager.FirstCollectibleOwner(EPITAPH.ID)
+			---@cast randomPlayer EntityPlayer
+			if rng:RandomFloat() <= ENEMY_CHANCE and numEnemies < MAX_ENEMIES then
+				local newType = EntityType.ENTITY_BONY
+				local newVariant = 0
+				numEnemies = numEnemies + 1
+				if rng:RandomFloat() <= BLACK_BONY_CHANCE then
+					newType = EntityType.ENTITY_BLACK_BONY
+				end
+				if canBecomeBigBony(npc) and rng:RandomFloat() <= BIG_BONY_CHANCE then
+					newType = EntityType.ENTITY_BIG_BONY
+				end
+				if rng:RandomFloat() <= BONE_FLY_CHANCE then
+					newType = EntityType.ENTITY_BOOMFLY
+					newVariant = 4
+				end
+				if rng:RandomFloat() <= REVENANT_CHANCE + getRevenantBonusChance() then
+					newType = EntityType.ENTITY_REVENANT
+					newVariant = 0
+				end
+				local newNPC = Isaac.Spawn(newType, newVariant, 0, npc.Position, Vector.Zero, randomPlayer)
+				newNPC:AddCharmed(EntityRef(randomPlayer), -1)
+			else
+				randomPlayer:AddBoneOrbital(npc.Position)
+			end
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, EPITAPH.ReviveEnemies)
+
+function EPITAPH:ResetReviveLocationsOnNewRoom()
+	Mod:ClearTable(reviveLocations, true)
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, EPITAPH.ResetReviveLocationsOnNewRoom)
 
 --#endregion
