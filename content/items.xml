@@ -83,7 +83,7 @@
 	<active id="29" name="Heart Renovator" description="Eternal triumph" gfx="heart_renovator.png" achievement="Heart Renovator" maxcharges="3" cache = "damage range" quality="3" tags="angel nolostbr nocantrip" />
 	<active id="33" name="Shattered Heart" description="Eternal sorrow" gfx="shattered_heart.png" achievement="Shattered Heart" chargetype="normal" maxcharges="1" quality="2" tags="nolostbr nocantrip" />
 	<active id="34" name="Keys to the Kingdom" description="Divine control + strength in salvation" gfx="keys_to_the_kingdom.png" achievement="Keys to the Kingdom" maxcharges="6" chargetype="special" quality="4" tags="angel" />
-	<active id="36" name="Muddled Cross" description="Flipped reality" gfx="muddled_cross.png" achievement="Muddled Cross" maxcharges="6" shopprice="30" devilprice="2" quality="4" />
+	<active id="36" name="Muddled Cross" description="Flipped reality" gfx="muddled_cross.png" achievement="Muddled Cross" maxcharges="120" chargetype="timed" quality="4" />
 	<active id="48" name="Book of Guidance" description="The exodus ends" gfx="book_of_guidance.png" achievement="Book of Guidance" maxcharges="12" quality="3" tags="book" />
 	<active id="49" name="Jar of Manna" description="Fill with faith" gfx="jar_of_manna.png" achievement="Jar of Manna" maxcharges="20" chargetype="special" quality="4" initcharge="0" tags="nocantrip" />
 	<active id="50" name="Tambourine" description="It's rattling!" gfx="tambourine.png" achievement="Tambourine" chargetype="timed" maxcharges="300" quality="0" />

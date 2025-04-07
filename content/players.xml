@@ -2,12 +2,14 @@
          portraitroot="gfx/ui/stage/" 
          nameimageroot="gfx/ui/boss/">
 	<player name="Leah" skinColor="-1" hp="4" broken="1" coins="6" costumeSuffix="leah"
+		pocketActive="Heart Renovator"
 		skin="character_001_leah.png"
 		modcostume="1"
 		nameimage="playername_leah.png"
 		portrait="playerportrait_leah.png"
 		birthright="Loved once more" />
 	<player name="Leah" bSkinParent="Leah" skinColor="-1" black="2" broken="11" costumeSuffix="leah_b"
+		pocketActive="Shattered Heart"
 		skin="character_001_leah_b.png"
 		modcostume="2"
 		nameimage="playername_leah.png"
@@ -15,12 +17,14 @@
 		birthright="Taken for granted"
 		achievement="The Unloved" />
 	<player name="Peter" skinColor="-1" hp="4" keys="1" armor="2" hidden="false" costumeSuffix="peter"
+		pocketActive="Keys to the Kingdom"
 		skin="character_002_peter.png"
 		modcostume="3"
 		nameimage="playername_peter.png"
 		portrait="playerportrait_peter.png"
 		birthright="Mercy up" />
 	<player name="Peter" bSkinParent="Peter" skinColor="-1" hp="6" costumeSuffix="peter_b"
+		pocketActive="Muddled Cross"
 		skin="character_002_peter_b.png"
 		modcostume="4"
 		nameimage="playername_peter.png"

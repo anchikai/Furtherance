@@ -6,6 +6,35 @@ Furtherance.Item.MUDDLED_CROSS = MUDDLED_CROSS
 
 MUDDLED_CROSS.ID = Isaac.GetItemIdByName("Muddled Cross")
 
+MUDDLED_CROSS.SFX_FLIP = Isaac.GetSoundIdByName("Peter Flip")
+MUDDLED_CROSS.SFX_UNFLIP = Isaac.GetSoundIdByName("Peter Unflip")
+
+Mod.Include("scripts.furtherance.characters.peter_b.flip")
+
+---@param flags UseFlag
+function MUDDLED_CROSS:OnUse(itemID, rng, player, flags)
+	if Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) then return end
+	local room = Mod.Room()
+	local effects = room:GetEffects()
+	local isFlipped = effects:HasCollectibleEffect(MUDDLED_CROSS.ID)
+	if not isFlipped then
+		effects:AddCollectibleEffect(MUDDLED_CROSS.ID)
+		Mod.SFXMan:Play(MUDDLED_CROSS.SFX_FLIP)
+	else
+		effects:RemoveCollectibleEffect(MUDDLED_CROSS.ID)
+		Mod.SFXMan:Play(MUDDLED_CROSS.SFX_UNFLIP)
+	end
+	return true
+end
+
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, MUDDLED_CROSS.OnUse, MUDDLED_CROSS.ID)
+
+function MUDDLED_CROSS:IsRoomEffectActive()
+	return Mod.Room():GetEffects():HasCollectibleEffect(MUDDLED_CROSS.ID)
+end
+
+return MUDDLED_CROSS
+
 --[[ local game = Game()
 
 Mod:SaveModData({
@@ -151,33 +180,6 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, Mod.TougherEnemies)
 
-function Mod:FixInputs(entity, hook, button)
-	if entity == nil then return end
-
-	local player = entity:ToPlayer()
-	if player == nil then return end
-
-	if Mod.Flipped ~= true then return end
-
-	if button == ButtonAction.ACTION_DOWN then
-		return Input.GetActionValue(ButtonAction.ACTION_UP, player.ControllerIndex)
-	elseif button == ButtonAction.ACTION_UP then
-		return Input.GetActionValue(ButtonAction.ACTION_DOWN, player.ControllerIndex)
-	elseif button == ButtonAction.ACTION_SHOOTUP then
-		return Input.GetActionValue(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex)
-	elseif button == ButtonAction.ACTION_SHOOTDOWN then
-		return Input.GetActionValue(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex)
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, Mod.FixInputs, InputHook.GET_ACTION_VALUE)
-
-local newGame = false
-function Mod:NewGame()
-	newGame = true
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, Mod.NewGame)
 
 local flipFactor = 0
 function Mod:NewFloor()

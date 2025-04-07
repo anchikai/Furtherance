@@ -6,7 +6,6 @@ Furtherance.Character.PETER = PETER
 
 ---@param player EntityPlayer
 function PETER:OnInit(player)
-	player:SetPocketActiveItem(Mod.Item.KEYS_TO_THE_KINGDOM.ID)
 	player:AddTrinket(Mod.Trinket.ALABASTER_SCRAP.ID)
 end
 
