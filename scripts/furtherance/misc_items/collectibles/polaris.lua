@@ -74,7 +74,7 @@ end
 
 ---@param player EntityPlayer
 function POLARIS:PickColorBuff(player)
-	local rng = player:GetCollectibleRNG(POLARIS.ID)
+	local rng = RNG(Mod.Level():GetCurrentRoomDesc().SpawnSeed)
 	local buffChoice = rng:RandomInt(POLARIS.COLOR.NUM_COLORS - 1) + 1
 	return buffChoice
 end
