@@ -7,13 +7,24 @@ Furtherance.Item.IRON = IRON
 IRON.ID = Isaac.GetItemIdByName("Iron")
 IRON.FAMILIAR = Isaac.GetEntityVariantByName("Iron")
 
-IRON.TEAR_COLOR = Color(1, 1, 1, 1, 0.3, 0, 0)
+IRON.TEAR_COLOR = Color(1, 1, 1, 1, 0.3, 0, 0, 1.8, 0.9, 0.3, 1)
+IRON.LASER_COLOR = Color(1, 1, 1, 1, 0, 0, 0, 5, 3, 1, 1)
 IRON.ORBIT_DISTANCE = Vector(128, 128)
 IRON.ORBIT_SPEED = 0.01
+
+---I love knives and lasers so much you have no idea (send help)
+
+---@param weaponEnt Entity | EntityBomb
+function IRON:ShouldBotherWithUpdate(weaponEnt)
+	return #Isaac.FindByType(EntityType.ENTITY_FAMILIAR, IRON.FAMILIAR) > 0
+		and Mod:TryGetPlayer(weaponEnt)
+		and (not weaponEnt:ToBomb() or weaponEnt.IsFetus)
+end
 
 ---@param familiar EntityFamiliar
 function IRON:IronInit(familiar)
 	familiar:AddToOrbit(5)
+	familiar.OrbitLayer = 5
 	familiar.OrbitDistance = IRON.ORBIT_DISTANCE
 	familiar.OrbitSpeed = IRON.ORBIT_SPEED
 	familiar:RecalculateOrbitOffset(familiar.OrbitLayer, true)
@@ -21,24 +32,188 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, IRON.IronInit, IRON.FAMILIAR)
 
+---@param tear EntityTear
+function IRON:TearCollision(tear)
+	if not IRON:ShouldBotherWithUpdate(tear) then return end
+	for _, familiar in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, IRON.FAMILIAR)) do
+		if familiar.Position:DistanceSquared(tear.Position) <= (tear.Size + familiar.Size) ^ 2 then
+			local data = Mod:GetData(tear)
+			if not data.WentThruIron then
+				tear.CollisionDamage = tear.CollisionDamage * 2
+				tear:AddTearFlags(TearFlags.TEAR_BURN)
+				tear:SetColor(IRON.TEAR_COLOR, -1, 1, false, true)
+				data.WentThruIron = true
+			end
+			if tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then
+				data.CheckLeavingIron = true
+			else
+				tear.Scale = tear.Scale * 1.5
+				tear:ResetSpriteScale(true)
+			end
+			break
+		end
+	end
+	local data = Mod:TryGetData(tear)
+	if not data or not tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then return end
+	local player = Mod:TryGetPlayer(tear)
+	---@cast player EntityPlayer
+	if data.WentThruIron and Mod:ShouldUpdateLudo(tear, player) then
+		if data.CheckLeavingIron then
+			tear.CollisionDamage = tear.CollisionDamage * 2
+		end
+		tear:AddTearFlags(TearFlags.TEAR_BURN)
+		tear:SetColor(IRON.TEAR_COLOR, -1, 1, false, true)
+	end
+
+	data.CheckLeavingIron = nil
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, IRON.TearCollision)
+
+---@param bomb EntityBomb
+function IRON:BombCollision(bomb)
+	if not IRON:ShouldBotherWithUpdate(bomb) then return end
+	for _, familiar in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, IRON.FAMILIAR)) do
+		if familiar.Position:DistanceSquared(bomb.Position) <= (bomb.Size + familiar.Size) ^ 2 then
+			local data = Mod:GetData(bomb)
+			if not data.WentThruIron then
+				bomb:AddTearFlags(TearFlags.TEAR_BURN)
+				bomb.ExplosionDamage = bomb.ExplosionDamage * 2
+				bomb:SetScale(bomb.ExplosionDamage / 35)
+				bomb:SetLoadCostumes(true)
+				data.WentThruIron = true
+			end
+			break
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, IRON.BombCollision)
+
+---Knife collision damage is reset on update and doesn't care about if you update it during its POST_UPDATE function
+---@param ent Entity
+---@param amount number
+---@param flags DamageFlag
+---@param source EntityRef
+---@param countdown integer
+function IRON:KnifeDamage(ent, amount, flags, source, countdown)
+	if ent:IsActiveEnemy(false)
+		and source.Entity
+		and source.Entity:ToKnife()
+	then
+		local data = Mod:TryGetData(source.Entity)
+		if data and data.IronKnifeDistance then
+			return {Damage = amount * 2}
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, IRON.KnifeDamage)
+
+---@param knife EntityKnife
+function IRON:KnifeCollision(knife)
+	local data = Mod:TryGetData(knife)
+	if knife:HasTearFlags(TearFlags.TEAR_LUDOVICO) then
+		for _, familiar in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, IRON.FAMILIAR)) do
+			if familiar.Position:DistanceSquared(knife.Position) <= (knife.Size + familiar.Size) ^ 2 then
+				data = Mod:GetData(knife)
+				if not data.IronKnifeDistance then
+					data.IronKnifeDistance = true
+				end
+				data.CheckLeavingIron = true
+				break
+			end
+		end
+		if data and data.IronKnifeDistance then
+			if not data.CheckLeavingIron then
+				data.IronKnifeDistance = nil
+			else
+				knife:GetSprite().Color = IRON.TEAR_COLOR
+				knife:AddTearFlags(TearFlags.TEAR_BURN)
+			end
+		end
+		data.CheckLeavingIron = nil
+		return
+	end
+	--Placed here because unlike the tear, it's still actually always the same knife and never respawns unless you exit/continue
+	--So we should nil out the data ourselves if you happen to lose the familiar
+	if not IRON:ShouldBotherWithUpdate(knife) then return end
+	if knife:IsFlying() then
+		for _, familiar in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, IRON.FAMILIAR)) do
+			if familiar.Position:DistanceSquared(knife.Position) <= (knife.Size + familiar.Size) ^ 2 then
+				data = Mod:GetData(knife)
+				if not data.IronKnifeDistance then
+					data.IronKnifeDistance = knife:GetKnifeDistance()
+				end
+				break
+			end
+		end
+	end
+	if data and data.IronKnifeDistance then
+		knife:GetSprite().Color = IRON.TEAR_COLOR
+		knife:AddTearFlags(TearFlags.TEAR_BURN)
+		if knife:GetKnifeDistance() < data.IronKnifeDistance then
+			data.IronKnifeDistance = nil
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_KNIFE_UPDATE, IRON.KnifeCollision)
+
+---@param laser EntityLaser
+function IRON:LaserCollision(laser)
+	if not IRON:ShouldBotherWithUpdate(laser) then return end
+	local samplePoints = laser:GetNonOptimizedSamples()
+
+	for i=0, #samplePoints-1 do
+		local pos = samplePoints:Get(i)
+		for _, familiar in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, IRON.FAMILIAR)) do
+			if familiar.Position:DistanceSquared(pos) <= (laser.Size + familiar.Size) ^ 2 then
+				local data = Mod:GetData(laser)
+				if not data.IronFireActive then
+					data.IronFireActive = true
+					laser:GetSprite().Color = IRON.LASER_COLOR
+				end
+				data.IronLaserCollision = true
+				break
+			end
+		end
+	end
+	local data = Mod:TryGetData(laser)
+	if not data then return end
+	if not data.IronLaserCollision
+		and data.IronFireActive
+		and laser.SubType == LaserSubType.LASER_SUBTYPE_LINEAR
+	then
+		local player = Mod:TryGetPlayer(laser)
+		---@cast player EntityPlayer
+		laser:GetSprite().Color = player.LaserColor
+		if data.IronDamageMult then
+			laser:SetDamageMultiplier(data.IronDamageMult)
+		end
+		data.IronFireActive = nil
+		data.IronDamageMult = nil
+	end
+	if data.IronFireActive then
+		laser:AddTearFlags(TearFlags.TEAR_BURN)
+		if not data.IronDamageMult then
+			data.IronDamageMult = laser:GetDamageMultiplier()
+		end
+		laser:SetDamageMultiplier(data.IronDamageMult * 2)
+	end
+	data.IronLaserCollision = nil
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, IRON.LaserCollision)
+
 ---@param familiar EntityFamiliar
 function IRON:IronUpdate(familiar)
 	local player = familiar.Player
 	local targetPosition = familiar:GetOrbitPosition(player.Position + player.Velocity)
+	familiar.OrbitLayer = 5
+	familiar.OrbitDistance = IRON.ORBIT_DISTANCE
+	familiar.OrbitSpeed = IRON.ORBIT_SPEED
 	familiar.Velocity = targetPosition - familiar.Position
-
-	for _, ent in ipairs(Isaac.FindInRadius(familiar.Position, familiar.Size, EntityPartition.TEAR)) do
-		local tear = ent:ToTear()
-		---@cast tear EntityTear
-		local data = Mod:GetData(tear)
-		if not data.WentThruIron then
-			tear.CollisionDamage = tear.CollisionDamage * 2
-			tear.Scale = tear.Scale * 2
-			tear:AddTearFlags(TearFlags.TEAR_BURN)
-			tear:SetColor(IRON.TEAR_COLOR, -1, 1, false, true)
-			data.WentThruIron = true
-		end
-	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, IRON.IronUpdate, IRON.FAMILIAR)

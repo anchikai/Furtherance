@@ -338,3 +338,9 @@ local inverseTearTable = Furtherance:Invert(bloodTearTable)
 function Furtherance:IsBloodTear(tear)
 	return inverseTearTable[tear.Variant] ~= nil
 end
+
+---@param tear EntityTear
+---@param player EntityPlayer
+function Furtherance:ShouldUpdateLudo(tear, player)
+	return math.floor(tear.FrameCount / player.MaxFireDelay) ~= math.floor((tear.FrameCount - 1) / player.MaxFireDelay)
+end

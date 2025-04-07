@@ -52,9 +52,9 @@ Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BOMB, HAMMERHEAD_WORM.FireHammerheadWo
 ---@param source EntityRef
 ---@param countdown integer
 function HAMMERHEAD_WORM:HammerheadWormKnife(ent, amount, flags, source, countdown)
-	if ent:IsActiveEnemy(true)
+	if ent:IsActiveEnemy(false)
 		and source.Entity
-		and (source.Entity:ToKnife() or source.Entity:ToLaser())
+		and source.Entity:ToKnife()
 	then
 		local sourceEnt = source.Entity
 		local player = sourceEnt.SpawnerEntity and sourceEnt.SpawnerEntity:ToPlayer()
