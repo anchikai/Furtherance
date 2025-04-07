@@ -4,8 +4,13 @@ local Mod = Furtherance
 
 local FLIP = {}
 
+local PETER_B = Mod.Character.PETER_B
 local MUDDLED_CROSS = Mod.Item.MUDDLED_CROSS
 Furtherance.Item.MUDDLED_CROSS.FLIP = FLIP
+
+FLIP.FLIP_FACTOR = 0
+FLIP.PAUSE_MENU_STOP_FLIP = false
+FLIP.PAUSE_ENEMIES_DURING_FLIP = false
 
 --#endregion
 
@@ -47,11 +52,14 @@ end
 function FLIP:Reflection(entity)
 	local renderMode = Mod.Room():GetRenderMode()
 	local player = Mod:TryGetPlayer(entity)
-	if player
-		and player:GetPlayerType() == Mod.PlayerType.PETER_B
-		and renderMode == FLIP:GetIgnoredRenderMode()
-	then
-		return false
+	if player then
+		if PETER_B:IsPeterB(player)
+			and renderMode == FLIP:GetIgnoredRenderMode()
+		then
+			return false
+		elseif not PETER_B:IsPeterB(player) and renderMode == RenderMode.RENDER_WATER_REFLECT then
+			return false
+		end
 	end
 	if FLIP:OriginatesFromEnemy(entity)
 		and renderMode == FLIP:GetEnemyIgnoredRenderMode(entity)
@@ -71,10 +79,17 @@ local validEffects = Mod:Set({
 })
 
 function FLIP:TearSplash(tear)
-	if not PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.PETER_B) then return end
+	if not PETER_B:UsePeterFlipRoomEffects() then return end
 	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
-		if ent.Position:DistanceSquared(tear.Position) <= 1 and validEffects[ent.Variant] then
-			Mod:GetData(ent).PeterBReflection = true
+		if ent.Position:DistanceSquared(tear.Position) <= 1
+			and validEffects[ent.Variant]
+		then
+			local player = Mod:TryGetPlayer(tear)
+			if player and PETER_B:IsPeterB(player) then
+				Mod:GetData(ent).PeterBReflection = true
+			elseif player and not PETER_B:IsPeterB(player) then
+				Mod:GetData(ent).NonPeterBReflection = true
+			end
 		end
 	end
 end
@@ -82,7 +97,7 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_TEAR_DEATH, FLIP.TearSplash)
 
 function FLIP:PostBombExplode(bomb)
-	if not PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.PETER_B) then return end
+	if not PETER_B:UsePeterFlipRoomEffects() then return end
 	local player = Mod:TryGetPlayer(bomb)
 	if player
 		and player:GetPlayerType() == Mod.PlayerType.PETER_B
@@ -105,6 +120,11 @@ function FLIP:HideEffects(effect)
 		and Mod.Room():GetRenderMode() == FLIP:GetIgnoredRenderMode()
 	then
 		return false
+	elseif data
+		and data.NonPeterBReflection
+		and Mod.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT
+	then
+		return false
 	end
 end
 
@@ -117,7 +137,7 @@ Mod:AddCallback(ModCallbacks.MC_PRE_BOMB_RENDER, FLIP.Reflection)
 Mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_RENDER, FLIP.Reflection)
 
 function FLIP:HideEnemies(npcOrProj)
-	if PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.PETER_B)
+	if PETER_B:UsePeterFlipRoomEffects()
 		and Mod.Room():GetRenderMode() == FLIP:GetEnemyIgnoredRenderMode(npcOrProj)
 	then
 		return false
@@ -154,7 +174,7 @@ end
 ---@param ent Entity
 ---@param collider Entity
 function FLIP:CollisionMode(ent, collider)
-	if not PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.PETER_B) then return end
+	if not PETER_B:UsePeterFlipRoomEffects() then return end
 	local damageSource
 	local enemyTarget
 	local oppositeTarget
@@ -215,12 +235,9 @@ Mod:AddPriorityCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, CallbackPriority.IMPORT
 --#endregion
 
 --#region Flip effect
-local flipFactor = 0
-local pauseTime = 0
-local pausedFixed = false
 
 function FLIP:AnimateFlip()
-	local speed = 0.05
+	local speed = 0.025
 	--[[ if Furtherance.FlipSpeed == 1 then
 		speed = 0.0172413793
 	elseif Furtherance.FlipSpeed == 2 then
@@ -228,34 +245,44 @@ function FLIP:AnimateFlip()
 	elseif Furtherance.FlipSpeed == 3 then
 		speed = 0.1
 	end ]]
-	local isFlipped = MUDDLED_CROSS:IsRoomEffectActive()
+	local isFlipped = Mod.Room():GetEffects():HasCollectibleEffect(MUDDLED_CROSS.ID)
+	FLIP.PAUSE_MENU_STOP_FLIP = Mod.Game:IsPauseMenuOpen()
 
-	local renderFlipped = isFlipped and not pausedFixed
-	if renderFlipped == true then
-		flipFactor = flipFactor + speed
-	elseif renderFlipped == false then
-		flipFactor = flipFactor - speed
+	if not FLIP.PAUSE_MENU_STOP_FLIP then
+		if isFlipped == true then
+			FLIP.FLIP_FACTOR = FLIP.FLIP_FACTOR + speed
+		elseif isFlipped == false then
+			FLIP.FLIP_FACTOR = FLIP.FLIP_FACTOR - speed
+		end
 	end
-	flipFactor = Mod:Clamp(flipFactor, 0, 1)
 
-	if Mod.Game:IsPauseMenuOpen() then
-		pauseTime = math.min(pauseTime + 1, 26)
-	else
-		pauseTime = 0
-	end
-	if isFlipped and pauseTime == 26 then
-		pausedFixed = true
-	elseif pausedFixed and not Mod.Game:IsPauseMenuOpen() then
-		pausedFixed = false
-	end
+	FLIP.FLIP_FACTOR = Mod:Clamp(FLIP.FLIP_FACTOR, 0, 1)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_RENDER, FLIP.AnimateFlip)
 
+function FLIP:FreezeEnemiesDuringFlip()
+	local effects = Mod.Room():GetEffects()
+	if FLIP.FLIP_FACTOR > 0 and FLIP.FLIP_FACTOR < 1 then
+		if not FLIP.PAUSE_ENEMIES_DURING_FLIP then
+			Isaac.GetPlayer():UseActiveItem(CollectibleType.COLLECTIBLE_PAUSE, false, false, false, false, -1)
+			Isaac.GetPlayer():GetEffects():RemoveCollectibleEffect(CollectibleType.COLLECTIBLE_PAUSE)
+			FLIP.PAUSE_ENEMIES_DURING_FLIP = true
+		end
+	else
+		if FLIP.PAUSE_ENEMIES_DURING_FLIP then
+			FLIP.PAUSE_ENEMIES_DURING_FLIP = false
+			effects:RemoveCollectibleEffect(CollectibleType.COLLECTIBLE_PAUSE)
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, FLIP.FreezeEnemiesDuringFlip)
+
 -- Thank you im_tem for the shader!!
 function FLIP:PeterFlip(name)
 	if name == 'Peter Flip' then
-		return { FlipFactor = flipFactor }
+		return { FlipFactor = FLIP.PAUSE_MENU_STOP_FLIP and 0 or FLIP.FLIP_FACTOR }
 	end
 end
 

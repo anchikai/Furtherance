@@ -14,6 +14,7 @@ Mod.Include("scripts.furtherance.characters.peter_b.flip")
 ---@param flags UseFlag
 function MUDDLED_CROSS:OnUse(itemID, rng, player, flags)
 	if Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) then return end
+	Mod.Game:ShakeScreen(10)
 	local room = Mod.Room()
 	local effects = room:GetEffects()
 	local isFlipped = effects:HasCollectibleEffect(MUDDLED_CROSS.ID)
@@ -30,7 +31,7 @@ end
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, MUDDLED_CROSS.OnUse, MUDDLED_CROSS.ID)
 
 function MUDDLED_CROSS:IsRoomEffectActive()
-	return Mod.Room():GetEffects():HasCollectibleEffect(MUDDLED_CROSS.ID)
+	return MUDDLED_CROSS.FLIP.FLIP_FACTOR > 0.5
 end
 
 return MUDDLED_CROSS

@@ -6,15 +6,33 @@ Furtherance.Character.PETER_B = PETER_B
 
 Mod.Include("scripts.furtherance.characters.peter_b.muddled_cross")
 
+function PETER_B:IsPeterB(player)
+	return player:GetPlayerType() == Mod.PlayerType.PETER_B
+end
+
+function PETER_B:UsePeterFlipRoomEffects()
+	return PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.PETER_B)
+		and Mod.Room():GetType() ~= RoomType.ROOM_DUNGEON
+end
+
 function PETER_B:BloodTears(tear)
-	Mod:TryChangeTearToBloodVariant(tear)
+	local player = Mod:TryGetPlayer(tear)
+	if player and PETER_B:IsPeterB(player) then
+		Mod:TryChangeTearToBloodVariant(tear)
+	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, PETER_B.BloodTears)
 
+function PETER_B:OnPlayerInit()
+	PETER_B:OnNewRoom()
+end
+
+Mod:AddCallback(ModCallbacks.MC_PLAYER_INIT_POST_LEVEL_INIT_STATS, PETER_B.OnPlayerInit, Mod.PlayerType.PETER_B)
+
 function PETER_B:OnNewRoom()
 	local room = Mod.Room()
-	if PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.PETER_B) and not room:HasWater() then
+	if PETER_B:UsePeterFlipRoomEffects() and not room:HasWater() then
 		room:SetWaterAmount(0.5)
 		room:GetFXParams().UseWaterV2 = true
 	end
