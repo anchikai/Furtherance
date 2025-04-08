@@ -16,6 +16,7 @@ local HALF_FIVE_SECONDS = FIVE_SECONDS / 2
 
 Mod.Include("scripts.furtherance.characters.peter_b.flip")
 
+---@param player EntityPlayer
 ---@param flags UseFlag
 function MUDDLED_CROSS:OnUse(itemID, rng, player, flags)
 	if MUDDLED_CROSS.FLIP.FLIP_FACTOR > 0 and MUDDLED_CROSS.FLIP.FLIP_FACTOR < 1 then
@@ -33,11 +34,6 @@ function MUDDLED_CROSS:OnUse(itemID, rng, player, flags)
 			effects:RemoveCollectibleEffect(MUDDLED_CROSS.ID, -1)
 			Mod.SFXMan:Play(MUDDLED_CROSS.SFX_UNFLIP)
 		end
-		for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PROJECTILE)) do
-			if not ent:IsDead() then
-				ent:Die()
-			end
-		end
 	end
 	local extraCooldown = Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) and FIVE_SECONDS or 0
 	Mod:ForEachEnemy(function (npc)
@@ -48,6 +44,7 @@ function MUDDLED_CROSS:OnUse(itemID, rng, player, flags)
 	Mod:DelayOneFrame(function()
 		local tempEffect = Mod.Room():GetEffects():GetCollectibleEffect(MUDDLED_CROSS.ID)
 		tempEffect.Cooldown = tempEffect.Cooldown + extraCooldown
+		player:GetEffects():RemoveCollectibleEffect(MUDDLED_CROSS.ID, -1)
 	end)
 	return true
 end

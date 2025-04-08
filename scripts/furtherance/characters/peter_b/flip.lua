@@ -12,6 +12,7 @@ Furtherance.Item.MUDDLED_CROSS.FLIP = FLIP
 FLIP.FLIP_FACTOR = 0
 FLIP.PAUSE_MENU_STOP_FLIP = false
 FLIP.PAUSE_ENEMIES_DURING_FLIP = false
+FLIP.FREEZE_ROOM_EFFECT_COOLDOWN = 0
 
 FLIP.TEAR_DEATH_EFFECTS = Mod:Set({
 	EffectVariant.TEAR_POOF_A,
@@ -28,7 +29,7 @@ FLIP.ENEMY_EFFECTS = Mod:Set({
 	EffectVariant.BLOOD_GUSH,
 	EffectVariant.BLOOD_PARTICLE,
 	EffectVariant.BLOOD_SPLAT,
-	EffectVariant.BLOOD_PARTICLE
+	EffectVariant.DUST_CLOUD
 })
 
 --Highest to lowest, top to bottom
@@ -81,21 +82,9 @@ function FLIP:GetIgnoredRenderMode(inverse)
 end
 
 ---@param ent Entity
-function FLIP:EnemyOnPeterSide(ent)
+function FLIP:IsFlippedEnemy(ent)
 	local data = Mod:GetData(ent)
 	return data.PeterFlipped or ent:HasEntityFlags(EntityFlag.FLAG_CHARM) or ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
-end
-
----@param ent Entity
-function FLIP:GetEnemyIgnoredRenderMode(ent)
-	local npc = ent:ToNPC() or ent.SpawnerEntity
-	if not npc then return RenderMode.RENDER_NULL end
-	local wasFlipped = FLIP:EnemyOnPeterSide(ent)
-	local renderMode = FLIP:GetIgnoredRenderMode(true)
-	if wasFlipped then
-		renderMode = FLIP:GetIgnoredRenderMode(false)
-	end
-	return renderMode
 end
 
 ---@param ent Entity
@@ -110,15 +99,38 @@ function FLIP:IsEntityInReflection(ent)
 	local player = Mod:TryGetPlayer(ent)
 	local flipActive = MUDDLED_CROSS:IsRoomEffectActive()
 	local fromEnemy = FLIP:OriginatesFromEnemy(ent)
-	local isFlippedEnemy = fromEnemy and FLIP:EnemyOnPeterSide(ent)
+	local isFlippedEnemy = fromEnemy and FLIP:IsFlippedEnemy(fromEnemy)
 	return (player and PETER_B:IsPeterB(player) and not flipActive)
 		or (fromEnemy and isFlippedEnemy and not flipActive)
 		or (fromEnemy and not isFlippedEnemy and flipActive)
 end
 
+---@param ent Entity
+function FLIP:GetEnemyIgnoredRenderMode(ent)
+	local npc = ent:ToNPC() or ent.SpawnerEntity
+	if not npc then return RenderMode.RENDER_NULL end
+	local wasFlipped = FLIP:IsEntityInReflection(ent)
+	local renderMode = FLIP:GetIgnoredRenderMode(true)
+	if wasFlipped then
+		renderMode = FLIP:GetIgnoredRenderMode(false)
+	end
+	return renderMode
+end
+
 --#endregion
 
 --#region Handle entity rendering
+
+---@param ent Entity
+function FLIP:FlipIfWithParent(ent)
+	if ent.SpawnerEntity and FLIP:IsFlippedEnemy(ent.SpawnerEntity)
+		or ent.Parent and FLIP:IsFlippedEnemy(ent.Parent)
+	then
+		Mod:GetData(ent).PeterFlipped = true
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, FLIP.FlipIfWithParent)
 
 ---@param entity Entity
 function FLIP:Reflection(entity)
@@ -170,10 +182,9 @@ function FLIP:TearSplash(tearOrProj)
 		if ent.Position:DistanceSquared(tearOrProj.Position) <= 1
 			and FLIP.TEAR_DEATH_EFFECTS[ent.Variant]
 		then
-			local player = Mod:TryGetPlayer(tearOrProj)
-			if player and PETER_B:IsPeterB(player) or tearOrProj.SpawnerEntity and tearOrProj.SpawnerEntity:ToNPC() then
+			if FLIP:IsEntityInReflection(tearOrProj) then
 				Mod:GetData(ent).PeterBReflection = true
-			elseif player and not PETER_B:IsPeterB(player) then
+			else
 				Mod:GetData(ent).NonPeterBReflection = true
 			end
 		end
@@ -200,17 +211,41 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, FLIP.PostBombExplode)
 
-function FLIP:FlyPoof(npc)
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.FLY_EXPLOSION)) do
-		if ent.Position:DistanceSquared(npc.Position) <= 324 then
+function FLIP:MarkEnemyEffectOnInit(effect)
+	if not PETER_B:UsePeterFlipRoomEffects() then return end
+	if effect.SpawnerEntity and FLIP:IsEntityInReflection(effect.SpawnerEntity) then
+		Mod:GetData(effect).PeterBReflection = true
+	else
+		for _, ent in ipairs(Isaac.GetRoomEntities()) do
+			if ent:IsActiveEnemy(true)
+				and effect.Position:DistanceSquared(ent.Position) <= 500
+				and FLIP:IsEntityInReflection(ent)
+				and FLIP.ENEMY_EFFECTS[effect.Variant]
+			then
+				Mod:GetData(effect).PeterBReflection = true
+			end
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, FLIP.MarkEnemyEffectOnInit)
+
+function FLIP:MarkEnemyEffectOnDeath(npc)
+	if not PETER_B:UsePeterFlipRoomEffects() then return end
+	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
+		if ent.Position:DistanceSquared(npc.Position) <= 324
+			and FLIP:IsEntityInReflection(npc)
+			and FLIP.ENEMY_EFFECTS[ent.Variant]
+		then
 			Mod:GetData(ent).PeterBReflection = true
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, FLIP.FlyPoof)
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, FLIP.MarkEnemyEffectOnDeath)
 
 function FLIP:HideEffects(effect)
+	if not PETER_B:UsePeterFlipRoomEffects() then return end
 	local data = Mod:TryGetData(effect)
 	--Peter B players
 	if data
@@ -239,7 +274,7 @@ function FLIP:AdjustEnemyGridCollision(npc)
 	if not PETER_B:UsePeterFlipRoomEffects() then return end
 	local data = Mod:GetData(npc)
 	if not data.PeterFlipOGGridColl then return end
-	if FLIP:EnemyOnPeterSide(npc) then
+	if FLIP:IsFlippedEnemy(npc) then
 		if FLIP:IsEntityInReflection(npc) then
 			npc.GridCollisionClass = GridCollisionClass.COLLISION_SOLID
 		else
@@ -276,7 +311,9 @@ function FLIP:BringEnemyToFlipside(ent)
 	end
 	SEL:AddStatusEffect(ent, FLIP.STATUS_STRENGTH, -1, EntityRef(nil))
 	ent:SetColor(STATUS_COLOR, 32, 1, false, false)
+	data.PeterJustFlipped = true
 	Isaac.CreateTimer(function()
+		data.PeterJustFlipped = false
 		ent.EntityCollisionClass = oldCollision
 		ent:ClearEntityFlags(EntityFlag.FLAG_FREEZE)
 	end, 30, 1, false)
@@ -299,8 +336,8 @@ function FLIP:CollisionMode(ent, collider)
 		oppositeTarget = ent
 	end
 	if enemyTarget then
-		local fromFlippedEnemy = FLIP:EnemyOnPeterSide(enemyTarget)
-		local isFlippedEnemy = FLIP:EnemyOnPeterSide(damageSource)
+		local fromFlippedEnemy = FLIP:IsFlippedEnemy(enemyTarget)
+		local isFlippedEnemy = FLIP:IsFlippedEnemy(damageSource)
 		if oppositeTarget:ToPlayer()
 			and FLIP:ValidEnemyToFlip(ent)
 			and not isFlippedEnemy
@@ -309,7 +346,7 @@ function FLIP:CollisionMode(ent, collider)
 			FLIP:BringEnemyToFlipside(damageSource)
 			return false
 		end
-		if not fromFlippedEnemy and not enemyTarget:IsBoss() then
+		if (not fromFlippedEnemy or Mod:GetData(enemyTarget).PeterJustFlipped) and not enemyTarget:IsBoss() then
 			return true
 		end
 	end
@@ -545,14 +582,27 @@ Mod:AddCallback(ModCallbacks.MC_POST_RENDER, FLIP.AnimateFlip)
 function FLIP:FreezeEnemiesDuringFlip()
 	local effects = Mod.Room():GetEffects()
 	if FLIP.FLIP_FACTOR > 0 and FLIP.FLIP_FACTOR < 1 then
+		local roomEffects = Mod.Room():GetEffects()
+		if roomEffects:HasCollectibleEffect(MUDDLED_CROSS.ID) then
+			if FLIP.FREEZE_ROOM_EFFECT_COOLDOWN == 0 then
+				FLIP.FREEZE_ROOM_EFFECT_COOLDOWN = roomEffects:GetCollectibleEffect(MUDDLED_CROSS.ID).Cooldown + 1
+			end
+			roomEffects:GetCollectibleEffect(MUDDLED_CROSS.ID).Cooldown = FLIP.FREEZE_ROOM_EFFECT_COOLDOWN
+		end
 		if not FLIP.PAUSE_ENEMIES_DURING_FLIP then
 			Isaac.GetPlayer():UseActiveItem(CollectibleType.COLLECTIBLE_PAUSE, false, false, false, false, -1)
 			Isaac.GetPlayer():GetEffects():RemoveCollectibleEffect(CollectibleType.COLLECTIBLE_PAUSE)
 			FLIP.PAUSE_ENEMIES_DURING_FLIP = true
+			for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PROJECTILE)) do
+				if not ent:IsDead() then
+					ent:Die()
+				end
+			end
 		end
 	else
 		if FLIP.PAUSE_ENEMIES_DURING_FLIP then
 			FLIP.PAUSE_ENEMIES_DURING_FLIP = false
+			FLIP.FREEZE_ROOM_EFFECT_COOLDOWN = 0
 			effects:RemoveCollectibleEffect(CollectibleType.COLLECTIBLE_PAUSE)
 		end
 	end

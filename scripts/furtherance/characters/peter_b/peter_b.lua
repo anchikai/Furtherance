@@ -4,7 +4,7 @@ local PETER_B = {}
 
 Furtherance.Character.PETER_B = PETER_B
 
-PETER_B.WATER_COLOR = KColor(2, 0, 0, 0)
+PETER_B.WATER_COLOR = KColor(2, 0, 0, 0.5)
 
 Mod.Include("scripts.furtherance.characters.peter_b.muddled_cross")
 
