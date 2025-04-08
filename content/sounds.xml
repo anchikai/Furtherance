@@ -49,4 +49,7 @@
 	<sound name="Power Down">
 		<sample weight="1" path="power_down.wav" />
 	</sound>
+	<sound name="Tombstone Jingle">
+		<sample weight="1" path="tombstone_jingle.wav" />
+	</sound>
 </sounds>

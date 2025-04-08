@@ -11,6 +11,12 @@ EPITAPH.TOMBSTONE_MAX_HITS = 3
 
 EPITAPH.NPC_REVIVE_CHANCE = 0.1
 
+EPITAPH.TOMBSTONE_JINGLE = Isaac.GetSoundIdByName("Tombstone Jingle")
+EPITAPH.JINGLE_DISTANCE_THRESHOLD = 400
+EPITAPH.JINGLE_MIN_VOLUME_DISTANCE = 75 ^ 2
+EPITAPH.JINGLE_CHANCE = 0.1
+EPITAPH.PLAY_JINGLE = false
+
 local reviveLocations = {}
 
 --#region Track items on death
@@ -206,6 +212,7 @@ end
 
 function EPITAPH:UpdateTombstoneOnNewRoom()
 	local room = Mod.Room()
+	local hasTombstone = false
 	for i = 0, room:GetGridSize() - 1 do
 		local gridEnt = room:GetGridEntity(i)
 		if gridEnt
@@ -213,7 +220,11 @@ function EPITAPH:UpdateTombstoneOnNewRoom()
 			and gridEnt:GetVariant() == EPITAPH.TOMBSTONE_GRID_VARIANT
 		then
 			EPITAPH:UpdateSprite(gridEnt, gridEnt:GetSaveState().VarData)
+			hasTombstone = true
 		end
+	end
+	if hasTombstone then
+		EPITAPH.PLAY_JINGLE = Mod.GENERIC_RNG:RandomFloat() <= EPITAPH.JINGLE_CHANCE
 	end
 end
 
@@ -270,6 +281,9 @@ function EPITAPH:TombstoneUpdate(gridEnt)
 		if dist <= effect.Scale ^ 2 then
 			EPITAPH:DestroyTombstone(gridEnt)
 		end
+	end
+	if EPITAPH.PLAY_JINGLE then
+		EPITAPH:DistanceBasedJingle(gridEnt.Position)
 	end
 end
 
@@ -404,5 +418,34 @@ function EPITAPH:ResetReviveLocationsOnNewRoom()
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, EPITAPH.ResetReviveLocationsOnNewRoom)
+
+--#endregion
+
+--#region Funny Jingle
+
+function EPITAPH:DistanceBasedJingle(pos)
+	if Mod.Room():GetFrameCount() == 0 then return end
+	local player, distance = Mod:GetClosestEntity(pos, EPITAPH.JINGLE_DISTANCE_THRESHOLD, EntityPartition.PLAYER)
+	if player and distance then
+		if not Mod.SFXMan:IsPlaying(EPITAPH.TOMBSTONE_JINGLE) then
+			Mod.SFXMan:Play(EPITAPH.TOMBSTONE_JINGLE, 1, 2, true, 1, 0)
+		end
+		local distanceRange = (distance - EPITAPH.JINGLE_MIN_VOLUME_DISTANCE) / ((EPITAPH.JINGLE_DISTANCE_THRESHOLD ^ 2) - EPITAPH.JINGLE_MIN_VOLUME_DISTANCE)
+		local oppositeDistance = 1 - distanceRange
+		local volume = Mod:Clamp(oppositeDistance, 0, 1)
+		local musicVolume = Mod:Clamp(distanceRange, 0, 1)
+		Mod.SFXMan:AdjustVolume(EPITAPH.TOMBSTONE_JINGLE, volume)
+		Mod.MusicMan:VolumeSlide(musicVolume, 1)
+	end
+end
+
+function EPITAPH:StopJingle()
+	if Mod.SFXMan:IsPlaying(EPITAPH.TOMBSTONE_JINGLE) then
+		Mod.SFXMan:Stop(EPITAPH.TOMBSTONE_JINGLE)
+		Mod.MusicMan:UpdateVolume()
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, EPITAPH.StopJingle)
 
 --#endregion

@@ -82,27 +82,25 @@ function Furtherance:GetClosestEnemyInView(pos, range, dir, fov, occludeObstacle
 	return closestEnemy
 end
 
----Thank you piber!
 ---@param pos Vector
 ---@param range number
----@return EntityProjectile | nil
-function Furtherance:GetClosestProjectile(pos, range)
-	---@type EntityProjectile | nil
-	local closestEnemy
+---@param partition EntityPartition
+---@return Entity?, number?
+function Furtherance:GetClosestEntity(pos, range, partition)
+	---@type Entity
+	local closestEnt
 	local closestDistance
 
-	for _, ent in pairs(Isaac.FindInRadius(pos, range, EntityPartition.BULLET)) do
-		local proj = ent:ToProjectile()
-		if not proj then goto continue end
-		local projDistance = ent.Position:DistanceSquared(pos)
+	for _, ent in pairs(Isaac.FindInRadius(pos, range, partition)) do
+		local entDistance = ent.Position:DistanceSquared(pos)
 
-		if not closestEnemy or projDistance < closestDistance then
-			closestEnemy = proj
-			closestDistance = projDistance
+		if not closestEnt or entDistance < closestDistance then
+			closestEnt = ent
+			closestDistance = entDistance
 		end
 		::continue::
 	end
-	return closestEnemy
+	return closestEnt, closestDistance
 end
 
 ---@param func fun(npc: EntityNPC)
