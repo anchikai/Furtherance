@@ -4,8 +4,11 @@ local PETER_B = {}
 
 Furtherance.Character.PETER_B = PETER_B
 
+PETER_B.WATER_COLOR = KColor(2, 0, 0, 0)
+
 Mod.Include("scripts.furtherance.characters.peter_b.muddled_cross")
 
+---@param player EntityPlayer
 function PETER_B:IsPeterB(player)
 	return player:GetPlayerType() == Mod.PlayerType.PETER_B
 end
@@ -37,7 +40,7 @@ function PETER_B:OnNewRoom()
 		room:GetFXParams().UseWaterV2 = true
 	end
 	if room:HasWater() then
-		room:SetWaterColor(KColor(2, 0, 0, 0.5))
+		room:SetWaterColor(PETER_B.WATER_COLOR)
 	end
 end
 

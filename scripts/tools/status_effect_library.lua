@@ -823,15 +823,17 @@ local function InitFunctions()
 			and DEBUG_PRINT
 		then
 			local num = REPENTOGON and ent:GetBossStatusEffectCooldown() or ent:GetData().BossStatusEffectCooldown
-			local textPos = Isaac.WorldToRenderPosition(ent.Position) + Vector(-50, -50)
+			local textPos = Isaac.WorldToScreen(ent.Position) + Vector(-50, -50)
 			Isaac.RenderText("Boss Cooldown: " .. tostring(num), textPos.X, textPos.Y, 1, 1, 1, 1)
 		end
 		local statusEffects = StatusEffectLibrary:GetStatusEffects(ent)
 		if not statusEffects then
 			return
 		end
+		local renderMode = game:GetRoom():GetRenderMode()
 		local result = StatusEffectLibrary.Callbacks.FireCallback(StatusEffectLibrary.Callbacks.ID.PRE_RENDER_STATUS_EFFECTS, ent)
-		if (game:GetRoom():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT
+		local isReflection = renderMode == RenderMode.RENDER_WATER_REFLECT
+		if (isReflection
 			or StatusEffectLibrary.Utils.IsOpenSegment(ent))
 			and not result
 		then
@@ -842,8 +844,8 @@ local function InitFunctions()
 			StatusEffectLibrary:ClearStatusEffects(ent)
 			return
 		end
-		local renderPos = Isaac.WorldToScreen(ent.Position + ent.PositionOffset) + offset
-		if Mod.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT then
+		local renderPos = Isaac.WorldToScreen(ent.Position + ent.PositionOffset)
+		if isReflection then
 			renderPos = Isaac.WorldToRenderPosition(ent.Position + ent.PositionOffset) + offset
 		end
 		if REPENTOGON and not ent:ToPlayer() then
@@ -853,14 +855,13 @@ local function InitFunctions()
 				return
 			end
 			local statusOffset = nullFrame ~= nil and nullFrame:GetPos() or Vector.Zero
-
-			renderPos = renderPos + statusOffset
+			renderPos = renderPos + (isReflection and -statusOffset or statusOffset)
 		else
-			renderPos = renderPos - Vector(0, 35)
+			renderPos = renderPos - (isReflection and Vector(0, -35) or Vector(0, 35))
 		end
 		local vanillaOffset = Vector(0, 0)
 		if StatusEffectLibrary:HasAnyVanillaStatusEffect(ent, true, true) then
-			vanillaOffset = Vector(0, -24)
+			vanillaOffset = isReflection and Vector(0, 24) or Vector(0, -24)
 		end
 
 		local iconIndex = 0

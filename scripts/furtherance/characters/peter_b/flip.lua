@@ -1,4 +1,5 @@
 --#region Variables
+
 local SEL = StatusEffectLibrary
 local Mod = Furtherance
 
@@ -12,7 +13,7 @@ FLIP.FLIP_FACTOR = 0
 FLIP.PAUSE_MENU_STOP_FLIP = false
 FLIP.PAUSE_ENEMIES_DURING_FLIP = false
 
-FLIP.PLAYER_EFFECTS = Mod:Set({
+FLIP.TEAR_DEATH_EFFECTS = Mod:Set({
 	EffectVariant.TEAR_POOF_A,
 	EffectVariant.TEAR_POOF_B,
 	EffectVariant.TEAR_POOF_SMALL,
@@ -21,9 +22,45 @@ FLIP.PLAYER_EFFECTS = Mod:Set({
 	EffectVariant.BLOOD_EXPLOSION,
 	EffectVariant.BULLET_POOF
 })
+FLIP.ENEMY_EFFECTS = Mod:Set({
+	EffectVariant.FLY_EXPLOSION,
+	EffectVariant.BLOOD_EXPLOSION,
+	EffectVariant.BLOOD_GUSH,
+	EffectVariant.BLOOD_PARTICLE,
+	EffectVariant.BLOOD_SPLAT,
+	EffectVariant.BLOOD_PARTICLE
+})
+
+--Highest to lowest, top to bottom
+local VANILLA_STATUS_PRIORITY = {
+	EntityFlag.FLAG_CHARM,
+	EntityFlag.FLAG_BRIMSTONE_MARKED,
+	EntityFlag.FLAG_MAGNETIZED,
+	EntityFlag.FLAG_BAITED,
+	EntityFlag.FLAG_CONFUSION,
+	EntityFlag.FLAG_BURN,
+	EntityFlag.FLAG_POISON,
+	EntityFlag.FLAG_FEAR,
+	EntityFlag.FLAG_BLEED_OUT,
+	EntityFlag.FLAG_SLOW,
+	EntityFlag.FLAG_WEAKNESS
+}
+local FLAG_TO_ICON = {
+	[EntityFlag.FLAG_CHARM] = "Charm",
+	[EntityFlag.FLAG_BRIMSTONE_MARKED] = "BrimstoneCurse",
+	[EntityFlag.FLAG_MAGNETIZED] = "Magnetize",
+	[EntityFlag.FLAG_BAITED] = "Bait",
+	[EntityFlag.FLAG_CONFUSION] = "Confuse",
+	[EntityFlag.FLAG_BURN] = "Burn",
+	[EntityFlag.FLAG_POISON] = "Poison",
+	[EntityFlag.FLAG_FEAR] = "Fear",
+	[EntityFlag.FLAG_BLEED_OUT] = "BleedingOut",
+	[EntityFlag.FLAG_SLOW] = "Slow",
+	[EntityFlag.FLAG_WEAKNESS] = "Weakness",
+}
 
 local identifier = "FR_STRENGTH"
-local statusSprite = Sprite("gfx/ui/fr_statuseffects", true)
+local statusSprite = Sprite("gfx/ui/fr_statuseffects.anm2", true)
 statusSprite:Play("Strength")
 local STATUS_COLOR = Color(1,1,1,1,0.3,0,0,0.2,0,0,0.75)
 SEL.RegisterStatusEffect(identifier, statusSprite, STATUS_COLOR, nil, true)
@@ -44,11 +81,16 @@ function FLIP:GetIgnoredRenderMode(inverse)
 end
 
 ---@param ent Entity
+function FLIP:EnemyOnPeterSide(ent)
+	local data = Mod:GetData(ent)
+	return data.PeterFlipped or ent:HasEntityFlags(EntityFlag.FLAG_CHARM) or ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
+end
+
+---@param ent Entity
 function FLIP:GetEnemyIgnoredRenderMode(ent)
 	local npc = ent:ToNPC() or ent.SpawnerEntity
 	if not npc then return RenderMode.RENDER_NULL end
-	local data = Mod:TryGetData(npc)
-	local wasFlipped = data and data.PeterFlipped
+	local wasFlipped = FLIP:EnemyOnPeterSide(ent)
 	local renderMode = FLIP:GetIgnoredRenderMode(true)
 	if wasFlipped then
 		renderMode = FLIP:GetIgnoredRenderMode(false)
@@ -63,9 +105,20 @@ function FLIP:OriginatesFromEnemy(ent)
 		or ent.SpawnerEntity and ent.SpawnerEntity:ToNPC())
 end
 
+---@param ent Entity
+function FLIP:IsEntityInReflection(ent)
+	local player = Mod:TryGetPlayer(ent)
+	local flipActive = MUDDLED_CROSS:IsRoomEffectActive()
+	local fromEnemy = FLIP:OriginatesFromEnemy(ent)
+	local isFlippedEnemy = fromEnemy and FLIP:EnemyOnPeterSide(ent)
+	return (player and PETER_B:IsPeterB(player) and not flipActive)
+		or (fromEnemy and isFlippedEnemy and not flipActive)
+		or (fromEnemy and not isFlippedEnemy and flipActive)
+end
+
 --#endregion
 
---#region Handle rendering
+--#region Handle entity rendering
 
 ---@param entity Entity
 function FLIP:Reflection(entity)
@@ -93,14 +146,32 @@ Mod:AddCallback(ModCallbacks.MC_PRE_TEAR_RENDER, FLIP.Reflection)
 Mod:AddCallback(ModCallbacks.MC_PRE_BOMB_RENDER, FLIP.Reflection)
 Mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_RENDER, FLIP.Reflection)
 
-function FLIP:TearSplash(tear)
+---@param npcOrProj EntityNPC | EntityProjectile
+function FLIP:HideEnemies(npcOrProj)
+	if PETER_B:UsePeterFlipRoomEffects()
+		and not npcOrProj:IsBoss()
+		and Mod.Room():GetRenderMode() == FLIP:GetEnemyIgnoredRenderMode(npcOrProj)
+	then
+		return false
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_NPC_RENDER, FLIP.HideEnemies)
+Mod:AddCallback(ModCallbacks.MC_PRE_PROJECTILE_RENDER, FLIP.HideEnemies)
+
+--#endregion
+
+--#region Manage specific effects
+
+---@param tearOrProj EntityTear | EntityProjectile
+function FLIP:TearSplash(tearOrProj)
 	if not PETER_B:UsePeterFlipRoomEffects() then return end
 	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
-		if ent.Position:DistanceSquared(tear.Position) <= 1
-			and FLIP.PLAYER_EFFECTS[ent.Variant]
+		if ent.Position:DistanceSquared(tearOrProj.Position) <= 1
+			and FLIP.TEAR_DEATH_EFFECTS[ent.Variant]
 		then
-			local player = Mod:TryGetPlayer(tear)
-			if player and PETER_B:IsPeterB(player) then
+			local player = Mod:TryGetPlayer(tearOrProj)
+			if player and PETER_B:IsPeterB(player) or tearOrProj.SpawnerEntity and tearOrProj.SpawnerEntity:ToNPC() then
 				Mod:GetData(ent).PeterBReflection = true
 			elseif player and not PETER_B:IsPeterB(player) then
 				Mod:GetData(ent).NonPeterBReflection = true
@@ -110,6 +181,7 @@ function FLIP:TearSplash(tear)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_TEAR_DEATH, FLIP.TearSplash)
+Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_DEATH, FLIP.TearSplash)
 
 function FLIP:PostBombExplode(bomb)
 	if not PETER_B:UsePeterFlipRoomEffects() then return end
@@ -119,7 +191,7 @@ function FLIP:PostBombExplode(bomb)
 		and bomb:GetSprite():IsPlaying("Explode")
 	then
 		for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
-			if ent.Position:DistanceSquared(bomb.Position) <= 1 and FLIP.PLAYER_EFFECTS[ent.Variant] then
+			if ent.Position:DistanceSquared(bomb.Position) <= 1 and FLIP.TEAR_DEATH_EFFECTS[ent.Variant] then
 				Mod:GetData(ent).PeterBReflection = true
 			end
 		end
@@ -127,6 +199,16 @@ function FLIP:PostBombExplode(bomb)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, FLIP.PostBombExplode)
+
+function FLIP:FlyPoof(npc)
+	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.FLY_EXPLOSION)) do
+		if ent.Position:DistanceSquared(npc.Position) <= 324 then
+			Mod:GetData(ent).PeterBReflection = true
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, FLIP.FlyPoof)
 
 function FLIP:HideEffects(effect)
 	local data = Mod:TryGetData(effect)
@@ -147,22 +229,26 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_PRE_EFFECT_RENDER, FLIP.HideEffects)
 
----@param npcOrProj EntityNPC | EntityProjectile
-function FLIP:HideEnemies(npcOrProj)
-	if PETER_B:UsePeterFlipRoomEffects()
-		and Mod.Room():GetRenderMode() == FLIP:GetEnemyIgnoredRenderMode(npcOrProj)
-		and not npcOrProj:IsBoss()
-	then
-		return false
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_PRE_NPC_RENDER, FLIP.HideEnemies)
-Mod:AddCallback(ModCallbacks.MC_PRE_PROJECTILE_RENDER, FLIP.HideEnemies)
-
 --#endregion
 
 --#region Handle collision/ignoring damage
+
+--So that their Pathfinders obey their ability to ignore grid entities
+---@param npc EntityNPC
+function FLIP:AdjustEnemyGridCollision(npc)
+	if not PETER_B:UsePeterFlipRoomEffects() then return end
+	local data = Mod:GetData(npc)
+	if not data.PeterFlipOGGridColl then return end
+	if FLIP:EnemyOnPeterSide(npc) then
+		if FLIP:IsEntityInReflection(npc) then
+			npc.GridCollisionClass = GridCollisionClass.COLLISION_SOLID
+		else
+			npc.GridCollisionClass = data.PeterFlipOGGridColl
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_NPC_UPDATE, FLIP.AdjustEnemyGridCollision)
 
 ---@param ent Entity
 function FLIP:ValidEnemyToFlip(ent)
@@ -184,13 +270,15 @@ function FLIP:BringEnemyToFlipside(ent)
 	ent:AddEntityFlags(EntityFlag.FLAG_FREEZE)
 	local oldCollision = ent.EntityCollisionClass
 	ent.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
-	Mod:GetData(ent).JustPeterFlipped = true
+	if ent.GridCollisionClass > GridCollisionClass.COLLISION_SOLID then
+		data.PeterFlipOGGridColl = ent.GridCollisionClass
+		ent.GridCollisionClass = GridCollisionClass.COLLISION_SOLID
+	end
 	SEL:AddStatusEffect(ent, FLIP.STATUS_STRENGTH, -1, EntityRef(nil))
 	ent:SetColor(STATUS_COLOR, 32, 1, false, false)
 	Isaac.CreateTimer(function()
 		ent.EntityCollisionClass = oldCollision
 		ent:ClearEntityFlags(EntityFlag.FLAG_FREEZE)
-		Mod:GetData(ent).JustPeterFlipped = nil
 	end, 30, 1, false)
 end
 
@@ -211,10 +299,8 @@ function FLIP:CollisionMode(ent, collider)
 		oppositeTarget = ent
 	end
 	if enemyTarget then
-		local srcData = Mod:TryGetData(damageSource)
-		local enemyData = Mod:TryGetData(enemyTarget)
-		local fromFlippedEnemy = enemyData and enemyData.PeterFlipped
-		local isFlippedEnemy = srcData and srcData.PeterFlipped
+		local fromFlippedEnemy = FLIP:EnemyOnPeterSide(enemyTarget)
+		local isFlippedEnemy = FLIP:EnemyOnPeterSide(damageSource)
 		if oppositeTarget:ToPlayer()
 			and FLIP:ValidEnemyToFlip(ent)
 			and not isFlippedEnemy
@@ -223,31 +309,58 @@ function FLIP:CollisionMode(ent, collider)
 			FLIP:BringEnemyToFlipside(damageSource)
 			return false
 		end
-		if isFlippedEnemy and enemyData and enemyData.JustPeterFlipped then
-			return false
-		end
 		if not fromFlippedEnemy and not enemyTarget:IsBoss() then
 			return true
 		end
 	end
 end
 
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_COLLISION, CallbackPriority.IMPORTANT, FLIP.CollisionMode)
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_KNIFE_COLLISION, CallbackPriority.IMPORTANT, FLIP.CollisionMode)
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_LASER_COLLISION, CallbackPriority.IMPORTANT, FLIP.CollisionMode)
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, CallbackPriority.IMPORTANT, FLIP.CollisionMode)
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_TEAR_COLLISION, CallbackPriority.IMPORTANT, FLIP.CollisionMode)
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_FAMILIAR_COLLISION, CallbackPriority.IMPORTANT, FLIP.CollisionMode)
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, CallbackPriority.IMPORTANT, FLIP.CollisionMode)
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_BOMB_COLLISION, CallbackPriority.IMPORTANT, FLIP.CollisionMode)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_LASER_COLLISION, CallbackPriority.IMPORTANT, FLIP.CollisionMode)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_KNIFE_COLLISION, CallbackPriority.IMPORTANT, FLIP.CollisionMode)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, CallbackPriority.IMPORTANT, FLIP.CollisionMode)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_COLLISION, CallbackPriority.IMPORTANT, FLIP.CollisionMode)
+
+---@param ent Entity
+---@param gridIndex integer
+---@param gridEnt GridEntity?
+function FLIP:GridCollision(ent, gridIndex, gridEnt)
+	if gridEnt
+		and PETER_B:UsePeterFlipRoomEffects()
+		and (
+			gridEnt:ToRock()
+			or gridEnt:ToFire()
+			or gridEnt:ToPoop()
+			or gridEnt:ToSpikes()
+			or gridEnt:ToWeb()
+			or gridEnt:ToTeleporter()
+			or gridEnt:ToPressurePlate()
+			or gridEnt:ToStatue()
+			or gridEnt:ToTNT()
+		)
+		and FLIP:IsEntityInReflection(ent)
+	then
+		return true
+	end
+end
+
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_GRID_COLLISION,CallbackPriority.IMPORTANT, FLIP.GridCollision)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_TEAR_GRID_COLLISION,CallbackPriority.IMPORTANT, FLIP.GridCollision)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_FAMILIAR_GRID_COLLISION,CallbackPriority.IMPORTANT, FLIP.GridCollision)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_BOMB_GRID_COLLISION,CallbackPriority.IMPORTANT, FLIP.GridCollision)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PROJECTILE_GRID_COLLISION,CallbackPriority.IMPORTANT, FLIP.GridCollision)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_GRID_COLLISION,CallbackPriority.IMPORTANT, FLIP.GridCollision)
 
 ---@param ent Entity
 ---@param source EntityRef
 function FLIP:HandleDamage(ent, amount, flags, source, countdown)
 	if source and source.Entity then
 		--If they shouldn't collide, ignore all sources of damage from that side as well
-		local result = FLIP:CollisionMode(ent, source.Entity)
-		if result then
+		local shouldNotCollide = FLIP:CollisionMode(ent, source.Entity)
+		if shouldNotCollide then
 			return false
 		end
 	end
@@ -255,15 +368,70 @@ end
 
 Mod:AddPriorityCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, CallbackPriority.IMPORTANT, FLIP.HandleDamage)
 
+---@param gridEnt GridEntityPressurePlate
+function FLIP:PressurePlateUpdate(gridEnt)
+	if PETER_B:UsePeterFlipRoomEffects()
+		and (not Mod.Game:IsGreedMode()
+			or gridEnt:GetGridIndex() == 112
+			and not Mod:IsInStartingRoom()
+		)
+		and gridEnt.State ~= 1
+	then
+		local grid_save = Mod:RoomSave(gridEnt:GetGridIndex())
+		local validPlayerOnPlate = false
+		for _, ent in ipairs(Isaac.FindInRadius(gridEnt.Position, 40, EntityPartition.PLAYER)) do
+			if FLIP:IsEntityInReflection(ent) and gridEnt.State == 0 and not validPlayerOnPlate then
+				gridEnt.State = 3
+			elseif not FLIP:IsEntityInReflection(ent) and gridEnt.State == 3 and not grid_save.PeterBPlateTriggered then
+				validPlayerOnPlate = true
+				gridEnt.State = 0
+				grid_save.PeterBPlateTriggered = true
+			end
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_GRID_ENTITY_PRESSUREPLATE_UPDATE, FLIP.PressurePlateUpdate)
+
 --#endregion
 
 --#region Weakness/Strength
+
+---@param npc EntityNPC
+function FLIP:RenderReflectiveStatusEffects(npc, offset)
+	if PETER_B:UsePeterFlipRoomEffects()
+		and not npc:IsBoss()
+		and Mod.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT
+	then
+		local data = Mod:GetData(npc)
+		local anim = ""
+		for _, statusFlag in ipairs(VANILLA_STATUS_PRIORITY) do
+			if npc:HasEntityFlags(statusFlag) then
+				anim = FLAG_TO_ICON[statusFlag]
+				break
+			end
+		end
+		if anim ~= "" and (not data.PeterFlippedRenderStatus or data.PeterFlippedRenderStatus:GetAnimation() ~= anim) then
+			data.PeterFlippedRenderStatus = data.PeterFlippedRenderStatus or Sprite("gfx/statuseffects.anm2")
+			data.PeterFlippedRenderStatus:Play(anim)
+		end
+		local statusOffset = Mod:GetStatusEffectOffset(npc)
+
+		if not data.PeterFlippedRenderStatus or anim == "" or not statusOffset then return end
+		local renderPos = Isaac.WorldToRenderPosition(npc.Position + npc.PositionOffset) + offset - statusOffset
+		data.PeterFlippedRenderStatus:Render(renderPos)
+		if Mod:ShouldUpdateSprite() then
+			data.PeterFlippedRenderStatus:Update()
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_RENDER, FLIP.RenderReflectiveStatusEffects)
 
 function FLIP:AllowReflectiveStatusEffects(ent)
 	if PETER_B:UsePeterFlipRoomEffects()
 		and not SEL.Utils.IsOpenSegment(ent)
 	then
-		print("return true!")
 		return true
 	end
 end
@@ -298,14 +466,22 @@ Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, FLIP.HalfDamage)
 
 ---@param npc EntityNPC
 function FLIP:StrengthAndWeakness(npc)
-	local data = Mod:TryGetData(npc)
-	if data and data.PeterFlipped then
-		if MUDDLED_CROSS:IsRoomEffectActive() and SEL:HasStatusEffect(npc, FLIP.STATUS_STRENGTH) then
-			SEL:RemoveStatusEffect(npc, FLIP.STATUS_STRENGTH)
-			npc:AddEntityFlags(EntityFlag.FLAG_WEAKNESS)
+	local data = Mod:GetData(npc)
+	if data.PeterFlipped then
+		if MUDDLED_CROSS:IsRoomEffectActive() then
+			if SEL:HasStatusEffect(npc, FLIP.STATUS_STRENGTH) then
+				SEL:RemoveStatusEffect(npc, FLIP.STATUS_STRENGTH)
+			end
+			if not npc:HasEntityFlags(EntityFlag.FLAG_WEAKNESS) then
+				npc:AddEntityFlags(EntityFlag.FLAG_WEAKNESS)
+			end
 		elseif not MUDDLED_CROSS:IsRoomEffectActive() and not SEL:HasStatusEffect(npc, FLIP.STATUS_STRENGTH) then
-			SEL:AddStatusEffect(npc, FLIP.STATUS_STRENGTH, -1, EntityRef(nil))
-			npc:ClearEntityFlags(EntityFlag.FLAG_WEAKNESS)
+			if not SEL:HasStatusEffect(npc, FLIP.STATUS_STRENGTH) then
+				SEL:AddStatusEffect(npc, FLIP.STATUS_STRENGTH, -1, EntityRef(nil))
+			end
+			if npc:HasEntityFlags(EntityFlag.FLAG_WEAKNESS) then
+				npc:ClearEntityFlags(EntityFlag.FLAG_WEAKNESS)
+			end
 		end
 	end
 	if npc:IsBoss() then
@@ -323,6 +499,19 @@ Mod:AddCallback(ModCallbacks.MC_PRE_NPC_UPDATE, FLIP.StrengthAndWeakness)
 
 --#region Flip effect
 
+---@param itemConfig ItemConfigItem
+function FLIP:OnLoseFlipEffect(itemConfig)
+	if itemConfig:IsCollectible()
+		and itemConfig.ID == MUDDLED_CROSS.ID
+		--Should only ever be false if removed via instant room change (i.e. debug console)
+		and (not Mod.Game:IsPaused() or RoomTransition.GetTransitionMode() > 0)
+	then
+		Mod.SFXMan:Play(MUDDLED_CROSS.SFX_UNFLIP)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_ROOM_TRIGGER_EFFECT_REMOVED, FLIP.OnLoseFlipEffect)
+
 function FLIP:AnimateFlip()
 	local speed = 0.025
 	--[[ if Furtherance.FlipSpeed == 1 then
@@ -339,6 +528,11 @@ function FLIP:AnimateFlip()
 		if isFlipped == true then
 			FLIP.FLIP_FACTOR = FLIP.FLIP_FACTOR + speed
 		elseif isFlipped == false then
+			--Should only ever be true if done within via instant room change (i.e. debug console) or restarting the game via holding R
+			if (Mod.Game:IsPaused() and RoomTransition.GetTransitionMode() == 0) or Mod.Game:GetFrameCount() == 0 then
+				FLIP.FLIP_FACTOR = 0
+				return
+			end
 			FLIP.FLIP_FACTOR = FLIP.FLIP_FACTOR - speed
 		end
 	end
