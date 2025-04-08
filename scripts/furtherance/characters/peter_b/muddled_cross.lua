@@ -25,6 +25,9 @@ function MUDDLED_CROSS:OnUse(itemID, rng, player, flags)
 		effects:RemoveCollectibleEffect(MUDDLED_CROSS.ID)
 		Mod.SFXMan:Play(MUDDLED_CROSS.SFX_UNFLIP)
 	end
+	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PROJECTILE)) do
+		ent:Die()
+	end
 	return true
 end
 

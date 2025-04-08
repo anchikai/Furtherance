@@ -1,6 +1,6 @@
 local Mod = Furtherance
 
-local VERSION = 1.02
+local VERSION = 1.11 --1.1.1
 local game = Game()
 local floor = math.floor
 local min = math.min
@@ -20,6 +20,7 @@ local function InitMod()
 	---@field NumStatusesActive integer
 	---@field NumIconsActive integer
 	---@field StatusEffectData {[string]: StatusEffectData}
+	---@field LoopedChain boolean
 
 	---Holds information about a single status effect
 	---@class StatusEffectData
@@ -71,11 +72,6 @@ local function InitMod()
 
 	---@type {[string]: string}
 	StatusEffectLibrary.BitflagToStatusFlag = CACHED_STATUS_FLAGS_REVERSE or {}
-
-	StatusEffectLibrary.BlacklistParentChildDistribution = {
-		[EntityType.ENTITY_CLUTCH] = true,
-		[EntityType.ENTITY_CLICKETY_CLACK] = true
-	}
 
 	StatusEffectLibrary.NUM_STATUS_EFFECTS = 0
 
@@ -144,7 +140,14 @@ local function InitFunctions()
 		-- - `statusEffectData` - Data of the status effect being removed
 		--
 		-- An extra argument can be passed to limit the callback to a specific StatusFlag
-		POST_REMOVE_ENTITY_STATUS_EFFECT = "STATUSEFFECTLIBRARY_POST_REMOVE_ENTITY_STATUS_EFFECT"
+		POST_REMOVE_ENTITY_STATUS_EFFECT = "STATUSEFFECTLIBRARY_POST_REMOVE_ENTITY_STATUS_EFFECT",
+
+		-- Called before the entity renders any custom status effects.
+		-- - `self` - StatusEffectLibrary Mod Global
+		-- - `entity` - The affected enemy/player. Will be EntityNPC/EntityPlayer appropriately
+		--
+		-- By default, will not render statuses if the render is on a water reflection or if they're part of a segmented enemy and not the head. Return `true` to override this
+		PRE_RENDER_STATUS_EFFECTS = "STATUSEFFECTLIBRARY_PRE_RENDER_STATUS_EFFECTS"
 	}
 
 	for _, v in pairs(StatusEffectLibrary.Callbacks.ID) do
@@ -168,7 +171,7 @@ local function InitFunctions()
 	StatusEffectLibrary.Utils = {}
 
 	function StatusEffectLibrary.Utils.Log(id, ...)
-		local str = "[StatusEffectLibrary] [Status " .. id .. "]: ".. table.concat({...}, " ")
+		local str = StatusEffectLibrary.Name .. " (" .. id .. "): ".. table.concat({...}, " ")
 		print(str)
 		Isaac.DebugString(str)
 	end
@@ -295,6 +298,49 @@ local function InitFunctions()
 		return final
 	end
 
+	---Checks if the entity has a parent and if that parent's child is the provided `ent`
+	---@param ent Entity
+	function StatusEffectLibrary.Utils.IsInParentChildChain(ent)
+		return ent.Parent
+			and ent.Parent:ToNPC()
+			and ent.Parent.Child
+			and GetPtrHash(ent) == GetPtrHash(ent.Parent.Child)
+	end
+
+	---Checks if the entity is part of an open parent-child chain. Used for ignoring icon rendering
+	---
+	---Only works if the entity has had a custom status effect assigned before
+	---@param ent Entity
+	function StatusEffectLibrary.Utils.IsOpenSegment(ent)
+		local statusEffects = StatusEffectLibrary:GetStatusEffects(ent)
+		return statusEffects
+			and not statusEffects.LoopedChain
+			and StatusEffectLibrary.Utils.IsInParentChildChain(ent)
+	end
+
+	---Safer version of Entity:GetLastParent as the function (as well as HasCommonParentWithEntity and GetLastChild) freezes the game if called on a parent/child loop
+	---@param ent Entity
+	---@return Entity NPC, boolean IsLooped @IsLooped will return true if the parent of the last entity in the chain is parented to the enemy this function was called upon
+	function StatusEffectLibrary.Utils.GetLastParent(ent)
+		local parents = {}
+		local currentEnt = ent
+		local isLooped = false
+
+		StatusEffectLibrary.Utils.DebugLog("N/A", "Locating parent/child chain head...")
+
+		while StatusEffectLibrary.Utils.IsInParentChildChain(currentEnt) and not parents[GetPtrHash(currentEnt)] and not parents[GetPtrHash(currentEnt.Parent)] do
+			StatusEffectLibrary.Utils.DebugLog("N/A", "Jumped to parent", ent.Parent.Type, ent.Parent.Variant, "from", ent.Type, ent.Variant)
+			parents[GetPtrHash(currentEnt)] = true
+			currentEnt = currentEnt.Parent
+		end
+
+		isLooped = currentEnt.Parent and GetPtrHash(currentEnt.Parent) == GetPtrHash(ent) or false
+
+		StatusEffectLibrary.Utils.DebugLog("N/A", "Is this a looped chain?", tostring(isLooped))
+
+		return currentEnt, isLooped
+	end
+
 	--#endregion
 
 	--#region Custom Callbacks
@@ -353,6 +399,14 @@ local function InitFunctions()
 
 				if shouldFire then
 					callbacks[i].Function(StatusEffectLibrary, entity, statusEffect, statusEffectData)
+				end
+			end
+		end,
+		[StatusEffectLibrary.Callbacks.ID.PRE_RENDER_STATUS_EFFECTS] = function(callbacks, entity)
+			for i = 1, #callbacks do
+				local result = callbacks[i].Function(StatusEffectLibrary, entity)
+				if result ~= nil then
+					return result
 				end
 			end
 		end,
@@ -437,7 +491,6 @@ local function InitFunctions()
 	---@param ignoreFlags? EntityFlag | integer #Any EntityFlag status effects this status effect should ignore when choosing whether to apply or not
 	---@param customTargetCheck? boolean #Bypass the default check that runs before a status effect is applied
 	---@param staticIconPosition? boolean #If your icon should be moved when other status effects are present
-	---@return StatusConfig
 	function StatusEffectLibrary.RegisterStatusEffect(identifier, icon, color, ignoreFlags, customTargetCheck, staticIconPosition)
 		local statusEffects = StatusEffectLibrary.Utils.ToList(StatusEffectLibrary.StatusFlag)
 		table.sort(statusEffects)
@@ -471,11 +524,12 @@ local function InitFunctions()
 
 	local tempBlacklist = {}
 
-	local function applyNonLoopingStatus(ent, statusFlag, duration, source, color, customData)
-		if not tempBlacklist[GetPtrHash(ent)] then
-			tempBlacklist[GetPtrHash(ent)] = true
-			StatusEffectLibrary:AddStatusEffect(ent, statusFlag, duration, source, color, StatusEffectLibrary.Utils.DeepCopy(customData))
-			tempBlacklist[GetPtrHash(ent)] = nil
+	local function applyNonLoopingStatus(ent, statusFlag, duration, source, color, customData, isLooped)
+		local entHash = GetPtrHash(ent)
+		if not tempBlacklist[entHash] then
+			tempBlacklist[entHash] = true
+			StatusEffectLibrary:AddStatusEffect(ent, statusFlag, duration, source, color, customData, isLooped)
+			tempBlacklist[entHash] = nil
 		end
 	end
 
@@ -486,9 +540,10 @@ local function InitFunctions()
 	---@param statusFlag StatusFlag
 	---@param duration integer
 	---@param source EntityRef
-	---@param color? Color #Provide a color manually for the status duration. This will override the default color, if any, associated with the status effect
-	---@param customData? table #A table containing any number of varables you wish
-	function StatusEffectLibrary:AddStatusEffect(ent, statusFlag, duration, source, color, customData)
+	---@param color? Color @Provide a color manually for the status duration. This will override the default color, if any, associated with the status effect
+	---@param customData? table @A table containing any number of varables you wish
+	---@param calledInLoop? boolean @Set to true to mark this entity as part of a looped chain. Used by the library after getting the head of the chain
+	function StatusEffectLibrary:AddStatusEffect(ent, statusFlag, duration, source, color, customData, calledInLoop)
 		local identifier = StatusEffectLibrary.BitflagToStatusFlag[statusFlag]
 		if not identifier then
 			error(string.format("[StatusEffectLibrary] Status effect %s does not exist", statusFlag))
@@ -516,10 +571,19 @@ local function InitFunctions()
 				NumIconsActive = 0,
 				StatusEffectData = {}
 			}
-			StatusEffectLibrary.Utils.DebugLog("N/A", "Initialized general status effect data")
+			StatusEffectLibrary.Utils.DebugLog("N/A", "Initialized general status effect data for", ent.Type, ent.Variant)
 			StatusEffectLibrary.EntityData[GetPtrHash(ent)] = newData
 			statusEffects = newData
 		end
+
+		---Only stops applying the status if it was called during a loop as they're likely individual enemies (like Ring Flies) that should have the status applied to them only
+		---This marks it as already being an enemy that will loop
+		if calledInLoop then
+			statusEffects.LoopedChain = calledInLoop
+			StatusEffectLibrary.Utils.DebugLog("Loop detected! Will not apply status effect")
+			return false
+		end
+
 		local durationMult = StatusEffectLibrary.Utils.GetSecondHandMultiplier()
 		duration = floor(duration * durationMult)
 
@@ -534,38 +598,47 @@ local function InitFunctions()
 				CustomData = customData
 			}
 			statusEffectData = statusEffects.StatusEffectData[identifier]
-			StatusEffectLibrary.Utils.DebugLog(identifier, "Initialized status effect data with duration of", duration)
+			StatusEffectLibrary.Utils.DebugLog(identifier, "Initialized status effect data with duration of", duration, "for", ent.Type, ent.Variant)
 		else
 			statusEffectData.Countdown = floor(duration)
-			StatusEffectLibrary.Utils.DebugLog(identifier, "Status effect already present. Resetting duration to", duration)
+			StatusEffectLibrary.Utils.DebugLog(identifier, "Status effect already present. Resetting duration to", duration, "for", ent.Type, ent.Variant)
 			return true
 		end
 
-		if not StatusEffectLibrary.BlacklistParentChildDistribution[ent.Type]
-			and ent:ToNPC()
-			and not tempBlacklist[GetPtrHash(ent)]
+		local entHash = GetPtrHash(ent)
+		if ent:ToNPC()
 			and (ent.Parent or ent.Child)
+			and not tempBlacklist[entHash]
 		then
+			local npc = ent:ToNPC()
+			---@cast npc EntityNPC
 			local children = {}
-			---Will return the last parent in a parent/child chain or, if none found, themselves
-			local currentEnt = ent:GetLastParent():ToNPC()
-			---@cast currentEnt EntityNPC
-			--Since the entity has already had the status applied to them directly
-			tempBlacklist[GetPtrHash(ent)] = true
+			local currentEnt, isLooped = StatusEffectLibrary.Utils.GetLastParent(npc)
+			statusEffects.LoopedChain = isLooped
+			tempBlacklist[entHash] = true
 
 			--Apply to rest of chain
-			while currentEnt.ChildNPC and not children[GetPtrHash(currentEnt)] do
-				children[GetPtrHash(currentEnt)] = true
-				applyNonLoopingStatus(currentEnt, statusFlag, duration, source, color, customData)
-				currentEnt = currentEnt.ChildNPC
+			while currentEnt.Child and currentEnt.Child:ToNPC()
+				and StatusEffectLibrary.Utils.IsInParentChildChain(currentEnt.Child)
+				and not children[entHash]
+			do
+				StatusEffectLibrary.Utils.DebugLog(identifier, "Jumped to child", currentEnt.Child:ToNPC().Type, currentEnt.Child:ToNPC().Variant, "from", currentEnt.Type, currentEnt.Variant)
+				children[entHash] = true
+				applyNonLoopingStatus(currentEnt, statusFlag, duration, source, color, StatusEffectLibrary.Utils.DeepCopy(customData), isLooped)
+				local child = currentEnt.Child:ToNPC()
+				---@cast child EntityNPC
+				currentEnt = child
+				entHash = GetPtrHash(currentEnt)
 			end
 
 			--Apply to end of chain
-			if currentEnt.ParentNPC
-				and not currentEnt.ChildNPC
-				and not children[GetPtrHash(currentEnt)]
+			if currentEnt.Parent
+				and currentEnt.Parent:ToNPC()
+				and StatusEffectLibrary.Utils.IsInParentChildChain(currentEnt)
+				and not children[entHash]
 			then
-				applyNonLoopingStatus(currentEnt, statusFlag, duration, source, color, customData)
+				StatusEffectLibrary.Utils.DebugLog(identifier, "Applied to end of chain", currentEnt.Type, currentEnt.Variant)
+				applyNonLoopingStatus(currentEnt, statusFlag, duration, source, color, StatusEffectLibrary.Utils.DeepCopy(customData), isLooped)
 			end
 		end
 
@@ -596,6 +669,7 @@ local function InitFunctions()
 
 		StatusEffectLibrary.Callbacks.FireCallback(StatusEffectLibrary.Callbacks.ID.POST_ADD_ENTITY_STATUS_EFFECT,
 		ent, statusFlag, statusEffectData)
+		StatusEffectLibrary.Utils.DebugLog(identifier, "End of AddStatusEffect for", ent.Type, ent.Variant)
 		return true
 	end
 
@@ -655,9 +729,12 @@ local function InitFunctions()
 	---@param ent Entity
 	function StatusEffectLibrary:IsValidTarget(ent)
 		if not ent:ToNPC() and not ent:ToPlayer() then
-			return true
+			return false
 		end
-		if ent:HasEntityFlags(EntityFlag.FLAG_NO_STATUS_EFFECTS) or not ent:IsActiveEnemy(false) then
+		if ent:HasEntityFlags(EntityFlag.FLAG_NO_STATUS_EFFECTS)
+			or not ent:IsActiveEnemy(false)
+			or (ent:ToNPC() and not ent:ToNPC().CanShutDoors)
+		then
 			return false
 		end
 		if ent:IsBoss() then
@@ -750,9 +827,13 @@ local function InitFunctions()
 			Isaac.RenderText("Boss Cooldown: " .. tostring(num), textPos.X, textPos.Y, 1, 1, 1, 1)
 		end
 		local statusEffects = StatusEffectLibrary:GetStatusEffects(ent)
-		if game:GetRoom():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT
-			or not statusEffects
-			or ent.Parent
+		if not statusEffects then
+			return
+		end
+		local result = StatusEffectLibrary.Callbacks.FireCallback(StatusEffectLibrary.Callbacks.ID.PRE_RENDER_STATUS_EFFECTS, ent)
+		if (game:GetRoom():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT
+			or StatusEffectLibrary.Utils.IsOpenSegment(ent))
+			and not result
 		then
 			return
 		end
@@ -761,8 +842,11 @@ local function InitFunctions()
 			StatusEffectLibrary:ClearStatusEffects(ent)
 			return
 		end
-		local renderPos = Isaac.WorldToRenderPosition(ent.Position + ent.PositionOffset) + offset
-		if REPENTOGON then
+		local renderPos = Isaac.WorldToScreen(ent.Position + ent.PositionOffset) + offset
+		if Mod.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT then
+			renderPos = Isaac.WorldToRenderPosition(ent.Position + ent.PositionOffset) + offset
+		end
+		if REPENTOGON and not ent:ToPlayer() then
 			local sprite = ent:GetSprite()
 			local nullFrame = sprite:GetNullFrame("OverlayEffect")
 			if not nullFrame or not nullFrame:IsVisible() then
@@ -845,7 +929,6 @@ local function InitFunctions()
 	---@param ent Entity
 	function StatusEffectLibrary.OnEntityRemove(_, ent)
 		if StatusEffectLibrary.EntityData[GetPtrHash(ent)] then
-			StatusEffectLibrary:ClearStatusEffects(ent)
 			StatusEffectLibrary.EntityData[GetPtrHash(ent)] = nil
 		end
 	end
