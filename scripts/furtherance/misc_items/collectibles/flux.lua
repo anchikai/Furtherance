@@ -51,7 +51,7 @@ function FLUX:FluxStats(player, flag)
 		if flag == CacheFlag.CACHE_TEARFLAG then
 			player.TearFlags = player.TearFlags | TearFlags.TEAR_SPECTRAL
 		elseif flag == CacheFlag.CACHE_RANGE then
-			player.TearRange = player.TearRange + (FLUX.RANGE_UP * 40)
+			player.TearRange = player.TearRange + (FLUX.RANGE_UP * Mod.RANGE_BASE_MULT)
 		end
 	end
 end

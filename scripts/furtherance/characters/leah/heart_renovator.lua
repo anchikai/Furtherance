@@ -8,7 +8,6 @@ HEART_RENOVATOR.ID = Isaac.GetItemIdByName("Heart Renovator")
 HEART_RENOVATOR.SFX_HEARTBEAT = Isaac.GetSoundIdByName("Broken Heartbeat")
 HEART_RENOVATOR.MAX_COUNTER = 99
 HEART_RENOVATOR.DAMAGE_MULT = 0.1
-HEART_RENOVATOR.SCARED_HEART_CHANCE = 0.16
 
 local font = Mod.Font.Tempest
 local counter = Sprite()
@@ -118,22 +117,6 @@ function HEART_RENOVATOR:DamageUp(player)
 end
 
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, HEART_RENOVATOR.DamageUp, CacheFlag.CACHE_DAMAGE)
-
----@param npc EntityNPC
-function HEART_RENOVATOR:ScaredHeartOnDeath(npc)
-	local player = PlayerManager.FirstCollectibleOwner(HEART_RENOVATOR.ID)
-	if player then
-		local hrRNG = player:GetCollectibleRNG(HEART_RENOVATOR.ID)
-		if npc:IsActiveEnemy(true) then
-			if hrRNG:RandomFloat() <= HEART_RENOVATOR.SCARED_HEART_CHANCE then
-				Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_SCARED,
-				npc.Position, Vector.Zero, player)
-			end
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, HEART_RENOVATOR.ScaredHeartOnDeath)
 
 ---@param player EntityPlayer
 function HEART_RENOVATOR:ConsumeHeartCounter(player)
