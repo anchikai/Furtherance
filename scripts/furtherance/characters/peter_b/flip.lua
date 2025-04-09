@@ -25,11 +25,18 @@ FLIP.TEAR_DEATH_EFFECTS = Mod:Set({
 })
 FLIP.ENEMY_EFFECTS = Mod:Set({
 	EffectVariant.FLY_EXPLOSION,
+	EffectVariant.MAGGOT_EXPLOSION,
+	EffectVariant.ROCK_EXPLOSION,
+	EffectVariant.POOP_EXPLOSION,
+	EffectVariant.BIG_ROCK_EXPLOSION,
 	EffectVariant.BLOOD_EXPLOSION,
 	EffectVariant.BLOOD_GUSH,
 	EffectVariant.BLOOD_PARTICLE,
 	EffectVariant.BLOOD_SPLAT,
 	EffectVariant.DUST_CLOUD
+})
+FLIP.IGNORED_ENTITIES = Mod:Set({
+	EntityType.ENTITY_WRAITH
 })
 
 --Highest to lowest, top to bottom
@@ -63,22 +70,42 @@ local FLAG_TO_ICON = {
 local identifier = "FR_STRENGTH"
 local statusSprite = Sprite("gfx/ui/fr_statuseffects.anm2", true)
 statusSprite:Play("Strength")
-local STATUS_COLOR = Color(1,1,1,1,0.3,0,0,0.2,0,0,0.75)
+local STATUS_COLOR = Color(1, 1, 1, 1, 0.3, 0, 0, 0.2, 0, 0, 0.75)
 SEL.RegisterStatusEffect(identifier, statusSprite, STATUS_COLOR, nil, true)
 
 FLIP.STATUS_STRENGTH = SEL.StatusFlag[identifier]
+
+local DISABLE_ABOVE_WATER = WaterClipFlag.DISABLE_RENDER_ABOVE_WATER | WaterClipFlag.DISABLE_RENDER_BELOW_WATER
+---@cast DISABLE_ABOVE_WATER WaterClipFlag
 
 --#endregion
 
 --#region Helpers
 
+function FLIP:ShouldIgnoreEnemy(ent)
+	return ent:IsBoss()
+		or FLIP.IGNORED_ENTITIES[ent.Type]
+end
+
+---@param ent Entity
+function FLIP:ValidEnemyToFlip(ent)
+	return ent:IsActiveEnemy(false)
+		and ent:ToNPC()
+		and ent:ToNPC().CanShutDoors
+		and not FLIP:ShouldIgnoreEnemy(ent)
+end
+
 ---@param inverse? boolean
-function FLIP:GetIgnoredRenderMode(inverse)
-	local renderMode = inverse and RenderMode.RENDER_WATER_REFLECT or RenderMode.RENDER_WATER_ABOVE
-	if MUDDLED_CROSS:IsRoomEffectActive() then
-		renderMode = inverse and RenderMode.RENDER_WATER_ABOVE or RenderMode.RENDER_WATER_REFLECT
+---@return WaterClipFlag
+function FLIP:GetIgnoredWaterClipFlag(inverse)
+	if Mod.Room():IsMirrorWorld() then
+		inverse = not inverse
 	end
-	return renderMode
+	local waterClipFlag = inverse and WaterClipFlag.DISABLE_RENDER_REFLECTION or DISABLE_ABOVE_WATER
+	if MUDDLED_CROSS:IsRoomEffectActive() then
+		waterClipFlag = inverse and DISABLE_ABOVE_WATER or WaterClipFlag.DISABLE_RENDER_REFLECTION
+	end
+	return waterClipFlag
 end
 
 ---@param ent Entity
@@ -88,17 +115,20 @@ function FLIP:IsFlippedEnemy(ent)
 end
 
 ---@param ent Entity
-function FLIP:OriginatesFromEnemy(ent)
-	if ent:IsBoss() then return end
-	return (ent:ToNPC()
-		or ent.SpawnerEntity and ent.SpawnerEntity:ToNPC())
+function FLIP:TryGetEnemy(ent)
+	if FLIP:ShouldIgnoreEnemy(ent) then return end
+	if ent:IsActiveEnemy(true) then
+		return ent:ToNPC()
+	elseif ent.SpawnerEntity and ent.SpawnerEntity:IsActiveEnemy(true) then
+		return ent.SpawnerEntity:ToNPC()
+	end
 end
 
 ---@param ent Entity
 function FLIP:IsEntityInReflection(ent)
 	local player = Mod:TryGetPlayer(ent)
 	local flipActive = MUDDLED_CROSS:IsRoomEffectActive()
-	local fromEnemy = FLIP:OriginatesFromEnemy(ent)
+	local fromEnemy = FLIP:TryGetEnemy(ent)
 	local isFlippedEnemy = fromEnemy and FLIP:IsFlippedEnemy(fromEnemy)
 	return (player and PETER_B:IsPeterB(player) and not flipActive)
 		or (fromEnemy and isFlippedEnemy and not flipActive)
@@ -106,70 +136,90 @@ function FLIP:IsEntityInReflection(ent)
 end
 
 ---@param ent Entity
-function FLIP:GetEnemyIgnoredRenderMode(ent)
-	local npc = ent:ToNPC() or ent.SpawnerEntity
-	if not npc then return RenderMode.RENDER_NULL end
-	local wasFlipped = FLIP:IsEntityInReflection(ent)
-	local renderMode = FLIP:GetIgnoredRenderMode(true)
-	if wasFlipped then
-		renderMode = FLIP:GetIgnoredRenderMode(false)
+---@param parent? Entity @Set to use this Entity for checking whether or not to be reflected, and to put the result onto `ent`
+function FLIP:SetAppropriateWaterClipFlag(ent, parent)
+	local flagCheckEnt = parent or ent
+	local enemy = FLIP:TryGetEnemy(flagCheckEnt)
+	local player = Mod:TryGetPlayer(flagCheckEnt)
+	if enemy then
+		local isFlippedEnemy = FLIP:IsFlippedEnemy(enemy)
+		local flag = FLIP:GetIgnoredWaterClipFlag(not isFlippedEnemy)
+		if flag then
+			local flags = flagCheckEnt:GetWaterClipFlags()
+			if Mod:HasBitFlags(flags, WaterClipFlag.ENABLE_RENDER_BELOW_WATER) then
+				flag = flag | WaterClipFlag.ENABLE_RENDER_BELOW_WATER
+			end
+			ent:SetWaterClipFlags(flag)
+		end
+	elseif player then
+		if PETER_B:IsPeterB(player) then
+			local flag = FLIP:GetIgnoredWaterClipFlag()
+			ent:SetWaterClipFlags(flag)
+		else
+			local flag = Mod.Room():IsMirrorWorld() and DISABLE_ABOVE_WATER or WaterClipFlag.DISABLE_RENDER_REFLECTION
+			ent:SetWaterClipFlags(flag)
+		end
 	end
-	return renderMode
+end
+
+---@param ent Entity
+function FLIP:FlipEnemy(ent)
+	Mod:GetData(ent).PeterFlipped = true
+	local flag = FLIP:GetIgnoredWaterClipFlag()
+	if MUDDLED_CROSS:IsRoomEffectActive() then
+		flag = FLIP:GetIgnoredWaterClipFlag(true)
+	end
+	if Mod:HasBitFlags(ent:GetWaterClipFlags(), WaterClipFlag.ENABLE_RENDER_BELOW_WATER) then
+		flag = flag | WaterClipFlag.ENABLE_RENDER_BELOW_WATER
+	end
+	ent:SetWaterClipFlags(flag)
 end
 
 --#endregion
 
---#region Handle entity rendering
+--#region Handle entity rendering via WaterClipFlags
 
 ---@param ent Entity
 function FLIP:FlipIfWithParent(ent)
 	if ent.SpawnerEntity and FLIP:IsFlippedEnemy(ent.SpawnerEntity)
 		or ent.Parent and FLIP:IsFlippedEnemy(ent.Parent)
 	then
-		Mod:GetData(ent).PeterFlipped = true
+		FLIP:FlipEnemy(ent)
 	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, FLIP.FlipIfWithParent)
 
----@param entity Entity
-function FLIP:Reflection(entity)
-	local renderMode = Mod.Room():GetRenderMode()
-	local player = Mod:TryGetPlayer(entity)
-	if player then
-		if PETER_B:IsPeterB(player)
-			and renderMode == FLIP:GetIgnoredRenderMode()
-		then
-			return false
-		elseif not PETER_B:IsPeterB(player) and renderMode == RenderMode.RENDER_WATER_REFLECT then
-			return false
+function FLIP:UpdateReflections()
+	if PETER_B:UsePeterFlipRoomEffects() then
+		for _, ent in ipairs(Isaac.GetRoomEntities()) do
+			FLIP:SetAppropriateWaterClipFlag(ent)
 		end
 	end
-	if FLIP:OriginatesFromEnemy(entity)
-		and renderMode == FLIP:GetEnemyIgnoredRenderMode(entity)
-	then
-		return false
+end
+
+Mod:AddCallback(Mod.ModCallbacks.PETER_B_ENEMY_ROOM_FLIP, FLIP.UpdateReflections)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, FLIP.UpdateReflections)
+
+---@param ent Entity
+function FLIP:Reflection(ent)
+	if PETER_B:UsePeterFlipRoomEffects() then
+		FLIP:SetAppropriateWaterClipFlag(ent)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_RENDER, FLIP.Reflection)
-Mod:AddCallback(ModCallbacks.MC_PRE_KNIFE_RENDER, FLIP.Reflection)
-Mod:AddCallback(ModCallbacks.MC_PRE_TEAR_RENDER, FLIP.Reflection)
-Mod:AddCallback(ModCallbacks.MC_PRE_BOMB_RENDER, FLIP.Reflection)
-Mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_RENDER, FLIP.Reflection)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, FLIP.Reflection)
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, FLIP.Reflection)
+Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, FLIP.Reflection)
+Mod:AddCallback(ModCallbacks.MC_POST_BOMB_INIT, FLIP.Reflection)
+Mod:AddCallback(ModCallbacks.MC_POST_LASER_INIT, FLIP.Reflection)
+Mod:AddCallback(ModCallbacks.MC_POST_KNIFE_INIT, FLIP.Reflection)
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, FLIP.Reflection)
+Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, FLIP.Reflection)
 
----@param npcOrProj EntityNPC | EntityProjectile
-function FLIP:HideEnemies(npcOrProj)
-	if PETER_B:UsePeterFlipRoomEffects()
-		and not npcOrProj:IsBoss()
-		and Mod.Room():GetRenderMode() == FLIP:GetEnemyIgnoredRenderMode(npcOrProj)
-	then
-		return false
-	end
+if Isaac.IsInGame() then
+	FLIP:UpdateReflections()
 end
-
-Mod:AddCallback(ModCallbacks.MC_PRE_NPC_RENDER, FLIP.HideEnemies)
-Mod:AddCallback(ModCallbacks.MC_PRE_PROJECTILE_RENDER, FLIP.HideEnemies)
 
 --#endregion
 
@@ -178,15 +228,12 @@ Mod:AddCallback(ModCallbacks.MC_PRE_PROJECTILE_RENDER, FLIP.HideEnemies)
 ---@param tearOrProj EntityTear | EntityProjectile
 function FLIP:TearSplash(tearOrProj)
 	if not PETER_B:UsePeterFlipRoomEffects() then return end
+
 	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
 		if ent.Position:DistanceSquared(tearOrProj.Position) <= 1
 			and FLIP.TEAR_DEATH_EFFECTS[ent.Variant]
 		then
-			if FLIP:IsEntityInReflection(tearOrProj) then
-				Mod:GetData(ent).PeterBReflection = true
-			else
-				Mod:GetData(ent).NonPeterBReflection = true
-			end
+			FLIP:SetAppropriateWaterClipFlag(ent, tearOrProj)
 		end
 	end
 end
@@ -196,33 +243,28 @@ Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_DEATH, FLIP.TearSplash)
 
 function FLIP:PostBombExplode(bomb)
 	if not PETER_B:UsePeterFlipRoomEffects() then return end
-	local player = Mod:TryGetPlayer(bomb)
-	if player
-		and player:GetPlayerType() == Mod.PlayerType.PETER_B
-		and bomb:GetSprite():IsPlaying("Explode")
-	then
-		for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
-			if ent.Position:DistanceSquared(bomb.Position) <= 1 and FLIP.TEAR_DEATH_EFFECTS[ent.Variant] then
-				Mod:GetData(ent).PeterBReflection = true
-			end
+
+	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
+		if ent.Position:DistanceSquared(bomb.Position) <= 1 and FLIP.TEAR_DEATH_EFFECTS[ent.Variant] then
+			FLIP:SetAppropriateWaterClipFlag(ent, bomb)
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, FLIP.PostBombExplode)
+Mod:AddCallback(Mod.ModCallbacks.POST_BOMB_EXPLODE, FLIP.PostBombExplode)
 
 function FLIP:MarkEnemyEffectOnInit(effect)
 	if not PETER_B:UsePeterFlipRoomEffects() then return end
-	if effect.SpawnerEntity and FLIP:IsEntityInReflection(effect.SpawnerEntity) then
-		Mod:GetData(effect).PeterBReflection = true
+
+	if effect.SpawnerEntity then
+		FLIP:SetAppropriateWaterClipFlag(effect, effect.SpawnerEntity)
 	else
 		for _, ent in ipairs(Isaac.GetRoomEntities()) do
-			if ent:IsActiveEnemy(true)
+			if FLIP:TryGetEnemy(ent)
 				and effect.Position:DistanceSquared(ent.Position) <= 500
-				and FLIP:IsEntityInReflection(ent)
 				and FLIP.ENEMY_EFFECTS[effect.Variant]
 			then
-				Mod:GetData(effect).PeterBReflection = true
+				FLIP:SetAppropriateWaterClipFlag(effect, ent)
 			end
 		end
 	end
@@ -232,37 +274,17 @@ Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, FLIP.MarkEnemyEffectOnInit)
 
 function FLIP:MarkEnemyEffectOnDeath(npc)
 	if not PETER_B:UsePeterFlipRoomEffects() then return end
+
 	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
 		if ent.Position:DistanceSquared(npc.Position) <= 324
-			and FLIP:IsEntityInReflection(npc)
 			and FLIP.ENEMY_EFFECTS[ent.Variant]
 		then
-			Mod:GetData(ent).PeterBReflection = true
+			FLIP:SetAppropriateWaterClipFlag(ent, npc)
 		end
 	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, FLIP.MarkEnemyEffectOnDeath)
-
-function FLIP:HideEffects(effect)
-	if not PETER_B:UsePeterFlipRoomEffects() then return end
-	local data = Mod:TryGetData(effect)
-	--Peter B players
-	if data
-		and data.PeterBReflection
-		and Mod.Room():GetRenderMode() == FLIP:GetIgnoredRenderMode()
-	then
-		return false
-	--Not-Peter B players
-	elseif data
-		and data.NonPeterBReflection
-		and Mod.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT
-	then
-		return false
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_PRE_EFFECT_RENDER, FLIP.HideEffects)
 
 --#endregion
 
@@ -286,17 +308,9 @@ end
 Mod:AddCallback(ModCallbacks.MC_PRE_NPC_UPDATE, FLIP.AdjustEnemyGridCollision)
 
 ---@param ent Entity
-function FLIP:ValidEnemyToFlip(ent)
-	return ent:IsActiveEnemy(false)
-		and ent:ToNPC()
-		and ent:ToNPC().CanShutDoors
-		and not ent:IsBoss()
-end
-
----@param ent Entity
 function FLIP:BringEnemyToFlipside(ent)
 	local data = Mod:GetData(ent)
-	data.PeterFlipped = true
+	FLIP:FlipEnemy(ent)
 	local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BIG_SPLASH, 0, ent.Position, Vector.Zero, nil)
 	effect.Color = Color(1, 0.3, 0.3, 0.75)
 	local size = ent.Size / 25
@@ -326,12 +340,12 @@ function FLIP:CollisionMode(ent, collider)
 	local damageSource
 	local enemyTarget
 	local oppositeTarget
-	if FLIP:OriginatesFromEnemy(ent) then
-		enemyTarget = FLIP:OriginatesFromEnemy(ent)
+	if FLIP:TryGetEnemy(ent) then
+		enemyTarget = FLIP:TryGetEnemy(ent)
 		damageSource = ent
 		oppositeTarget = collider
-	elseif FLIP:OriginatesFromEnemy(collider) then
-		enemyTarget = FLIP:OriginatesFromEnemy(collider)
+	elseif FLIP:TryGetEnemy(collider) then
+		enemyTarget = FLIP:TryGetEnemy(collider)
 		damageSource = collider
 		oppositeTarget = ent
 	end
@@ -369,7 +383,6 @@ function FLIP:GridCollision(ent, gridIndex, gridEnt)
 		and PETER_B:UsePeterFlipRoomEffects()
 		and (
 			gridEnt:ToRock()
-			or gridEnt:ToFire()
 			or gridEnt:ToPoop()
 			or gridEnt:ToSpikes()
 			or gridEnt:ToWeb()
@@ -377,6 +390,7 @@ function FLIP:GridCollision(ent, gridIndex, gridEnt)
 			or gridEnt:ToPressurePlate()
 			or gridEnt:ToStatue()
 			or gridEnt:ToTNT()
+			or gridEnt:ToPit()
 		)
 		and FLIP:IsEntityInReflection(ent)
 	then
@@ -384,12 +398,12 @@ function FLIP:GridCollision(ent, gridIndex, gridEnt)
 	end
 end
 
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_GRID_COLLISION,CallbackPriority.IMPORTANT, FLIP.GridCollision)
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_TEAR_GRID_COLLISION,CallbackPriority.IMPORTANT, FLIP.GridCollision)
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_FAMILIAR_GRID_COLLISION,CallbackPriority.IMPORTANT, FLIP.GridCollision)
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_BOMB_GRID_COLLISION,CallbackPriority.IMPORTANT, FLIP.GridCollision)
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PROJECTILE_GRID_COLLISION,CallbackPriority.IMPORTANT, FLIP.GridCollision)
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_GRID_COLLISION,CallbackPriority.IMPORTANT, FLIP.GridCollision)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_GRID_COLLISION, CallbackPriority.IMPORTANT, FLIP.GridCollision)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_TEAR_GRID_COLLISION, CallbackPriority.IMPORTANT, FLIP.GridCollision)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_FAMILIAR_GRID_COLLISION, CallbackPriority.IMPORTANT, FLIP.GridCollision)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_BOMB_GRID_COLLISION, CallbackPriority.IMPORTANT, FLIP.GridCollision)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PROJECTILE_GRID_COLLISION, CallbackPriority.IMPORTANT, FLIP.GridCollision)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_GRID_COLLISION, CallbackPriority.IMPORTANT, FLIP.GridCollision)
 
 ---@param ent Entity
 ---@param source EntityRef
@@ -437,7 +451,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_GRID_ENTITY_PRESSUREPLATE_UPDATE, FLIP.Pres
 ---@param npc EntityNPC
 function FLIP:RenderReflectiveStatusEffects(npc, offset)
 	if PETER_B:UsePeterFlipRoomEffects()
-		and not npc:IsBoss()
+		and not FLIP:ShouldIgnoreEnemy(npc)
 		and Mod.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT
 	then
 		local data = Mod:GetData(npc)
@@ -478,11 +492,12 @@ SEL.Callbacks.AddCallback(SEL.Callbacks.ID.PRE_RENDER_STATUS_EFFECTS, FLIP.Allow
 ---@param ent Entity
 function FLIP:PreApplyStrength(ent)
 	if not (ent:IsActiveEnemy(false)
-		and ent:IsVulnerableEnemy()
-		and not ent:IsBoss()
-		and ent:ToNPC()
-		and ent:ToNPC().CanShutDoors
-	) then
+			and ent:IsVulnerableEnemy()
+			and not FLIP:ShouldIgnoreEnemy(ent)
+			and ent:ToNPC()
+			and ent:ToNPC().CanShutDoors
+		)
+	then
 		return true
 	end
 end
@@ -495,7 +510,7 @@ function FLIP:HalfDamage(ent, amount, flags, source, countdown)
 	if not ent:IsActiveEnemy(false) then return end
 	local hasStrength = SEL:GetStatusEffectData(ent, FLIP.STATUS_STRENGTH)
 	if hasStrength then
-		return {Damage = amount * 0.75}
+		return { Damage = amount * 0.75 }
 	end
 end
 
@@ -521,7 +536,7 @@ function FLIP:StrengthAndWeakness(npc)
 			end
 		end
 	end
-	if npc:IsBoss() then
+	if FLIP:ShouldIgnoreEnemy(npc) then
 		if MUDDLED_CROSS:IsRoomEffectActive() and not npc:HasEntityFlags(EntityFlag.FLAG_WEAKNESS) then
 			npc:AddEntityFlags(EntityFlag.FLAG_WEAKNESS)
 		elseif not MUDDLED_CROSS:IsRoomEffectActive() and npc:HasEntityFlags(EntityFlag.FLAG_WEAKNESS) then
@@ -575,6 +590,10 @@ function FLIP:AnimateFlip()
 	end
 
 	FLIP.FLIP_FACTOR = Mod:Clamp(FLIP.FLIP_FACTOR, 0, 1)
+
+	if FLIP.FLIP_FACTOR > 0 and FLIP.FLIP_FACTOR < 1 then
+		Isaac.RunCallback(Mod.ModCallbacks.PETER_B_ENEMY_ROOM_FLIP)
+	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_RENDER, FLIP.AnimateFlip)

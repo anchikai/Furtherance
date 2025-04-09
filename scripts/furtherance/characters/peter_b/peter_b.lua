@@ -6,8 +6,6 @@ Furtherance.Character.PETER_B = PETER_B
 
 PETER_B.WATER_COLOR = KColor(2, 0, 0, 0.5)
 
-Mod.Include("scripts.furtherance.characters.peter_b.muddled_cross")
-
 ---@param player EntityPlayer
 function PETER_B:IsPeterB(player)
 	return player:GetPlayerType() == Mod.PlayerType.PETER_B
@@ -27,22 +25,21 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, PETER_B.BloodTears)
 
-function PETER_B:OnPlayerInit()
+function PETER_B:OnFirstPlayerInit()
 	PETER_B:OnNewRoom()
 end
 
-Mod:AddCallback(ModCallbacks.MC_PLAYER_INIT_POST_LEVEL_INIT_STATS, PETER_B.OnPlayerInit, Mod.PlayerType.PETER_B)
+Mod:AddCallback(ModCallbacks.MC_PLAYER_INIT_POST_LEVEL_INIT_STATS, PETER_B.OnFirstPlayerInit, Mod.PlayerType.PETER_B)
 
 function PETER_B:OnNewRoom()
 	local room = Mod.Room()
 	if PETER_B:UsePeterFlipRoomEffects() and not room:HasWater() then
 		room:SetWaterAmount(0.5)
 		room:GetFXParams().UseWaterV2 = true
-	end
-	if room:HasWater() then
 		room:SetWaterColor(PETER_B.WATER_COLOR)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, PETER_B.OnNewRoom)
+Mod:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, CallbackPriority.LATE, PETER_B.OnNewRoom)
 
+Mod.Include("scripts.furtherance.characters.peter_b.muddled_cross")

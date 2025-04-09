@@ -14,8 +14,6 @@ MUDDLED_CROSS.CHARGE_FRACTION_PER_KILL = 6
 local FIVE_SECONDS = 150
 local HALF_FIVE_SECONDS = FIVE_SECONDS / 2
 
-Mod.Include("scripts.furtherance.characters.peter_b.flip")
-
 ---@param player EntityPlayer
 ---@param flags UseFlag
 function MUDDLED_CROSS:OnUse(itemID, rng, player, flags)
@@ -125,6 +123,8 @@ function MUDDLED_CROSS:ChargeOnEnemyDeath(npc)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, MUDDLED_CROSS.ChargeOnEnemyDeath)
+
+Mod.Include("scripts.furtherance.characters.peter_b.flip")
 
 return MUDDLED_CROSS
 

@@ -148,7 +148,8 @@ local tools = {
 
 local core = {
 	"customhealthapi.core",
-	"hearts"
+	"hearts",
+	"custom_callbacks"
 }
 
 local config = {
@@ -209,6 +210,12 @@ end)
 Mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, function(_, shaderName)
 	if shaderName == 'Peter Flip' then
 		return { FlipFactor = 0 }
+	end
+end)
+
+Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM, function(_, count, player, itemID, onlyTrue)
+	if itemID == 64 then
+		return 1
 	end
 end)
 
