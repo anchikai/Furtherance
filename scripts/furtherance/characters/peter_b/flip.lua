@@ -241,11 +241,12 @@ function FLIP:TempPreRender(ent)
 end
 
 Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_RENDER, FLIP.TempPreRender)
-Mod:AddCallback(ModCallbacks.MC_PRE_KNIFE_RENDER, FLIP.TempPreRender)
 Mod:AddCallback(ModCallbacks.MC_PRE_TEAR_RENDER, FLIP.TempPreRender)
+Mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_RENDER, FLIP.TempPreRender)
 Mod:AddCallback(ModCallbacks.MC_PRE_BOMB_RENDER, FLIP.TempPreRender)
-Mod:AddCallback(ModCallbacks.MC_PRE_NPC_RENDER, FLIP.TempPreRender)
+Mod:AddCallback(ModCallbacks.MC_PRE_KNIFE_RENDER, FLIP.TempPreRender)
 Mod:AddCallback(ModCallbacks.MC_PRE_PROJECTILE_RENDER, FLIP.TempPreRender)
+Mod:AddCallback(ModCallbacks.MC_PRE_NPC_RENDER, FLIP.TempPreRender)
 Mod:AddCallback(ModCallbacks.MC_PRE_EFFECT_RENDER, FLIP.TempPreRender)
 
 if Isaac.IsInGame() then
