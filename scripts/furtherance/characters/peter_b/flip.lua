@@ -75,8 +75,8 @@ SEL.RegisterStatusEffect(identifier, statusSprite, STATUS_COLOR, nil, true)
 
 FLIP.STATUS_STRENGTH = SEL.StatusFlag[identifier]
 
-local DISABLE_ABOVE_WATER = WaterClipFlag.DISABLE_RENDER_ABOVE_WATER | WaterClipFlag.DISABLE_RENDER_BELOW_WATER
----@cast DISABLE_ABOVE_WATER WaterClipFlag
+--local DISABLE_ABOVE_WATER = WaterClipFlag.DISABLE_RENDER_ABOVE_WATER | WaterClipFlag.DISABLE_RENDER_BELOW_WATER
+--@cast DISABLE_ABOVE_WATER WaterClipFlag
 
 --#endregion
 
@@ -96,14 +96,18 @@ function FLIP:ValidEnemyToFlip(ent)
 end
 
 ---@param inverse? boolean
----@return WaterClipFlag
+---@return RenderMode
 function FLIP:GetIgnoredWaterClipFlag(inverse)
 	if Mod.Room():IsMirrorWorld() then
 		inverse = not inverse
 	end
-	local waterClipFlag = inverse and WaterClipFlag.DISABLE_RENDER_REFLECTION or DISABLE_ABOVE_WATER
+	--[[ local waterClipFlag = inverse and WaterClipFlag.DISABLE_RENDER_REFLECTION or DISABLE_ABOVE_WATER
 	if MUDDLED_CROSS:IsRoomEffectActive() then
 		waterClipFlag = inverse and DISABLE_ABOVE_WATER or WaterClipFlag.DISABLE_RENDER_REFLECTION
+	end ]]
+	local waterClipFlag = inverse and RenderMode.RENDER_WATER_REFLECT or RenderMode.RENDER_WATER_ABOVE
+	if MUDDLED_CROSS:IsRoomEffectActive() then
+		waterClipFlag = inverse and RenderMode.RENDER_WATER_ABOVE or RenderMode.RENDER_WATER_REFLECT
 	end
 	return waterClipFlag
 end
@@ -141,38 +145,45 @@ function FLIP:SetAppropriateWaterClipFlag(ent, parent)
 	local flagCheckEnt = parent or ent
 	local enemy = FLIP:TryGetEnemy(flagCheckEnt)
 	local player = Mod:TryGetPlayer(flagCheckEnt)
+	local data = Mod:GetData(ent)
 	if enemy then
 		local isFlippedEnemy = FLIP:IsFlippedEnemy(enemy)
 		local flag = FLIP:GetIgnoredWaterClipFlag(not isFlippedEnemy)
 		if flag then
-			local flags = flagCheckEnt:GetWaterClipFlags()
+			--[[ local flags = flagCheckEnt:GetWaterClipFlags()
 			if Mod:HasBitFlags(flags, WaterClipFlag.ENABLE_RENDER_BELOW_WATER) then
 				flag = flag | WaterClipFlag.ENABLE_RENDER_BELOW_WATER
-			end
-			ent:SetWaterClipFlags(flag)
+			end ]]
+			data.PeterFlippedIgnoredRenderFlag = flag
+			--ent:SetWaterClipFlags(flag)
 		end
 	elseif player then
 		if PETER_B:IsPeterB(player) then
 			local flag = FLIP:GetIgnoredWaterClipFlag()
-			ent:SetWaterClipFlags(flag)
+			data.PeterFlippedIgnoredRenderFlag = flag
+			--ent:SetWaterClipFlags(flag)
 		else
-			local flag = Mod.Room():IsMirrorWorld() and DISABLE_ABOVE_WATER or WaterClipFlag.DISABLE_RENDER_REFLECTION
-			ent:SetWaterClipFlags(flag)
+			--local flag = Mod.Room():IsMirrorWorld() and DISABLE_ABOVE_WATER or WaterClipFlag.DISABLE_RENDER_REFLECTION
+			local flag = Mod.Room():IsMirrorWorld() and RenderMode.RENDER_WATER_ABOVE or RenderMode.RENDER_WATER_REFLECT
+			data.PeterFlippedIgnoredRenderFlag = flag
+			--ent:SetWaterClipFlags(flag)
 		end
 	end
 end
 
 ---@param ent Entity
 function FLIP:FlipEnemy(ent)
-	Mod:GetData(ent).PeterFlipped = true
+	local data = Mod:GetData(ent)
+	data.PeterFlipped = true
 	local flag = FLIP:GetIgnoredWaterClipFlag()
 	if MUDDLED_CROSS:IsRoomEffectActive() then
 		flag = FLIP:GetIgnoredWaterClipFlag(true)
 	end
-	if Mod:HasBitFlags(ent:GetWaterClipFlags(), WaterClipFlag.ENABLE_RENDER_BELOW_WATER) then
+	--[[ if Mod:HasBitFlags(ent:GetWaterClipFlags(), WaterClipFlag.ENABLE_RENDER_BELOW_WATER) then
 		flag = flag | WaterClipFlag.ENABLE_RENDER_BELOW_WATER
 	end
-	ent:SetWaterClipFlags(flag)
+	ent:SetWaterClipFlags(flag) ]]
+	data.PeterFlippedIgnoredRenderFlag = flag
 end
 
 --#endregion
@@ -216,6 +227,26 @@ Mod:AddCallback(ModCallbacks.MC_POST_LASER_INIT, FLIP.Reflection)
 Mod:AddCallback(ModCallbacks.MC_POST_KNIFE_INIT, FLIP.Reflection)
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, FLIP.Reflection)
 Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, FLIP.Reflection)
+
+---!Temporarily in place while we wait for RGON to come out of Rep+ development
+---@param ent Entity
+function FLIP:TempPreRender(ent)
+	if not PETER_B:UsePeterFlipRoomEffects() then return end
+
+	local renderMode = Mod.Room():GetRenderMode()
+	local data = Mod:GetData(ent)
+	if renderMode == data.PeterFlippedIgnoredRenderFlag then
+		return false
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_RENDER, FLIP.TempPreRender)
+Mod:AddCallback(ModCallbacks.MC_PRE_KNIFE_RENDER, FLIP.TempPreRender)
+Mod:AddCallback(ModCallbacks.MC_PRE_TEAR_RENDER, FLIP.TempPreRender)
+Mod:AddCallback(ModCallbacks.MC_PRE_BOMB_RENDER, FLIP.TempPreRender)
+Mod:AddCallback(ModCallbacks.MC_PRE_NPC_RENDER, FLIP.TempPreRender)
+Mod:AddCallback(ModCallbacks.MC_PRE_PROJECTILE_RENDER, FLIP.TempPreRender)
+Mod:AddCallback(ModCallbacks.MC_PRE_EFFECT_RENDER, FLIP.TempPreRender)
 
 if Isaac.IsInGame() then
 	FLIP:UpdateReflections()
@@ -565,7 +596,7 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_ROOM_TRIGGER_EFFECT_REMOVED, FLIP.OnLoseFlipEffect)
 
 function FLIP:AnimateFlip()
-	local speed = 0.025
+	--local speed = 0.025
 	--[[ if Furtherance.FlipSpeed == 1 then
 		speed = 0.0172413793
 	elseif Furtherance.FlipSpeed == 2 then
@@ -577,21 +608,19 @@ function FLIP:AnimateFlip()
 	FLIP.PAUSE_MENU_STOP_FLIP = Mod.Game:IsPauseMenuOpen()
 
 	if not FLIP.PAUSE_MENU_STOP_FLIP then
-		if isFlipped == true then
-			FLIP.FLIP_FACTOR = FLIP.FLIP_FACTOR + speed
-		elseif isFlipped == false then
+		if not isFlipped then
 			--Should only ever be true if done within via instant room change (i.e. debug console) or restarting the game via holding R
 			if (Mod.Game:IsPaused() and RoomTransition.GetTransitionMode() == 0) or Mod.Game:GetFrameCount() == 0 then
 				FLIP.FLIP_FACTOR = 0
 				return
 			end
-			FLIP.FLIP_FACTOR = FLIP.FLIP_FACTOR - speed
 		end
+		local lerp = Mod:Lerp(FLIP.FLIP_FACTOR, isFlipped and 1 or 0, 0.125)
+		FLIP.FLIP_FACTOR = Mod:Clamp(lerp, 0, 1)
 	end
 
-	FLIP.FLIP_FACTOR = Mod:Clamp(FLIP.FLIP_FACTOR, 0, 1)
 
-	if FLIP.FLIP_FACTOR > 0 and FLIP.FLIP_FACTOR < 1 then
+	if FLIP.FLIP_FACTOR > 0.05 and FLIP.FLIP_FACTOR < 0.95 then
 		Isaac.RunCallback(Mod.ModCallbacks.PETER_B_ENEMY_ROOM_FLIP)
 	end
 end
@@ -600,7 +629,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_RENDER, FLIP.AnimateFlip)
 
 function FLIP:FreezeEnemiesDuringFlip()
 	local effects = Mod.Room():GetEffects()
-	if FLIP.FLIP_FACTOR > 0 and FLIP.FLIP_FACTOR < 1 then
+	if FLIP.FLIP_FACTOR > 0.05 and FLIP.FLIP_FACTOR < 0.95 then
 		local roomEffects = Mod.Room():GetEffects()
 		if roomEffects:HasCollectibleEffect(MUDDLED_CROSS.ID) then
 			if FLIP.FREEZE_ROOM_EFFECT_COOLDOWN == 0 then

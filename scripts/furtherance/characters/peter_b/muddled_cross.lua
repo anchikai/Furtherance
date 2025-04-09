@@ -17,7 +17,7 @@ local HALF_FIVE_SECONDS = FIVE_SECONDS / 2
 ---@param player EntityPlayer
 ---@param flags UseFlag
 function MUDDLED_CROSS:OnUse(itemID, rng, player, flags)
-	if MUDDLED_CROSS.FLIP.FLIP_FACTOR > 0 and MUDDLED_CROSS.FLIP.FLIP_FACTOR < 1 then
+	if MUDDLED_CROSS.FLIP.FLIP_FACTOR > 0.05 and MUDDLED_CROSS.FLIP.FLIP_FACTOR < 0.95 then
 		return {Discharge = false, Remove = false, ShowAnim = false}
 	end
 	if not Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) then
