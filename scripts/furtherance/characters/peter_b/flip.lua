@@ -647,7 +647,7 @@ function FLIP:AnimateFlip()
 				return
 			end
 		end
-		local lerp = Mod:Lerp(FLIP.FLIP_FACTOR, isFlipped and 1 or 0, 0.125)
+		local lerp = Mod:Lerp(FLIP.FLIP_FACTOR, isFlipped and 1 or 0, 0.2)
 		FLIP.FLIP_FACTOR = Mod:Clamp(lerp, 0, 1)
 	end
 
