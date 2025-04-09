@@ -448,9 +448,18 @@ end
 Mod:AddPriorityCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, CallbackPriority.IMPORTANT, FLIP.HandleDamage)
 
 ---Mainly for spikes
+---@param gridEnt GridEntity
 ---@param ent Entity
-function FLIP:PreventGridDamage(_, ent, _, _)
-	if FLIP:IsEntityInReflection(ent) then
+function FLIP:PreventGridDamage(gridEnt, ent, _, _)
+	if PETER_B:UsePeterFlipRoomEffects()
+		and FLIP:IsEntityInReflection(ent)
+		and not gridEnt:ToSpikes()
+			or (
+				Mod.Room():GetType() ~= RoomType.ROOM_SACRIFICE
+				and (Mod.Room():GetType() ~= RoomType.ROOM_DEVIL
+				or gridEnt:GetGridIndex() ~= 67) --Sanguine Bond
+			)
+	then
 		return false
 	end
 end
@@ -459,6 +468,7 @@ Mod:AddCallback(ModCallbacks.MC_GRID_HURT_DAMAGE, FLIP.PreventGridDamage)
 
 ---@param gridEnt GridEntity
 function FLIP:PreventNoCollGridUpdate(gridEnt)
+	if not PETER_B:UsePeterFlipRoomEffects() then return end
 	for _, ent in ipairs(Isaac.GetRoomEntities()) do
 		if (ent:ToPlayer() or ent:ToNPC())
 			and ent.Position:DistanceSquared(gridEnt.Position) <= 40 ^ 2
