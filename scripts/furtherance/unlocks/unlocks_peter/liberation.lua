@@ -7,7 +7,8 @@ Furtherance.Item.LIBERATION = LIBERATION
 LIBERATION.ID = Isaac.GetItemIdByName("Liberation")
 LIBERATION.PROC_CHANCE = 0.05
 
-function LIBERATION:TryActivateLiberation()
+function LIBERATION:TryActivateLiberation(ent)
+	if not Mod:IsDeadEnemy(ent) then return end
 	local chance = PlayerManager.GetNumCollectibles(LIBERATION.ID) * LIBERATION.PROC_CHANCE
 	local effects = Mod.Room():GetEffects()
 	if chance > 0 and not effects:HasCollectibleEffect(LIBERATION.ID) then
@@ -27,4 +28,4 @@ function LIBERATION:TryActivateLiberation()
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, LIBERATION.TryActivateLiberation)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, LIBERATION.TryActivateLiberation)

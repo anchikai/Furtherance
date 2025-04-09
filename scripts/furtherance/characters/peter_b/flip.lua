@@ -191,15 +191,15 @@ end
 --#region Handle entity rendering via WaterClipFlags
 
 ---@param ent Entity
-function FLIP:FlipIfWithParent(ent)
+function FLIP:FlipIfRelatedEntity(ent)
 	if ent.SpawnerEntity and FLIP:IsFlippedEnemy(ent.SpawnerEntity)
-		or ent.Parent and FLIP:IsFlippedEnemy(ent.Parent)
+		and FLIP:ValidEnemyToFlip(ent)
 	then
 		FLIP:FlipEnemy(ent)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, FLIP.FlipIfWithParent)
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, FLIP.FlipIfRelatedEntity)
 
 function FLIP:UpdateReflections()
 	if PETER_B:UsePeterFlipRoomEffects() then
@@ -416,10 +416,6 @@ function FLIP:GridCollision(ent, gridIndex, gridEnt)
 		and (
 			gridEnt:ToRock()
 			or gridEnt:ToPoop()
-			or gridEnt:ToSpikes()
-			or gridEnt:ToWeb()
-			or gridEnt:ToTeleporter()
-			or gridEnt:ToPressurePlate()
 			or gridEnt:ToStatue()
 			or gridEnt:ToTNT()
 			or gridEnt:ToPit()
@@ -450,6 +446,31 @@ function FLIP:HandleDamage(ent, amount, flags, source, countdown)
 end
 
 Mod:AddPriorityCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, CallbackPriority.IMPORTANT, FLIP.HandleDamage)
+
+---Mainly for spikes
+---@param ent Entity
+function FLIP:PreventGridDamage(_, ent, _, _)
+	if FLIP:IsEntityInReflection(ent) then
+		return false
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_GRID_HURT_DAMAGE, FLIP.PreventGridDamage)
+
+---@param gridEnt GridEntity
+function FLIP:PreventNoCollGridUpdate(gridEnt)
+	for _, ent in ipairs(Isaac.GetRoomEntities()) do
+		if (ent:ToPlayer() or ent:ToNPC())
+			and ent.Position:DistanceSquared(gridEnt.Position) <= 40 ^ 2
+			and FLIP:IsEntityInReflection(ent)
+		then
+			return false
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_GRID_ENTITY_WEB_UPDATE, FLIP.PreventNoCollGridUpdate)
+Mod:AddCallback(ModCallbacks.MC_PRE_GRID_ENTITY_TELEPORTER_UPDATE, FLIP.PreventNoCollGridUpdate)
 
 ---@param gridEnt GridEntityPressurePlate
 function FLIP:PressurePlateUpdate(gridEnt)

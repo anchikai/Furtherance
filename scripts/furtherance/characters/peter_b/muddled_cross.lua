@@ -85,14 +85,14 @@ Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, MUDDLED_CROSS.TimedRecharge
 local floor = math.floor
 local min = math.min
 
----@param npc EntityNPC
-function MUDDLED_CROSS:ChargeOnEnemyDeath(npc)
-	if not npc:IsActiveEnemy(true) then return end
+---@param ent Entity
+function MUDDLED_CROSS:ChargeOnEnemyDeath(ent)
+	if not Mod:IsDeadEnemy(ent) then return end
 	local effects = Mod.Room():GetEffects()
 	if MUDDLED_CROSS:IsRoomEffectActive() and effects:HasCollectibleEffect(MUDDLED_CROSS.ID) then
 		local aliveFlippedEnemies = false
 		Mod:ForEachEnemy(function(_npc)
-			if GetPtrHash(_npc) ~= GetPtrHash(npc) and Mod:GetData(_npc).PeterFlipped then
+			if GetPtrHash(_npc) ~= GetPtrHash(ent) and Mod:GetData(_npc).PeterFlipped then
 				aliveFlippedEnemies = true
 			end
 		end, true)
@@ -122,7 +122,7 @@ function MUDDLED_CROSS:ChargeOnEnemyDeath(npc)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, MUDDLED_CROSS.ChargeOnEnemyDeath)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, MUDDLED_CROSS.ChargeOnEnemyDeath)
 
 Mod.Include("scripts.furtherance.characters.peter_b.flip")
 

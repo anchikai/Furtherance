@@ -344,3 +344,7 @@ end
 function Furtherance:ShouldUpdateLudo(tear, player)
 	return math.floor(tear.FrameCount / player.MaxFireDelay) ~= math.floor((tear.FrameCount - 1) / player.MaxFireDelay)
 end
+
+function Furtherance:IsDeadEnemy(ent)
+	return ent:IsActiveEnemy(true) or not ent:ToNPC().CanShutDoors
+end

@@ -213,12 +213,6 @@ Mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, function(_, shaderName)
 	end
 end)
 
-Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM, function(_, count, player, itemID, onlyTrue)
-	if itemID == 64 then
-		return 1
-	end
-end)
-
 --!End of file
 
 Mod.Include("scripts.compatibility.patches_loader")

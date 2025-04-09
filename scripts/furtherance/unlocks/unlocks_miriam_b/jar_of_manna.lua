@@ -72,9 +72,13 @@ end
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, JAR_OF_MANNA.OnUse, JAR_OF_MANNA.ID)
 
 -- Spawn manna --
----@param npc EntityNPC
-function JAR_OF_MANNA:SpawnManaOnDeath(npc)
-	if not PlayerManager.AnyoneHasCollectible(JAR_OF_MANNA.ID) then return end
+---@param ent EntityNPC
+function JAR_OF_MANNA:SpawnManaOnDeath(ent)
+	if not PlayerManager.AnyoneHasCollectible(JAR_OF_MANNA.ID)
+		or not Mod:IsDeadEnemy(ent)
+	then
+		return
+	end
 	local needsCharge = Mod:ForEachPlayer(function(player)
 		if JAR_OF_MANNA:GetNeededChargeSlot(player) then
 			return true
@@ -82,12 +86,12 @@ function JAR_OF_MANNA:SpawnManaOnDeath(npc)
 	end)
 
 	if needsCharge then
-		Isaac.Spawn(EntityType.ENTITY_EFFECT, JAR_OF_MANNA.EFFECT, 0, npc.Position, Vector.Zero, nil):ToEffect()
+		Isaac.Spawn(EntityType.ENTITY_EFFECT, JAR_OF_MANNA.EFFECT, 0, ent.Position, Vector.Zero, nil):ToEffect()
 			:SetTimeout(75)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, JAR_OF_MANNA.SpawnManaOnDeath)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, JAR_OF_MANNA.SpawnManaOnDeath)
 
 ---@param effect EntityEffect
 function JAR_OF_MANNA:MannaPickup(effect)

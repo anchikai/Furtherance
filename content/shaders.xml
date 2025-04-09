@@ -28,8 +28,7 @@
                 TexCoord0 = TexCoord;
                 gl_Position = Transform * vec4(Position.xyz, 1.0);
             }
-        ]]>
-        </vertex>
+        ]]></vertex>
         <fragment>
             <![CDATA[#version 150
             varying lowp vec4 Color0;
@@ -42,18 +41,17 @@
 
             void main(void)
             {
-                float partone = TexCoord0.y * (1-FlipFactorOut);
-                float parttwo = ((RenderDataOut.y/RenderDataOut.z)-TexCoord0.y) * FlipFactorOut;
-                float FlipValue = partone+parttwo;
-                float MirrorFactor = 1 * (1 - FlipFactorOut) + 0.7 * FlipFactorOut;
-                vec4 Color = Color0 * texture2D(Texture0, vec2( TexCoord0.x,FlipValue) );
+				vec2 uv=TexCoord0*(RenderDataOut.zw/RenderDataOut.xy);
+				uv.y = (1.0-FlipFactorOut)*uv.y + (1.0-uv.y)*FlipFactorOut;
+				vec2 out_tex_coord=uv/(RenderDataOut.zw/RenderDataOut.xy);
+                vec4 Color = Color0 * texture2D(Texture0, out_tex_coord );
+				float MirrorFactor = 1 * (1 - FlipFactorOut) + 0.7 * FlipFactorOut;
                 Color.r *= 1.0f + FlipFactorOut;
                 Color.g *= 1.0f - (FlipFactorOut * 0.225f);
                 Color.b *= 1.0f - (FlipFactorOut * 0.225f);
                 gl_FragColor = Color*MirrorFactor;
             }
-        ]]>
-        </fragment>
+        ]]></fragment>
     </shader>
 	 <shader name="AltF4PowerDown">
          <parameters>
