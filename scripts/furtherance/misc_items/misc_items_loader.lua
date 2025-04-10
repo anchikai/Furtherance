@@ -1,13 +1,6 @@
 local Mod = Furtherance
 
----@param tab table
----@param path string
-local function loopInclude(tab, path)
-	path = "scripts.furtherance.misc_items." .. path
-	for _, fileName in pairs(tab) do
-		Mod.Include(path .. "." .. fileName)
-	end
-end
+local prefix = "scripts.furtherance.misc_items."
 
 --#region Collectibles
 
@@ -50,7 +43,7 @@ local collectibles = {
 	"zzzzoptionszzzz",
 }
 
-loopInclude(collectibles, "collectibles")
+Mod.LoopInclude(collectibles, prefix .. "collectibles")
 
 --#endregion
 
@@ -72,7 +65,7 @@ local keyboard = {
 	"key_tilde",
 }
 
-loopInclude(keyboard, "collectibles.isaacs_keyboard")
+Mod.LoopInclude(keyboard, prefix .. "collectibles.isaacs_keyboard")
 
 --#endregion
 
@@ -87,7 +80,7 @@ local astrological = {
 	"vesta"
 }
 
-loopInclude(astrological, "collectibles.astrological_signs")
+Mod.LoopInclude(astrological, prefix .. "collectibles.astrological_signs")
 
 --#endregion
 
@@ -104,7 +97,7 @@ local trinkets = {
 	"slick_worm"
 }
 
-loopInclude(trinkets, "trinkets")
+Mod.LoopInclude(trinkets, prefix .. "trinkets")
 
 --#endregion
 
@@ -124,6 +117,6 @@ local pickups = {
 	"unlucky_penny"
 }
 
-loopInclude(pickups, "pickups")
+Mod.LoopInclude(pickups, prefix .. "pickups")
 
 --#endregion

@@ -14,36 +14,78 @@ MUDDLED_CROSS.CHARGE_FRACTION_PER_KILL = 6
 local FIVE_SECONDS = 150
 local HALF_FIVE_SECONDS = FIVE_SECONDS / 2
 
+MUDDLED_CROSS.TARGET_FLIP = 0
+MUDDLED_CROSS.FLIP_FACTOR = 0
+MUDDLED_CROSS.PAUSE_MENU_STOP_FLIP = false
+MUDDLED_CROSS.FLIP_X_SPEED = 0.15
+
+function MUDDLED_CROSS:FlipX()
+	local room = Mod.Room()
+	local effects = room:GetEffects()
+	local isFlipped = effects:HasCollectibleEffect(MUDDLED_CROSS.ID)
+	if not isFlipped then
+		effects:AddCollectibleEffect(MUDDLED_CROSS.ID)
+		Mod.SFXMan:Play(MUDDLED_CROSS.SFX_FLIP)
+	else
+		effects:RemoveCollectibleEffect(MUDDLED_CROSS.ID, -1)
+		Mod.SFXMan:Play(MUDDLED_CROSS.SFX_UNFLIP)
+	end
+end
+
+function MUDDLED_CROSS:FlipY()
+	MUDDLED_CROSS.TARGET_FLIP = 1
+	Mod.SFXMan:Play(MUDDLED_CROSS.SFX_FLIP)
+end
+
+function MUDDLED_CROSS:TryFlip(player)
+	local isPeter = Mod.Character.PETER_B:IsPeterB(player)
+	local room = Mod.Room()
+	local enemiesActive = room:GetAliveEnemiesCount() > 0
+	local isXFlipped = MUDDLED_CROSS.FLIP.FLIP_FACTOR >= 0.95
+
+	if not MUDDLED_CROSS.SPECIAL_ROOM_FLIP:IsFlippedRoom(Mod.Level():GetCurrentRoomIndex())
+		and (not isPeter or not enemiesActive)
+		and not isXFlipped
+		and Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ALLOWED_SPECIAL_ROOMS[room:GetType()]
+	then
+		MUDDLED_CROSS:FlipY()
+		return true
+	elseif isPeter then
+		MUDDLED_CROSS:FlipX()
+		return true
+	end
+
+	return false
+end
+
 ---@param player EntityPlayer
 ---@param flags UseFlag
 function MUDDLED_CROSS:OnUse(itemID, rng, player, flags)
-	if MUDDLED_CROSS.FLIP.FLIP_FACTOR > 0.05 and MUDDLED_CROSS.FLIP.FLIP_FACTOR < 0.95 then
-		return {Discharge = false, Remove = false, ShowAnim = false}
-	end
 	if not Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) then
-		Mod.Game:ShakeScreen(10)
-		local room = Mod.Room()
-		local effects = room:GetEffects()
-		local isFlipped = effects:HasCollectibleEffect(MUDDLED_CROSS.ID)
-		if not isFlipped then
-			effects:AddCollectibleEffect(MUDDLED_CROSS.ID)
-			Mod.SFXMan:Play(MUDDLED_CROSS.SFX_FLIP)
+		local flipped = MUDDLED_CROSS:TryFlip(player)
+		if not flipped then
+			return {Discharge = false, Remove = false, ShowAnim = false}
 		else
-			effects:RemoveCollectibleEffect(MUDDLED_CROSS.ID, -1)
-			Mod.SFXMan:Play(MUDDLED_CROSS.SFX_UNFLIP)
+			Mod.Game:ShakeScreen(10)
 		end
 	end
-	local extraCooldown = Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) and FIVE_SECONDS or 0
-	Mod:ForEachEnemy(function (npc)
-		if Mod:GetData(npc).PeterFlipped then
-			extraCooldown = extraCooldown + HALF_FIVE_SECONDS
-		end
-	end, false)
-	Mod:DelayOneFrame(function()
-		local tempEffect = Mod.Room():GetEffects():GetCollectibleEffect(MUDDLED_CROSS.ID)
-		tempEffect.Cooldown = tempEffect.Cooldown + extraCooldown
-		player:GetEffects():RemoveCollectibleEffect(MUDDLED_CROSS.ID, -1)
-	end)
+	if Mod.Character.PETER_B:IsPeterB(player) then
+		local extraCooldown = Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) and FIVE_SECONDS or 0
+		Mod:ForEachEnemy(function(npc)
+			if Mod:GetData(npc).PeterFlipped then
+				extraCooldown = extraCooldown + HALF_FIVE_SECONDS
+			end
+		end, false)
+		Mod:DelayOneFrame(function()
+			local tempEffect = Mod.Room():GetEffects():GetCollectibleEffect(MUDDLED_CROSS.ID)
+			tempEffect.Cooldown = tempEffect.Cooldown + extraCooldown
+			player:GetEffects():RemoveCollectibleEffect(MUDDLED_CROSS.ID, -1)
+		end)
+	else
+		Mod:DelayOneFrame(function()
+			player:GetEffects():RemoveCollectibleEffect(MUDDLED_CROSS.ID, -1)
+		end)
+	end
 	return true
 end
 
@@ -100,7 +142,7 @@ function MUDDLED_CROSS:ChargeOnEnemyDeath(ent)
 			effects:RemoveCollectibleEffect(MUDDLED_CROSS.ID, -1)
 		end
 	else
-		Mod:ForEachPlayer(function (player)
+		Mod:ForEachPlayer(function(player)
 			local slots = Mod:GetActiveItemCharges(player, MUDDLED_CROSS.ID)
 			local MAX_CHARGE = MUDDLED_CROSS.MAX_CHARGES
 			local CHARGE_FRACTION = MUDDLED_CROSS.CHARGE_FRACTION_PER_KILL
@@ -115,7 +157,8 @@ function MUDDLED_CROSS:ChargeOnEnemyDeath(ent)
 			end
 			for _, slotData in ipairs(slots) do
 				if slotData.Charge < MAX_CHARGE then
-					player:SetActiveCharge(min(MAX_CHARGE, slotData.Charge + floor(MUDDLED_CROSS.MAX_CHARGES / CHARGE_FRACTION)), slotData.Slot)
+					player:SetActiveCharge(
+					min(MAX_CHARGE, slotData.Charge + floor(MUDDLED_CROSS.MAX_CHARGES / CHARGE_FRACTION)), slotData.Slot)
 				end
 			end
 		end)
@@ -124,218 +167,39 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, MUDDLED_CROSS.ChargeOnEnemyDeath)
 
+function MUDDLED_CROSS:AnimateFlip()
+	local isFlipped = MUDDLED_CROSS.TARGET_FLIP == 1
+	MUDDLED_CROSS.PAUSE_MENU_STOP_FLIP = Mod.Game:IsPauseMenuOpen()
+
+	if not MUDDLED_CROSS.PAUSE_MENU_STOP_FLIP then
+		if not isFlipped then
+			--Should only ever be true if done within via instant room change (i.e. debug console) or restarting the game via holding R
+			if (Mod.Game:IsPaused() and RoomTransition.GetTransitionMode() == 0) or Mod.Game:GetFrameCount() == 0 then
+				MUDDLED_CROSS.FLIP_FACTOR = 0
+				return
+			end
+		end
+		local lerp = Mod:Lerp(MUDDLED_CROSS.FLIP_FACTOR, isFlipped and 1 or 0, MUDDLED_CROSS.FLIP_X_SPEED)
+		MUDDLED_CROSS.FLIP_FACTOR = Mod:Clamp(lerp, 0, 1)
+	end
+
+	if MUDDLED_CROSS.FLIP_FACTOR >= 0.5 and MUDDLED_CROSS.TARGET_FLIP == 1 then
+		Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP:TryFlipSpecialRoom()
+		MUDDLED_CROSS.TARGET_FLIP = 0
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_RENDER, MUDDLED_CROSS.AnimateFlip)
+
+function MUDDLED_CROSS:XFlipShader(shaderName)
+	if shaderName == "Peter Room Type Flip" then
+		return { FlipFactor = MUDDLED_CROSS.PAUSE_MENU_STOP_FLIP and 0 or MUDDLED_CROSS.FLIP_FACTOR }
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, MUDDLED_CROSS.XFlipShader)
+
 Mod.Include("scripts.furtherance.characters.peter_b.flip")
+Mod.Include("scripts.furtherance.characters.peter_b.special_room_flip")
 
 return MUDDLED_CROSS
-
---[[ local game = Game()
-
-Mod:SaveModData({
-	Flipped = false,
-	MuddledCrossBackdropType = Mod.SaveNil
-})
-
-local FlipSFX = Isaac.GetSoundIdByName("PeterFlip")
-local UnflipSFX = Isaac.GetSoundIdByName("PeterUnflip")
-
-local function clamp(value, min, max)
-	return math.min(math.max(value, min), max)
-end
-
-local function switchBackground(isFlipped)
-	local level = game:GetLevel()
-	local room = game:GetRoom()
-	if isFlipped == true then
-		Mod.MuddledCrossBackdropType = room:GetBackdropType()
-		if room:GetType() == RoomType.ROOM_DEFAULT or room:GetType() == RoomType.ROOM_TREASURE then
-			if level:GetStageType() <= StageType.STAGETYPE_AFTERBIRTH then
-				if level:GetStage() < LevelStage.STAGE4_3 then
-					game:ShowHallucination(0, Mod.MuddledCrossBackdropType + 3)
-				elseif level:GetStage() ~= LevelStage.STAGE4_3 and level:GetStage() < LevelStage.STAGE6 then
-					game:ShowHallucination(0, Mod.MuddledCrossBackdropType + 2)
-				end
-			elseif level:GetStageType() >= StageType.STAGETYPE_REPENTANCE then
-				if level:GetStage() < LevelStage.STAGE4_1 then
-					if (Mod.MuddledCrossBackdropType >= BackdropType.MAUSOLEUM2 and Mod.MuddledCrossBackdropType <= BackdropType.MAUSOLEUM4) or Mod.MuddledCrossBackdropType == BackdropType.MAUSOLEUM then
-						game:ShowHallucination(0, BackdropType.CORPSE)
-					else
-						game:ShowHallucination(0, Mod.MuddledCrossBackdropType + 1)
-					end
-				end
-			end
-		end
-	elseif isFlipped == false then
-		game:ShowHallucination(0, Mod.MuddledCrossBackdropType)
-	end
-	SFXManager():Stop(SoundEffect.SOUND_DEATH_CARD)
-end
-
-function Mod:UseFlippedCross(_, _, player)
-	game:ShakeScreen(10)
-
-	Mod.Flipped = not Mod.Flipped
-	switchBackground(Mod.Flipped)
-
-	if Mod.Flipped == true then
-		SFXManager():Play(FlipSFX)
-	else
-		SFXManager():Play(UnflipSFX)
-	end
-	return true
-end
-
-Mod:AddCallback(ModCallbacks.MC_USE_ITEM, Mod.UseFlippedCross, CollectibleType.COLLECTIBLE_MUDDLED_CROSS)
-
-function Mod:RoomPersist()
-	if Mod.Flipped == true then
-		switchBackground(true)
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.RoomPersist)
-
-function Mod:UltraSecretPool(pool, decrease, seed)
-	if Mod.Flipped == true then
-		if Rerolled ~= true then
-			Rerolled = true
-			return game:GetItemPool():GetCollectible(ItemPoolType.POOL_ULTRA_SECRET, false, seed,
-				CollectibleType.COLLECTIBLE_NULL)
-		end
-		Rerolled = false
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_PRE_GET_COLLECTIBLE, Mod.UltraSecretPool)
-
-function Mod:DoubleStuff(pickup)
-	local room = game:GetRoom()
-	if pickup.FrameCount ~= 1 or Mod.Flipped ~= true then
-		return
-	end
-	for i = 0, game:GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(i)
-		if pickup.SpawnerType ~= EntityType.ENTITY_PLAYER then
-			pickup.SpawnerEntity = player
-			pickup.SpawnerType = EntityType.ENTITY_PLAYER
-			pickup.SpawnerVariant = player.Variant
-			if Mod.Flipped and room:IsFirstVisit() then
-				local newItem = Isaac.Spawn(EntityType.ENTITY_PICKUP, pickup.Variant, 0,
-					Isaac.GetFreeNearPosition(pickup.Position, 80), Vector.Zero, player):ToPickup()
-				newItem.Price = pickup.Price
-				newItem.OptionsPickupIndex = pickup.OptionsPickupIndex
-			end
-
-			break
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, Mod.DoubleStuff)
-
-function Mod:HealthDrain(player)
-	if Mod.Flipped == true and player:GetHearts() > 1 and game:GetFrameCount() ~= 0 then
-		local drainSpeed
-		if player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) and player:GetName() == "PeterB" then
-			drainSpeed = 420
-		else
-			drainSpeed = 210
-		end
-		if game:GetFrameCount() % drainSpeed == 0 then
-			player:AddHearts(-1)
-			local blood = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_RED, 0, player.Position,
-				Vector.Zero, player):ToEffect()
-			blood.Scale = 1.5
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.HealthDrain)
-
-function Mod:TougherEnemies(entity)
-	if Mod.Flipped ~= true then return end
-
-	for i = 0, game:GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(i)
-		local data = Mod:GetData(player)
-		if entity:IsActiveEnemy(false) and entity:IsVulnerableEnemy() then
-			if data.DamageTimeout == nil then
-				data.DamageTimeout = false
-			elseif data.DamageTimeout == true then
-				data.DamageTimeout = false
-				entity:SetColor(Color(0.709, 0.0196, 0.0196, 1, 0.65, 0, 0), 1, 1, false, false)
-				return false
-			else
-				data.DamageTimeout = true
-			end
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, Mod.TougherEnemies)
-
-
-local flipFactor = 0
-function Mod:NewFloor()
-	if Mod.Flipped and not newGame then
-		Mod.Flipped = false
-		flipFactor = 0
-	end
-	newGame = false
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, Mod.NewFloor)
-
-local pauseTime = 0
-local pausedFixed = false
-function Mod:AnimateFlip()
-	local speed = 0.05
-	if Furtherance.FlipSpeed == 1 then
-		speed = 0.0172413793
-	elseif Furtherance.FlipSpeed == 2 then
-		speed = 0.05
-	elseif Furtherance.FlipSpeed == 3 then
-		speed = 0.1
-	end
-
-	local renderFlipped = Mod.Flipped and not pausedFixed
-	if renderFlipped == true then
-		flipFactor = flipFactor + speed
-	elseif renderFlipped == false then
-		flipFactor = flipFactor - speed
-	end
-	flipFactor = clamp(flipFactor, 0, 1)
-
-	if game:IsPaused() then
-		pauseTime = math.min(pauseTime + 1, 26)
-	else
-		pauseTime = 0
-	end
-	if Mod.Flipped and pauseTime == 26 then
-		pausedFixed = true
-	elseif pausedFixed and not game:IsPaused() then
-		pausedFixed = false
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_RENDER, Mod.AnimateFlip)
-
--- Thank you im_tem for the shader!!
-function Mod:PeterFlip(name)
-	if name == 'Peter Flip' then
-		return { FlipFactor = flipFactor }
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, Mod.PeterFlip)
-
-function Mod:ResetFlipped(continued)
-	pausedFixed = false
-	if not continued and Mod.Flipped then
-		switchBackground(false)
-		flipFactor = 0
-		Mod.Flipped = false
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, Mod.ResetFlipped)
- ]]

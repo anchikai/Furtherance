@@ -1,13 +1,6 @@
 local Mod = Furtherance
 
----@param tab table
----@param path string
-local function loopInclude(tab, path)
-	path = "scripts.furtherance.unlocks.unlocks_" .. path
-	for _, fileName in pairs(tab) do
-		Mod.Include(path .. "." .. fileName)
-	end
-end
+local prefix = "scripts.furtherance.unlocks.unlocks_"
 
 --#region Leah
 
@@ -27,7 +20,7 @@ local leah = {
 	"exsanguination"
 }
 
-loopInclude(leah, "leah")
+Mod.LoopInclude(leah, prefix .. "leah")
 
 --#endregion
 
@@ -43,7 +36,7 @@ local leah_b = {
 	"moon_hearts",
 }
 
-loopInclude(leah_b, "leah_b")
+Mod.LoopInclude(leah_b, prefix .. "leah_b")
 
 --#endregion
 
@@ -65,7 +58,7 @@ local peter = {
 	"severed_ear",
 }
 
-loopInclude(peter, "peter")
+Mod.LoopInclude(peter, prefix .. "peter")
 
 --#endregion
 
@@ -80,7 +73,7 @@ local peter_b = {
 	"trepanation",
 }
 
-loopInclude(peter_b, "peter_b")
+Mod.LoopInclude(peter_b, prefix .. "peter_b")
 
 --#endregion
 
@@ -101,7 +94,7 @@ local miriam = {
 	"wormwood_leaf",
 }
 
-loopInclude(miriam, "miriam")
+Mod.LoopInclude(miriam, prefix .. "miriam")
 
 --#endregion
 
@@ -118,7 +111,7 @@ local miriam_b = {
 	"spiritual_wound",
 }
 
-loopInclude(miriam_b, "miriam_b")
+Mod.LoopInclude(miriam_b, prefix .. "miriam_b")
 
 --#endregion
 

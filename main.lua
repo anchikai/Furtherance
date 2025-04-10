@@ -32,6 +32,12 @@ Furtherance:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function()
 	Furtherance.GENERIC_RNG:SetSeed(seed)
 end)
 
+function Furtherance:GetAndAdvanceGenericRNGSeed()
+	local seed = Mod.GENERIC_RNG:GetSeed()
+	Mod.GENERIC_RNG:Next()
+	return seed
+end
+
 Furtherance.RANGE_BASE_MULT = 40
 
 Furtherance.REPLACER_EFFECT = Isaac.GetEntityVariantByName("Furtherance PRE_ENTITY_SPAWN Replacement")
@@ -100,9 +106,7 @@ function Furtherance.Include(path)
 	return result
 end
 
----@param tab table
----@param path string
-local function loopInclude(tab, path)
+function Furtherance.LoopInclude(tab, path)
 	for _, fileName in pairs(tab) do
 		Furtherance.Include(path .. "." .. fileName)
 	end
@@ -159,12 +163,12 @@ local config = {
 	"mcm_setup",
 }
 
-loopInclude(helpers, "scripts.helpers")
+Mod.LoopInclude(helpers, "scripts.helpers")
 Dump = include("scripts.helpers.everything_function")
 InputHelper = include("scripts.helpers.vendor.inputhelper")
-loopInclude(tools, "scripts.tools")
-loopInclude(core, "scripts.furtherance.core")
-loopInclude(config, "scripts.furtherance.config")
+Mod.LoopInclude(tools, "scripts.tools")
+Mod.LoopInclude(core, "scripts.furtherance.core")
+Mod.LoopInclude(config, "scripts.furtherance.config")
 
 Furtherance.TearModifier = include("scripts.furtherance.core.tear_modifiers")
 
@@ -191,11 +195,11 @@ local characters = {
 	"miriam_b.polarity_shift"
 }
 
-loopInclude(characters, "scripts.furtherance.characters")
+Mod.LoopInclude(characters, "scripts.furtherance.characters")
 
 local challenges = {}
 
-loopInclude(challenges, "scripts.furtherance.challenes")
+Mod.LoopInclude(challenges, "scripts.furtherance.challenes")
 
 Mod.Include("scripts.furtherance.unlocks.unlock_loader")
 Mod.Include("scripts.furtherance.misc_items.misc_items_loader")
@@ -226,6 +230,7 @@ else
 end
 
 Furtherance.Include = nil
+Furtherance.LoopInclude = nil
 
 --[[
 -- Floor Generation

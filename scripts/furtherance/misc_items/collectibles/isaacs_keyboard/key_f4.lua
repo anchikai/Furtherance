@@ -278,9 +278,9 @@ end
 Mod:AddPriorityCallback(ModCallbacks.MC_POST_NPC_INIT, CallbackPriority.IMPORTANT, F4_KEY.Error404BossNotFound)
 
 function F4_KEY:EndAltF4Effect()
-	if Mod.Room():IsCurrentRoomLastBoss() then
+	if isPoweredDown and Mod.Room():IsCurrentRoomLastBoss() then
 		F4_KEY:StopAltF4()
-		Mod.MusicMan:Play(Music.MUSIC_BOSS_OVER, 1)
+		Mod.Room():PlayMusic()
 		Mod.MusicMan:UpdateVolume()
 	end
 end
@@ -320,8 +320,10 @@ end)
 
 for _, variant in ipairs(environmentEffects) do
 	Mod:AddCallback(ModCallbacks.MC_PRE_EFFECT_UPDATE, function(_, ent)
-		ent.Velocity = Vector.Zero
-		ent:GetSprite():Stop()
+		if isPoweredDown then
+			ent.Velocity = Vector.Zero
+			ent:GetSprite():Stop()
+		end
 	end, variant)
 end
 
@@ -344,9 +346,11 @@ for _, callback in ipairs(collisionCallbacks) do
 end
 
 for _, sfx in ipairs(stopSomeLoopingSFX) do
-	Mod:AddCallback(ModCallbacks.MC_PRE_SFX_PLAY, function()
-		return false
-	end, sfx)
+	if isPoweredDown then
+		Mod:AddCallback(ModCallbacks.MC_PRE_SFX_PLAY, function()
+			return false
+		end, sfx)
+	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_PRE_MUSIC_PLAY, function()

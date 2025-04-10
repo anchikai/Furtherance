@@ -10,6 +10,7 @@ local MUDDLED_CROSS = Mod.Item.MUDDLED_CROSS
 Furtherance.Item.MUDDLED_CROSS.FLIP = FLIP
 
 FLIP.FLIP_FACTOR = 0
+FLIP.FLIP_SPEED = 0.2
 FLIP.PAUSE_MENU_STOP_FLIP = false
 FLIP.PAUSE_ENEMIES_DURING_FLIP = false
 FLIP.FREEZE_ROOM_EFFECT_COOLDOWN = 0
@@ -129,7 +130,7 @@ function FLIP:TryGetEnemy(ent)
 end
 
 ---@param ent Entity
-function FLIP:IsEntityInReflection(ent)
+function FLIP:IsEntitySubmerged(ent)
 	local player = Mod:TryGetPlayer(ent)
 	local flipActive = MUDDLED_CROSS:IsRoomEffectActive()
 	local fromEnemy = FLIP:TryGetEnemy(ent)
@@ -329,7 +330,7 @@ function FLIP:AdjustEnemyGridCollision(npc)
 	local data = Mod:GetData(npc)
 	if not data.PeterFlipOGGridColl then return end
 	if FLIP:IsFlippedEnemy(npc) then
-		if FLIP:IsEntityInReflection(npc) then
+		if FLIP:IsEntitySubmerged(npc) then
 			npc.GridCollisionClass = GridCollisionClass.COLLISION_SOLID
 		else
 			npc.GridCollisionClass = data.PeterFlipOGGridColl
@@ -420,7 +421,7 @@ function FLIP:GridCollision(ent, gridIndex, gridEnt)
 			or gridEnt:ToTNT()
 			or gridEnt:ToPit()
 		)
-		and FLIP:IsEntityInReflection(ent)
+		and FLIP:IsEntitySubmerged(ent)
 	then
 		return true
 	end
@@ -452,7 +453,7 @@ Mod:AddPriorityCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, CallbackPriority.IMPORT
 ---@param ent Entity
 function FLIP:PreventGridDamage(gridEnt, ent, _, _)
 	if PETER_B:UsePeterFlipRoomEffects()
-		and FLIP:IsEntityInReflection(ent)
+		and FLIP:IsEntitySubmerged(ent)
 		and not gridEnt:ToSpikes()
 			or (
 				Mod.Room():GetType() ~= RoomType.ROOM_SACRIFICE
@@ -472,7 +473,7 @@ function FLIP:PreventNoCollGridUpdate(gridEnt)
 	for _, ent in ipairs(Isaac.GetRoomEntities()) do
 		if (ent:ToPlayer() or ent:ToNPC())
 			and ent.Position:DistanceSquared(gridEnt.Position) <= 40 ^ 2
-			and FLIP:IsEntityInReflection(ent)
+			and FLIP:IsEntitySubmerged(ent)
 		then
 			return false
 		end
@@ -494,9 +495,9 @@ function FLIP:PressurePlateUpdate(gridEnt)
 		local grid_save = Mod:RoomSave(gridEnt:GetGridIndex())
 		local validPlayerOnPlate = false
 		for _, ent in ipairs(Isaac.FindInRadius(gridEnt.Position, 40, EntityPartition.PLAYER)) do
-			if FLIP:IsEntityInReflection(ent) and gridEnt.State == 0 and not validPlayerOnPlate then
+			if FLIP:IsEntitySubmerged(ent) and gridEnt.State == 0 and not validPlayerOnPlate then
 				gridEnt.State = 3
-			elseif not FLIP:IsEntityInReflection(ent) and gridEnt.State == 3 and not grid_save.PeterBPlateTriggered then
+			elseif not FLIP:IsEntitySubmerged(ent) and gridEnt.State == 3 and not grid_save.PeterBPlateTriggered then
 				validPlayerOnPlate = true
 				gridEnt.State = 0
 				grid_save.PeterBPlateTriggered = true
@@ -628,14 +629,6 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_ROOM_TRIGGER_EFFECT_REMOVED, FLIP.OnLoseFlipEffect)
 
 function FLIP:AnimateFlip()
-	--local speed = 0.025
-	--[[ if Furtherance.FlipSpeed == 1 then
-		speed = 0.0172413793
-	elseif Furtherance.FlipSpeed == 2 then
-		speed = 0.05
-	elseif Furtherance.FlipSpeed == 3 then
-		speed = 0.1
-	end ]]
 	local isFlipped = Mod.Room():GetEffects():HasCollectibleEffect(MUDDLED_CROSS.ID)
 	FLIP.PAUSE_MENU_STOP_FLIP = Mod.Game:IsPauseMenuOpen()
 
@@ -647,7 +640,7 @@ function FLIP:AnimateFlip()
 				return
 			end
 		end
-		local lerp = Mod:Lerp(FLIP.FLIP_FACTOR, isFlipped and 1 or 0, 0.2)
+		local lerp = Mod:Lerp(FLIP.FLIP_FACTOR, isFlipped and 1 or 0, FLIP.FLIP_SPEED)
 		FLIP.FLIP_FACTOR = Mod:Clamp(lerp, 0, 1)
 	end
 
@@ -658,6 +651,36 @@ function FLIP:AnimateFlip()
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_RENDER, FLIP.AnimateFlip)
+
+---@param ent EntityNPC | EntityPlayer
+function FLIP:FlashNearFlipEnd(ent)
+	if PETER_B:UsePeterFlipRoomEffects()
+		and not FLIP:IsEntitySubmerged(ent)
+	then
+		local room = Mod.Room():GetEffects()
+		if room:HasCollectibleEffect(MUDDLED_CROSS.ID) then
+			local cooldown = room:GetCollectibleEffect(MUDDLED_CROSS.ID).Cooldown
+			if cooldown > 0 and cooldown < 60 and cooldown % 15 == 0 then
+				ent:SetColor(STATUS_COLOR, 15, 10, true, false)
+			end
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, FLIP.FlashNearFlipEnd)
+Mod:AddCallback(ModCallbacks.MC_PRE_NPC_UPDATE, FLIP.FlashNearFlipEnd)
+
+function FLIP:BeepNearFlipEnd()
+	local room = Mod.Room():GetEffects()
+	if room:HasCollectibleEffect(MUDDLED_CROSS.ID) then
+		local cooldown = room:GetCollectibleEffect(MUDDLED_CROSS.ID).Cooldown
+		if cooldown > 0 and cooldown < 60 and cooldown % 15 == 0 then
+			Mod.SFXMan:Play(SoundEffect.SOUND_BEEP)
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, FLIP.BeepNearFlipEnd)
 
 function FLIP:FreezeEnemiesDuringFlip()
 	local effects = Mod.Room():GetEffects()

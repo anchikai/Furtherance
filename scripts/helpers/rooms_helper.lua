@@ -78,6 +78,72 @@ function Furtherance:GetRandomRooms(count, rng, cond)
 	return randomRooms
 end
 
+local MAX_ATTEMPTS = 100
+---I'll do this later if I feel like it lol. Supposed to manage getting a valid random room that doesn't take from rooms you shouldn't have
+---
+---Examples: Mines-unique Challenge Room, Variant 100 Devil and Angel Rooms as well as their Number 6/Stairway versions with SubType 1
+--[[
+---@param roomType RoomType
+function Furtherance:GetRandomRoom(roomType, requiredDoors)
+	local numAttempts = 0
+	local roomConfigRoom
+	local minDifficulty = -1
+	local maxDifficulty = -1
+	local minVariant = -1
+	local maxVariant = -1
+
+	if roomType == RoomType.ROOM_DEVIL
+
+
+	repeat
+		local seed = Furtherance:GetAndAdvanceGenericRNGSeed()
+		roomConfigRoom = RoomConfigHolder.GetRandomRoom(seed, true, StbType.SPECIAL_ROOMS, roomType, Furtherance.Room():GetRoomShape(), -1, -1, 1, 10, requiredDoors)
+
+		numAttempts = numAttempts + 1
+	until numAttempts >= MAX_ATTEMPTS
+	return roomConfigRoom
+end ]]
+
+---Returns a RoomConfigRoom that should be able to replace the current room with the provided `roomType`
+---@param roomType RoomType
+function Furtherance:GenerateReplacementRoomConfig(roomType)
+	local room = Furtherance.Room()
+	local roomDesc = Furtherance.Level():GetCurrentRoomDesc()
+	local seed = roomDesc.SpawnSeed
+	local doors = roomDesc.Data.Doors
+	local allowedDoors = roomDesc.AllowedDoors
+	local requiredDoors = 0
+	local presentDoors = {}
+	for i = DoorSlot.NO_DOOR_SLOT + 1, DoorSlot.NUM_DOOR_SLOTS - 1 do
+		if Furtherance:HasBitFlags(doors, 1 << i) then
+			requiredDoors = requiredDoors + 1
+		end
+		if Furtherance:HasBitFlags(allowedDoors, 1 << i) then
+			presentDoors[i] = true
+		end
+	end
+	local numAttempts = 0
+	local roomConfigRoom
+	---Even if the number of required doors match, we must ensure the specific doors in the current room are available in this new room
+	repeat
+		local failedDoorCheck = false
+		roomConfigRoom = RoomConfigHolder.GetRandomRoom(seed, true, StbType.SPECIAL_ROOMS, roomType,
+			Furtherance.Room():GetRoomShape(), -1, -1, 1, 10, requiredDoors)
+		for doorSlot, _ in pairs(presentDoors) do
+			if not Furtherance:HasBitFlags(roomConfigRoom.Doors, 1 << doorSlot) then
+				failedDoorCheck = true
+				break
+			end
+		end
+		numAttempts = numAttempts + 1
+	until not failedDoorCheck or numAttempts >= MAX_ATTEMPTS
+	if numAttempts >= MAX_ATTEMPTS then
+		Furtherance:Log("Could not find a suitable replacement for", room:GetType(), "with type", roomType,
+			"after 100 attempts")
+	end
+	return roomConfigRoom
+end
+
 ---@param secondFloorOnly boolean
 function Furtherance:CheckValidPreWombChapter(secondFloorOnly)
 	local level = Furtherance.Level()
@@ -94,4 +160,18 @@ end
 -- For getting a speicifc group of rooms of the respective difficulty
 function Furtherance:GetRoomMode()
 	return Furtherance.Game:IsGreedMode() and 1 or 0
+end
+
+---@param func fun(doorSlot: GridEntityDoor)
+function Furtherance:ForEachDoor(func)
+	local room = Furtherance.Room()
+	for doorSlot = DoorSlot.NO_DOOR_SLOT + 1, DoorSlot.NUM_DOOR_SLOTS - 1 do
+		local door = room:GetDoor(doorSlot)
+		if door then
+			local result = func(door)
+			if result then
+				return true
+			end
+		end
+	end
 end
