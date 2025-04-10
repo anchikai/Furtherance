@@ -1,3 +1,8 @@
+
+--All credit for pickup price logic goes to Epiphany
+
+--#region Variables
+
 local Mod = Furtherance
 
 local ALMAGEST_SCRAP = {}
@@ -6,7 +11,23 @@ Furtherance.Trinket.ALMAGEST_SCRAP = ALMAGEST_SCRAP
 
 ALMAGEST_SCRAP.ID = Isaac.GetTrinketIdByName("Almagest Scrap")
 
---TODO: Planetarium Broken Heart price
+ALMAGEST_SCRAP.PickupPrice = {
+	ONE_BROKEN_HEART = -32,
+	TWO_BROKEN_HEARTS = -33
+}
+
+--#endregion
+
+--#region helpers
+
+function ALMAGEST_SCRAP:IsAlmagestPrice(pickup)
+	return pickup.Price == ALMAGEST_SCRAP.PickupPrice.ONE_BROKEN_HEART
+	or pickup.Price == ALMAGEST_SCRAP.PickupPrice.TWO_BROKEN_HEARTS
+end
+
+function ALMAGEST_SCRAP:ShouldUpdateTreasureRoom()
+	return PlayerManager.AnyoneHasTrinket(ALMAGEST_SCRAP.ID) and not PlayerManager.AnyoneHasTrinket(TrinketType.TRINKET_DEVILS_CROWN)
+end
 
 local function updateTreasureDoors(filename)
 	local room = Mod.Room()
@@ -22,13 +43,18 @@ local function updateTreasureDoors(filename)
 				local anim = sprite:GetAnimation()
 				sprite:Load(filename, true)
 				sprite:Play(anim)
+				Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, door.Position, Vector.Zero, nil)
 			end
 		end
 	end
 end
 
+--#endregion
+
+--#region Creating Planetarium
+
 function ALMAGEST_SCRAP:UpdateDoors()
-	if PlayerManager.AnyoneHasTrinket(ALMAGEST_SCRAP.ID) then
+	if ALMAGEST_SCRAP:ShouldUpdateTreasureRoom() then
 		updateTreasureDoors("gfx/grid/door_00x_planetariumdoor.anm2")
 	else
 		updateTreasureDoors("gfx/grid/door_02_treasureroomdoor.anm2")
@@ -37,141 +63,161 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_TRINKET_ADDED, ALMAGEST_SCRAP.UpdateDoors, ALMAGEST_SCRAP.ID)
 Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_TRINKET_REMOVED, ALMAGEST_SCRAP.UpdateDoors, ALMAGEST_SCRAP.ID)
-Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, ALMAGEST_SCRAP.UpdateDoors)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
+	if ALMAGEST_SCRAP:ShouldUpdateTreasureRoom() then
+		ALMAGEST_SCRAP:UpdateDoors()
+	end
+end)
 
-local updatedRoom = false
-
----@param room Room
 ---@param roomDesc RoomDescriptor
-function ALMAGEST_SCRAP:PreEnterPlanetarium(room, roomDesc)
-	if PlayerManager.AnyoneHasTrinket(ALMAGEST_SCRAP.ID)
-		and room:IsFirstVisit()
-		and room:GetType() == RoomType.ROOM_TREASURE
+function ALMAGEST_SCRAP:PreEnterPlanetarium(_, roomDesc)
+	if ALMAGEST_SCRAP:ShouldUpdateTreasureRoom()
+		and roomDesc.VisitedCount == 0
+		and roomDesc.Data.Type == RoomType.ROOM_TREASURE
 	then
 		local rng = PlayerManager.FirstTrinketOwner(ALMAGEST_SCRAP.ID):GetCollectibleRNG(ALMAGEST_SCRAP.ID)
 		local shape = roomDesc.Data.Shape
-		local allowedDoors = roomDesc.AllowedDoors
-		local numDoors = 0
-		for doorSlot = DoorSlot.NO_DOOR_SLOT + 1, DoorSlot.NUM_DOOR_SLOTS - 1 do
-			if Mod:HasBitFlags(allowedDoors, doorSlot) then
-				numDoors = numDoors + 1
-			end
-		end
 		local planetarium = RoomConfigHolder.GetRandomRoom(rng:GetSeed(), true, StbType.SPECIAL_ROOMS,
-			RoomType.ROOM_PLANETARIUM, shape,
-			-1, -1, 0, 10, numDoors, -1, Mod:GetRoomMode())
+			RoomType.ROOM_PLANETARIUM, shape, -1, -1, 0, 10, 1, 0)
 		roomDesc.Data = planetarium
-		updatedRoom = true
+		Mod:RoomSave(nil, false, roomDesc.ListIndex).AlmagestPlanetarium = true
 	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_PRE_NEW_ROOM, ALMAGEST_SCRAP.PreEnterPlanetarium)
 
+--#endregion
+
+--#region Handle custom prices
+
+---@param pickup EntityPickup
+function ALMAGEST_SCRAP:OnPriceInit(pickup)
+	pickup.ShopItemId = -3
+	pickup.AutoUpdatePrice = false
+end
+
+---@param pickup EntityPickup
+function ALMAGEST_SCRAP:TurnToAlmagestShopItem(pickup)
+	local pickup_save = Mod:PickupSave(pickup)
+	local quality = Mod.ItemConfig:GetCollectible(pickup.SubType).Quality
+	local price = ALMAGEST_SCRAP.PickupPrice.ONE_BROKEN_HEART
+	if quality >= 3 then
+		price = ALMAGEST_SCRAP.PickupPrice.TWO_BROKEN_HEARTS
+	end
+	pickup_save.Price = price
+	if PlayerManager.AnyoneHasTrinket(TrinketType.TRINKET_YOUR_SOUL)
+		and pickup_save.Price < 0 and pickup_save.Price ~= PickupPrice.PRICE_FREE and pickup_save.Price ~= PickupPrice.PRICE_SPIKES
+	then
+		pickup.Price = PickupPrice.PRICE_SOUL
+	else
+		pickup.Price = price
+	end
+	ALMAGEST_SCRAP:OnPriceInit(pickup)
+end
+
 function ALMAGEST_SCRAP:UpdateFirstVisitPlanetarium()
-	if updatedRoom then
-		updatedRoom = false
+	if ALMAGEST_SCRAP:ShouldUpdateTreasureRoom() then
 		updateTreasureDoors("gfx/grid/door_00x_planetariumdoor.anm2")
+	end
+	if Mod:RoomSave().AlmagestPlanetarium and Mod.Room():IsFirstVisit() then
+		for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
+			local pickup = ent:ToPickup()
+			---@cast pickup EntityPickup
+			ALMAGEST_SCRAP:TurnToAlmagestShopItem(pickup)
+		end
 	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, ALMAGEST_SCRAP.UpdateFirstVisitPlanetarium)
 
---[[
-
-function Mod:ConvertToPlanetarium()
-    if not isTreasureRoom() then return end
-
-    local room = game:GetRoom()
-    local level = game:GetLevel()
-    local roomIndex = level:GetCurrentRoomIndex()
-
-    if not convertedRooms[roomIndex] and not (room:IsFirstVisit() and someoneHasAlmagest()) then return end
-    convertedRooms[roomIndex] = true
-
-    game:ShowHallucination(0, BackdropType.PLANETARIUM)
-    SFXManager():Stop(SoundEffect.SOUND_DEATH_CARD)
-
-    local entities = Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, -1, false, false)
-
-    local itemConfig = Isaac.GetItemConfig()
-    for _, entity in ipairs(entities) do
-        local collectible = entity:ToPickup()
-        local data = Mod:GetData(collectible)
-        local configItem = itemConfig:GetCollectible(collectible.SubType)
-        collectible.Price = -10
-        collectible.AutoUpdatePrice = false
-        if configItem.Quality == 0 or configItem.Quality == 1 then
-            data.BrokenHeartsPrice = 1
-        elseif configItem.Quality == 2 or configItem.Quality == 3 then
-            data.BrokenHeartsPrice = 2
-        elseif configItem.Quality == 4 then
-            data.BrokenHeartsPrice = 3
-        end
-    end
+---@param pickup EntityPickup
+function ALMAGEST_SCRAP:OnPickupUpdate(pickup)
+	local pickup_save = Mod:PickupSave(pickup, true)
+	if pickup_save.Price then
+		if pickup.Touched == false then
+			--Purchased Flip pedestals are considered not touched
+			if pickup.SubType == 0 and pickup.Price == 0 then
+				pickup.Touched = true
+				return
+			end
+			if pickup_save.Price ~= pickup.Price then
+				pickup.Price = pickup_save.Price
+				ALMAGEST_SCRAP:OnPriceInit(pickup)
+			end
+			if pickup_save.Price < 0 and pickup_save.Price ~= PickupPrice.PRICE_FREE and pickup_save.Price ~= PickupPrice.PRICE_SPIKES
+				and PlayerManager.AnyoneHasTrinket(TrinketType.TRINKET_YOUR_SOUL)
+			then
+				if pickup.Price ~= PickupPrice.PRICE_SOUL then
+					pickup.Price = PickupPrice.PRICE_SOUL
+					ALMAGEST_SCRAP:OnPriceInit(pickup)
+				end
+			end
+		else
+			pickup_save.Price = nil
+		end
+	end
 end
-Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.ConvertToPlanetarium)
 
-local pickupOffset = Vector(0, 20)
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, ALMAGEST_SCRAP.OnPickupUpdate, PickupVariant.PICKUP_COLLECTIBLE)
 
-function Mod:RenderBrokenHeartPrice(pickup)
-    local data = Mod:GetData(pickup)
-    local room = game:GetRoom()
-    if data.BrokenHeartsPrice then
-        local sprite = Sprite()
-        sprite:Load("gfx/ui/ui_broken_heart_prices.anm2", true)
-        if data.BrokenHeartsPrice == 1 then
-            sprite:SetFrame("One", 0)
-        elseif data.BrokenHeartsPrice == 2 then
-            sprite:SetFrame("Two", 0)
-        elseif data.BrokenHeartsPrice == 3 then
-            sprite:SetFrame("Three", 0)
-        end
-        sprite:Render(room:WorldToScreenPosition(pickup.Position) + pickupOffset, Vector.Zero, Vector.Zero)
-    end
+---@function
+---@param pickup EntityPickup
+---@param ent Entity
+function ALMAGEST_SCRAP:OnCollision(pickup, ent)
+	local player = ent:ToPlayer()
+	if not player or player.Variant ~= 0 then
+		return
+	end
+	if player:GetPlayerType() == PlayerType.PLAYER_THESOUL_B then
+		player = player:GetMainTwin()
+	end
+
+	if ALMAGEST_SCRAP:IsAlmagestPrice(pickup) then
+		if pickup.SubType ~= CollectibleType.COLLECTIBLE_NULL
+			and not player:IsHoldingItem()
+			and player:CanPickupItem()
+			and player:IsExtraAnimationFinished()
+			and player.ItemHoldCooldown == 0
+			and pickup.Wait == 0
+		then
+			local brokenHearts = 1
+			if pickup.Price == ALMAGEST_SCRAP.PickupPrice.TWO_BROKEN_HEARTS then
+				brokenHearts = 2
+			end
+			player:AddBrokenHearts(brokenHearts)
+			Mod:KillChoice(pickup)
+		else
+			return true
+		end
+	end
 end
-Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_RENDER, Mod.RenderBrokenHeartPrice)
 
-local qualityPriceMap = {
-    [0] = 1,
-    [1] = 1,
-    [2] = 2,
-    [3] = 2,
-    [4] = 3,
-}
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, ALMAGEST_SCRAP.OnCollision, PickupVariant.PICKUP_COLLECTIBLE)
 
---[[function Mod:PlanetariumPickupSpawned(pickup)
-    if isTreasureRoom() and someoneHasAlmagest() and pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE then
-        local itemConfig = Isaac.GetItemConfig()
-        local pickupQuality = itemConfig:GetCollectible(pickup.SubType).Quality
+local PRICE_OFFSET = Vector(0, 10)
 
-        -- get the price for pickup to data
-        local data = Mod:GetData(pickup)
-        data.BrokenHeartsPrice = qualityPriceMap[pickupQuality]
-        print(data.BrokenHeartsPrice)
-        -- add a broken hearts price graphic (wip)
-    end
-
-
+---@param pickup EntityPickup
+function ALMAGEST_SCRAP:RenderBrokenHeartPrice(pickup, offset)
+	if ALMAGEST_SCRAP:IsAlmagestPrice(pickup) then
+		local data = Mod:GetData(pickup)
+		if not data.AlmagestHeartSprite then
+			local sprite = Sprite()
+			sprite:Load("gfx/ui/ui_broken_heart_prices.anm2", true)
+			if pickup.Price == ALMAGEST_SCRAP.PickupPrice.ONE_BROKEN_HEART then
+				sprite:SetFrame("One", 0)
+			else
+				sprite:SetFrame("Two", 0)
+			end
+			data.AlmagestHeartSprite = sprite
+		end
+		if Mod.Room():GetRenderMode() ~= RenderMode.RENDER_WATER_REFLECT then
+			local renderPos = Isaac.WorldToScreen(pickup.Position + pickup.PositionOffset) + offset
+			renderPos = renderPos + PRICE_OFFSET
+			data.AlmagestHeartSprite:Render(renderPos)
+		end
+	end
 end
-Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, Mod.PostPlanetariumPool)
 
-function Mod:PrePickupCollision(pickup, collider)
-    local player = collider:ToPlayer()
-    if not player then return end
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_RENDER, ALMAGEST_SCRAP.RenderBrokenHeartPrice, PickupVariant.PICKUP_COLLECTIBLE)
 
-    if isTreasureRoom() and someoneHasAlmagest() and pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE then
-        -- check whether the pickup's price
-        local data = Mod:GetData(pickup)
-        local price = data.BrokenHeartsPrice
-        if price == nil then
-            return nil
-        elseif player:GetBrokenHearts() >= price then
-            player:AddBrokenHearts(-price)
-            return nil
-        else
-            return false
-        end
-    end
-
-end
-Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, Mod.PrePickupCollision) ]]
+--#endregion

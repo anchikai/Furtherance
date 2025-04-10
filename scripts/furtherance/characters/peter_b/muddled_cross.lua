@@ -32,9 +32,16 @@ function MUDDLED_CROSS:FlipX()
 	end
 end
 
-function MUDDLED_CROSS:FlipY()
-	MUDDLED_CROSS.TARGET_FLIP = 1
-	Mod.SFXMan:Play(MUDDLED_CROSS.SFX_FLIP)
+function MUDDLED_CROSS:TryFlipY(player)
+	local successful = Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP:TryFlipSpecialRoom()
+	if not successful then
+		player:AnimateSad()
+		return false
+	else
+		MUDDLED_CROSS.TARGET_FLIP = 1
+		Mod.SFXMan:Play(MUDDLED_CROSS.SFX_FLIP)
+		return true
+	end
 end
 
 function MUDDLED_CROSS:TryFlip(player)
@@ -48,8 +55,7 @@ function MUDDLED_CROSS:TryFlip(player)
 		and not isXFlipped
 		and Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ALLOWED_SPECIAL_ROOMS[room:GetType()]
 	then
-		MUDDLED_CROSS:FlipY()
-		return true
+		return MUDDLED_CROSS:TryFlipY(player)
 	elseif isPeter then
 		MUDDLED_CROSS:FlipX()
 		return true
@@ -184,7 +190,7 @@ function MUDDLED_CROSS:AnimateFlip()
 	end
 
 	if MUDDLED_CROSS.FLIP_FACTOR >= 0.5 and MUDDLED_CROSS.TARGET_FLIP == 1 then
-		Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP:TryFlipSpecialRoom()
+		Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP:UpdateRoom()
 		MUDDLED_CROSS.TARGET_FLIP = 0
 	end
 end

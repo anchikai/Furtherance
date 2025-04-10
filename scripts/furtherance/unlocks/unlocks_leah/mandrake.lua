@@ -34,9 +34,7 @@ function MANDRAKE:SpawnFamiliarItem()
 				mandrakeSpawn.OptionsPickupIndex = optionIndex
 				Mod:GetData(mandrakeSpawn).MandrakeItem = true
 				if pickup:IsShopItem() then
-					Isaac.CreateTimer(function() mandrakeSpawn.Price = pickup.Price
-						mandrakeSpawn.ShopItemId = -1
-					end, 1, 1, true)
+					mandrakeSpawn:MakeShopItem(-1)
 				end
 			end
 		end

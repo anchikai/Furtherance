@@ -1,60 +1,84 @@
 local Mod = Furtherance
 
 ---Number 6 Devil Rooms (SubType 1)
-local function devilRoomMorph()
-	local seed = Mod:GetAndAdvanceGenericRNGSeed()
-	return RoomConfigHolder.GetRandomRoom(seed, true, StbType.SPECIAL_ROOMS, RoomType.ROOM_ANGEL, Furtherance.Room():GetRoomShape(), -1, -1, 1, 10, 1, 1)
+local function devilRoomFlip()
+	return RoomConfigHolder.GetRandomRoom(Mod.GENERIC_RNG:Next(), true, StbType.SPECIAL_ROOMS, RoomType.ROOM_ANGEL, Furtherance.Room():GetRoomShape(), -1, -1, 1, 10, 1, 1)
 end
 
-Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, devilRoomMorph, RoomType.ROOM_DEVIL)
+Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, devilRoomFlip, RoomType.ROOM_DEVIL)
 
 ---Stairway Angel Rooms (SubType 1)
-local function angelRoomMorph()
-	local seed = Mod:GetAndAdvanceGenericRNGSeed()
-	return RoomConfigHolder.GetRandomRoom(seed, true, StbType.SPECIAL_ROOMS, RoomType.ROOM_DEVIL, Furtherance.Room():GetRoomShape(), -1, -1, 1, 10, 1, 1)
+local function angelRoomFlip()
+	return RoomConfigHolder.GetRandomRoom(Mod.GENERIC_RNG:Next(), true, StbType.SPECIAL_ROOMS, RoomType.ROOM_DEVIL, Furtherance.Room():GetRoomShape(), -1, -1, 1, 10, 1, 1)
 end
 
-Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, angelRoomMorph, RoomType.ROOM_ANGEL)
+Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, angelRoomFlip, RoomType.ROOM_ANGEL)
 
----Normal Angel Room effect w/Birthright
-local function updateAngelItems(_, newRoomType)
-	if not PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.PETER_B) then return end
-	if newRoomType == RoomType.ROOM_ANGEL then
-		local pickupIndex
-		for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
-			local pickup = ent:ToPickup()
-			---@cast pickup EntityPickup
-			if not pickupIndex then
-				pickup:SetNewOptionsPickupIndex()
-				pickupIndex = pickup.OptionsPickupIndex
-			else
-				pickup.OptionsPickupIndex = pickupIndex
-			end
-			if pickup:IsShopItem() then
-				pickup.Price = 0
-			end
+local function birthrightAngelSteamSale(_, count, player, itemID, onlyTrue)
+	if itemID == CollectibleType.COLLECTIBLE_STEAM_SALE
+		and Mod.Character.PETER_B:IsPeterB(player)
+		and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
+	then
+		local room_save = Mod:RoomSave()
+		if room_save.MuddledCrossFlippedRoom
+			and room_save.MuddledCrossFlippedRoom[tostring(Mod.Level():GetCurrentRoomIndex())]
+			and Mod.Room():GetType() == RoomType.ROOM_ANGEL
+		then
+			return count + 1
 		end
 	end
 end
 
-Mod:AddCallback(Mod.ModCallbacks.POST_MUDDLED_CROSS_ROOM_FLIP, updateAngelItems, RoomType.ROOM_DEVIL)
+Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM, birthrightAngelSteamSale)
 
----Lost-style Devil Deals
-local function updateDevilItems(_, newRoomType)
-	if PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.PETER_B) then return end
-	if newRoomType == RoomType.ROOM_DEVIL then
-		local pickupIndex
-		for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
-			local pickup = ent:ToPickup()
-			---@cast pickup EntityPickup
-			if not pickupIndex then
-				pickup:SetNewOptionsPickupIndex()
-				pickupIndex = pickup.OptionsPickupIndex
-			else
-				pickup.OptionsPickupIndex = pickupIndex
+---@param pickup EntityPickup
+local function birthrightYourSoulPrice(_, pickup)
+	if Mod.Room():GetType() == RoomType.ROOM_DEVIL
+		and PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.PETER_B)
+	then
+		local room_save = Mod:RoomSave()
+		local data = Mod:GetData(pickup)
+		if room_save.MuddledCrossFlippedRoom
+			and room_save.MuddledCrossFlippedRoom[tostring(Mod.Level():GetCurrentRoomIndex())]
+			and not room_save.PeterBBirthrightPurchasedDevil
+			and not data.PeterBBirthrightIgnorePickup
+			and pickup:IsShopItem()
+		then
+			if pickup.Price ~= PickupPrice.PRICE_SOUL then
+				data.PeterBBirthrightFreePickup = true
+				pickup.Price = PickupPrice.PRICE_SOUL
+				pickup.AutoUpdatePrice = false
 			end
+		end
+		--Was made free through some other means, presumably
+		if data.PeterBBirthrightFreePickup and not pickup:IsShopItem() and not pickup.Touched then
+			data.PeterBBirthrightFreePickup = nil
+			data.PeterBBirthrightIgnorePickup = true
 		end
 	end
 end
 
-Mod:AddCallback(Mod.ModCallbacks.POST_MUDDLED_CROSS_ROOM_FLIP, updateDevilItems, RoomType.ROOM_ANGEL)
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, birthrightYourSoulPrice, PickupVariant.PICKUP_COLLECTIBLE)
+
+---@param pickup EntityPickup
+local function birthrightOnShopPurchase(_, pickup, collider)
+	local player = collider:ToPlayer()
+	if not player then return end
+	if Mod:GetData(pickup).PeterBBirthrightFreePickup then
+		local room_save = Mod:RoomSave()
+		room_save.PeterBBirthrightPurchasedDevil = true
+		for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
+			local data = Mod:GetData(ent)
+			if data.PeterBBirthrightFreePickup then
+				local _pickup = ent:ToPickup()
+				---@cast _pickup EntityPickup
+				_pickup.AutoUpdatePrice = true
+				data.PeterBBirthrightFreePickup = nil
+			end
+		end
+	elseif Mod:CanPlayerBuyShopItem(player, pickup) then
+		Mod:KillDevilPedestals(pickup)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, birthrightOnShopPurchase)

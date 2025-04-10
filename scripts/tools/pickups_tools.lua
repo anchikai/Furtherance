@@ -195,7 +195,7 @@ function Furtherance:KillDevilPedestals(ignoredPickup, filter)
 	local level = Mod.Level()
 	local isDarkRoom = level:GetStage() == LevelStage.STAGE6 and level:GetStageType() == StageType.STAGETYPE_ORIGINAL
 
-	Mod(Isaac.FindByType(EntityType.ENTITY_PICKUP), function(ent)
+	Mod:inverseiforeach(Isaac.FindByType(EntityType.ENTITY_PICKUP), function(ent)
 		local pickup = ent:ToPickup() ---@cast pickup EntityPickup
 		if GetPtrHash(pickup) ~= ignoredHash
 			and (Mod:IsDevilDealItem(pickup)

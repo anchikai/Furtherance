@@ -32,12 +32,6 @@ Furtherance:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function()
 	Furtherance.GENERIC_RNG:SetSeed(seed)
 end)
 
-function Furtherance:GetAndAdvanceGenericRNGSeed()
-	local seed = Mod.GENERIC_RNG:GetSeed()
-	Mod.GENERIC_RNG:Next()
-	return seed
-end
-
 Furtherance.RANGE_BASE_MULT = 40
 
 Furtherance.REPLACER_EFFECT = Isaac.GetEntityVariantByName("Furtherance PRE_ENTITY_SPAWN Replacement")

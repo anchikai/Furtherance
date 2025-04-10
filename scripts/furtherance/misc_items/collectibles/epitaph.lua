@@ -152,7 +152,7 @@ function EPITAPH:PostNewLevel()
 			table.remove(run_save.EpitaphTombstones, index)
 		end
 	end)
-	local rooms = Mod:GetRandomRooms(#tombstones, Mod.GENERIC_RNG, function(room)
+	local rooms = Mod:GetRandomRoomsOnFloor(#tombstones, Mod.GENERIC_RNG, function(room)
 		return room.Data.Type == RoomType.ROOM_DEFAULT
 	end)
 	for i, roomDesc in ipairs(rooms) do
@@ -430,7 +430,8 @@ function EPITAPH:DistanceBasedJingle(pos)
 		if not Mod.SFXMan:IsPlaying(EPITAPH.TOMBSTONE_JINGLE) then
 			Mod.SFXMan:Play(EPITAPH.TOMBSTONE_JINGLE, 1, 2, true, 1, 0)
 		end
-		local distanceRange = (distance - EPITAPH.JINGLE_MIN_VOLUME_DISTANCE) / ((EPITAPH.JINGLE_DISTANCE_THRESHOLD ^ 2) - EPITAPH.JINGLE_MIN_VOLUME_DISTANCE)
+		local distanceRange = (distance - EPITAPH.JINGLE_MIN_VOLUME_DISTANCE) /
+		((EPITAPH.JINGLE_DISTANCE_THRESHOLD ^ 2) - EPITAPH.JINGLE_MIN_VOLUME_DISTANCE)
 		local oppositeDistance = 1 - distanceRange
 		local volume = Mod:Clamp(oppositeDistance, 0, 1)
 		local musicVolume = Mod:Clamp(distanceRange, 0, 1)
