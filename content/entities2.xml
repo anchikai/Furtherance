@@ -33,7 +33,7 @@
 	<entity anm2path="rockheart.anm2" baseHP="0" boss="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Rock Heart" numGridCollisionPoints="24" shadowSize="17" stageHP="0" variant="10" subtype="226" /> -->
 	<entity anm2path="pickup_goldensack.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Golden Sack" numGridCollisionPoints="24" shadowSize="18" stageHP="0" variant="69" subtype="3" />
 	<entity anm2path="pickup_goldencard.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Golden Card" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="99" />
-	<entity anm2path="pickup_unluckypenny.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Unlucky Penny" numGridCollisionPoints="24" shadowSize="14" stageHP="0" variant="20" subtype="117" >
+	<entity anm2path="pickup_unluckypenny.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Unlucky Penny" numGridCollisionPoints="24" shadowSize="14" stageHP="0" variant="20" subtype="117">
 		<preload-snd id="200"/>
 	</entity>
 	<entity anm2path="pickup_chargedbomb.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Charged Bomb" numGridCollisionPoints="24" shadowSize="14" stageHP="0" variant="40" subtype="118">
@@ -56,7 +56,7 @@
 	</entity>
 
 	<!-- Effects -->
-	<entity anm2path="effect_polydipsia_puddle.anm2" baseHP="0" boss="0" champion="0" collisionDamage="1" collisionMass="0" collisionRadius="60" friction="1" id="1000" name="Polydipsia Puddle" numGridCollisionPoints="0" shadowSize="0" stageHP="0" variant="54" subtype="1" />
+	<entity anm2path="003.025_holy water.anm2" baseHP="0" boss="0" champion="0" collisionDamage="1" collisionMass="0" collisionRadius="60" friction="1" id="1000" name="Polydipsia Puddle" numGridCollisionPoints="0" shadowSize="0" stageHP="0" variant="54" subtype="1" />
 	<entity anm2path="effect_spiritual_wound_target.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="0" collisionRadius="60" friction="1" id="1000" name="Spiritual Wound Target" numGridCollisionPoints="0" shadowSize="0" stageHP="0" variant="7886" />
 	<entity anm2path="effect_keystothekingdom.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="0" collisionRadius="60" friction="1" id="1000" name="Keys to the Kingdom Effects" numGridCollisionPoints="0" shadowSize="0" stageHP="0" variant="7887" />
 	<entity anm2path="effect_manna_orb.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="0" collisionRadius="12" friction="1" id="1000" name="Manna Orb" numGridCollisionPoints="0" shadowSize="0" stageHP="0" variant="7888" />
@@ -64,4 +64,5 @@
 		<gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
 	</entity>
 	<entity anm2path="blank.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="0" collisionRadius="0" friction="0" id="1000" name="Furtherance PRE_ENTITY_SPAWN Replacement" numGridCollisionPoints="0" shadowSize="0" stageHP="0" variant="7892" />
+	<entity anm2path="effect_muddledcross_puddle.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="0" collisionRadius="0" friction="0" id="1000" name="Muddled Cross Puddle" numGridCollisionPoints="0" shadowSize="0" stageHP="0" variant="7893" subtype="0" />
 </entities>

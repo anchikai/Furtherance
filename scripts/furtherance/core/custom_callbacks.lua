@@ -12,6 +12,8 @@ Furtherance.ModCallbacks = {
 
 	--(), Optional Arg: RoomType - Called after a special room is flipped. RoomType is for the type the room was before the flip
 	POST_MUDDLED_CROSS_ROOM_FLIP = "FURTHERANCE_POST_MUDDLED_CROSS_ROOM_FLIP",
+
+	GET_MUDDLED_CROSS_PUDDLE_BACKDROP = "FURTHERANCE_GET_MUDDLED_CROSS_PUDDLE_BACKDROP"
 }
 
 local function postBombExplode(_, bomb)

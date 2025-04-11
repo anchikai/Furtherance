@@ -1,16 +1,46 @@
 local Mod = Furtherance
 
 local function planetariumFlip()
-	return RoomConfigHolder.GetRandomRoom(Mod.GENERIC_RNG:Next(), true, StbType.SPECIAL_ROOMS, RoomType.ROOM_ULTRASECRET, Mod.Room():GetRoomShape(), -1, -1, 1, 10, 1)
+	local roomConfigRoom
+	--10 attempts
+	for _ = 1, 10 do
+		roomConfigRoom = RoomConfigHolder.GetRandomRoom(Mod.GENERIC_RNG:Next(), true, StbType.SPECIAL_ROOMS, RoomType.ROOM_ULTRASECRET, Mod.Room():GetRoomShape(), -1, -1, 1, 10, 1)
+		--Means there are literally no rooms that match. Abort!
+		if not roomConfigRoom then return end
+		if Mod:CanReplaceRoom(Mod.Level():GetCurrentRoomDesc(), roomConfigRoom) then
+			return roomConfigRoom
+		end
+	end
 end
 
 Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, planetariumFlip, RoomType.ROOM_PLANETARIUM)
 
 local function ultraSecretFlip()
-	return RoomConfigHolder.GetRandomRoom(Mod.GENERIC_RNG:Next(), true, StbType.SPECIAL_ROOMS, RoomType.ROOM_PLANETARIUM, Mod.Room():GetRoomShape(), -1, -1, 1, 10, 1)
+	local roomConfigRoom
+	--10 attempts
+	for _ = 1, 10 do
+		roomConfigRoom = RoomConfigHolder.GetRandomRoom(Mod.GENERIC_RNG:Next(), true, StbType.SPECIAL_ROOMS, RoomType.ROOM_PLANETARIUM, Mod.Room():GetRoomShape(), -1, -1, 1, 10, 1)
+		--Means there are literally no rooms that match. Abort!
+		if not roomConfigRoom then return end
+		if Mod:CanReplaceRoom(Mod.Level():GetCurrentRoomDesc(), roomConfigRoom) then
+			return roomConfigRoom
+		end
+	end
 end
 
 Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, ultraSecretFlip, RoomType.ROOM_ULTRASECRET)
+
+local function planetariumBackdrop()
+	return Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_PLANETARIUM]
+end
+
+Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, planetariumBackdrop, RoomType.ROOM_ULTRASECRET)
+
+local function ultraSecretBackdrop()
+	return Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_ULTRASECRET]
+end
+
+Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, ultraSecretBackdrop, RoomType.ROOM_PLANETARIUM)
 
 local function postUltraSecretRoomFlip()
 	if PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.PETER_B) then return end

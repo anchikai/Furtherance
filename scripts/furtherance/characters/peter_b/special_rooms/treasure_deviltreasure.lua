@@ -16,6 +16,19 @@ end
 
 Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, treasureRoomFlip, RoomType.ROOM_TREASURE)
 
+local function provideFlippedBackdrop()
+	local roomDesc = Mod:GetRoomDesc()
+	if Mod:HasBitFlags(roomDesc.Flags, RoomDescriptor.FLAG_DEVIL_TREASURE) then
+		local backdropType = RoomConfig.GetStage(Isaac.GetCurrentStageConfigId()):GetBackdrop()
+		local backdropSprite = "gfx/backdrop/" .. XMLData.GetEntryById(XMLNode.BACKDROP, backdropType)
+		return backdropSprite
+	else
+		return Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_DEVIL]
+	end
+end
+
+Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, provideFlippedBackdrop, RoomType.ROOM_TREASURE)
+
 local function updateCollectibles()
 	local roomDesc = Mod.Level():GetCurrentRoomDesc()
 	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do

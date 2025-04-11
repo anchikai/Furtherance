@@ -70,6 +70,18 @@ end
 
 Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, libraryRoomFlip, RoomType.ROOM_LIBRARY)
 
+local function libraryRoomBackdrop()
+	return Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_LIBRARY]
+end
+
+Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, libraryRoomBackdrop, RoomType.ROOM_SHOP)
+
+local function shopRoomBackdrop()
+	return Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_SHOP]
+end
+
+Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, shopRoomBackdrop, RoomType.ROOM_LIBRARY)
+
 local function getLibraryRoomData(rng)
 	local persistentGameData = Mod.PersistGameData
 	local storeLevel = 0

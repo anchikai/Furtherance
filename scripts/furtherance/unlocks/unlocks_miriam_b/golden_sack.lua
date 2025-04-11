@@ -16,7 +16,7 @@ GOLDEN_SACK.DISAPPEAR_CHANCE = 0.2
 function GOLDEN_SACK:SpawnGoldenSack(entType, variant, subtype, _, _, _, seed)
 	if entType == EntityType.ENTITY_PICKUP
 		and variant == PickupVariant.PICKUP_GRAB_BAG
-		and subtype <= SackSubType.SACK_NORMAL
+		and subtype == SackSubType.SACK_NORMAL
 		and Mod.PersistGameData:Unlocked(GOLDEN_SACK.ACHIEVEMENT)
 	then
 		--Even though this runs every time the entity spawns, the same seed will always produce the same result
@@ -33,12 +33,14 @@ Mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, GOLDEN_SACK.SpawnGoldenSack)
 ---@param collider Entity
 function GOLDEN_SACK:OnSackCollision(pickup, collider)
 	local player = collider:ToPlayer()
-	if player then
+	if player and pickup.SubType == GOLDEN_SACK.ID then
 		local pickup_save = Mod:PickupSave(pickup, false)
 		if not pickup_save.GoldenSackRNGSeed then
 			pickup_save.GoldenSackRNGSeed = pickup.DropSeed
 		end
-		if RNG(pickup_save.GoldenSackRNGSeed):RandomFloat() > GOLDEN_SACK.DISAPPEAR_CHANCE then
+		local rng = RNG(pickup_save.GoldenSackRNGSeed)
+		if rng:RandomFloat() > GOLDEN_SACK.DISAPPEAR_CHANCE then
+			pickup_save.GoldenSackRNGSeed = rng:Next()
 			local room = Mod.Room()
 			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_GRAB_BAG, GOLDEN_SACK.ID,
 				room:FindFreePickupSpawnPosition(room:GetRandomPosition(0)), Vector.Zero, nil):ToPickup()

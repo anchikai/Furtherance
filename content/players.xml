@@ -29,7 +29,7 @@
 		modcostume="4"
 		nameimage="playername_peter.png"
 		portrait="playerportrait_peter_b.png"
-		birthright="Hemorrhage"
+		birthright="Enhanced flipside"
 		achievement="The Martyr" />
 	<player name="Miriam" skinColor="-1" hp="4" armor="4" costumeSuffix="miriam"
 		skin="character_003_miriam.png"

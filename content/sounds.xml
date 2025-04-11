@@ -31,6 +31,9 @@
 	<sound name="Peter Unflip">
 		<sample weight="1" path="peter_unflip.wav" />
 	</sound>
+	<sound name="Peter Room Flip">
+		<sample weight="1" path="peter_room_flip.wav" />
+	</sound>
 	<sound name="Miriam Water Flow">
 		<sample weight="1" path="miriam_water_flow_loop.wav" />
 	</sound>

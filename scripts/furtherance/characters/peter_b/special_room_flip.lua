@@ -5,6 +5,7 @@ local SPECIAL_ROOM_FLIP = {}
 Furtherance.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP = SPECIAL_ROOM_FLIP
 
 local roomPath = "scripts.furtherance.characters.peter_b.special_rooms"
+local backdropPath = "gfx/backdrop/"
 
 local specialRooms = {
 	"treasure_deviltreasure",
@@ -15,6 +16,15 @@ local specialRooms = {
 
 Mod.LoopInclude(specialRooms, roomPath)
 
+SPECIAL_ROOM_FLIP.ROOM_BACKDROPS = {
+	[RoomType.ROOM_SHOP] = backdropPath .. "0b_shop.png",
+	[RoomType.ROOM_LIBRARY] = backdropPath .. "0a_library.png",
+	[RoomType.ROOM_DEVIL] = backdropPath .. "09_sheol.png",
+	[RoomType.ROOM_ANGEL] = backdropPath .. "10_cathedral.png",
+	[RoomType.ROOM_PLANETARIUM] = backdropPath .. "planetarium_blue_base.png",
+	[RoomType.ROOM_ULTRASECRET] = backdropPath .. "0fx_hallway.png",
+}
+
 SPECIAL_ROOM_FLIP.ALLOWED_SPECIAL_ROOMS = Mod:Set({
 	RoomType.ROOM_TREASURE,
 	RoomType.ROOM_SHOP,
@@ -22,16 +32,20 @@ SPECIAL_ROOM_FLIP.ALLOWED_SPECIAL_ROOMS = Mod:Set({
 	RoomType.ROOM_DEVIL,
 	RoomType.ROOM_ANGEL,
 	RoomType.ROOM_PLANETARIUM,
-	RoomType.ROOM_ULTRASECRET,
+	RoomType.ROOM_ULTRASECRET
 })
+
 SPECIAL_ROOM_FLIP.TEMP_KEEP_DOORS_SHUT_DURATION = 45
 local tempCloseDoors = 0
 
----@param idx integer
-function SPECIAL_ROOM_FLIP:IsFlippedRoom(idx)
+function SPECIAL_ROOM_FLIP:CanFlipRoom()
+	return SPECIAL_ROOM_FLIP.ALLOWED_SPECIAL_ROOMS[Mod.Room():GetType()]
+		and not SPECIAL_ROOM_FLIP:IsFlippedRoom()
+end
+
+function SPECIAL_ROOM_FLIP:IsFlippedRoom()
 	local room_save = Mod:RoomSave()
 	return room_save.MuddledCrossFlippedRoom
-		and room_save.MuddledCrossFlippedRoom[tostring(idx)]
 end
 
 local roomToLoad
@@ -39,19 +53,17 @@ local roomToLoad
 function SPECIAL_ROOM_FLIP:TryFlipSpecialRoom()
 	local room = Mod.Room()
 	local roomType = room:GetType()
-	local curIndex = Mod.Level():GetCurrentRoomIndex()
 	local roomConfigRoom = Isaac.RunCallbackWithParam(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, roomType)
 	if not roomConfigRoom then return false end
 	---@cast roomConfigRoom RoomConfigRoom
-	Mod:DebugLog("Room Flip: RoomType:", roomType, "replacing with RoomType", roomConfigRoom.Type, "Variant", roomConfigRoom.Variant, "Subtype", roomConfigRoom.Subtype)
 	local room_save = Mod:RoomSave()
-	if curIndex ~= GridRooms.ROOM_DEBUG_IDX then
-		room_save.MuddledCrossFlippedRoom = room_save.MuddledCrossFlippedRoom or {}
-		room_save.MuddledCrossFlippedRoom[tostring(curIndex)] = true
-	end
+	room_save.MuddledCrossFlippedRoom = true
 	--Replace current room's data with newly received blank room, if applicable
 	if type(roomConfigRoom) ~= "boolean" then
 		roomToLoad = roomConfigRoom
+		Mod:DebugLog("Room Flip: RoomType:", roomType, "replacing with RoomType", roomConfigRoom.Type, "Variant", roomConfigRoom.Variant, "Subtype", roomConfigRoom.Subtype)
+	else
+		Mod:DebugLog("Room Flip: Flip successful, MUDDLED_CROSS_ROOM_FLIP returned boolean")
 	end
 
 	return true
@@ -92,25 +104,22 @@ local GRID_ID_TO_POOP_VARIANT = {
 local GRID_ID_TO_ENTITY = {
 	[1400] = {EntityType.ENTITY_FIREPLACE, 0},
 	[1410] = {EntityType.ENTITY_FIREPLACE, 1},
-	[5000] = {EntityType.ENTITY_EFFECT, EffectVariant.DEVIL},
-	[5001] = {EntityType.ENTITY_EFFECT, EffectVariant.ANGEL}
+	--Don't need to be respawned even if they overlap I guess? Effects are likely a unique exception
+	--[5000] = {EntityType.ENTITY_EFFECT, EffectVariant.DEVIL},
+	--[5001] = {EntityType.ENTITY_EFFECT, EffectVariant.ANGEL}
 }
+
+local gridIndexes = {}
 
 ---When overriding one room with another, it cannot overwrite any existing "RoomConfigSpawn"s from the previous room, and thus do not spawn even if the entity that was there is removed
 ---
 ---So we have to manage spawning every entity in ourselves, IF there isn't already an entity there. Grid entities have no problem spawning in, at least
----@param oldRoomConfigRoom RoomConfigRoom
+---@param occupiedSpawns table
 ---@param newRoomConfigRoom RoomConfigRoom
-function SPECIAL_ROOM_FLIP:RespawnRoomContents(oldRoomConfigRoom, newRoomConfigRoom)
-	local oldSpawns = oldRoomConfigRoom.Spawns
+function SPECIAL_ROOM_FLIP:RespawnRoomContents(occupiedSpawns, newRoomConfigRoom)
 	local newSpawns = newRoomConfigRoom.Spawns
 	local room = Mod.Room()
 	local rng = RNG(room:GetSpawnSeed())
-	local occupiedSpawns = {}
-	for i = 0, #oldSpawns - 1 do
-		local spawn = oldSpawns:Get(i)
-		occupiedSpawns[tostring(spawn.X) .. tostring(spawn.Y)] = true
-	end
 	Mod:DebugLog("Room Flip: Attempting to locate overlapping spawns")
 	for i = 0, #newSpawns - 1 do
 		local spawn = newSpawns:Get(i)
@@ -118,7 +127,12 @@ function SPECIAL_ROOM_FLIP:RespawnRoomContents(oldRoomConfigRoom, newRoomConfigR
 			--We do +1 because nothing is allowed to spawn on the walls, and thus they are ignored
 			--The true top left starts from tile 1,1
 			local gridIndex = room:GetGridIndexByTile(spawn.X + 1, spawn.Y + 1)
+			--The room is actually completely fine with spawning an entity if a grid entity occupied that space. Skip needing to respawn it
+			if gridIndexes[gridIndex] then
+				goto skipSpawn
+			end
 			local spawnEntry = spawn:PickEntry(Mod.GENERIC_RNG:RandomFloat())
+			--If a grid entity was in the spot, the room will actually be fine with spawning entities there.
 			--Grid spawn IDs and maybe mods that are stupid can cause an invalid spawn. Do NOT
 			local pos = room:GetGridPosition(gridIndex)
 			local entType, var, subtype = spawnEntry.Type, spawnEntry.Variant, spawnEntry.Subtype
@@ -146,6 +160,7 @@ function SPECIAL_ROOM_FLIP:RespawnRoomContents(oldRoomConfigRoom, newRoomConfigR
 				Mod:DebugLog("Failed to spawn entity", entType, var, subtype, "at index", gridIndex)
 			end
 		end
+		::skipSpawn::
 	end
 	Mod:DebugLog("Room Flip: Entity search complete")
 end
@@ -157,12 +172,23 @@ function SPECIAL_ROOM_FLIP:UpdateRoom()
 	local roomType = room:GetType()
 
 	if roomToLoad then
-		local oldRoom = level:GetCurrentRoomDesc().Data
 		for index = room:GetGridSize() - 1, 0, -1 do
 			local gridEnt = room:GetGridEntity(index)
 			if gridEnt then
+				gridIndexes[index] = true
 				room:RemoveGridEntityImmediate(index, 0, false)
 			end
+		end
+		Mod:inverseiforeach(Isaac.GetRoomEntities(), function (ent, key)
+			if not ent:ToPlayer() and not ent:ToFamiliar() then
+				ent:Remove()
+			end
+		end)
+		local oldSpawns = level:GetCurrentRoomDesc().Data.Spawns
+		local occupiedSpawns = {}
+		for i = 0, #oldSpawns - 1 do
+			local spawn = oldSpawns:Get(i)
+			occupiedSpawns[tostring(spawn.X) .. tostring(spawn.Y)] = {}
 		end
 		--GetEntitiesSaveState():Clear() only works if you're outside the room you're changing
 		Mod.Game:ChangeRoom(84)
@@ -175,7 +201,13 @@ function SPECIAL_ROOM_FLIP:UpdateRoom()
 		currentRoom.OverrideData = roomToLoad
 		currentRoom.VisitedCount = 0
 		Mod.Game:ChangeRoom(curIndex)
-		SPECIAL_ROOM_FLIP:RespawnRoomContents(oldRoom, roomToLoad)
+		SPECIAL_ROOM_FLIP:RespawnRoomContents(occupiedSpawns, roomToLoad)
+		gridIndexes = nil
+		--In case something goes wrong at the entrance
+		local spawnGrid = Mod.Room():GetGridEntityFromPos(Isaac.GetPlayer().Position)
+		if spawnGrid then
+			room:RemoveGridEntityImmediate(spawnGrid:GetGridIndex(), 0, false)
+		end
 		roomToLoad = nil
 	else
 		Mod.Game:ChangeRoom(curIndex)
@@ -191,26 +223,46 @@ function SPECIAL_ROOM_FLIP:TempCloseDoors()
 	local room = Mod.Room()
 	if tempCloseDoors > 0 then
 		tempCloseDoors = tempCloseDoors - 1
-		for doorSlot = DoorSlot.LEFT0, DoorSlot.NUM_DOOR_SLOTS - 1 do
-			local door = room:GetDoor(doorSlot)
-			if door and not door:IsOpen() and tempCloseDoors == 0 then
-				door:TryUnlock(Isaac.GetPlayer(), true)
-				Mod.SFXMan:Stop(SoundEffect.SOUND_UNLOCK00)
-				door:GetSprite():Play(door.OpenAnimation, true)
-			elseif door
-				and door:IsOpen()
-				and door:GetSprite():GetAnimation() ~= door.CloseAnimation
-				and tempCloseDoors > 0
-			then
-				door:Close()
-				door:GetSprite():Play(door.CloseAnimation, true)
-				door:GetSprite():SetLastFrame()
-			end
+		local door = room:GetDoor(Mod.Level().EnterDoor)
+		if door and not door:IsOpen() and tempCloseDoors == 0 then
+			door:TryUnlock(Isaac.GetPlayer(), true)
+			Mod.SFXMan:Stop(SoundEffect.SOUND_UNLOCK00)
+			door:GetSprite():Play(door.OpenAnimation, true)
+		elseif door
+			and door:IsOpen()
+			and door:GetSprite():GetAnimation() ~= door.CloseAnimation
+			and tempCloseDoors > 0
+		then
+			door:Close()
+			door:GetSprite():Play(door.CloseAnimation, true)
+			door:GetSprite():SetLastFrame()
 		end
 	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, SPECIAL_ROOM_FLIP.TempCloseDoors)
+
+---@param pickup EntityPickup
+---@param collider Entity
+function SPECIAL_ROOM_FLIP:InvalidateFlip(pickup, collider)
+	local player = collider:ToPlayer()
+	if player
+		and Mod:CanPlayerBuyShopItem(player, pickup)
+		and SPECIAL_ROOM_FLIP:CanFlipRoom()
+	then
+		Mod:KillDevilPedestals(pickup)
+		local room_save = Mod:RoomSave()
+		room_save.MuddledCrossFlippedRoom = true
+		for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, Mod.Item.MUDDLED_CROSS.PUDDLE)) do
+			ent:ToEffect().Timeout = 4
+			if ent.SubType == 0 then
+				Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 2, ent.Position, Vector.Zero, nil)
+			end
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, SPECIAL_ROOM_FLIP.InvalidateFlip, PickupVariant.PICKUP_COLLECTIBLE)
 
 local function resetDoorsNewRoom()
 	tempCloseDoors = 0

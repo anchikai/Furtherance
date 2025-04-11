@@ -1,27 +1,45 @@
 local Mod = Furtherance
 
----Number 6 Devil Rooms (SubType 1)
 local function devilRoomFlip()
-	return RoomConfigHolder.GetRandomRoom(Mod.GENERIC_RNG:Next(), true, StbType.SPECIAL_ROOMS, RoomType.ROOM_ANGEL, Furtherance.Room():GetRoomShape(), -1, -1, 1, 10, 1, 1)
+	return RoomConfigHolder.GetRandomRoom(Mod.GENERIC_RNG:Next(), true, StbType.SPECIAL_ROOMS, RoomType.ROOM_ANGEL, Furtherance.Room():GetRoomShape(), -1, -1, 1, 10, 1, 0)
 end
 
 Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, devilRoomFlip, RoomType.ROOM_DEVIL)
 
----Stairway Angel Rooms (SubType 1)
 local function angelRoomFlip()
-	return RoomConfigHolder.GetRandomRoom(Mod.GENERIC_RNG:Next(), true, StbType.SPECIAL_ROOMS, RoomType.ROOM_DEVIL, Furtherance.Room():GetRoomShape(), -1, -1, 1, 10, 1, 1)
+	return RoomConfigHolder.GetRandomRoom(Mod.GENERIC_RNG:Next(), true, StbType.SPECIAL_ROOMS, RoomType.ROOM_DEVIL, Furtherance.Room():GetRoomShape(), -1, -1, 1, 10, 1, 0)
 end
 
 Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, angelRoomFlip, RoomType.ROOM_ANGEL)
+
+local function devilRoomBackdrop()
+	return Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_DEVIL]
+end
+
+Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, devilRoomBackdrop, RoomType.ROOM_ANGEL)
+
+local function angelRoomBackdrop()
+	return Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_ANGEL]
+end
+
+Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, angelRoomBackdrop, RoomType.ROOM_DEVIL)
+
+local function angelRoomShop()
+	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
+		local pickup = ent:ToPickup()
+		---@cast pickup EntityPickup
+		Mod.Card.REVERSE_CHARITY:MakeBalancedShopItem(pickup)
+	end
+end
+
+Mod:AddCallback(Mod.ModCallbacks.POST_MUDDLED_CROSS_ROOM_FLIP, angelRoomShop, RoomType.ROOM_DEVIL)
 
 local function birthrightAngelSteamSale(_, count, player, itemID, onlyTrue)
 	if itemID == CollectibleType.COLLECTIBLE_STEAM_SALE
 		and Mod.Character.PETER_B:IsPeterB(player)
 		and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
 	then
-		local room_save = Mod:RoomSave()
-		if room_save.MuddledCrossFlippedRoom
-			and room_save.MuddledCrossFlippedRoom[tostring(Mod.Level():GetCurrentRoomIndex())]
+		if Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP:IsFlippedRoom()
 			and Mod.Room():GetType() == RoomType.ROOM_ANGEL
 		then
 			return count + 1
@@ -38,8 +56,7 @@ local function birthrightYourSoulPrice(_, pickup)
 	then
 		local room_save = Mod:RoomSave()
 		local data = Mod:GetData(pickup)
-		if room_save.MuddledCrossFlippedRoom
-			and room_save.MuddledCrossFlippedRoom[tostring(Mod.Level():GetCurrentRoomIndex())]
+		if Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP:IsFlippedRoom()
 			and not room_save.PeterBBirthrightPurchasedDevil
 			and not data.PeterBBirthrightIgnorePickup
 			and pickup:IsShopItem()
@@ -81,4 +98,4 @@ local function birthrightOnShopPurchase(_, pickup, collider)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, birthrightOnShopPurchase)
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, birthrightOnShopPurchase, PickupVariant.PICKUP_COLLECTIBLE)
