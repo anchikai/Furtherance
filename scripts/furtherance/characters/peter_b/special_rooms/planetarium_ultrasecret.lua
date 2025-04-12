@@ -51,4 +51,4 @@ local function postUltraSecretRoomFlip()
 	end
 end
 
-Mod:AddCallback(Mod.ModCallbacks.POST_MUDDLED_CROSS_ROOM_FLIP, postUltraSecretRoomFlip, RoomType.ROOM_ULTRASECRET)
+Mod:AddCallback(Mod.ModCallbacks.POST_MUDDLED_CROSS_ROOM_FLIP, postUltraSecretRoomFlip, RoomType.ROOM_PLANETARIUM)

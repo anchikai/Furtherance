@@ -170,9 +170,14 @@ function SPECIAL_ROOM_FLIP:UpdateRoom()
 	local curIndex = level:GetCurrentRoomIndex()
 	local room = Mod.Room()
 	local roomType = room:GetType()
+	local spawnPos
+	local puddle = Isaac.FindByType(EntityType.ENTITY_EFFECT, Mod.Item.MUDDLED_CROSS.PUDDLE)[1]
+	if puddle then
+		spawnPos = puddle.Position
+	end
 
 	if roomToLoad then
-		for index = room:GetGridSize() - 1, 0, -1 do
+		for index = 0, room:GetGridSize() - 1 do
 			local gridEnt = room:GetGridEntity(index)
 			if gridEnt then
 				gridIndexes[index] = true
@@ -191,8 +196,9 @@ function SPECIAL_ROOM_FLIP:UpdateRoom()
 			occupiedSpawns[tostring(spawn.X) .. tostring(spawn.Y)] = {}
 		end
 		--GetEntitiesSaveState():Clear() only works if you're outside the room you're changing
+		level.LeaveDoor = -1
 		Mod.Game:ChangeRoom(84)
-		local startingRoom = Mod.Level():GetRoomByIdx(curIndex)
+		local startingRoom = Mod.Level():GetRoomByIdx(84)
 		--Shh we were never here
 		startingRoom.VisitedCount = startingRoom.VisitedCount - 1
 		local currentRoom = Mod.Level():GetRoomByIdx(curIndex)
@@ -200,9 +206,10 @@ function SPECIAL_ROOM_FLIP:UpdateRoom()
 		currentRoom.Data = roomToLoad
 		currentRoom.OverrideData = roomToLoad
 		currentRoom.VisitedCount = 0
+		level.LeaveDoor = -1
 		Mod.Game:ChangeRoom(curIndex)
 		SPECIAL_ROOM_FLIP:RespawnRoomContents(occupiedSpawns, roomToLoad)
-		gridIndexes = nil
+		gridIndexes = {}
 		--In case something goes wrong at the entrance
 		local spawnGrid = Mod.Room():GetGridEntityFromPos(Isaac.GetPlayer().Position)
 		if spawnGrid then
@@ -210,11 +217,16 @@ function SPECIAL_ROOM_FLIP:UpdateRoom()
 		end
 		roomToLoad = nil
 	else
+		level.LeaveDoor = -1
 		Mod.Game:ChangeRoom(curIndex)
 	end
-
+	if spawnPos then
+		Mod:ForEachPlayer(function (player)
+			player.Position = spawnPos
+		end)
+	end
 	Mod.Room():PlayMusic()
-	Isaac.RunCallbackWithParam(Mod.ModCallbacks.POST_MUDDLED_CROSS_ROOM_FLIP, roomType, room:GetType())
+	Isaac.RunCallbackWithParam(Mod.ModCallbacks.POST_MUDDLED_CROSS_ROOM_FLIP, room:GetType(), roomType)
 	tempCloseDoors = SPECIAL_ROOM_FLIP.TEMP_KEEP_DOORS_SHUT_DURATION
 end
 

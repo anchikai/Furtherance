@@ -32,7 +32,7 @@ local function angelRoomShop()
 	end
 end
 
-Mod:AddCallback(Mod.ModCallbacks.POST_MUDDLED_CROSS_ROOM_FLIP, angelRoomShop, RoomType.ROOM_DEVIL)
+Mod:AddCallback(Mod.ModCallbacks.POST_MUDDLED_CROSS_ROOM_FLIP, angelRoomShop, RoomType.ROOM_ANGEL)
 
 local function birthrightAngelSteamSale(_, count, player, itemID, onlyTrue)
 	if itemID == CollectibleType.COLLECTIBLE_STEAM_SALE

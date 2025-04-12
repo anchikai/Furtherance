@@ -13,6 +13,7 @@ MUDDLED_CROSS.SFX_UNFLIP = Isaac.GetSoundIdByName("Peter Unflip")
 MUDDLED_CROSS.SFX_ROOM_FLIP = Isaac.GetSoundIdByName("Peter Room Flip")
 MUDDLED_CROSS.MAX_CHARGES = Mod.ItemConfig:GetCollectible(MUDDLED_CROSS.ID).MaxCharges
 MUDDLED_CROSS.CHARGE_FRACTION_PER_KILL = 6
+MUDDLED_CROSS.CHARGE_FRACTION_NOT_PETERB = 18
 
 MUDDLED_CROSS.PUDDLE = Isaac.GetEntityVariantByName("Muddled Cross Puddle")
 MUDDLED_CROSS.POOL_MASK_COLORIZE = Color(1, 1, 1, 0.1, 0, 0, 0, 1, 0, 0, 0)
@@ -70,13 +71,30 @@ function MUDDLED_CROSS:TryFlip(player)
 		and not isXFlipped
 		and MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ALLOWED_SPECIAL_ROOMS[room:GetType()]
 	then
-		return MUDDLED_CROSS:TryFlipY()
+		local puddles = Isaac.FindByType(EntityType.ENTITY_EFFECT, MUDDLED_CROSS.PUDDLE)
+		local flipped
+		for _, ent in ipairs(puddles) do
+			if player.Position:DistanceSquared(ent.Position) <= (player.Size + ent.Size) ^ 2 then
+				flipped = MUDDLED_CROSS:TryFlipY()
+				break
+			end
+		end
+		if #puddles > 0 and flipped == false then
+			Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
+			for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, Mod.Item.MUDDLED_CROSS.PUDDLE)) do
+				ent:ToEffect().Timeout = 4
+				if ent.SubType == 0 then
+					Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 2, ent.Position, Vector.Zero, nil)
+				end
+			end
+			return false
+		elseif flipped then
+			return true
+		end
 	elseif isPeter then
 		MUDDLED_CROSS:FlipX()
 		return true
 	end
-
-	return false
 end
 
 ---@param player EntityPlayer
@@ -85,8 +103,8 @@ function MUDDLED_CROSS:OnUse(itemID, rng, player, flags)
 	if not Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) then
 		local flipped = MUDDLED_CROSS:TryFlip(player)
 		if not flipped then
-			player:AnimateSad()
-			return { Discharge = false, Remove = false, ShowAnim = false }
+			local roomNotFound = flipped == false
+			return { Discharge = roomNotFound, Remove = false, ShowAnim = roomNotFound }
 		else
 			Mod.Game:ShakeScreen(10)
 		end
@@ -135,7 +153,12 @@ Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR, CallbackP
 ---@param player EntityPlayer
 function MUDDLED_CROSS:TimedRecharge(player)
 	local effects = Mod.Room():GetEffects()
-	if Mod.Room():GetAliveEnemiesCount() > 0 or effects:HasCollectibleEffect(MUDDLED_CROSS.ID) then return end
+	if Mod.Room():GetAliveEnemiesCount() > 0
+		or effects:HasCollectibleEffect(MUDDLED_CROSS.ID)
+		or not Mod.Character.PETER_B:IsPeterB(player)
+	then
+		return
+	end
 	local slots = Mod:GetActiveItemCharges(player, MUDDLED_CROSS.ID)
 	for _, slotData in ipairs(slots) do
 		if slotData.Charge < MUDDLED_CROSS.MAX_CHARGES then
@@ -149,31 +172,48 @@ Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, MUDDLED_CROSS.TimedRecharge
 local floor = math.floor
 local min = math.min
 
+---@param player EntityPlayer
+function MUDDLED_CROSS:GetChargeFractionPerKill(player)
+	local charge = MUDDLED_CROSS.CHARGE_FRACTION_PER_KILL
+	if not Mod.Character.PETER_B:IsPeterB(player) then
+		charge = MUDDLED_CROSS.CHARGE_FRACTION_NOT_PETERB
+	end
+	if player:HasCollectible(CollectibleType.COLLECTIBLE_9_VOLT) then
+		CHARGE_FRACTION = CHARGE_FRACTION - 1
+	end
+	if player:HasTrinket(TrinketType.TRINKET_AAA_BATTERY) then
+		CHARGE_FRACTION = CHARGE_FRACTION - 1
+	end
+	return charge
+end
+
 ---@param ent Entity
 function MUDDLED_CROSS:ChargeOnEnemyDeath(ent)
 	if not Mod:IsDeadEnemy(ent) then return end
 	local effects = Mod.Room():GetEffects()
 	if MUDDLED_CROSS:IsRoomEffectActive() and effects:HasCollectibleEffect(MUDDLED_CROSS.ID) then
-		local aliveFlippedEnemies = false
-		Mod:ForEachEnemy(function(_npc)
-			if GetPtrHash(_npc) ~= GetPtrHash(ent) and Mod:GetData(_npc).PeterFlipped then
-				aliveFlippedEnemies = true
+		Mod:DelayOneFrame(function()
+			local aliveFlippedEnemies = false
+			Mod:ForEachEnemy(function(_npc)
+				if GetPtrHash(_npc) ~= GetPtrHash(ent) and Mod:GetData(_npc).PeterFlipped then
+					aliveFlippedEnemies = true
+				end
+			end, true)
+			if not aliveFlippedEnemies then
+				effects:RemoveCollectibleEffect(MUDDLED_CROSS.ID, -1)
 			end
-		end, true)
-		if not aliveFlippedEnemies then
-			effects:RemoveCollectibleEffect(MUDDLED_CROSS.ID, -1)
-		end
+		end)
 	else
+		--If spawned from something else
+		if ent.SpawnerEntity
+			and RNG(ent.InitSeed):RandomFloat() <= 0.5
+		then
+			return
+		end
 		Mod:ForEachPlayer(function(player)
 			local slots = Mod:GetActiveItemCharges(player, MUDDLED_CROSS.ID)
 			local MAX_CHARGE = MUDDLED_CROSS.MAX_CHARGES
-			local CHARGE_FRACTION = MUDDLED_CROSS.CHARGE_FRACTION_PER_KILL
-			if player:HasCollectible(CollectibleType.COLLECTIBLE_9_VOLT) then
-				CHARGE_FRACTION = CHARGE_FRACTION - 1
-			end
-			if player:HasTrinket(TrinketType.TRINKET_AAA_BATTERY) then
-				CHARGE_FRACTION = CHARGE_FRACTION - 1
-			end
+			local CHARGE_FRACTION = MUDDLED_CROSS:GetChargeFractionPerKill(player)
 			if player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY) then
 				MAX_CHARGE = MAX_CHARGE * 2
 			end
@@ -197,16 +237,16 @@ Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, MUDDLED_CROSS.ChargeOnEnemyDea
 function MUDDLED_CROSS:AnimateFlip()
 	local isFlipped = MUDDLED_CROSS.TARGET_FLIP == 1
 
-	if not MUDDLED_CROSS.FLIP.PAUSE_MENU_STOP_FLIP then
+	if PauseMenu.GetState() == PauseMenuStates.CLOSED then
 		if not isFlipped then
 			--Should only ever be true if done within via instant room change (i.e. debug console) or restarting the game via holding R
-			if (Mod.Game:IsPaused() and RoomTransition.GetTransitionMode() == 0) or Mod.Game:GetFrameCount() == 0 then
+			if Mod.Game:GetFrameCount() == 0 then
 				MUDDLED_CROSS.FLIP_FACTOR = 0
 				return
 			end
 		end
 		local lerp = Mod:Lerp(MUDDLED_CROSS.FLIP_FACTOR, isFlipped and 1 or 0, MUDDLED_CROSS.FLIP_X_SPEED)
-		MUDDLED_CROSS.FLIP_FACTOR = Mod:Clamp(lerp, 0, 1)
+		MUDDLED_CROSS.FLIP_FACTOR = Mod:Clamp(floor(lerp * 100) / 100, 0, 1)
 	end
 
 	if MUDDLED_CROSS.FLIP_FACTOR >= 0.5 and MUDDLED_CROSS.TARGET_FLIP == 1 then
@@ -233,10 +273,11 @@ Mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, MUDDLED_CROSS.XFlipShader)
 function MUDDLED_CROSS:OnEffectInit(effect)
 	if effect.SubType == 0 then
 		local sprite = effect:GetSprite()
-		local cross = Isaac.Spawn(effect.Type, effect.Variant, 1, effect.Position, Vector.Zero, nil):ToEffect()
+		local cross = Isaac.Spawn(effect.Type, effect.Variant, 1, effect.Position, Vector.Zero, effect):ToEffect()
 		---@cast cross EntityEffect
 		cross:GetSprite():Play("IdleCross")
 		cross:GetSprite().PlaybackSpeed = 0.5
+		cross.Parent = effect
 		effect.SortingLayer = SortingLayer.SORTING_BACKGROUND
 		local maskLayer = sprite:GetLayer("mask")
 		---@cast maskLayer LayerState
@@ -253,12 +294,16 @@ function MUDDLED_CROSS:OnEffectUpdate(effect)
 	if effect.SubType == 1 then
 		local sprite = effect:GetSprite()
 		if sprite:IsEventTriggered("Ripple") then
-			local ripple = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.WATER_RIPPLE, 0, effect.Position, Vector.Zero, nil)
+			local ripple = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.WATER_RIPPLE, 0, effect.Position,
+				Vector.Zero, nil)
 			ripple:GetSprite():GetLayer(0):GetBlendMode():SetMode(BlendType.ADDITIVE)
 			Mod.SFXMan:Play(SoundEffect.SOUND_WATER_DROP)
 		end
 	end
-	if effect.Timeout == 0 or not PlayerManager.AnyoneHasCollectible(Mod.Item.MUDDLED_CROSS.ID) then
+	if effect.Timeout == 0
+		or not PlayerManager.AnyoneHasCollectible(Mod.Item.MUDDLED_CROSS.ID)
+		or (effect.Parent and not effect.Parent:Exists())
+	then
 		effect:Remove()
 	end
 end
@@ -273,7 +318,8 @@ function MUDDLED_CROSS:OnPossibleRoomFlipEnter()
 		local roomType = room:GetType()
 		local backdrop = Isaac.RunCallbackWithParam(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, roomType)
 		if not backdrop then return end
-		local puddle = Isaac.Spawn(EntityType.ENTITY_EFFECT, MUDDLED_CROSS.PUDDLE, 0, room:FindFreeTilePosition(Isaac.GetPlayer().Position, 0), Vector.Zero, nil):ToEffect()
+		local puddle = Isaac.Spawn(EntityType.ENTITY_EFFECT, MUDDLED_CROSS.PUDDLE, 0,
+			room:FindFreeTilePosition(Isaac.GetPlayer().Position, 0), Vector.Zero, nil):ToEffect()
 		---@cast puddle EntityEffect
 		local sprite = puddle:GetSprite()
 		sprite:ReplaceSpritesheet(0, backdrop, true)

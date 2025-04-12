@@ -64,5 +64,5 @@
 		<gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
 	</entity>
 	<entity anm2path="blank.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="0" collisionRadius="0" friction="0" id="1000" name="Furtherance PRE_ENTITY_SPAWN Replacement" numGridCollisionPoints="0" shadowSize="0" stageHP="0" variant="7892" />
-	<entity anm2path="effect_muddledcross_puddle.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="0" collisionRadius="0" friction="0" id="1000" name="Muddled Cross Puddle" numGridCollisionPoints="0" shadowSize="0" stageHP="0" variant="7893" subtype="0" />
+	<entity anm2path="effect_muddledcross_puddle.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="0" collisionRadius="25" friction="0" id="1000" name="Muddled Cross Puddle" numGridCollisionPoints="0" shadowSize="0" stageHP="0" variant="7893" subtype="0" />
 </entities>

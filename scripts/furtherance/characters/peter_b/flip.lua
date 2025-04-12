@@ -11,10 +11,10 @@ Furtherance.Item.MUDDLED_CROSS.FLIP = FLIP
 
 FLIP.FLIP_FACTOR = 0
 FLIP.FLIP_SPEED = 0.2
-FLIP.PAUSE_MENU_STOP_FLIP = false
 FLIP.PAUSE_ENEMIES_DURING_FLIP = false
 FLIP.FREEZE_ROOM_EFFECT_COOLDOWN = 0
 FLIP.PETER_EFFECTS_ACTIVE = false
+FLIP.SHOW_DEBUG = false
 
 FLIP.TEAR_DEATH_EFFECTS = Mod:Set({
 	EffectVariant.TEAR_POOF_A,
@@ -24,6 +24,9 @@ FLIP.TEAR_DEATH_EFFECTS = Mod:Set({
 	EffectVariant.BOMB_EXPLOSION,
 	EffectVariant.BLOOD_EXPLOSION,
 	EffectVariant.BULLET_POOF
+})
+FLIP.BLACKLISTED_EFFECTS = Mod:Set({
+	EffectVariant.PURGATORY
 })
 FLIP.ENEMY_EFFECTS = Mod:Set({
 	EffectVariant.FLY_EXPLOSION,
@@ -75,6 +78,8 @@ local FLAG_TO_ICON = {
 	[EntityFlag.FLAG_SLOW] = "Slow",
 	[EntityFlag.FLAG_WEAKNESS] = "Weakness",
 }
+
+local floor = math.floor
 
 local identifier = "FR_STRENGTH"
 local statusSprite = Sprite("gfx/ui/fr_statuseffects.anm2", true)
@@ -134,11 +139,7 @@ end
 ---@param ent Entity
 function FLIP:TryGetEnemy(ent)
 	if FLIP:ShouldIgnoreEnemy(ent) then return end
-	if ent:ToNPC() then
-		return ent:ToNPC()
-	elseif ent.SpawnerEntity and ent.SpawnerEntity:ToNPC() then
-		return ent.SpawnerEntity:ToNPC()
-	end
+	return ent.SpawnerEntity and ent.SpawnerEntity:ToNPC() or ent:ToNPC()
 end
 
 ---@param ent Entity
@@ -159,7 +160,8 @@ function FLIP:SetAppropriateWaterClipFlag(ent, parent)
 	local enemy = FLIP:TryGetEnemy(flagCheckEnt)
 	local player = Mod:TryGetPlayer(flagCheckEnt)
 	local data = Mod:GetData(ent)
-	if enemy then
+
+	if enemy and (not FLIP:ShouldIgnoreEnemy(enemy) or FLIP:ValidEnemyToFlip(ent)) then
 		local isFlippedEnemy = FLIP:IsFlippedEnemy(enemy)
 		local flag = FLIP:GetIgnoredWaterClipFlag(not isFlippedEnemy)
 		if flag then
@@ -215,6 +217,7 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, FLIP.FlipIfRelatedEntity)
 
 function FLIP:UpdateReflections()
+	FLIP.PETER_EFFECTS_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
 	if FLIP.PETER_EFFECTS_ACTIVE then
 		for _, ent in ipairs(Isaac.GetRoomEntities()) do
 			FLIP:SetAppropriateWaterClipFlag(ent)
@@ -224,6 +227,12 @@ end
 
 Mod:AddCallback(Mod.ModCallbacks.PETER_B_ENEMY_ROOM_FLIP, FLIP.UpdateReflections)
 Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, FLIP.UpdateReflections)
+
+function FLIP:UpdateShouldUsePeter()
+	FLIP.PETER_EFFECTS_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, FLIP.UpdateShouldUsePeter)
 
 ---@param ent Entity
 function FLIP:Reflection(ent)
@@ -299,10 +308,13 @@ end
 
 Mod:AddCallback(Mod.ModCallbacks.POST_BOMB_EXPLODE, FLIP.PostBombExplode)
 
+---@param effect EntityEffect
 function FLIP:MarkEnemyEffectOnInit(effect)
 	if not FLIP.PETER_EFFECTS_ACTIVE then return end
 
-	if effect.SpawnerEntity then
+	if effect.SpawnerEntity
+		and not FLIP.BLACKLISTED_EFFECTS[effect.Variant]
+	then
 		FLIP:SetAppropriateWaterClipFlag(effect, effect.SpawnerEntity)
 	else
 		for _, ent in ipairs(Isaac.GetRoomEntities()) do
@@ -318,6 +330,7 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, FLIP.MarkEnemyEffectOnInit)
 
+---@param npc EntityNPC
 function FLIP:MarkEnemyEffectOnDeath(npc)
 	if not FLIP.PETER_EFFECTS_ACTIVE then return end
 
@@ -452,7 +465,7 @@ Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_GRID_COLLISION, CallbackPriority
 ---@param ent Entity
 ---@param source EntityRef
 function FLIP:HandleDamage(ent, amount, flags, source, countdown)
-	if source and source.Entity then
+	if source.Entity then
 		--If they shouldn't collide, ignore all sources of damage from that side as well
 		local shouldNotCollide = FLIP:CollisionMode(ent, source.Entity)
 		if shouldNotCollide then
@@ -646,20 +659,17 @@ Mod:AddCallback(ModCallbacks.MC_POST_ROOM_TRIGGER_EFFECT_REMOVED, FLIP.OnLoseFli
 function FLIP:AnimateFlip()
 	FLIP.PETER_EFFECTS_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
 	local isFlipped = Mod.Room():GetEffects():HasCollectibleEffect(MUDDLED_CROSS.ID)
-	FLIP.PAUSE_MENU_STOP_FLIP = Mod.Game:IsPauseMenuOpen()
-
-	if not FLIP.PAUSE_MENU_STOP_FLIP then
+	if PauseMenu.GetState() == PauseMenuStates.CLOSED then
 		if not isFlipped then
 			--Should only ever be true if done within via instant room change (i.e. debug console) or restarting the game via holding R
-			if (Mod.Game:IsPaused() and RoomTransition.GetTransitionMode() == 0) or Mod.Game:GetFrameCount() == 0 then
+			if Mod.Game:GetFrameCount() == 0 then
 				FLIP.FLIP_FACTOR = 0
 				return
 			end
 		end
 		local lerp = Mod:Lerp(FLIP.FLIP_FACTOR, isFlipped and 1 or 0, FLIP.FLIP_SPEED)
-		FLIP.FLIP_FACTOR = Mod:Clamp(lerp, 0, 1)
+		FLIP.FLIP_FACTOR = Mod:Clamp(floor(lerp * 100) / 100, 0, 1)
 	end
-
 
 	if FLIP.FLIP_FACTOR > 0.05 and FLIP.FLIP_FACTOR < 0.95 then
 		Isaac.RunCallback(Mod.ModCallbacks.PETER_B_ENEMY_ROOM_FLIP)
@@ -734,11 +744,24 @@ Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, FLIP.FreezeEnemiesDuringFlip)
 function FLIP:PeterFlip(name)
 	if name == 'Peter Flip' then
 		local factor = MUDDLED_CROSS.FLIP_FACTOR > 0 and MUDDLED_CROSS.FLIP_FACTOR or FLIP.FLIP_FACTOR
-		return { FlipFactor = FLIP.PAUSE_MENU_STOP_FLIP and 0 or factor }
+		if Mod.FLAGS.Debug and FLIP.SHOW_DEBUG then
+			Isaac.RenderText("Expected to Peter Flip:" .. tostring(Mod.Room():GetEffects():HasCollectibleEffect(MUDDLED_CROSS.ID)), 50, 30, 1, 1, 1, 1)
+			Isaac.RenderText("Expected to Room Flip (Overrides Peter Flip):" .. tostring(MUDDLED_CROSS.TARGET_FLIP > 0), 50, 45, 1, 1, 1, 1)
+			Isaac.RenderText("Peter Flip Factor:" .. tostring(FLIP.FLIP_FACTOR), 50, 60, 1, 1, 1, 1)
+			Isaac.RenderText("Room Flip Factor:" .. tostring(MUDDLED_CROSS.FLIP_FACTOR), 50, 75, 1, 1, 1, 1)
+		end
+		return { FlipFactor = PauseMenu.GetState() ~= PauseMenuStates.CLOSED and 0 or factor }
 	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, FLIP.PeterFlip)
+
+function Mod:PrintPeterBFlip()
+	print("Expected to Peter Flip:" .. Mod.Room():GetEffects():HasCollectibleEffect(MUDDLED_CROSS.ID))
+	print("Expected to Room Flip (Overrides Peter Flip):" .. MUDDLED_CROSS.TARGET_FLIP > 0)
+	print("Peter Flip Factor:" ..FLIP.FLIP_FACTOR)
+	print("Room Flip Factor:" .. MUDDLED_CROSS.FLIP_FACTOR)
+end
 
 function FLIP:FixInputs(ent, _, button)
 	local player = ent and ent:ToPlayer()
