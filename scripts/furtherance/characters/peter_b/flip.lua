@@ -203,6 +203,16 @@ end
 
 --#endregion
 
+--#region Update if Peter Flip Room Effects should be active
+
+function FLIP:OnUpdate()
+	FLIP.PETER_EFFECTS_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, FLIP.OnUpdate)
+
+--#endregion
+
 --#region Handle entity rendering via WaterClipFlags
 
 ---@param ent Entity
@@ -217,7 +227,6 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, FLIP.FlipIfRelatedEntity)
 
 function FLIP:UpdateReflections()
-	FLIP.PETER_EFFECTS_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
 	if FLIP.PETER_EFFECTS_ACTIVE then
 		for _, ent in ipairs(Isaac.GetRoomEntities()) do
 			FLIP:SetAppropriateWaterClipFlag(ent)
@@ -254,7 +263,6 @@ Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, FLIP.Reflection)
 ---@param ent Entity
 function FLIP:TempPreRender(ent)
 	if not FLIP.PETER_EFFECTS_ACTIVE then return end
-
 	local renderMode = Mod.Room():GetRenderMode()
 	local data = Mod:GetData(ent)
 	if renderMode == data.PeterFlippedIgnoredRenderFlag then
@@ -657,9 +665,8 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_ROOM_TRIGGER_EFFECT_REMOVED, FLIP.OnLoseFlipEffect)
 
 function FLIP:AnimateFlip()
-	FLIP.PETER_EFFECTS_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
 	local isFlipped = Mod.Room():GetEffects():HasCollectibleEffect(MUDDLED_CROSS.ID)
-	if PauseMenu.GetState() == PauseMenuStates.CLOSED then
+	if not Mod.Game:IsPauseMenuOpen() then
 		if not isFlipped then
 			--Should only ever be true if done within via instant room change (i.e. debug console) or restarting the game via holding R
 			if Mod.Game:GetFrameCount() == 0 then
@@ -742,7 +749,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, FLIP.FreezeEnemiesDuringFlip)
 
 -- Thank you im_tem for the shader!!
 function FLIP:PeterFlip(name)
-	if name == 'Peter Flip' then
+	if name == "Peter Flip" then
 		local factor = MUDDLED_CROSS.FLIP_FACTOR > 0 and MUDDLED_CROSS.FLIP_FACTOR or FLIP.FLIP_FACTOR
 		if Mod.FLAGS.Debug and FLIP.SHOW_DEBUG then
 			Isaac.RenderText("Expected to Peter Flip:" .. tostring(Mod.Room():GetEffects():HasCollectibleEffect(MUDDLED_CROSS.ID)), 50, 30, 1, 1, 1, 1)
@@ -750,7 +757,13 @@ function FLIP:PeterFlip(name)
 			Isaac.RenderText("Peter Flip Factor:" .. tostring(FLIP.FLIP_FACTOR), 50, 60, 1, 1, 1, 1)
 			Isaac.RenderText("Room Flip Factor:" .. tostring(MUDDLED_CROSS.FLIP_FACTOR), 50, 75, 1, 1, 1, 1)
 		end
-		return { FlipFactor = PauseMenu.GetState() ~= PauseMenuStates.CLOSED and 0 or factor }
+		return { FlipFactor = Mod.Game:IsPauseMenuOpen() and 0 or factor }
+	elseif name == "Peter Flip HUD" then
+		if FLIP.PETER_EFFECTS_ACTIVE then
+			Mod.HUD:SetVisible(true)
+			Mod.HUD:Render()
+			Mod.HUD:SetVisible(false)
+		end
 	end
 end
 
@@ -779,6 +792,18 @@ function FLIP:FixInputs(ent, _, button)
 end
 
 Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, FLIP.FixInputs, InputHook.GET_ACTION_VALUE)
+
+--#endregion
+
+--#region Lower ripple volume
+
+function FLIP:ReduceRippleSound(id, volume, frameDelay, loop, pitch, pan)
+	if FLIP.PETER_EFFECTS_ACTIVE then
+		return {id, 0.05, frameDelay, loop, pitch, pan}
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_SFX_PLAY, FLIP.ReduceRippleSound, SoundEffect.SOUND_WET_FEET)
 
 --#endregion
 

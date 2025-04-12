@@ -237,7 +237,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, MUDDLED_CROSS.ChargeOnEnemyDea
 function MUDDLED_CROSS:AnimateFlip()
 	local isFlipped = MUDDLED_CROSS.TARGET_FLIP == 1
 
-	if PauseMenu.GetState() == PauseMenuStates.CLOSED then
+	if not Mod.Game:IsPauseMenuOpen() then
 		if not isFlipped then
 			--Should only ever be true if done within via instant room change (i.e. debug console) or restarting the game via holding R
 			if Mod.Game:GetFrameCount() == 0 then
