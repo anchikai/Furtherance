@@ -167,10 +167,10 @@ Mod.LoopInclude(config, "scripts.furtherance.config")
 Furtherance.TearModifier = include("scripts.furtherance.core.tear_modifiers")
 
 Furtherance.PlayerType = {
-	LEAH = Isaac.GetPlayerTypeByName("Laeh", false),
+	LEAH = Isaac.GetPlayerTypeByName("Leah", false),
 	PETER = Isaac.GetPlayerTypeByName("Peter", false),
 	MIRIAM = Isaac.GetPlayerTypeByName("Miriam", false),
-	LEAH_B = Isaac.GetPlayerTypeByName("Laeh", true),
+	LEAH_B = Isaac.GetPlayerTypeByName("Leah", true),
 	PETER_B = Isaac.GetPlayerTypeByName("Peter", true),
 	MIRIAM_B = Isaac.GetPlayerTypeByName("Miriam", true),
 }
@@ -180,7 +180,6 @@ local characters = {
 	"leah_b.leah_b",
 	"leah_b.shattered_heart",
 	"peter.peter",
-	"peter.keys_to_the_kingdom",
 	"peter_b.peter_b",
 	"miriam.miriam",
 	"miriam.tambourine",

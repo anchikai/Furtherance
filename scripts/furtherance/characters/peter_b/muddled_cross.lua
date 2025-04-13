@@ -163,6 +163,10 @@ function MUDDLED_CROSS:TimedRecharge(player)
 	for _, slotData in ipairs(slots) do
 		if slotData.Charge < MUDDLED_CROSS.MAX_CHARGES then
 			player:SetActiveCharge(slotData.Charge + 1, slotData.Slot)
+			if player:GetActiveCharge(slotData.Slot) == MUDDLED_CROSS.MAX_CHARGES then
+				Mod.HUD:FlashChargeBar(player, slotData.Slot)
+				Mod.SFXMan:Play(SoundEffect.SOUND_ITEMRECHARGE)
+			end
 		end
 	end
 end
@@ -212,17 +216,9 @@ function MUDDLED_CROSS:ChargeOnEnemyDeath(ent)
 		end
 		Mod:ForEachPlayer(function(player)
 			local slots = Mod:GetActiveItemCharges(player, MUDDLED_CROSS.ID)
-			local MAX_CHARGE = MUDDLED_CROSS.MAX_CHARGES
 			local CHARGE_FRACTION = MUDDLED_CROSS:GetChargeFractionPerKill(player)
-			if player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY) then
-				MAX_CHARGE = MAX_CHARGE * 2
-			end
 			for _, slotData in ipairs(slots) do
-				if slotData.Charge < MAX_CHARGE then
-					player:SetActiveCharge(
-						min(MAX_CHARGE, slotData.Charge + floor(MUDDLED_CROSS.MAX_CHARGES / CHARGE_FRACTION)),
-						slotData.Slot)
-				end
+				player:AddActiveCharge(floor(MUDDLED_CROSS.MAX_CHARGES / CHARGE_FRACTION), slotData.Slot, true, false, true)
 			end
 		end)
 	end

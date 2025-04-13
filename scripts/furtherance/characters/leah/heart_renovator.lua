@@ -122,7 +122,9 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, HEART_RENOVATOR.DamageUp, CacheF
 function HEART_RENOVATOR:ConsumeHeartCounter(player)
 	if not player:HasCollectible(HEART_RENOVATOR.ID) then return end
 	local player_run_save = Mod:RunSave(player)
-	if player_run_save.HeartRenovatorCounter >= 2 and player:GetBrokenHearts() <= 11 then
+	if (player_run_save.HeartRenovatorCounter or 0) >= 2
+		and player:GetBrokenHearts() <= 11
+	then
 		local data = Mod:GetData(player)
 		local dropTriggered = Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex)
 		local doubleTapWindow = Mod.GetSetting(Mod.Setting.HeartRenovatorDoubleTap)

@@ -40,6 +40,9 @@ KEYS_TO_THE_KINGDOM.STORY_BOSS_IDS = Mod:Set({
 KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN = 30 * 30
 KEYS_TO_THE_KINGDOM.MAX_CHARGES = Mod.ItemConfig:GetCollectible(KEYS_TO_THE_KINGDOM.ID).MaxCharges
 KEYS_TO_THE_KINGDOM.COLLECTION_DISTANCE = 20 ^ 2
+KEYS_TO_THE_KINGDOM.SPARE_TIMER = {
+	[EntityType.ENTITY_BABY_PLUM] = KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN * 0.5
+}
 
 KEYS_TO_THE_KINGDOM.StatTable = {
 	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.5,      TempBuff = 0.1 },
@@ -87,8 +90,15 @@ SEL.Callbacks.AddCallback(SEL.Callbacks.ID.PRE_ADD_ENTITY_STATUS_EFFECT,
 	KEYS_TO_THE_KINGDOM.OnStatusEffectAdd, KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
 
 ---@param player EntityPlayer
-function KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player)
+---@param ent Entity
+function KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, ent)
+	if not ent:IsBoss() then
+		return 0
+	end
 	local raptureCountdown = KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN
+	if KEYS_TO_THE_KINGDOM.SPARE_TIMER[ent.Type] then
+		raptureCountdown = KEYS_TO_THE_KINGDOM.SPARE_TIMER[ent.Type]
+	end
 	if player:GetPlayerType() == Mod.PlayerType.PETER and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 		raptureCountdown = raptureCountdown * 0.5
 	end
@@ -390,8 +400,13 @@ end
 ---@param effect EntityEffect
 function KEYS_TO_THE_KINGDOM:SpotlightUpdate(effect)
 	local sprite = effect:GetSprite()
-	if not effect.Parent and not sprite:IsPlaying("LightDisappear") then
+	if not effect.Parent and not sprite:IsPlaying("LightDisappear") and effect.Timeout <= 0 then
 		sprite:Play("LightDisappear")
+	end
+	if effect.Timeout > 0 then
+		local scale = sprite.Scale
+		scale:Lerp(Vector(1.25, 1.25), 0.05)
+		sprite.Scale = scale
 	end
 	if sprite:IsFinished("LightDisappear") then
 		effect:Remove()
@@ -504,10 +519,17 @@ SEL.Callbacks.AddCallback(SEL.Callbacks.ID.ENTITY_STATUS_EFFECT_UPDATE, KEYS_TO_
 
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
-	KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
+	local statusData = SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
+	---@cast statusData StatusEffectData
 	Mod.SFXMan:Play(SoundEffect.SOUND_LIGHTBOLT, 2)
-	local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.CRACK_THE_SKY, 10, npc.Position, Vector.Zero, nil)
-	effect.SpriteScale = Vector(3, 3)
+	--for i = 1, 30 do
+	--local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DUST_CLOUD, 0, npc.Position, RandomVector():Resized(2), nil):ToEffect()
+	--effect.Timeout = 30
+	--effect.PositionOffset = Vector(Mod:RandomNum(-npc.Size/2, npc.Size/2), Mod:RandomNum(-npc.Size, 0))
+	--end
+	local spotlight = statusData.CustomData.Spotlight
+	spotlight.Timeout = 60
+	KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
 	Mod:ForEachPlayer(function(player)
 		if player:HasCollectible(KEYS_TO_THE_KINGDOM.ID) then
 			KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), true)
@@ -516,7 +538,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	end)
 end
 
-SEL.Callbacks.AddCallback(SEL.Callbacks.ID.POST_REMOVE_ENTITY_STATUS_EFFECT, KEYS_TO_THE_KINGDOM.RaptureBoss,
+SEL.Callbacks.AddCallback(SEL.Callbacks.ID.PRE_REMOVE_ENTITY_STATUS_EFFECT, KEYS_TO_THE_KINGDOM.RaptureBoss,
 	KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
 
 ---@param ent Entity
@@ -528,7 +550,7 @@ function KEYS_TO_THE_KINGDOM:ResetRaptureStatusOnHit(ent, _, _, source, _)
 		--If the damage source came from the player in any way
 		local player = Mod:TryGetPlayer(source)
 		if player then
-			statusData.Countdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player)
+			statusData.Countdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, ent)
 			player:AnimateSad()
 		end
 	end
@@ -543,8 +565,8 @@ function KEYS_TO_THE_KINGDOM:ResetRaptureStatusOnDamage(ent, _, _, source, _)
 	if player and source.Entity then
 		local npc = source.Entity:ToNPC() or source.Entity.SpawnerEntity and source.Entity.SpawnerEntity:ToNPC()
 		local statusData = npc and SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
-		if statusData then
-			statusData.Countdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player)
+		if statusData and npc then
+			statusData.Countdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, npc)
 			Mod.SFXMan:Play(SoundEffect.SOUND_THUMBS_DOWN)
 		end
 	end
