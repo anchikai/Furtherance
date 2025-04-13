@@ -9,6 +9,7 @@ Furtherance.Item.KEYS_TO_THE_KINGDOM = KEYS_TO_THE_KINGDOM
 
 KEYS_TO_THE_KINGDOM.ID = Isaac.GetItemIdByName("Keys to the Kingdom")
 KEYS_TO_THE_KINGDOM.EFFECT = Isaac.GetEntityVariantByName("Keys to the Kingdom Effects")
+KEYS_TO_THE_KINGDOM.DEVIL_NULL_ID = Isaac.GetNullItemIdByName("kttk denied deals")
 
 --SubTypes of the Effect
 KEYS_TO_THE_KINGDOM.SOUL = 1
@@ -47,6 +48,13 @@ KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS = Mod:Set({
 	EffectVariant.BLOOD_SPLAT,
 	EffectVariant.DUST_CLOUD
 })
+KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS = {
+	SoundEffect.SOUND_ROCKET_BLAST_DEATH,
+	SoundEffect.SOUND_DEATH_BURST_BONE,
+	SoundEffect.SOUND_DEATH_BURST_LARGE,
+	SoundEffect.SOUND_DEATH_BURST_SMALL,
+	SoundEffect.SOUND_MEAT_JUMPS
+}
 
 --30fps * 30 = 30 seconds
 KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN = 30 * 3
@@ -70,6 +78,8 @@ KEYS_TO_THE_KINGDOM.StatTable = {
 local identifier = "FR_RAPTURE"
 SEL.RegisterStatusEffect(identifier, nil, nil, nil, true)
 KEYS_TO_THE_KINGDOM.STATUS_RAPTURE = SEL.StatusFlag[identifier]
+
+local min = math.min
 
 --#endregion
 
@@ -119,6 +129,31 @@ function KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, ent)
 	return raptureCountdown
 end
 
+---Cannot remove a boss outright as it can cause unintended effects, such as the room continuing to play the boss fight music
+---@param npc Entity
+function KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
+	--Does just about nothing anyways
+	npc:AddEntityFlags(EntityFlag.FLAG_NO_BLOOD_SPLASH)
+	npc:ClearEntityFlags(EntityFlag.FLAG_EXTRA_GORE)
+	npc:Die()
+	Mod:DelayOneFrame(function()
+		npc:GetSprite():SetLastFrame()
+		Mod:DelayOneFrame(function()
+			for _, effect in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
+				if KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[effect.Variant]
+					and effect.Position:DistanceSquared(npc.Position) <= (effect.Size + npc.Size + 25) ^ 2
+				then
+					effect:Remove()
+				end
+			end
+			for _, soundID in ipairs(KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS) do
+				Mod.SFXMan:Stop(soundID)
+			end
+		end)
+	end)
+	npc.Visible = false
+end
+
 ---Raptures the enemy, spawning a spared soul and grants stats to the player who raptured it corresponding to whether or not it's a boss
 ---
 ---Will spawn the soul at the parent head if it happens to be a segmented enemy and remove the rest
@@ -149,53 +184,29 @@ function KEYS_TO_THE_KINGDOM:RaptureEnemy(ent)
 	end
 	if ent:IsBoss() then
 		Mod:GetData(ent).Raptured = true
-		--Does just about nothing anyways
-		parent:AddEntityFlags(EntityFlag.FLAG_NO_BLOOD_SPLASH)
-		parent:ClearEntityFlags(EntityFlag.FLAG_EXTRA_GORE)
-		parent:Die()
-		Mod:DelayOneFrame(function()
-			parent:GetSprite():SetLastFrame()
-			Mod:DelayOneFrame(function()
-				for _, effect in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
-					if KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[effect.Variant]
-						and effect.Position:DistanceSquared(parent.Position) <= (effect.Size + parent.Size + 25) ^ 2
-					then
-						effect:Remove()
-					end
-				end
-			end)
-		end)
-		parent.Visible = false
+		KEYS_TO_THE_KINGDOM:RemoveBoss(parent)
 	else
 		parent:Remove()
 	end
 end
 
----Grants 1 random stat buff from the Keys to the Kingdom StatBuff table
+---Grants a number of random stat buffs from the Keys to the Kingdom StatBuff table
 ---@param player EntityPlayer
 ---@param rng RNG
----@param isBoss boolean @If set to true, will grant 2 different stats, or 3 if you're Peter with Birthright
-function KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, isBoss)
+---@param numStats integer @How many stat buffs to provide. Any other than 1 will provide a different stat. Cannot be more than 6
+---@param isTemp boolean @If set to true, will pull from the temporary stat pool and only last for the floor
+function KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, numStats, isTemp)
+	numStats = min(6, numStats)
 	local varName = "KeysToTheKingdomStatBonus"
-	if not isBoss then
+	if isTemp then
 		varName = varName .. "_Temp"
 	end
 	local selectedStats = {}
-	if isBoss then
-		local numStats = 2
-		if player:GetPlayerType() == Mod.PlayerType.PETER and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
-			numStats = 3
-		end
-		for _ = 1, numStats do
-			local randomStatIndex = Mod:GetDifferentRandomKey(selectedStats, KEYS_TO_THE_KINGDOM.StatTable, rng)
-			selectedStats[randomStatIndex] = true
-		end
-	else
-		selectedStats[rng:RandomInt(#KEYS_TO_THE_KINGDOM.StatTable) + 1] = true
-	end
-	for statIndex, _ in pairs(selectedStats) do
-		local key = tostring(statIndex)
-		local player_save = isBoss and Mod:RunSave(player) or Mod:FloorSave(player)
+	for _ = 1, numStats do
+		local randomStatIndex = Mod:GetDifferentRandomKey(selectedStats, KEYS_TO_THE_KINGDOM.StatTable, rng)
+		selectedStats[randomStatIndex] = true
+		local key = tostring(randomStatIndex)
+		local player_save = isTemp and Mod:FloorSave(player) or Mod:RunSave(player)
 		player_save[varName] = player_save[varName] or {}
 		player_save[varName][key] = (player_save[varName][key] or 0) + 1
 	end
@@ -210,9 +221,15 @@ end
 function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 	local room = Mod.Room()
 
-	if room:GetAliveEnemiesCount() == 0 then
+	if KEYS_TO_THE_KINGDOM:DenyHisOfferings(player) then
+		return true
+	elseif room:GetAliveEnemiesCount() == 0 then
 		return { Discharge = false, ShowAnim = false, Remove = false }
-	elseif KEYS_TO_THE_KINGDOM.STORY_BOSS_IDS[room:GetBossID()] then
+	elseif KEYS_TO_THE_KINGDOM.STORY_BOSS_IDS[room:GetBossID()]
+		or player:GetPlayerType() == Mod.PlayerType.PETER
+		and (room:GetType() == RoomType.ROOM_BOSSRUSH
+			or room:GetType() == RoomType.ROOM_CHALLENGE)
+	then
 		player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_HOLY_MANTLE, true)
 		return true
 	else
@@ -226,7 +243,7 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 			local npc = ent:ToNPC()
 			local data = Mod:TryGetData(ent)
 			if canSpare and ent:IsBoss() and npc and (not data or not data.FailedRapture) then
-				local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.PRE_START_RAPTURE_BOSS, npc.Type, npc)
+				local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.PRE_START_RAPTURE_BOSS, npc.Type, npc, player, rng, flags, slot)
 				if result then
 					return
 				end
@@ -241,7 +258,7 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 					{ Spotlight = spotlight, FailedAttempts = 0, FailedAttemptsCooldown = 0 })
 			elseif canSpare and ent:Exists() then
 				KEYS_TO_THE_KINGDOM:RaptureEnemy(ent)
-				KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, false)
+				KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, 1, true)
 			end
 		end)
 	end
@@ -556,7 +573,11 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
 	Mod:ForEachPlayer(function(player)
 		if player:HasCollectible(KEYS_TO_THE_KINGDOM.ID) then
-			KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), true)
+			local numStats = 2
+			if player:GetPlayerType() == Mod.PlayerType.PETER and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+				numStats = 3
+			end
+			KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), numStats, false)
 			player:AddCacheFlags(CacheFlag.CACHE_ALL, true)
 		end
 	end)
@@ -564,8 +585,6 @@ end
 
 SEL.Callbacks.AddCallback(SEL.Callbacks.ID.PRE_REMOVE_ENTITY_STATUS_EFFECT, KEYS_TO_THE_KINGDOM.RaptureBoss,
 	KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
-
-local min = math.min
 
 ---@param player EntityPlayer
 ---@param npc EntityNPC
@@ -673,5 +692,103 @@ function KEYS_TO_THE_KINGDOM:PostKrampusRapture(npc)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, KEYS_TO_THE_KINGDOM.PostKrampusRapture, EntityType.ENTITY_FALLEN)
+
+--#endregion
+
+--#region Alabaster Scrap + Angel interaction
+
+---@param npc EntityNPC
+---@param player EntityPlayer
+function KEYS_TO_THE_KINGDOM:SpareAngels(npc, player)
+	if player:HasTrinket(Mod.Trinket.ALABASTER_SCRAP.ID) then
+		local data = Mod:GetData(npc)
+		if not data.KTTKSparedAngel then
+			Mod:GetData(npc).KTTKSparedAngel = true
+			npc:GetSprite():Play("Appear")
+			npc:GetSprite():SetLastFrame()
+			npc.Friction = 0
+			npc.Velocity = Vector.Zero
+			Mod.SFXMan:Play(SoundEffect.SOUND_THUMBSUP)
+		end
+		return true
+	end
+end
+
+Mod:AddCallback(Mod.ModCallbacks.PRE_START_RAPTURE_BOSS, KEYS_TO_THE_KINGDOM.SpareAngels, EntityType.ENTITY_GABRIEL)
+Mod:AddCallback(Mod.ModCallbacks.PRE_START_RAPTURE_BOSS, KEYS_TO_THE_KINGDOM.SpareAngels, EntityType.ENTITY_URIEL)
+
+---@param npc EntityNPC
+function KEYS_TO_THE_KINGDOM:ReverseAppear(npc)
+	local data = Mod:TryGetData(npc)
+	if data and data.KTTKSparedAngel then
+		npc.Velocity = Vector.Zero
+		local sprite = npc:GetSprite()
+		local previousFrame = sprite:GetFrame() - 2
+		sprite:SetFrame(previousFrame)
+		if previousFrame == 0 then
+			local angelKey = npc.Type == EntityType.ENTITY_URIEL and CollectibleType.COLLECTIBLE_KEY_PIECE_1 or
+			CollectibleType.COLLECTIBLE_KEY_PIECE_2
+			local otherKey = npc.Type == EntityType.ENTITY_URIEL and CollectibleType.COLLECTIBLE_KEY_PIECE_2 or
+			CollectibleType.COLLECTIBLE_KEY_PIECE_1
+			local itemID
+			if not PlayerManager.AnyoneHasCollectible(angelKey) then
+				itemID = angelKey
+			elseif not PlayerManager.AnyoneHasCollectible(otherKey) then
+				itemID = otherKey
+			else
+				itemID = Mod.Game:GetItemPool():GetCollectible(ItemPoolType.POOL_ANGEL, true,
+					PlayerManager.FirstCollectibleOwner(KEYS_TO_THE_KINGDOM.ID):GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID)
+					:Next(), nil)
+			end
+			Mod.SFXMan:Play(SoundEffect.SOUND_HOLY)
+			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, itemID,
+				Mod.Room():FindFreePickupSpawnPosition(npc.Position), Vector.Zero, npc)
+			KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
+		end
+		return true
+	end
+end
+
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_UPDATE, CallbackPriority.IMPORTANT, KEYS_TO_THE_KINGDOM.ReverseAppear,
+	EntityType.ENTITY_GABRIEL)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_UPDATE, CallbackPriority.IMPORTANT, KEYS_TO_THE_KINGDOM.ReverseAppear,
+	EntityType.ENTITY_URIEL)
+
+--#endregion
+
+--#region Alabaster Scrap + Devil interaction
+
+---@param player EntityPlayer
+function KEYS_TO_THE_KINGDOM:DenyHisOfferings(player)
+	if Mod.Room():GetType() == RoomType.ROOM_DEVIL
+		and player:HasTrinket(Mod.Trinket.ALABASTER_SCRAP.ID)
+	then
+		Mod:inverseiforeach(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE), function(ent)
+			local pickup = ent:ToPickup()
+			---@cast pickup EntityPickup
+			if pickup:IsShopItem() then
+				Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.CRACK_THE_SKY, 10, pickup.Position, Vector.Zero, nil)
+				Mod.SFXMan:Play(SoundEffect.SOUND_LIGHTBOLT)
+				pickup:Remove()
+				player:AddNullItemEffect(KEYS_TO_THE_KINGDOM.DEVIL_NULL_ID, false)
+			end
+		end)
+		return true
+	end
+end
+
+---@param player EntityPlayer
+function KEYS_TO_THE_KINGDOM:StatsOnNextFloor(player)
+	local effectNum = player:GetEffects():GetNullEffectNum(KEYS_TO_THE_KINGDOM.DEVIL_NULL_ID)
+	if effectNum > 0 then
+		Mod:DelayOneFrame(function()
+			KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), effectNum, false)
+			Mod.SFXMan:Play(SoundEffect.SOUND_HOLY)
+		end)
+		player:GetEffects():RemoveNullEffect(KEYS_TO_THE_KINGDOM.DEVIL_NULL_ID, -1)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_NEW_LEVEL, KEYS_TO_THE_KINGDOM.StatsOnNextFloor)
 
 --#endregion

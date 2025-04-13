@@ -3,7 +3,7 @@
          nameimageroot="gfx/ui/boss/">
 	<player name="Leah" skin="character_001_leah.png" costumeSuffix="leah" skinColor="-1" modcostume="1"
 		heartcontainers="4" redhearts="4" brokenhearts="1" coins="6"
-		firedelaymodifier="1" damagemodifier="-0.36" rangemodifier="-2"
+		firedelaymodifier="-0.29" damagemodifier="-0.36" rangemodifier="-2"
 		pocketActive="Heart Renovator"
 		nameimage="playername_leah.png" portrait="playerportrait_leah.png"
 		birthright="Loved once more" />
@@ -16,7 +16,7 @@
 
 	<player name="Peter" skin="character_002_peter.png" costumeSuffix="peter" skinColor="-1" modcostume="3"
 		heartcontainers="4" redhearts="4" soulhearts="2" keys="1"
-		speedmodifier="-0.25" firedelaymodifier="8.7" damagemodifier="-0.5" rangemodifier="0.5"
+		speedmodifier="-0.25" firedelaymodifier="-1.05" damagemodifier="-1" rangemodifier="0.5"
 		pocketActive="Keys to the Kingdom"
 		nameimage="playername_peter.png" portrait="playerportrait_peter.png"
 		birthright="Mercy up" />
@@ -30,7 +30,7 @@
 
 	<player name="Miriam" skin="character_003_miriam.png" costumeSuffix="miriam" skinColor="-1" modcostume="5"
 		heartcontainers="4" redhearts="4" soulhearts="4"
-		speedmodifier="0.25" firedelaymodifier="-3" damagemodifier="0.5" rangemodifier="-1.5"
+		speedmodifier="0.25" firedelaymodifier="1.5" damagemodifier="0.5" rangemodifier="-1.5"
 		nameimage="playername_miriam.png" portrait="playerportrait_miriam.png"
 		birthright="Crashing waves" />
 	<player name="Miriam" bSkinParent="Miriam" skin="character_003_miriam_b.png" costumeSuffix="miriam_b" skinColor="-1" modcostume="6"

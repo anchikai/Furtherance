@@ -26,15 +26,20 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, LEAH.ScaredHeartOnDeath)
 
 ---@param player EntityPlayer
+function LEAH:OnBrokenHeartAdd(player)
+	if player:GetPlayerType() == Mod.PlayerType.LEAH then
+		player:AddCacheFlags(CacheFlag.CACHE_FIREDELAY, true)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_ADD_HEARTS, LEAH.OnBrokenHeartAdd, AddHealthType.BROKEN)
+
+---@param player EntityPlayer
 function LEAH:TearsUp(player)
 	if player:GetPlayerType() == Mod.PlayerType.LEAH then
-		print(player.MaxFireDelay)
 		local tears = Mod:Delay2Tears(player.MaxFireDelay)
-		print(tears)
 		tears = tears + LEAH.TEARS_PER_BROKEN * player:GetBrokenHearts()
-		print(tears)
 		player.MaxFireDelay = Mod:Tears2Delay(tears)
-		print(player.MaxFireDelay)
 	end
 end
 
