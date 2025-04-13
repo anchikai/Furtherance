@@ -35,9 +35,23 @@ KEYS_TO_THE_KINGDOM.STORY_BOSS_IDS = Mod:Set({
 	BossType.DOGMA,
 	BossType.BEAST
 })
+KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS = Mod:Set({
+	EffectVariant.FLY_EXPLOSION,
+	EffectVariant.MAGGOT_EXPLOSION,
+	EffectVariant.ROCK_EXPLOSION,
+	EffectVariant.POOP_EXPLOSION,
+	EffectVariant.BIG_ROCK_EXPLOSION,
+	EffectVariant.BLOOD_EXPLOSION,
+	EffectVariant.BLOOD_GUSH,
+	EffectVariant.BLOOD_PARTICLE,
+	EffectVariant.BLOOD_SPLAT,
+	EffectVariant.DUST_CLOUD
+})
 
 --30fps * 30 = 30 seconds
-KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN = 30 * 30
+KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN = 30 * 3
+KEYS_TO_THE_KINGDOM.BOSS_FORGIVE_ATTEMPTS = 3
+KEYS_TO_THE_KINGDOM.BOSS_FORGIVE_COOLDOWN = 60
 KEYS_TO_THE_KINGDOM.MAX_CHARGES = Mod.ItemConfig:GetCollectible(KEYS_TO_THE_KINGDOM.ID).MaxCharges
 KEYS_TO_THE_KINGDOM.COLLECTION_DISTANCE = 20 ^ 2
 KEYS_TO_THE_KINGDOM.SPARE_TIMER = {
@@ -45,17 +59,17 @@ KEYS_TO_THE_KINGDOM.SPARE_TIMER = {
 }
 
 KEYS_TO_THE_KINGDOM.StatTable = {
-	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.5,      TempBuff = 0.1 },
-	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = -0.5 * 5, TempBuff = -0.1 * 5 }, -- MaxFireDelay buffs should be negative!
+	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.5,                       TempBuff = 0.1 },
+	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = -0.5 * 5,                  TempBuff = -0.1 * 5 }, -- MaxFireDelay buffs should be negative!
 	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.5 * Mod.RANGE_BASE_MULT, TempBuff = 0.1 * Mod.RANGE_BASE_MULT },
-	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.125,    TempBuff = 0.025 },
-	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.5,      TempBuff = 0.1 },
-	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5,      TempBuff = 0.1 }
+	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.125,                     TempBuff = 0.025 },
+	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.5,                       TempBuff = 0.1 },
+	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5,                       TempBuff = 0.1 }
 }
 
 local identifier = "FR_RAPTURE"
 SEL.RegisterStatusEffect(identifier, nil, nil, nil, true)
-KEYS_TO_THE_KINGDOM.RAPTURE_STATUS = SEL.StatusFlag[identifier]
+KEYS_TO_THE_KINGDOM.STATUS_RAPTURE = SEL.StatusFlag[identifier]
 
 --#endregion
 
@@ -70,7 +84,7 @@ function KEYS_TO_THE_KINGDOM:CanSpare(ent, allowDead)
 		and (allowDead and not ent:IsInvincible() or ent:IsVulnerableEnemy())
 		and not ent:HasEntityFlags(EntityFlag.FLAG_CHARM | EntityFlag.FLAG_FRIENDLY)
 		and ent:ToNPC().CanShutDoors
-		and not SEL:HasStatusEffect(ent, KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
+		and not SEL:HasStatusEffect(ent, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 		and not (Mod:TryGetData(ent) and Mod:GetData(ent).Raptured)
 end
 
@@ -79,7 +93,7 @@ function KEYS_TO_THE_KINGDOM:OnStatusEffectAdd(ent)
 	if not (ent:IsActiveEnemy(false) and ent:IsVulnerableEnemy() and ent:IsBoss()) then
 		return true
 	end
-	local statusConfig = SEL:GetStatusEffectData(ent, KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
+	local statusConfig = SEL:GetStatusEffectData(ent, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 	if statusConfig then
 		--Don't both reapplying it so the timer won't get reset
 		return true
@@ -87,7 +101,7 @@ function KEYS_TO_THE_KINGDOM:OnStatusEffectAdd(ent)
 end
 
 SEL.Callbacks.AddCallback(SEL.Callbacks.ID.PRE_ADD_ENTITY_STATUS_EFFECT,
-	KEYS_TO_THE_KINGDOM.OnStatusEffectAdd, KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
+	KEYS_TO_THE_KINGDOM.OnStatusEffectAdd, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 
 ---@param player EntityPlayer
 ---@param ent Entity
@@ -110,34 +124,50 @@ end
 ---Will spawn the soul at the parent head if it happens to be a segmented enemy and remove the rest
 ---@param ent Entity
 function KEYS_TO_THE_KINGDOM:RaptureEnemy(ent)
-	local parent = ent:GetLastParent() --Returns the first parent in the chain or itself
+	local parent = SEL.Utils.GetLastParent(ent)
 	local glow = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.GROUND_GLOW, 0, parent.Position, Vector.Zero, nil)
 	glow:GetSprite().PlaybackSpeed = 0.1
 	local subtype = ent:IsBoss() and KEYS_TO_THE_KINGDOM.SPARED_SOUL_BOSS or KEYS_TO_THE_KINGDOM.SPARED_SOUL
 	Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT, subtype,
 		parent.Position, Vector.Zero, nil)
 	local currentEnt = parent
-	local attempt = 0
-	--Clear up segmented enemies
-	while currentEnt:Exists() and currentEnt.Child and currentEnt.Child:Exists() and not currentEnt.Child:IsBoss() do
-		local child = currentEnt.Child
-		currentEnt:Remove()
-		currentEnt = child
-		attempt = attempt + 1
-		--You can never be too safe around while loops...
-		if attempt == 50 then
-			break
+	local ptrHash = GetPtrHash(currentEnt)
+	local loopedEntities = {
+		[ptrHash] = true
+	}
+
+	if currentEnt.Child then
+		currentEnt = currentEnt.Child
+		ptrHash = GetPtrHash(currentEnt)
+		--Clear up segmented enemies
+		while not loopedEntities[ptrHash] and SEL.Utils.IsInParentChildChain(currentEnt) do
+			local child = currentEnt.Child
+			currentEnt:Remove()
+			currentEnt = child
+			ptrHash = GetPtrHash(currentEnt)
 		end
 	end
 	if ent:IsBoss() then
 		Mod:GetData(ent).Raptured = true
-		currentEnt:AddEntityFlags(EntityFlag.FLAG_NO_BLOOD_SPLASH)
-		currentEnt:Die()
-		currentEnt:GetSprite():Play("Death")
-		currentEnt:GetSprite():SetLastFrame()
-		currentEnt.Visible = false
+		--Does just about nothing anyways
+		parent:AddEntityFlags(EntityFlag.FLAG_NO_BLOOD_SPLASH)
+		parent:ClearEntityFlags(EntityFlag.FLAG_EXTRA_GORE)
+		parent:Die()
+		Mod:DelayOneFrame(function()
+			parent:GetSprite():SetLastFrame()
+			Mod:DelayOneFrame(function()
+				for _, effect in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
+					if KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[effect.Variant]
+						and effect.Position:DistanceSquared(parent.Position) <= (effect.Size + parent.Size + 25) ^ 2
+					then
+						effect:Remove()
+					end
+				end
+			end)
+		end)
+		parent.Visible = false
 	else
-		currentEnt:Remove()
+		parent:Remove()
 	end
 end
 
@@ -179,26 +209,8 @@ end
 ---@param player EntityPlayer
 function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 	local room = Mod.Room()
-	local roomType = room:GetType()
 
-	room:GetEffects():AddCollectibleEffect(KEYS_TO_THE_KINGDOM.ID)
-
-	if roomType == RoomType.ROOM_ANGEL
-		and not (
-			player:HasCollectible(CollectibleType.COLLECTIBLE_KEY_PIECE_1)
-			and player:HasCollectible(CollectibleType.COLLECTIBLE_KEY_PIECE_2)
-		)
-	then
-		if not player:HasCollectible(CollectibleType.COLLECTIBLE_KEY_PIECE_1) then
-			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE,
-				CollectibleType.COLLECTIBLE_KEY_PIECE_1,
-				room:FindFreePickupSpawnPosition(player.Position, 40), Vector.Zero, player)
-		elseif not player:HasCollectible(CollectibleType.COLLECTIBLE_KEY_PIECE_2) then
-			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE,
-				CollectibleType.COLLECTIBLE_KEY_PIECE_2,
-				room:FindFreePickupSpawnPosition(player.Position, 40), Vector.Zero, player)
-		end
-	elseif room:GetAliveEnemiesCount() == 0 then
+	if room:GetAliveEnemiesCount() == 0 then
 		return { Discharge = false, ShowAnim = false, Remove = false }
 	elseif KEYS_TO_THE_KINGDOM.STORY_BOSS_IDS[room:GetBossID()] then
 		player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_HOLY_MANTLE, true)
@@ -211,15 +223,22 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 		local source = EntityRef(player)
 		Mod:inverseiforeach(Isaac.GetRoomEntities(), function(ent)
 			local canSpare = KEYS_TO_THE_KINGDOM:CanSpare(ent)
-			if canSpare and ent:IsBoss() then
+			local npc = ent:ToNPC()
+			local data = Mod:TryGetData(ent)
+			if canSpare and ent:IsBoss() and npc and (not data or not data.FailedRapture) then
+				local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.PRE_START_RAPTURE_BOSS, npc.Type, npc)
+				if result then
+					return
+				end
 				local spotlight = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
 					KEYS_TO_THE_KINGDOM.SPOTLIGHT,
 					ent.Position, Vector.Zero, ent):ToEffect()
 				---@cast spotlight EntityEffect
 				spotlight.Parent = ent
 				spotlight:FollowParent(ent)
-				SEL:AddStatusEffect(ent, KEYS_TO_THE_KINGDOM.RAPTURE_STATUS, raptureCountdown, source, nil,
-					{ Spotlight = spotlight })
+				spotlight:GetSprite().Scale = Vector(1.25, 1.25)
+				SEL:AddStatusEffect(ent, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil,
+					{ Spotlight = spotlight, FailedAttempts = 0, FailedAttemptsCooldown = 0 })
 			elseif canSpare and ent:Exists() then
 				KEYS_TO_THE_KINGDOM:RaptureEnemy(ent)
 				KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, false)
@@ -496,11 +515,15 @@ Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, KEYS_TO_THE_KINGDOM.OnEffectIn
 
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:RaptureBossUpdate(npc)
-	local statusData = SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
+	local statusData = SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 	---@cast statusData StatusEffectData
+	local customData = statusData.CustomData
 	local countdown = statusData.Countdown
 	---@type EntityEffect
-	local spotlight = statusData.CustomData.Spotlight
+	local spotlight = customData.Spotlight
+	if customData.FailedAttemptsCooldown > 0 then
+		customData.FailedAttemptsCooldown = customData.FailedAttemptsCooldown - 1
+	end
 	local whiteColor = 0.45 - (countdown / 2000)
 	spotlight:GetSprite().Scale = Vector(0.25 + (countdown / KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN), 1.25)
 	spotlight:SetColor(Color(1, 1, 1, 1, whiteColor, whiteColor, whiteColor), 1, 2, true, false)
@@ -515,12 +538,13 @@ function KEYS_TO_THE_KINGDOM:RaptureBossUpdate(npc)
 end
 
 SEL.Callbacks.AddCallback(SEL.Callbacks.ID.ENTITY_STATUS_EFFECT_UPDATE, KEYS_TO_THE_KINGDOM.RaptureBossUpdate,
-	KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
+	KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
-	local statusData = SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
+	local statusData = SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 	---@cast statusData StatusEffectData
+	if statusData.CustomData.FailRapture then return end
 	Mod.SFXMan:Play(SoundEffect.SOUND_LIGHTBOLT, 2)
 	--for i = 1, 30 do
 	--local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DUST_CLOUD, 0, npc.Position, RandomVector():Resized(2), nil):ToEffect()
@@ -539,19 +563,46 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 end
 
 SEL.Callbacks.AddCallback(SEL.Callbacks.ID.PRE_REMOVE_ENTITY_STATUS_EFFECT, KEYS_TO_THE_KINGDOM.RaptureBoss,
-	KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
+	KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
+
+local min = math.min
+
+---@param player EntityPlayer
+---@param npc EntityNPC
+---@param statusData StatusEffectData
+function KEYS_TO_THE_KINGDOM:SkillIssue(player, npc, statusData)
+	local customData = statusData.CustomData
+	if customData.FailedAttemptsCooldown > 0 then return end
+	customData.FailedAttempts = customData.FailedAttempts + 1
+	if customData.FailedAttempts < KEYS_TO_THE_KINGDOM.BOSS_FORGIVE_ATTEMPTS then
+		customData.FailedAttemptsCooldown = KEYS_TO_THE_KINGDOM.BOSS_FORGIVE_COOLDOWN
+		local maxCountdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, npc)
+		statusData.Countdown = min(maxCountdown, statusData.Countdown + (maxCountdown / 3))
+		Mod.SFXMan:Play(SoundEffect.SOUND_THUMBS_DOWN)
+	else
+		customData.FailRapture = true
+		Mod:GetData(npc).FailedRapture = true
+		customData.Spotlight:GetSprite():Play("LightDisappear")
+		Mod.SFXMan:Play(SoundEffect.SOUND_THUMBSDOWN_AMPLIFIED)
+		SEL:RemoveStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
+	end
+end
 
 ---@param ent Entity
 ---@param source EntityRef
 function KEYS_TO_THE_KINGDOM:ResetRaptureStatusOnHit(ent, _, _, source, _)
-	local statusData = SEL:GetStatusEffectData(ent, KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
-	--So long as the enemy was damage by something that isn't an enemy
-	if statusData and source.Entity and not source.Entity:ToNPC() then
-		--If the damage source came from the player in any way
-		local player = Mod:TryGetPlayer(source)
+	local statusData = SEL:GetStatusEffectData(ent, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
+	local npc = ent:ToNPC()
+	if statusData
+		and npc
+		and source.Entity
+		--Ignore friendly enemies and familiars since you don't really control them
+		and not source.Entity:ToNPC()
+		and not source.Entity:ToFamiliar()
+	then
+		local player = source.Entity:ToPlayer() or source.Entity.SpawnerEntity and source.Entity.SpawnerEntity:ToPlayer()
 		if player then
-			statusData.Countdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, ent)
-			player:AnimateSad()
+			KEYS_TO_THE_KINGDOM:SkillIssue(player, npc, statusData)
 		end
 	end
 end
@@ -564,10 +615,9 @@ function KEYS_TO_THE_KINGDOM:ResetRaptureStatusOnDamage(ent, _, _, source, _)
 	local player = ent:ToPlayer()
 	if player and source.Entity then
 		local npc = source.Entity:ToNPC() or source.Entity.SpawnerEntity and source.Entity.SpawnerEntity:ToNPC()
-		local statusData = npc and SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.RAPTURE_STATUS)
+		local statusData = npc and SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 		if statusData and npc then
-			statusData.Countdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, npc)
-			Mod.SFXMan:Play(SoundEffect.SOUND_THUMBS_DOWN)
+			KEYS_TO_THE_KINGDOM:SkillIssue(player, npc, statusData)
 		end
 	end
 end
@@ -577,43 +627,51 @@ Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.ResetR
 
 --#endregion
 
---#region Krampoos
+--#region Unique Rapture death interactions (basically just Krampus)
 
-local krampusLineup = {}
+local raptureDeathQueue = {}
 
----Apparently POST_NPC_DEATH runs A F T ER POST_ENTITY_REMOVE which is when I remove my custom data. Awesome.
-function KEYS_TO_THE_KINGDOM:Ugh(ent)
-	if ent.Variant == 1 then
+---Apparently POST_NPC_DEATH runs A F T E R POST_ENTITY_REMOVE which is when I remove my custom data. Awesome.
+function KEYS_TO_THE_KINGDOM:RaptureBossDeath(ent)
+	if ent:IsBoss() then
 		local data = Mod:TryGetData(ent)
 		if data and data.Raptured then
-			krampusLineup[GetPtrHash(ent)] = true
-			Mod:DelayOneFrame(function() krampusLineup[GetPtrHash(ent)] = false end)
+			raptureDeathQueue[GetPtrHash(ent)] = true
+			Mod:DelayOneFrame(function() raptureDeathQueue[GetPtrHash(ent)] = false end)
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, KEYS_TO_THE_KINGDOM.Ugh, EntityType.ENTITY_FALLEN)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, KEYS_TO_THE_KINGDOM.RaptureBossDeath)
 
 ---@param npc EntityNPC
-function KEYS_TO_THE_KINGDOM:KrampusRapture(npc)
-	if krampusLineup[GetPtrHash(npc)] and npc.Variant == 1 then
-		for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
-			if ent.FrameCount == 0
-				and (ent.SubType == CollectibleType.COLLECTIBLE_LUMP_OF_COAL
-					or ent.SubType == CollectibleType.COLLECTIBLE_HEAD_OF_KRAMPUS)
-			then
-				local itemPool = Mod.Game:GetItemPool()
-				local pickup = ent:ToPickup()
-				---@cast pickup EntityPickup
-				local newItem = itemPool:GetCollectible(ItemPoolType.POOL_DEVIL, true, npc.DropSeed,
-					CollectibleType.COLLECTIBLE_LUMP_OF_COAL)
-				pickup:Morph(ent.Type, ent.Variant, newItem)
-				break
-			end
+function KEYS_TO_THE_KINGDOM:PostRaptureDeath(npc)
+	if raptureDeathQueue[GetPtrHash(npc)] then
+		Isaac.RunCallbackWithParam(Mod.ModCallbacks.POST_RAPTURE_BOSS_DEATH, npc.Type, npc)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, KEYS_TO_THE_KINGDOM.PostRaptureDeath, EntityType.ENTITY_FALLEN)
+
+---@param npc EntityNPC
+function KEYS_TO_THE_KINGDOM:PostKrampusRapture(npc)
+	if npc.Variant ~= 1 then return end
+	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
+		if ent.FrameCount == 0
+			and (ent.SubType == CollectibleType.COLLECTIBLE_LUMP_OF_COAL
+				or ent.SubType == CollectibleType.COLLECTIBLE_HEAD_OF_KRAMPUS)
+		then
+			local itemPool = Mod.Game:GetItemPool()
+			local pickup = ent:ToPickup()
+			---@cast pickup EntityPickup
+			local newItem = itemPool:GetCollectible(ItemPoolType.POOL_DEVIL, true, npc.DropSeed,
+				CollectibleType.COLLECTIBLE_LUMP_OF_COAL)
+			pickup:Morph(ent.Type, ent.Variant, newItem)
+			break
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, KEYS_TO_THE_KINGDOM.KrampusRapture, EntityType.ENTITY_FALLEN)
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, KEYS_TO_THE_KINGDOM.PostKrampusRapture, EntityType.ENTITY_FALLEN)
 
 --#endregion

@@ -28,18 +28,6 @@ FLIP.TEAR_DEATH_EFFECTS = Mod:Set({
 FLIP.BLACKLISTED_EFFECTS = Mod:Set({
 	EffectVariant.PURGATORY
 })
-FLIP.ENEMY_EFFECTS = Mod:Set({
-	EffectVariant.FLY_EXPLOSION,
-	EffectVariant.MAGGOT_EXPLOSION,
-	EffectVariant.ROCK_EXPLOSION,
-	EffectVariant.POOP_EXPLOSION,
-	EffectVariant.BIG_ROCK_EXPLOSION,
-	EffectVariant.BLOOD_EXPLOSION,
-	EffectVariant.BLOOD_GUSH,
-	EffectVariant.BLOOD_PARTICLE,
-	EffectVariant.BLOOD_SPLAT,
-	EffectVariant.DUST_CLOUD
-})
 --They have their own funky mirror stuff. Don't bother with their effects and allow them to exist on both sides
 FLIP.BLACKLISTED_ENTITIES = Mod:Set({
 	EntityType.ENTITY_WRAITH,
@@ -328,7 +316,7 @@ function FLIP:MarkEnemyEffectOnInit(effect)
 		for _, ent in ipairs(Isaac.GetRoomEntities()) do
 			if FLIP:TryGetEnemy(ent)
 				and effect.Position:DistanceSquared(ent.Position) <= 500
-				and FLIP.ENEMY_EFFECTS[effect.Variant]
+				and Mod.Item.KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[effect.Variant]
 			then
 				FLIP:SetAppropriateWaterClipFlag(effect, ent)
 			end
@@ -344,7 +332,7 @@ function FLIP:MarkEnemyEffectOnDeath(npc)
 
 	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
 		if ent.Position:DistanceSquared(npc.Position) <= 324
-			and FLIP.ENEMY_EFFECTS[ent.Variant]
+			and Mod.Item.KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[ent.Variant]
 		then
 			FLIP:SetAppropriateWaterClipFlag(ent, npc)
 		end
@@ -752,8 +740,11 @@ function FLIP:PeterFlip(name)
 	if name == "Peter Flip" then
 		local factor = MUDDLED_CROSS.FLIP_FACTOR > 0 and MUDDLED_CROSS.FLIP_FACTOR or FLIP.FLIP_FACTOR
 		if Mod.FLAGS.Debug and FLIP.SHOW_DEBUG then
-			Isaac.RenderText("Expected to Peter Flip:" .. tostring(Mod.Room():GetEffects():HasCollectibleEffect(MUDDLED_CROSS.ID)), 50, 30, 1, 1, 1, 1)
-			Isaac.RenderText("Expected to Room Flip (Overrides Peter Flip):" .. tostring(MUDDLED_CROSS.TARGET_FLIP > 0), 50, 45, 1, 1, 1, 1)
+			Isaac.RenderText(
+			"Expected to Peter Flip:" .. tostring(Mod.Room():GetEffects():HasCollectibleEffect(MUDDLED_CROSS.ID)), 50, 30,
+				1, 1, 1, 1)
+			Isaac.RenderText("Expected to Room Flip (Overrides Peter Flip):" .. tostring(MUDDLED_CROSS.TARGET_FLIP > 0),
+				50, 45, 1, 1, 1, 1)
 			Isaac.RenderText("Peter Flip Factor:" .. tostring(FLIP.FLIP_FACTOR), 50, 60, 1, 1, 1, 1)
 			Isaac.RenderText("Room Flip Factor:" .. tostring(MUDDLED_CROSS.FLIP_FACTOR), 50, 75, 1, 1, 1, 1)
 		end
@@ -769,10 +760,11 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, FLIP.PeterFlip)
 
+---@diagnostic disable-next-line: inject-field
 function Mod:PrintPeterBFlip()
 	print("Expected to Peter Flip:" .. Mod.Room():GetEffects():HasCollectibleEffect(MUDDLED_CROSS.ID))
 	print("Expected to Room Flip (Overrides Peter Flip):" .. MUDDLED_CROSS.TARGET_FLIP > 0)
-	print("Peter Flip Factor:" ..FLIP.FLIP_FACTOR)
+	print("Peter Flip Factor:" .. FLIP.FLIP_FACTOR)
 	print("Room Flip Factor:" .. MUDDLED_CROSS.FLIP_FACTOR)
 end
 
@@ -799,7 +791,7 @@ Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, FLIP.FixInputs, InputHook.GET_ACTI
 
 function FLIP:ReduceRippleSound(id, volume, frameDelay, loop, pitch, pan)
 	if FLIP.PETER_EFFECTS_ACTIVE then
-		return {id, 0.05, frameDelay, loop, pitch, pan}
+		return { id, 0.05, frameDelay, loop, pitch, pan }
 	end
 end
 

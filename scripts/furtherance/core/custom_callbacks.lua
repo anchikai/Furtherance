@@ -14,7 +14,13 @@ Furtherance.ModCallbacks = {
 	POST_MUDDLED_CROSS_ROOM_FLIP = "FURTHERANCE_POST_MUDDLED_CROSS_ROOM_FLIP",
 
 	--(), Optional Arg: RoomType - Called when Muddled Cross' puddle effect needs to get a backdrop. Providing a RoomType argument will have it only run for the current room's type
-	GET_MUDDLED_CROSS_PUDDLE_BACKDROP = "FURTHERANCE_GET_MUDDLED_CROSS_PUDDLE_BACKDROP"
+	GET_MUDDLED_CROSS_PUDDLE_BACKDROP = "FURTHERANCE_GET_MUDDLED_CROSS_PUDDLE_BACKDROP",
+
+	--(EntityNPC npc): boolean, Optional Arg: EntityType - Called when initiating the rapture process from Keys to the Kingdom on a boss enemy. Return `true` to stop the usual process from initiating
+	PRE_START_RAPTURE_BOSS = "FURTHERANCE_PRE_START_RAPTURE_BOSS",
+
+	--(EntityNPC npc), Optional Arg: EntityType - Called after the "death" of a raptured boss.
+	POST_RAPTURE_BOSS_DEATH = "FURTHERANCE_POST_RAPTURE_BOSS_DEATH"
 }
 
 local function postBombExplode(_, bomb)
