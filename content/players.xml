@@ -16,7 +16,7 @@
 
 	<player name="Peter" skin="character_002_peter.png" costumeSuffix="peter" skinColor="-1" modcostume="3"
 		heartcontainers="4" redhearts="4" soulhearts="2" keys="1"
-		speedmodifier="-0.25" firedelaymodifier="-1.05" damagemodifier="-1" rangemodifier="0.5"
+		speedmodifier="-0.25" firedelaymodifier="-0.55" damagemodifier="-1" rangemodifier="0.5"
 		pocketActive="Keys to the Kingdom"
 		nameimage="playername_peter.png" portrait="playerportrait_peter.png"
 		birthright="Mercy up" />
