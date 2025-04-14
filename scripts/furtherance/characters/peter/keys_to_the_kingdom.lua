@@ -2,6 +2,7 @@
 
 local Mod = Furtherance
 local SEL = StatusEffectLibrary
+local PETER = Mod.Character.PETER
 
 local KEYS_TO_THE_KINGDOM = {}
 
@@ -123,7 +124,7 @@ function KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, ent)
 	if KEYS_TO_THE_KINGDOM.SPARE_TIMER[ent.Type] then
 		raptureCountdown = KEYS_TO_THE_KINGDOM.SPARE_TIMER[ent.Type]
 	end
-	if player:GetPlayerType() == Mod.PlayerType.PETER and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+	if PETER:IsPeter(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 		raptureCountdown = raptureCountdown * 0.5
 	end
 	return raptureCountdown
@@ -226,7 +227,7 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 	elseif room:GetAliveEnemiesCount() == 0 then
 		return { Discharge = false, ShowAnim = false, Remove = false }
 	elseif KEYS_TO_THE_KINGDOM.STORY_BOSS_IDS[room:GetBossID()]
-		or player:GetPlayerType() == Mod.PlayerType.PETER
+		or PETER:IsPeter(player)
 		and (room:GetType() == RoomType.ROOM_BOSSRUSH
 			or room:GetType() == RoomType.ROOM_CHALLENGE)
 	then
@@ -234,7 +235,7 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 		return true
 	else
 		local raptureCountdown = KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN
-		if player:GetPlayerType() == Mod.PlayerType.PETER and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+		if PETER:IsPeter(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 			raptureCountdown = raptureCountdown * 0.5
 		end
 		local source = EntityRef(player)
@@ -574,7 +575,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	Mod:ForEachPlayer(function(player)
 		if player:HasCollectible(KEYS_TO_THE_KINGDOM.ID) then
 			local numStats = 2
-			if player:GetPlayerType() == Mod.PlayerType.PETER and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+			if PETER:IsPeter(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 				numStats = 3
 			end
 			KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), numStats, false)

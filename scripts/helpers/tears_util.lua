@@ -7,3 +7,9 @@ end
 function Furtherance:Tears2Delay(tears)
 	return (30 / tears) - 1
 end
+
+---@param player EntityPlayer
+---@param tear EntityTear
+function Furtherance:ShouldLudovicoUpdate(player, tear)
+	return math.floor(tear.FrameCount / player.MaxFireDelay) ~= math.floor((tear.FrameCount - 1) / player.MaxFireDelay)
+end

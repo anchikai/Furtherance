@@ -23,23 +23,10 @@ HEART_RENOVATOR.HeartAmount = {
 	[HeartSubType.HEART_BLENDED] = 2,
 }
 
---TODO: We can just save this for Leah's file probably
---[[ function Mod:LeahHeartCount(isContinued)
-	if isContinued then return end
-	for i = 0, Mod.Game:GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(i)
-		if player:GetPlayerType() == PlayerType.PLAYER_LEAH then
-			Mod:GetData(player).HeartCount = 2
-		end
-	end
-end
-
-Mod:AddCallback(Mod.CustomCallbacks.MC_POST_LOADED, Mod.LeahHeartCount) ]]
-
 function HEART_RENOVATOR:GetMaxHeartCounter(player)
 	local maxCount = HEART_RENOVATOR.MAX_COUNTER
 
-	if player:GetPlayerType() == Mod.PlayerType.LEAH and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+	if Mod.Character.LEAH:IsLeah(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 		maxCount = 999
 	end
 	return maxCount
@@ -109,7 +96,7 @@ function HEART_RENOVATOR:DamageUp(player)
 	local player_run_save = Mod:RunSave(player)
 	if player_run_save.HeartRenovatorDamage and player:HasCollectible(HEART_RENOVATOR.ID) then
 		local addAmount = player_run_save.HeartRenovatorDamage * HEART_RENOVATOR.DAMAGE_MULT
-		if player:GetPlayerType() == Mod.PlayerType.LEAH and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+		if Mod.Character.LEAH:IsLeah(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 			addAmount = addAmount * 2
 		end
 		player.Damage = player.Damage + player_run_save.HeartRenovatorDamage * HEART_RENOVATOR.DAMAGE_MULT

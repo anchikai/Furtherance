@@ -9,6 +9,11 @@ LEAH.TEARS_PER_BROKEN = 0.2
 
 Mod.Include("scripts.furtherance.characters.leah.heart_renovator")
 
+---@param player EntityPlayer
+function LEAH:IsLeah(player)
+	return player:GetPlayerType() == Mod.PlayerType.LEAH
+end
+
 ---@param npc EntityNPC
 function LEAH:ScaredHeartOnDeath(npc)
 	local player = PlayerManager.FirstPlayerByType(Mod.PlayerType.LEAH)

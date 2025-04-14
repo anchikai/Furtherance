@@ -6,6 +6,12 @@ Furtherance.Item.TAMBOURINE = TAMBOURINE
 
 TAMBOURINE.ID = Isaac.GetItemIdByName("Tambourine")
 
+function TAMBOURINE:OnUse()
+
+end
+
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, TAMBOURINE.OnUse, TAMBOURINE.ID)
+
 --[[
 local TambourineMedium = Isaac.GetSoundIdByName("TambourineMedium")
 local WhirlpoolVariant = Isaac.GetEntityVariantByName("Miriam Whirlpool")

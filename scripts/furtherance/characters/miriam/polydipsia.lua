@@ -6,35 +6,140 @@ Furtherance.Item.POLYDIPSIA = POLYDIPSIA
 
 POLYDIPSIA.ID = Isaac.GetItemIdByName("Polydipsia")
 
+---@param player EntityPlayer
+---@param cacheFlag CacheFlag
+function POLYDIPSIA:Stats(player, cacheFlag)
+	if not player:HasCollectible(POLYDIPSIA.ID) then return end
+
+	if cacheFlag == CacheFlag.CACHE_RANGE then
+		player.TearFallingSpeed = player.TearFallingSpeed + 20
+		player.TearFallingAcceleration = player.TearFallingAcceleration + 1
+	elseif cacheFlag == CacheFlag.CACHE_FIREDELAY and not player:HasWeaponType(WeaponType.WEAPON_BONE) then
+		player.MaxFireDelay = (player.MaxFireDelay * 2) + 10
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, POLYDIPSIA.Stats, CacheFlag.CACHE_FIREDELAY)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, POLYDIPSIA.Stats, CacheFlag.CACHE_RANGE)
+
+---@param player EntityPlayer
+---@param ent Entity
+function POLYDIPSIA:SpawnPolydipsiaCreep(player, ent)
+	local pos = Mod.Room():GetClampedPosition(ent:ToLaser() and ent:ToLaser():GetEndPoint() or ent.Position, 25)
+	local weapon = player:GetWeapon(0)
+	local weaponType = weapon and weapon:GetWeaponType() or WeaponType.WEAPON_TEARS
+	--How Aquarius Creep is calculated by default according to rgon docs, with some adjustments
+	local tearParams = player:GetTearHitParams(weaponType, (player:GetTearPoisonDamage() * 0.666) / player.Damage, -Mod:RandomNum(2) & 2 - 1, nil)
+	local creep = player:SpawnAquariusCreep(tearParams)
+	if ent:ToKnife() then
+		creep:SetTimeout(Mod:RandomNum(15, 45))
+	else
+		creep:SetTimeout(90)
+		creep.SpriteScale = creep.SpriteScale * 1.25
+		creep:GetSprite():Play("BigBlood0" .. Mod:RandomNum(6))
+	end
+	creep.Position = pos
+end
+
+---@param weaponEnt Entity
+function POLYDIPSIA:OnWeaponEntityFire(weaponEnt)
+	local player = Mod:TryGetPlayer(weaponEnt)
+	if player and player:HasCollectible(POLYDIPSIA.ID) then
+		Mod:GetData(weaponEnt).PolydipsiaShot = true
+		if weaponEnt:ToTear() and not weaponEnt:ToTear():HasTearFlags(TearFlags.TEAR_LUDOVICO) then
+			---@cast weaponEnt EntityTear
+			weaponEnt.Scale = weaponEnt.Scale * 1.4
+			weaponEnt:AddTearFlags(TearFlags.TEAR_KNOCKBACK)
+			weaponEnt:SetKnockbackMultiplier(weaponEnt.KnockbackMultiplier * 2)
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, POLYDIPSIA.OnWeaponEntityFire)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BOMB, POLYDIPSIA.OnWeaponEntityFire)
+Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, POLYDIPSIA.OnWeaponEntityFire, EffectVariant.ROCKET)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_SWORD, POLYDIPSIA.OnWeaponEntityFire)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_KNIFE, POLYDIPSIA.OnWeaponEntityFire)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BRIMSTONE, POLYDIPSIA.OnWeaponEntityFire)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BRIMSTONE_BALL, POLYDIPSIA.OnWeaponEntityFire)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TECH_LASER, POLYDIPSIA.OnWeaponEntityFire)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TECH_X_LASER, POLYDIPSIA.OnWeaponEntityFire)
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BONE_CLUB, POLYDIPSIA.OnWeaponEntityFire)
+
+---@param tear EntityTear
+function POLYDIPSIA:OnTearDeath(tear)
+	local player = Mod:TryGetPlayer(tear)
+	local data = Mod:TryGetData(tear)
+	if player and data and data.PolydipsiaShot then
+		POLYDIPSIA:SpawnPolydipsiaCreep(player, tear)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_DEATH, POLYDIPSIA.OnTearDeath)
+
+---@param tear EntityTear
+function POLYDIPSIA:OnLudoTearUpdate(tear)
+	if not tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then return end
+	local player = Mod:TryGetPlayer(tear)
+	if not player then return end
+	local data = Mod:GetData(player)
+	if data.PolydipsiaShot and Mod:ShouldUpdateLudo(tear, player) then
+		POLYDIPSIA:SpawnPolydipsiaCreep(player, tear)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, POLYDIPSIA.OnLudoTearUpdate)
+
+---@param bomb EntityBomb
+function POLYDIPSIA:OnBombExplode(bomb)
+	local data = Mod:TryGetData(bomb)
+	local player = Mod:TryGetPlayer(bomb)
+	if player and data and data.PolydipsiaShot then
+		POLYDIPSIA:SpawnPolydipsiaCreep(player, bomb)
+	end
+end
+
+Mod:AddCallback(Mod.ModCallbacks.POST_BOMB_EXPLODE, POLYDIPSIA.OnBombExplode)
+
+---@param knife EntityKnife
+function POLYDIPSIA:OnKnifeUpdate(knife)
+	local player = Mod:TryGetPlayer(knife)
+	if player and player:HasCollectible(POLYDIPSIA.ID) and knife:IsFlying() then
+		local data = Mod:GetData(knife)
+		if (data.NextPuddleSpawn or 0)  == 0 then
+			data.NextPuddleSpawn = Mod:RandomNum(2, 5)
+		end
+		if data.NextPuddleSpawn > 0 then
+			data.NextPuddleSpawn = data.NextPuddleSpawn - 1
+			if data.NextPuddleSpawn == 0 then
+				POLYDIPSIA:SpawnPolydipsiaCreep(player, knife)
+			end
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_KNIFE_UPDATE, POLYDIPSIA.OnKnifeUpdate)
+
+---@param laser EntityLaser
+function POLYDIPSIA:OnLaserUpdate(laser)
+	local player = Mod:TryGetPlayer(laser)
+	local data = Mod:TryGetData(laser)
+	if player and data and data.PolydipsiaShot then
+		local indexMap = Mod:Set(laser:GetHitList())
+		for _, ent in ipairs(Isaac.GetRoomEntities()) do
+			if indexMap[ent.Index] then
+				POLYDIPSIA:SpawnPolydipsiaCreep(player, ent)
+			end
+		end
+		POLYDIPSIA:SpawnPolydipsiaCreep(player, laser)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, POLYDIPSIA.OnLaserUpdate)
+
 --[[
-local WhirlpoolVariant = Isaac.GetEntityVariantByName("Miriam Whirlpool")
 
 local allPuddles = {}
-
-local function hasItem(player)
-	return player ~= nil and player:HasCollectible(CollectibleType.COLLECTIBLE_POLYDIPSIA)
-end
-
-local function isMiriam(player)
-	return player ~= nil and player:GetPlayerType() == PlayerType.PLAYER_MIRIAM
-end
-
-function Mod:GetPolydipsia(player, cacheFlag)
-	if hasItem(player) or isMiriam(player) then
-		if cacheFlag == CacheFlag.CACHE_RANGE then
-			player.TearFallingSpeed = player.TearFallingSpeed + 20
-			player.TearFallingAcceleration = player.TearFallingAcceleration + 1
-		end
-	end
-
-	if hasItem(player) and not isMiriam(player) and player:GetPlayerType() ~= PlayerType.PLAYER_THEFORGOTTEN then
-		if cacheFlag == CacheFlag.CACHE_FIREDELAY then
-			player.MaxFireDelay = (player.MaxFireDelay * 2) + 10
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.GetPolydipsia)
 
 local function makeMiriamPuddle(miriam, tear)
 	local data = Mod:GetData(tear)

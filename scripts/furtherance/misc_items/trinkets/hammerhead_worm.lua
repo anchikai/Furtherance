@@ -70,7 +70,7 @@ Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, HAMMERHEAD_WORM.HammerheadWormK
 
 ---Lasers pass the "player" as the source of damage, and has the same issue as knife with CollisionDamage so we gotta do this instead :/
 ---
----Shoutout to RGON though for [Get/Set]]DamageMult
+---Shoutout to RGON though for [Get/Set]DamageMult
 ---@param laser EntityLaser
 function HAMMERHEAD_WORM:SaveDamageMult(laser)
 	local player = laser.SpawnerEntity and laser.SpawnerEntity:ToPlayer()
