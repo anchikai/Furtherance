@@ -695,23 +695,21 @@ Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, KEYS_TO_THE_KINGDOM.PostKrampusR
 
 --#endregion
 
---#region Alabaster Scrap + Angel interaction
+--#region Angel interaction
 
 ---@param npc EntityNPC
 ---@param player EntityPlayer
 function KEYS_TO_THE_KINGDOM:SpareAngels(npc, player)
-	if player:HasTrinket(Mod.Trinket.ALABASTER_SCRAP.ID) then
-		local data = Mod:GetData(npc)
-		if not data.KTTKSparedAngel then
-			Mod:GetData(npc).KTTKSparedAngel = true
-			npc:GetSprite():Play("Appear")
-			npc:GetSprite():SetLastFrame()
-			npc.Friction = 0
-			npc.Velocity = Vector.Zero
-			Mod.SFXMan:Play(SoundEffect.SOUND_THUMBSUP)
-		end
-		return true
+	local data = Mod:GetData(npc)
+	if not data.KTTKSparedAngel then
+		Mod:GetData(npc).KTTKSparedAngel = true
+		npc:GetSprite():Play("Appear")
+		npc:GetSprite():SetLastFrame()
+		npc.Friction = 0
+		npc.Velocity = Vector.Zero
+		Mod.SFXMan:Play(SoundEffect.SOUND_THUMBSUP)
 	end
+	return true
 end
 
 Mod:AddCallback(Mod.ModCallbacks.PRE_START_RAPTURE_BOSS, KEYS_TO_THE_KINGDOM.SpareAngels, EntityType.ENTITY_GABRIEL)
@@ -756,13 +754,11 @@ Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_UPDATE, CallbackPriority.IMPORTA
 
 --#endregion
 
---#region Alabaster Scrap + Devil interaction
+--#region Devil interaction
 
 ---@param player EntityPlayer
 function KEYS_TO_THE_KINGDOM:DenyHisOfferings(player)
-	if Mod.Room():GetType() == RoomType.ROOM_DEVIL
-		and player:HasTrinket(Mod.Trinket.ALABASTER_SCRAP.ID)
-	then
+	if Mod.Room():GetType() == RoomType.ROOM_DEVIL then
 		Mod:inverseiforeach(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE), function(ent)
 			local pickup = ent:ToPickup()
 			---@cast pickup EntityPickup
