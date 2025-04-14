@@ -43,3 +43,4 @@ end
 Mod:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, CallbackPriority.LATE, PETER_B.OnNewRoom)
 
 Mod.Include("scripts.furtherance.characters.peter_b.muddled_cross")
+Mod.Include("scripts.furtherance.characters.peter_b.flip_modifier.flip_main")

@@ -28,14 +28,6 @@ MUDDLED_CROSS.FLIP_X_SPEED = 0.15
 
 --#endregion
 
---#region Helpers
-
-function MUDDLED_CROSS:IsRoomEffectActive()
-	return MUDDLED_CROSS.FLIP.FLIP_FACTOR > 0.5
-end
-
---#endregion
-
 --#region Flip on use
 
 function MUDDLED_CROSS:FlipX()
@@ -64,7 +56,7 @@ function MUDDLED_CROSS:TryFlip(player)
 	local isPeter = Mod.Character.PETER_B:IsPeterB(player)
 	local room = Mod.Room()
 	local enemiesActive = room:GetAliveEnemiesCount() > 0
-	local isXFlipped = MUDDLED_CROSS.FLIP.FLIP_FACTOR >= 0.95
+	local isXFlipped = Mod.Character.PETER_B.FLIP.FLIP_FACTOR >= 0.95
 
 	if not MUDDLED_CROSS.SPECIAL_ROOM_FLIP:IsFlippedRoom()
 		and (not isPeter or not enemiesActive)
@@ -143,7 +135,7 @@ function MUDDLED_CROSS:OnRoomClear(player)
 			player:FullCharge(slotData.Slot, true)
 		end
 	end
-	if MUDDLED_CROSS:IsRoomEffectActive() then
+	if Mod.Character.PETER_B.FLIP:IsRoomEffectActive() then
 		Mod.Room():GetEffects():RemoveCollectibleEffect(MUDDLED_CROSS.ID, -1)
 	end
 end
@@ -174,7 +166,6 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, MUDDLED_CROSS.TimedRecharge, Mod.PlayerType.PETER_B)
 
 local floor = math.floor
-local min = math.min
 
 ---@param player EntityPlayer
 function MUDDLED_CROSS:GetChargeFractionPerKill(player)
@@ -195,7 +186,7 @@ end
 function MUDDLED_CROSS:ChargeOnEnemyDeath(ent)
 	if not Mod:IsDeadEnemy(ent) then return end
 	local effects = Mod.Room():GetEffects()
-	if MUDDLED_CROSS:IsRoomEffectActive() and effects:HasCollectibleEffect(MUDDLED_CROSS.ID) then
+	if Mod.Character.PETER_B.FLIP:IsRoomEffectActive() and effects:HasCollectibleEffect(MUDDLED_CROSS.ID) then
 		Mod:DelayOneFrame(function()
 			local aliveFlippedEnemies = false
 			Mod:ForEachEnemy(function(_npc)
@@ -218,7 +209,8 @@ function MUDDLED_CROSS:ChargeOnEnemyDeath(ent)
 			local slots = Mod:GetActiveItemCharges(player, MUDDLED_CROSS.ID)
 			local CHARGE_FRACTION = MUDDLED_CROSS:GetChargeFractionPerKill(player)
 			for _, slotData in ipairs(slots) do
-				player:AddActiveCharge(floor(MUDDLED_CROSS.MAX_CHARGES / CHARGE_FRACTION), slotData.Slot, true, false, true)
+				player:AddActiveCharge(floor(MUDDLED_CROSS.MAX_CHARGES / CHARGE_FRACTION), slotData.Slot, true, false,
+					true)
 			end
 		end)
 	end
@@ -334,7 +326,6 @@ Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, MUDDLED_CROSS.OnAddCollect
 
 --#endregion
 
-Mod.Include("scripts.furtherance.characters.peter_b.flip")
 Mod.Include("scripts.furtherance.characters.peter_b.special_room_flip")
 
 return MUDDLED_CROSS
