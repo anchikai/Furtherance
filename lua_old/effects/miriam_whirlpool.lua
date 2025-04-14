@@ -28,8 +28,8 @@ function mod:WhirlpoolUpdate(effect)
     -- detecting death by LifeSpan
     if effect.LifeSpan <= 0 and not effect:IsDead() then
         effect:Die()
-        local sprite = effect:GetSprite()
         sprite:Play("Death", true)
+        local sprite = effect:GetSprite()
         mod:DelayFunction(function()
             if effect:IsDead() then
                 effect:Remove()

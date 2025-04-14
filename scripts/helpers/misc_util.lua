@@ -1,12 +1,7 @@
----@param ent Entity
-function Furtherance:GetId(ent)
-	return Furtherance.SaveManager.Utility.GetSaveIndex(ent)
-end
-
 ---@param ent1 Entity
 ---@param ent2 Entity
-function Furtherance:DoIdentifiersMatch(ent1, ent2)
-	return Furtherance:GetId(ent1) == Furtherance:GetId(ent2)
+function Furtherance:IsSameEntity(ent1, ent2)
+	return GetPtrHash(ent1) == GetPtrHash(ent2)
 end
 
 ---@param sprite Sprite
@@ -62,9 +57,19 @@ function Furtherance:AreColorsDifferent(c1, c2)
 	local c2Metatable = getmetatable(c2)
 	local different = false
 	for key, value in pairs(c1Metatable.__propget) do
-		if c2Metatable[key] ~= value then
+		if c2Metatable.__propget[key] ~= value then
 			different = true
 			break
+		end
+	end
+	if not different then
+		local cz1 = c1:GetColorize()
+		local cz2 = c2:GetColorize()
+		for key, value in pairs(cz1) do
+			if cz2[key] ~= value then
+				different = true
+				break
+			end
 		end
 	end
 	return different
@@ -178,7 +183,6 @@ function Furtherance:CheckTypeVarSub(ent, type, var, sub)
 		and ent.Variant == var
 		and ent.SubType == sub
 end
-
 
 ---@param pos Vector
 ---@param subType NotifySubType

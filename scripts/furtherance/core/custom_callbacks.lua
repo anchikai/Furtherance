@@ -4,8 +4,11 @@ Furtherance.ModCallbacks = {
 	---() - Called when the Muddled Cross flip shader is flipping from one side to the other
 	PETER_B_ENEMY_ROOM_FLIP = "FURTHERANCE_PETER_B_ENEMY_ROOM_FLIP",
 
-	---(EntityBomb Bomb) - Called
+	---(EntityBomb Bomb) - Called when a bomb explodes
 	POST_BOMB_EXPLODE = "FURTHERANCE_POST_BOMB_EXPLODE",
+
+	---(EntityBomb Bomb) - Called when an Epic Fetus rocket explodes
+	POST_ROCKET_EXPLODE = "FURTHERANCE_POST_ROCKET_EXPLODE",
 
 	--(), Optional Arg: RoomType - Called when a special room is being flipped. Providing a RoomType argument will have it only run for the current room's type
 	MUDDLED_CROSS_ROOM_FLIP = "FURTHERANCE_MUDDLED_CROSS_ROOM_FLIP",
@@ -33,3 +36,11 @@ local function postBombExplode(_, bomb)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, postBombExplode)
+
+local function postEpicFetusExplode(_, effect)
+	if effect.Variant == EffectVariant.ROCKET and effect.PositionOffset.Y == 0 then
+		Isaac.RunCallback(Mod.ModCallbacks.POST_ROCKET_EXPLODE, effect:ToEffect())
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, postEpicFetusExplode, EntityType.ENTITY_EFFECT)

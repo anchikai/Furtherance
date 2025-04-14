@@ -54,7 +54,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, BINDS_OF_DEVOTION.AddNewJa
 function BINDS_OF_DEVOTION:RemoveJacob(player, itemID)
 	Mod:ForEachPlayer(function(_player, playerIndex)
 		if _player:GetPlayerType() == BINDS_OF_DEVOTION.PLAYER_FAKE_JACOB
-			and Mod:DoIdentifiersMatch(_player.Parent, player)
+			and Mod:IsSameEntity(_player.Parent, player)
 			and _player:Exists()
 			and not _player:IsDead()
 		then
@@ -71,7 +71,7 @@ function BINDS_OF_DEVOTION:FakobDied(entity)
 	if player and player:IsDead() then
 		if player:GetPlayerType() == BINDS_OF_DEVOTION.PLAYER_FAKE_JACOB then
 			Mod:ForEachMainPlayer(function(_player)
-				if Mod:DoIdentifiersMatch(player.Parent, _player) then
+				if Mod:IsSameEntity(player.Parent, _player) then
 					_player:RemoveCollectible(BINDS_OF_DEVOTION.ID)
 				end
 			end)

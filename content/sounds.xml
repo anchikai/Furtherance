@@ -16,13 +16,7 @@
 	<sound name="FaithfulHeartPickup">
 		<sample weight="1" path="faithfulheart_pickup1.wav" />
 	</sound>
-	<sound name="TambourineLong">
-		<sample weight="1" path="tambourine_long.wa" /> <!-- Thank you Sillst! -->
-	</sound>
-	<sound name="TambourineMedium">
-		<sample weight="1" path="tambourine_medium.wav" /> <!-- Thank you Sillst! -->
-	</sound>
-	<sound name="TambourineShort">
+	<sound name="Tambourine">
 		<sample weight="1" path="tambourine_short.wav" /> <!-- Thank you Sillst! -->
 	</sound>
 	<sound name="Peter Flip">

@@ -6,39 +6,88 @@ Furtherance.Item.POLYDIPSIA = POLYDIPSIA
 
 POLYDIPSIA.ID = Isaac.GetItemIdByName("Polydipsia")
 
+POLYDIPSIA.CREEP_TIMEOUT = 90
+
+local floor = math.floor
+
 ---@param player EntityPlayer
 ---@param cacheFlag CacheFlag
 function POLYDIPSIA:Stats(player, cacheFlag)
-	if not player:HasCollectible(POLYDIPSIA.ID) then return end
+	if not player:HasCollectible(POLYDIPSIA.ID) or player:HasWeaponType(WeaponType.WEAPON_BONE) then return end
 
 	if cacheFlag == CacheFlag.CACHE_RANGE then
-		player.TearFallingSpeed = player.TearFallingSpeed + 20
+		player.TearFallingSpeed = player.TearFallingSpeed * 20
 		player.TearFallingAcceleration = player.TearFallingAcceleration + 1
-	elseif cacheFlag == CacheFlag.CACHE_FIREDELAY and not player:HasWeaponType(WeaponType.WEAPON_BONE) then
-		player.MaxFireDelay = (player.MaxFireDelay * 2) + 10
+		player.TearRange = player.TearRange * 0.8
+	elseif cacheFlag == CacheFlag.CACHE_FIREDELAY then
+		player.MaxFireDelay = (player.MaxFireDelay * 2) + 8
 	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, POLYDIPSIA.Stats, CacheFlag.CACHE_FIREDELAY)
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, POLYDIPSIA.Stats, CacheFlag.CACHE_RANGE)
 
+function POLYDIPSIA:UpdateCreepSize(creep, newSize)
+	local creepSize = math.sqrt(newSize / 10)
+	creep.SpriteScale = Vector(creepSize, creepSize)
+	creep.Size = (((creepSize * 12.5) ^ 1.75) / (newSize * 0.25))
+end
+
 ---@param player EntityPlayer
 ---@param ent Entity
-function POLYDIPSIA:SpawnPolydipsiaCreep(player, ent)
-	local pos = Mod.Room():GetClampedPosition(ent:ToLaser() and ent:ToLaser():GetEndPoint() or ent.Position, 25)
-	local weapon = player:GetWeapon(0)
-	local weaponType = weapon and weapon:GetWeaponType() or WeaponType.WEAPON_TEARS
+---@param enemyPos? Vector
+function POLYDIPSIA:SpawnPolydipsiaCreep(player, ent, enemyPos)
+	local pos = enemyPos or ent.Position
+	if ent:ToLaser() then
+		---@cast ent EntityLaser
+		if ent.SubType == LaserSubType.LASER_SUBTYPE_LINEAR then
+			pos = enemyPos or ent:GetEndPoint()
+		elseif enemyPos and ent.SubType ~= LaserSubType.LASER_SUBTYPE_NO_IMPACT then
+			pos = ent.Position + (enemyPos - ent.Position):Resized(ent.Radius)
+		end
+	end
+	pos = Mod.Room():GetClampedPosition(pos, 25)
 	--How Aquarius Creep is calculated by default according to rgon docs, with some adjustments
-	local tearParams = player:GetTearHitParams(weaponType, (player:GetTearPoisonDamage() * 0.666) / player.Damage, -Mod:RandomNum(2) & 2 - 1, nil)
+	local tearParams = player:GetTearHitParams(WeaponType.WEAPON_TEARS,
+		(player:GetTearPoisonDamage() * 0.666) / player.Damage, 5, player)
 	local creep = player:SpawnAquariusCreep(tearParams)
-	if ent:ToKnife() then
-		creep:SetTimeout(Mod:RandomNum(15, 45))
+	local size = ent.Size
+	--Epic Fetus
+	if ent:ToEffect() then
+		--They only exist for one frame and do change size with the explosion radius
+		for _, eff in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.BOMB_CRATER)) do
+			if eff.Position:DistanceSquared(pos) <= 0 then
+				size = 15 * eff.SpriteScale.X
+			end
+		end
+	elseif player:HasCollectible(CollectibleType.COLLECTIBLE_POLYPHEMUS) then
+		size = size + 15
+	end
+	if ent:ToKnife() and ent.SubType ~= KnifeSubType.CLUB_HITBOX then
+		creep:SetTimeout(Mod:RandomNum(floor(POLYDIPSIA.CREEP_TIMEOUT / 4), floor(POLYDIPSIA.CREEP_TIMEOUT / 2)))
 	else
+		POLYDIPSIA:UpdateCreepSize(creep, size)
 		creep:SetTimeout(90)
-		creep.SpriteScale = creep.SpriteScale * 1.25
 		creep:GetSprite():Play("BigBlood0" .. Mod:RandomNum(6))
 	end
+	if ent:ToLaser() then
+		if not Mod:AreColorsDifferent(player.LaserColor, Color.Default) then
+			creep:GetSprite().Color = Color(1, 0, 0)
+		end
+	end
 	creep.Position = pos
+	for _, eff in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL)) do
+		local existingCreep = eff:ToEffect()
+		---@cast existingCreep EntityEffect
+		if not Mod:IsSameEntity(eff, creep) and creep.Position:DistanceSquared(existingCreep.Position) <= (creep.Size + existingCreep.Size) ^ 2 and existingCreep.FrameCount > 1 then
+			local data = Mod:GetData(existingCreep)
+			data.PolydipsiaPenalty = (data.PolydipsiaPenalty or 0)
+			existingCreep:SetTimeout(Mod:Clamp(existingCreep.Timeout + 30 - data.PolydipsiaPenalty, 0,
+				POLYDIPSIA.CREEP_TIMEOUT))
+			data.PolydipsiaPenalty = math.max(0, data.PolydipsiaPenalty + 5)
+		end
+	end
+	return creep
 end
 
 ---@param weaponEnt Entity
@@ -50,7 +99,8 @@ function POLYDIPSIA:OnWeaponEntityFire(weaponEnt)
 			---@cast weaponEnt EntityTear
 			weaponEnt.Scale = weaponEnt.Scale * 1.4
 			weaponEnt:AddTearFlags(TearFlags.TEAR_KNOCKBACK)
-			weaponEnt:SetKnockbackMultiplier(weaponEnt.KnockbackMultiplier * 2)
+			weaponEnt.Mass = weaponEnt.Mass * 1.5
+			weaponEnt:SetKnockbackMultiplier(weaponEnt.KnockbackMultiplier * 5)
 		end
 	end
 end
@@ -82,8 +132,7 @@ function POLYDIPSIA:OnLudoTearUpdate(tear)
 	if not tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then return end
 	local player = Mod:TryGetPlayer(tear)
 	if not player then return end
-	local data = Mod:GetData(player)
-	if data.PolydipsiaShot and Mod:ShouldUpdateLudo(tear, player) then
+	if player:HasCollectible(POLYDIPSIA.ID) and Mod:ShouldUpdateLudo(tear, player) then
 		POLYDIPSIA:SpawnPolydipsiaCreep(player, tear)
 	end
 end
@@ -100,13 +149,14 @@ function POLYDIPSIA:OnBombExplode(bomb)
 end
 
 Mod:AddCallback(Mod.ModCallbacks.POST_BOMB_EXPLODE, POLYDIPSIA.OnBombExplode)
+Mod:AddCallback(Mod.ModCallbacks.POST_ROCKET_EXPLODE, POLYDIPSIA.OnBombExplode)
 
 ---@param knife EntityKnife
 function POLYDIPSIA:OnKnifeUpdate(knife)
 	local player = Mod:TryGetPlayer(knife)
 	if player and player:HasCollectible(POLYDIPSIA.ID) and knife:IsFlying() then
 		local data = Mod:GetData(knife)
-		if (data.NextPuddleSpawn or 0)  == 0 then
+		if (data.NextPuddleSpawn or 0) == 0 then
 			data.NextPuddleSpawn = Mod:RandomNum(2, 5)
 		end
 		if data.NextPuddleSpawn > 0 then
@@ -124,14 +174,25 @@ Mod:AddCallback(ModCallbacks.MC_POST_KNIFE_UPDATE, POLYDIPSIA.OnKnifeUpdate)
 function POLYDIPSIA:OnLaserUpdate(laser)
 	local player = Mod:TryGetPlayer(laser)
 	local data = Mod:TryGetData(laser)
-	if player and data and data.PolydipsiaShot then
-		local indexMap = Mod:Set(laser:GetHitList())
-		for _, ent in ipairs(Isaac.GetRoomEntities()) do
-			if indexMap[ent.Index] then
-				POLYDIPSIA:SpawnPolydipsiaCreep(player, ent)
+	if player and (data and data.PolydipsiaShot or laser.SubType ~= LaserSubType.LASER_SUBTYPE_LINEAR) then
+		data = Mod:GetData(laser)
+		if (data.NextPuddleSpawn or 0) == 0 then
+			data.NextPuddleSpawn = laser.Timeout == 0 and 6 or 3
+		end
+		if data.NextPuddleSpawn > 0 then
+			data.NextPuddleSpawn = data.NextPuddleSpawn - 1
+			if data.NextPuddleSpawn == 0 then
+				local indexMap = Mod:Set(laser:GetHitList())
+				for _, ent in ipairs(Isaac.GetRoomEntities()) do
+					if indexMap[ent.Index] then
+						POLYDIPSIA:SpawnPolydipsiaCreep(player, laser, ent.Position)
+					end
+				end
+				if laser.SubType == LaserSubType.LASER_SUBTYPE_LINEAR then
+					POLYDIPSIA:SpawnPolydipsiaCreep(player, laser)
+				end
 			end
 		end
-		POLYDIPSIA:SpawnPolydipsiaCreep(player, laser)
 	end
 end
 

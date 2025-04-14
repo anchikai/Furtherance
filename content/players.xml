@@ -30,7 +30,7 @@
 
 	<player name="Miriam" skin="character_003_miriam.png" costumeSuffix="miriam" skinColor="-1" modcostume="5"
 		heartcontainers="4" redhearts="4" soulhearts="4"
-		speedmodifier="0.25" firedelaymodifier="1.5" damagemodifier="0.5" rangemodifier="-1.5"
+		speedmodifier="0.25" damagemodifier="0.5"
 		items="Tambourine"
 		nameimage="playername_miriam.png" portrait="playerportrait_miriam.png"
 		birthright="Crashing waves" />
