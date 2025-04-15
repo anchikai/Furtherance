@@ -22,6 +22,9 @@ function TAMBOURINE:OnUse(_, _, player)
 	---@cast splash EntityEffect
 	splash.SpriteScale = Vector(5, 5)
 	splash.Color = Color(1,1,1,1,0.25,0.5,1)
+	local ripple = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.WATER_RIPPLE, 0, player.Position, Vector.Zero, nil):ToEffect()
+	---@cast ripple EntityEffect
+	ripple.SpriteScale = Vector(3, 3)
 	Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2_DIVE, 0.4, 2, false, 1.5)
 	Mod.SFXMan:Play(TAMBOURINE.SFX)
 	local creep = Mod.Item.POLYDIPSIA:SpawnPolydipsiaCreep(player, player)
