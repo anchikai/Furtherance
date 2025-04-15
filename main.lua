@@ -164,6 +164,10 @@ Mod.LoopInclude(tools, "scripts.tools")
 Mod.LoopInclude(core, "scripts.furtherance.core")
 Mod.LoopInclude(config, "scripts.furtherance.config")
 
+if CustomHealthAPI and CustomHealthAPI.Library and CustomHealthAPI.Library.UnregisterCallbacks then
+    CustomHealthAPI.Library.UnregisterCallbacks("Furtherance")
+end
+
 Furtherance.TearModifier = include("scripts.furtherance.core.tear_modifiers")
 
 Furtherance.PlayerType = {
@@ -192,7 +196,7 @@ Mod.LoopInclude(characters, "scripts.furtherance.characters")
 
 local challenges = {}
 
-Mod.LoopInclude(challenges, "scripts.furtherance.challenes")
+Mod.LoopInclude(challenges, "scripts.furtherance.challenges")
 
 Mod.Include("scripts.furtherance.unlocks.unlock_loader")
 Mod.Include("scripts.furtherance.misc_items.misc_items_loader")
