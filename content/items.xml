@@ -48,7 +48,7 @@
 	<passive id="56" name="Butterfly" description="Loss of a loved one" gfx="butterfly.png" quality="1" tags="nolostbr" />
 	<passive id="58" name="Wine Bottle" description="Pop!" gfx="wine_bottle.png" quality="2" tags="offensive" />
 	<passive id="59" name="Flux" description="Continuity" gfx="flux.png" cache="tearflag range" quality="2" tags="offensive" />
-	<passive id="62" name="Little Raincoat" description="Become the nightmare" gfx="little_raincoat.png" cache="size" quality="2" tags="nolostbr" />
+	<passive id="62" name="Little Raincoat" description="Become the nightmare" gfx="little_raincoat.png" cache="size" quality="2" tags="nolostbr" maxhearts="2" />
 	<!-- <passive id="66" name="Leah's Hair Tie" description="Fasten your hair" gfx="leahs_hair_tie.png" quality="2" /> -->
 	<!-- <passive id="67" name="Leah's Torn Heart" description="" gfx="leahs_torn_heart.png" quality="2" /> -->
 	<!-- <passive id="68" name="Peter's Headband" description="" gfx="peters_headband.png" quality="4" keys="1" /> -->
