@@ -4,7 +4,7 @@ local JUNO = {}
 
 Furtherance.Item.JUNO = JUNO
 
-JUNO.ID = Isaac.GetItemIdByName("Juno")
+JUNO.ID = Isaac.GetItemIdByName("Juno?")
 
 JUNO.ANIMA_SOLA_DURATION = 60
 

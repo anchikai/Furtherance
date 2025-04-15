@@ -4,7 +4,7 @@ local CHIRON = {}
 
 Furtherance.Item.CHIRON = CHIRON
 
-CHIRON.ID = Isaac.GetItemIdByName("Chiron")
+CHIRON.ID = Isaac.GetItemIdByName("Chiron?")
 
 CHIRON.SPEED_UP = 0.2
 

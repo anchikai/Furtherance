@@ -4,7 +4,7 @@ local OPHIUCHUS = {}
 
 Furtherance.Item.OPHIUCHUS = OPHIUCHUS
 
-OPHIUCHUS.ID = Isaac.GetItemIdByName("Ophiuchus")
+OPHIUCHUS.ID = Isaac.GetItemIdByName("Ophiuchus?")
 
 OPHIUCHUS.DAMAGE_UP = 0.3
 OPHIUCHUS.FIREDELAY_DOWN = 0.4

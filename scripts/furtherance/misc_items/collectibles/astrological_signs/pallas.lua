@@ -4,7 +4,7 @@ local PALLAS = {}
 
 Furtherance.Item.PALLAS = PALLAS
 
-PALLAS.ID = Isaac.GetItemIdByName("Pallas")
+PALLAS.ID = Isaac.GetItemIdByName("Pallas?")
 
 PALLAS.FLAT_STONE_DAMAGE_BONUS = 1.16
 PALLAS.TEAR_SCALE = 1.2

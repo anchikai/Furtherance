@@ -1,6 +1,10 @@
 local Mod = Furtherance
 
---TODO: Will revisit for tear modifier implementation
+local CERES = {}
+
+Furtherance.Item.CERES = CERES
+
+CERES.ID = Isaac.GetItemIdByName("Ceres?")
 
 --[[
 local game = Game()
