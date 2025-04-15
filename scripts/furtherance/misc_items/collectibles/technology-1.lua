@@ -4,31 +4,58 @@ local TECHNOLOGY_MINUS_1 = {}
 
 Furtherance.Item.TECHNOLOGY_MINUS_1 = TECHNOLOGY_MINUS_1
 
-TECHNOLOGY_MINUS_1.ID = Isaac.GetItemIdByName("Tech IX")
+TECHNOLOGY_MINUS_1.ID = Isaac.GetItemIdByName("Technology -1")
 
---TODO: Revisit later
+TECHNOLOGY_MINUS_1.SPLIT_CHANCE = math.pi * 0.01
 
---[[ ---@param tear EntityTear
-function Mod:Minus1Shots(tear)
-	local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
-	if player and player:HasCollectible(CollectibleType.COLLECTIBLE_TECHNOLOGY_MINUS_1) then
-		local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_TECHNOLOGY_MINUS_1)
-		if rng:RandomFloat() <= 0.0314 then
-			for i = 1, 3 do
-				local direction = rng:RandomInt(8) * 45
-
-				-- 2 is technology laser
-				local laser = EntityLaser.ShootAngle(2, tear.Position, direction, 3, Vector.Zero, player)
-				laser.TearFlags = player.TearFlags & ~TearFlags.TEAR_QUADSPLIT
-				laser:SetOneHit(true)
+---@param ent EntityTear | EntityKnife | EntityBomb
+function TECHNOLOGY_MINUS_1:ShootLasers(ent)
+	local player = Mod:TryGetPlayer(ent, true)
+	if player and player:HasCollectible(TECHNOLOGY_MINUS_1.ID) then
+		local rng = player:GetCollectibleRNG(TECHNOLOGY_MINUS_1.ID)
+		if (ent:ToKnife() and ent:IsFlying() or ent:ToBomb() and ent.IsFetus or ent:ToTear())
+			and rng:RandomFloat() <= TECHNOLOGY_MINUS_1.SPLIT_CHANCE
+		then
+			local num = player:GetCollectibleNum(TECHNOLOGY_MINUS_1.ID) - 1
+			local maxLasers = 3 + num
+			for _ = 1, maxLasers do
+				local laser = player:FireTechLaser(ent.Position, LaserOffset.LASER_TRACTOR_BEAM_OFFSET, RandomVector(), false, true, ent, 1)
+				laser.PositionOffset = ent.PositionOffset
+				laser.TearFlags = ent.TearFlags
+				laser:GetSprite().Color = player.LaserColor
+				Mod:GetData(laser).TechMinus1Laser = true
 			end
-			tear:ClearTearFlags(TearFlags.TEAR_QUADSPLIT | TearFlags.TEAR_BURSTSPLIT | TearFlags.TEAR_SPLIT)
-			tear:Die()
 		end
-		tear.Color = Color(0.75, 0, 0, 1, 0.25, 0, 0)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, Mod.Minus1Shots)
-Mod:AddCallback(ModCallbacks.MC_POST_KNIFE_UPDATE, Mod.Minus1Shots)
- ]]
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, TECHNOLOGY_MINUS_1.ShootLasers)
+Mod:AddCallback(ModCallbacks.MC_POST_KNIFE_UPDATE, TECHNOLOGY_MINUS_1.ShootLasers)
+Mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, TECHNOLOGY_MINUS_1.ShootLasers)
+
+---@param laser EntityLaser
+function TECHNOLOGY_MINUS_1:LasersShootLasers(laser)
+	local player = Mod:TryGetPlayer(laser, true)
+	if player and player:HasCollectible(TECHNOLOGY_MINUS_1.ID) then
+		local data = Mod:TryGetData(laser)
+		if not data or not data.TechMinus1Laser then
+			local rng = player:GetCollectibleRNG(TECHNOLOGY_MINUS_1.ID)
+			local pos = laser:GetEndPoint()
+			if rng:RandomFloat() <= TECHNOLOGY_MINUS_1.SPLIT_CHANCE then
+				local num = player:GetCollectibleNum(TECHNOLOGY_MINUS_1.ID) - 1
+				local maxLasers = 3 + num
+				local oppositeDir = Vector.FromAngle(laser.AngleDegrees):Rotated(180)
+				for _ = 1, maxLasers do
+					local dir = oppositeDir:Rotated(Mod:RandomNum(-90, 90))
+					local techLaser = player:FireTechLaser(pos, LaserOffset.LASER_SHOOP_OFFSET, dir, false, true, laser, 1)
+					techLaser.TearFlags = laser.TearFlags
+					techLaser:GetSprite().Color = laser:GetSprite().Color
+					Mod:GetData(techLaser).TechMinus1Laser = true
+					techLaser.Parent = laser
+				end
+			end
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, TECHNOLOGY_MINUS_1.LasersShootLasers)

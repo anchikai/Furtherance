@@ -37,7 +37,7 @@ local collectibles = {
 	"servitude",
 	"sunscreen",
 	--"tech_ix",
-	--"technology-1",
+	"technology-1",
 	"unstable_core",
 	"wine_bottle",
 	"zzzzoptionszzzz",
