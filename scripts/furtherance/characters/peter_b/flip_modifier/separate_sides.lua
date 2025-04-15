@@ -1,6 +1,5 @@
 local Mod = Furtherance
 local SEL = StatusEffectLibrary
-local MUDDLED_CROSS = Mod.Item.MUDDLED_CROSS
 local FLIP = Mod.Character.PETER_B.FLIP
 
 local SEPARATE_SIDES = {}
@@ -66,7 +65,6 @@ function SEPARATE_SIDES:CollisionMode(ent, collider)
 		oppositeTarget = ent
 	end
 	if enemyTarget then
-		local fromFlippedEnemy = FLIP:IsFlippedEnemy(enemyTarget)
 		local isFlippedEnemy = FLIP:IsFlippedEnemy(damageSource)
 		if oppositeTarget:ToPlayer()
 			and FLIP:ValidEnemyToFlip(ent)
@@ -76,7 +74,9 @@ function SEPARATE_SIDES:CollisionMode(ent, collider)
 			SEPARATE_SIDES:BringEnemyToFlipside(damageSource)
 			return false
 		end
-		if (not fromFlippedEnemy or Mod:GetData(enemyTarget).PeterJustFlipped) and not enemyTarget:IsBoss() then
+		local enemyData = Mod:GetData(enemyTarget)
+		local entData = Mod:GetData(ent)
+		if (entData.PeterFlippedIgnoredRenderFlag ~= enemyData.PeterFlippedIgnoredRenderFlag or Mod:GetData(enemyTarget).PeterJustFlipped) and not enemyTarget:IsBoss() then
 			return true
 		end
 	end
@@ -198,3 +198,22 @@ function SEPARATE_SIDES:PressurePlateUpdate(gridEnt)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_GRID_ENTITY_PRESSUREPLATE_UPDATE, SEPARATE_SIDES.PressurePlateUpdate)
+
+---@param tear EntityTear
+function SEPARATE_SIDES:FlatStone(tear)
+	if tear:HasTearFlags(TearFlags.TEAR_HYDROBOUNCE)
+		and tear.PositionOffset.Y == -5
+	then
+		local normal = FLIP:GetIgnoredWaterClipFlag()
+		local inverse = FLIP:GetIgnoredWaterClipFlag(true)
+		local data = Mod:GetData(tear)
+
+		if data.PeterFlippedIgnoredRenderFlag == normal then
+			data.PeterFlippedIgnoredRenderFlag = inverse
+		else
+			data.PeterFlippedIgnoredRenderFlag = normal
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, SEPARATE_SIDES.FlatStone)

@@ -119,12 +119,13 @@ end
 ---@param tearOrProj EntityTear | EntityProjectile
 function FLIP_RENDERING:TearSplash(tearOrProj)
 	if not FLIP.PETER_EFFECTS_ACTIVE then return end
+	local renderFlag = Mod:GetData(tearOrProj).PeterFlippedIgnoredRenderFlag
 
 	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
 		if ent.Position:DistanceSquared(tearOrProj.Position) <= 1
 			and FLIP.TEAR_DEATH_EFFECTS[ent.Variant]
 		then
-			FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, tearOrProj)
+			Mod:GetData(ent).PeterFlippedIgnoredRenderFlag = renderFlag
 		end
 	end
 end
@@ -134,10 +135,11 @@ Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_DEATH, FLIP_RENDERING.TearSplash
 
 function FLIP_RENDERING:PostBombExplode(bomb)
 	if not FLIP.PETER_EFFECTS_ACTIVE then return end
+	local renderFlag = Mod:GetData(bomb).PeterFlippedIgnoredRenderFlag
 
 	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
 		if ent.Position:DistanceSquared(bomb.Position) <= 1 and FLIP.TEAR_DEATH_EFFECTS[ent.Variant] then
-			FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, bomb)
+			Mod:GetData(ent).PeterFlippedIgnoredRenderFlag = renderFlag
 		end
 	end
 end
@@ -158,7 +160,8 @@ function FLIP:MarkEnemyEffectOnInit(effect)
 				and effect.Position:DistanceSquared(ent.Position) <= 500
 				and Mod.Item.KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[effect.Variant]
 			then
-				FLIP_RENDERING:SetAppropriateWaterClipFlag(effect, ent)
+				local renderFlag = Mod:GetData(ent).PeterFlippedIgnoredRenderFlag
+				Mod:GetData(effect).PeterFlippedIgnoredRenderFlag = renderFlag
 			end
 		end
 	end
