@@ -13,7 +13,7 @@ Q_KEY.ID = Isaac.GetItemIdByName("Q Key")
 function Q_KEY:OnUse(_, rng, player, flags, slot)
 	if (player:GetCard(0) == Card.CARD_QUESTIONMARK) then
 		player:SetCard(0, Card.CARD_NULL)
-		if Mod.Item.SPACEBAR_KEY:IsEndStage() then
+		if Mod.Item.KEY_SPACEBAR:IsEndStage() then
 			Isaac.Spawn(EntityType.ENTITY_SHOPKEEPER, 2, 0, player.Position, Vector.Zero, nil)
 		else
 			Mod.Game:StartRoomTransition(Mod.Level():QueryRoomTypeIndex(RoomType.ROOM_ERROR, false, rng), Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT)
@@ -47,7 +47,7 @@ function Q_KEY:OnUse(_, rng, player, flags, slot)
 			end
 			player:UsePill(pillEffect, ID, UseFlag.USE_MIMIC)
 		elseif pocketItem:GetType() == PocketItemType.CARD then
-			local cardConfig = Mod.ItemConfig:GetPillEffect(ID)
+			local cardConfig = Mod.ItemConfig:GetCard(ID)
 			if not cardConfig.MimicCharge
 				or cardConfig.MimicCharge <= 0
 			then
