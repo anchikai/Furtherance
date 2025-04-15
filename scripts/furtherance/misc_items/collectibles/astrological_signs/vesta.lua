@@ -4,42 +4,83 @@ local VESTA = {}
 
 Furtherance.Item.VESTA = VESTA
 
-VESTA.ID = Isaac.GetItemIdByName("Vesta")
+VESTA.ID = Isaac.GetItemIdByName("Vesta?")
 
---TODO: Will revisit for tear modifier implementation...but also idk about this item as a whole
+VESTA.TEAR_MODIFIER = Mod.TearModifier.New({
+	Name = "Vesta",
+	Items = {VESTA.ID},
+	MinChance = 0.1,
+	MaxChance = 1,
+	MinLuck = 0,
+	MaxLuck = 10
+})
 
---[[ function Mod:GetVesta(player, flag)
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_VESTA) then
-		local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_VESTA)
-		if rng:RandomInt(100) + 1 <= player.Luck * 10 + 10 then
-			if flag == CacheFlag.CACHE_TEARFLAG then
-				player.TearFlags = player.TearFlags | TearFlags.TEAR_SPECTRAL | TearFlags.TEAR_QUADSPLIT
-			end
-		end
-		if flag == CacheFlag.CACHE_DAMAGE then
-			player.Damage = player.Damage * 1.5
-		end
-		if flag == CacheFlag.CACHE_TEARCOLOR then
-			player.TearColor = Color(1, 1, 1, 0.8, 0, 0, 0)
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.GetVesta)
-
-function Mod:tearSize(tear)
-	local player = tear.Parent:ToPlayer()
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_VESTA) then
-		if player:HasTrinket(TrinketType.TRINKET_PULSE_WORM) then
-			tear.Scale = tear.Scale * 0.22
-		else
-			local sprite = tear:GetSprite()
-			tear.Scale = tear.Scale * 0
-			sprite:Load("gfx/tear_vesta.anm2", true)
-			sprite:Play("Rotate0", true)
+---@param player EntityPlayer
+---@param cacheFlag CacheFlag
+function VESTA:Stats(player, cacheFlag)
+	if player:HasCollectible(VESTA.ID) then
+		if cacheFlag == CacheFlag.CACHE_DAMAGE then
+			player.Damage = player.Damage * 2
+		elseif cacheFlag == CacheFlag.CACHE_TEARCOLOR then
+			player.TearColor = Color(1, 1, 1, 0.8)
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, Mod.tearSize)
- ]]
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, VESTA.Stats, CacheFlag.CACHE_DAMAGE)
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, VESTA.Stats, CacheFlag.CACHE_TEARCOLOR)
+
+---@param tear EntityTear
+function VESTA:PostFireTear(tear)
+	local player = Mod:TryGetPlayer(tear)
+	if player and player:HasCollectible(VESTA.ID) then
+		tear:ChangeVariant(TearVariant.BLUE)
+		local sprite = tear:GetSprite()
+		tear.Scale = 0.1
+		sprite:Load("gfx/tear_vesta.anm2", true)
+		sprite:Play("Rotate0", true)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, VESTA.PostFireTear)
+
+---@param bomb EntityBomb
+function VESTA:PostFireBomb(bomb)
+	local player = Mod:TryGetPlayer(bomb)
+	if player and player:HasCollectible(VESTA.ID) then
+		bomb:SetScale(0.1)
+		bomb:SetLoadCostumes(true)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BOMB, VESTA.PostFireBomb)
+
+---@param laser EntityLaser
+function VESTA:PostFireLaser(laser)
+	local player = Mod:TryGetPlayer(laser)
+	if player and player:HasCollectible(VESTA.ID) then
+		--RGON my beloved
+		laser:SetScale(0.353553)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BRIMSTONE, VESTA.PostFireLaser)
+
+function VESTA.TEAR_MODIFIER:PostFire(object)
+	if object:ToTear() or object:ToBomb() then
+		object:AddTearFlags(TearFlags.TEAR_SPECTRAL | TearFlags.TEAR_QUADSPLIT)
+	end
+end
+
+function VESTA.TEAR_MODIFIER:PostUpdate(object)
+	local player = Mod:TryGetPlayer(object)
+	if player and object:ToLaser() and not Mod:HasBitFlags(player.TearFlags, TearFlags.TEAR_QUADSPLIT) then
+		object:AddTearFlags(TearFlags.TEAR_QUADSPLIT)
+	end
+end
+
+function VESTA.TEAR_MODIFIER:PostNpcHit(hitter, npc)
+	if hitter:ToLaser() and hitter:HasTearFlags(TearFlags.TEAR_QUADSPLIT) then
+		--
+	end
+end

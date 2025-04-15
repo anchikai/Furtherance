@@ -30,7 +30,7 @@ local collectibles = {
 	"old_camera",
 
 	"parasitic_poofer",
-	--"pharaoh_cat",
+	"pharaoh_cat",
 	"polaris",
 	"quarantine",
 	"rotten_apple",
