@@ -15,8 +15,12 @@ function TECH_IX:EvaluteCache(player, cacheFlag)
 	if cacheFlag == CacheFlag.CACHE_WEAPON then
 		Mod:DelayOneFrame(function()
 			local weapon = player:GetWeapon(1)
-			if player:HasCollectible(TECH_IX.ID) and weapon and weapon:GetWeaponType() == WeaponType.WEAPON_BRIMSTONE then
+			if weapon and weapon:GetWeaponType() == WeaponType.WEAPON_BRIMSTONE then
 				player:SetWeapon(Isaac.CreateWeapon(WeaponType.WEAPON_TEARS, player), 1)
+			elseif weapon and weapon:GetWeaponType() == WeaponType.WEAPON_LUDOVICO_TECHNIQUE then
+				local newWeapon = Isaac.CreateWeapon(WeaponType.WEAPON_LASER, player)
+				newWeapon:SetModifiers(weapon:GetModifiers() | WeaponModifier.LUDOVICO_TECHNIQUE)
+				player:SetWeapon(newWeapon, 1)
 			end
 		end)
 	elseif cacheFlag == CacheFlag.CACHE_TEARCOLOR then
@@ -55,40 +59,13 @@ function TECH_IX:LudoTear(tear)
 	Mod:DelayOneFrame(function()
 		local player = Mod:TryGetPlayer(tear, true)
 		if player and player:HasCollectible(TECH_IX.ID) and tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then
-			tear.Visible = false
-			tear.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
-			tear.CollisionDamage = 0
-			local laserRing = player:FireTechXLaser(tear.Position, tear.Velocity, tear.Size * 5, player, 0.66)
-			laserRing.Parent = tear
-			laserRing.DisableFollowParent = false
-			laserRing.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_NONE
-			laserRing:AddTearFlags(TearFlags.TEAR_SPECTRAL)
-			laserRing:AddTearFlags(TearFlags.TEAR_PIERCING)
-			Mod:GetData(laserRing).TechIXLudoParent = tear
+			tear:Remove()
 		end
 	end)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, TECH_IX.LudoTear)
 
----@param laser EntityLaser
-function TECH_IX:LudoLaserUpdate(laser)
-	local data = Mod:TryGetData(laser)
-	if data and data.TechIXLudoParent then
-		local parent = laser.Parent
-		if not parent:Exists() or parent:IsDead() then
-			laser:SetTimeout(1)
-			data.TechIXLudoParent = nil
-		else
-			if parent.Position:DistanceSquared(laser.Position) >= (laser.Radius / 2) ^ 2 then
-				parent.Position = laser.Position
-			end
-			laser.Position = parent.Position
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, TECH_IX.LudoLaserUpdate)
 
 function TECH_IX:LessDeafeningLasers(id, volume, framedelay, loop, pitch, pan)
 	if PlayerManager.AnyoneHasCollectible(TECH_IX.ID) then
