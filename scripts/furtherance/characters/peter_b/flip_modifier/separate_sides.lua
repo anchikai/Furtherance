@@ -146,7 +146,7 @@ function SEPARATE_SIDES:PreventDamageFromGrids(gridEnt, ent, _, _)
 	if FLIP.PETER_EFFECTS_ACTIVE
 		and FLIP:IsEntitySubmerged(ent)
 		and not gridEnt:ToSpikes()
-		or (
+		and (
 			Mod.Room():GetType() ~= RoomType.ROOM_SACRIFICE
 			and (Mod.Room():GetType() ~= RoomType.ROOM_DEVIL
 				or gridEnt:GetGridIndex() ~= 67) --Sanguine Bond

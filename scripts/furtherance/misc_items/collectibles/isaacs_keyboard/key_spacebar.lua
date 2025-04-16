@@ -16,7 +16,7 @@ function SPACEBAR_KEY:IsEndStage()
 		return stage == LevelStage.STAGE7_GREED
 	else
 		--Chest/Dark Room, Void, Home, Corpse II, Dad's Note Maus II
-		return stage <= LevelStage.STAGE6
+		return stage >= LevelStage.STAGE6
 		or stage == LevelStage.STAGE4_2
 			and (
 			stageType >= StageType.STAGETYPE_REPENTANCE
