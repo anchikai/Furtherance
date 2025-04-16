@@ -96,6 +96,15 @@ function MOON_HEART:CollectMoonHeart(pickup, collider)
 end
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, CallbackPriority.LATE, MOON_HEART.CollectMoonHeart, PickupVariant.PICKUP_HEART)
 
+function MOON_HEART:SpawnLunarLight()
+	local room = Mod.Room()
+	if (room:GetType() == RoomType.ROOM_SECRET or room:GetType() == RoomType.ROOM_SUPERSECRET)
+	and room:IsFirstVisit() and #Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.HEAVEN_LIGHT_DOOR, 1) == 0 then
+		Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.HEAVEN_LIGHT_DOOR, 1, room:GetCenterPos(), Vector.Zero, nil)
+	end
+end
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, MOON_HEART.SpawnLunarLight)
+
 ---@param player EntityPlayer
 ---@param key string
 CustomHealthAPI.Library.AddCallback("Furtherance", CustomHealthAPI.Enums.Callbacks.CAN_PICK_HEALTH, 0, function(player, key)
@@ -104,10 +113,34 @@ CustomHealthAPI.Library.AddCallback("Furtherance", CustomHealthAPI.Enums.Callbac
     end
 end)
 
+---@generic K
+---@param rooms table<K, RoomDescriptor>
+local function ShowSecretRoom(rooms)
+	if #rooms == 0 then return false end
+	local idx = Mod.GENERIC_RNG:RandomInt(#rooms) + 1
+	local room = rooms[idx]
+	room.DisplayFlags = room.DisplayFlags | 6
+	return true
+end
+
 CustomHealthAPI.Library.AddCallback("Furtherance", CustomHealthAPI.Enums.Callbacks.POST_HEALTH_DAMAGED, 0, function(player, flags, key, hpDamaged, wasDepleted, wasLastDamaged)
 	if key == MOON_HEART.KEY then
 		if wasDepleted then
-            
+            local secretRooms =	Mod:GetAllRooms(function(room) 
+				---@cast room RoomDescriptor
+				local roomData = room.Data
+				return roomData.Type == RoomType.ROOM_SECRET
+				and not Mod:HasBitFlags(room.DisplayFlags, 1 << 2)
+			end)
+			if not ShowSecretRoom(secretRooms) then
+				local superSecretRooms = Mod:GetAllRooms(function(room)
+					---@cast room RoomDescriptor
+					local roomData = room.Data
+					return roomData.Type == RoomType.ROOM_SUPERSECRET
+					and not Mod:HasBitFlags(room.DisplayFlags, 1 << 2)
+				end)
+				ShowSecretRoom(superSecretRooms)
+			end
 		end
 	end
 end)
