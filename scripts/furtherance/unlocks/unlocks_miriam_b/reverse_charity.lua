@@ -19,6 +19,17 @@ Mod:AddCallback(ModCallbacks.MC_USE_CARD, REVERSE_CHARITY.OnUse, REVERSE_CHARITY
 ---@param pickup EntityPickup
 function REVERSE_CHARITY:MakeBalancedShopItem(pickup)
 	pickup:MakeShopItem(-1)
+	if pickup.Variant ~= PickupVariant.PICKUP_COLLECTIBLE then
+		if pickup.Variant == PickupVariant.PICKUP_COIN then
+			local value = pickup:GetCoinValue()
+			if value > 99 then
+				value = 5
+			end
+			pickup.Price = value
+			pickup.AutoUpdatePrice = false
+		end
+		return
+	end
 	local itemConfig = Mod.ItemConfig:GetCollectible(pickup.SubType)
 	if itemConfig.ShopPrice == 15 and itemConfig.Quality >= 3 then
 		pickup.Price = 30
