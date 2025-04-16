@@ -6,66 +6,96 @@ Furtherance.Item.TECH_IX = TECH_IX
 
 TECH_IX.ID = Isaac.GetItemIdByName("Tech IX")
 
---TODO: Revisit later
+TECH_IX.LASER_COLOR = Color(0, 1, 0, 1, 0, 1, 0.6)
 
---[[ -- tear positions offset from original tear when shot to the right
-local pharaohCatPositions = {
-	Vector(0, 0),
-	Vector(-20, -5),
-	Vector(-20, 5),
-	Vector(-30, 10),
-	Vector(-30, -10),
-	Vector(-30, 0),
-}
-
-local techIXColor = Color(0, 1, 0, 1, 0, 1, 0.6)
-
-function Mod:IXShots(tear)
-	local player = tear.Parent and tear.Parent:ToPlayer()
-	if player == nil then return end
-
-	if ((player:HasCollectible(CollectibleType.COLLECTIBLE_POLYPHEMUS) or player:HasCollectible(CollectibleType.COLLECTIBLE_HAEMOLACRIA)) and player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_IX)) then
-		local laser = player:FireTechXLaser(tear.Position, tear.Velocity, 40, player, 0.66)
-		laser:SetColor(techIXColor, 0, 0, false, false)
-		tear:Remove()
-	elseif (player:HasCollectible(CollectibleType.COLLECTIBLE_VESTA) and player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_IX)) then -- Vesta Synergy
-		local laser = player:FireTechXLaser(tear.Position, tear.Velocity, 1, player, 0.66)
-		laser:SetColor(techIXColor, 0, 0, false, false)
-		tear:Remove()
-	elseif (player:HasCollectible(CollectibleType.COLLECTIBLE_PHARAOH_CAT) and player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_IX)) then -- Pharaoh Cat Synergy
-		local direction = tear.Velocity:GetAngleDegrees()
-		local laser = player:FireTechXLaser(tear.Position, tear.Velocity, 10, player, 0.66)
-		laser:SetColor(techIXColor, 0, 0, false, false)
-		for _, position in ipairs(pharaohCatPositions) do
-			local extraLaser = player:FireTechXLaser(tear.Position + position:Rotated(direction), tear.Velocity, 10,
-				player, 0.66)
-			extraLaser:SetColor(techIXColor, 0, 0, false, false)
-		end
-		tear:Remove()
-	elseif (player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_IX)) then -- double check the tear belongs to a player
-		local laser = player:FireTechXLaser(tear.Position, tear.Velocity, 10, player, 0.66)
-		laser:SetColor(techIXColor, 0, 0, false, false)
-		tear:Remove()
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, Mod.IXShots)
-
-function Mod:TechIXDebuff(player, cacheFlag)
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_IX) then
-		if cacheFlag == CacheFlag.CACHE_FIREDELAY then
-			player.MaxFireDelay = player.MaxFireDelay + 5
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.TechIXDebuff)
-
-function Mod:Synergies(player, flag)
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_IX) and player:HasCollectible(CollectibleType.COLLECTIBLE_C_SECTION) then
+---@param player EntityPlayer
+---@param cacheFlag CacheFlag
+function TECH_IX:EvaluteCache(player, cacheFlag)
+	if not player:HasCollectible(TECH_IX.ID) then return end
+	if cacheFlag == CacheFlag.CACHE_WEAPON then
+		Mod:DelayOneFrame(function()
+			local weapon = player:GetWeapon(1)
+			if player:HasCollectible(TECH_IX.ID) and weapon and weapon:GetWeaponType() == WeaponType.WEAPON_BRIMSTONE then
+				player:SetWeapon(Isaac.CreateWeapon(WeaponType.WEAPON_TEARS, player), 1)
+			end
+		end)
+	elseif cacheFlag == CacheFlag.CACHE_TEARCOLOR then
+		player.LaserColor = TECH_IX.LASER_COLOR
+	elseif cacheFlag == CacheFlag.CACHE_FIREDELAY then
+		player.MaxFireDelay = player.MaxFireDelay + 5
+	elseif player:HasCollectible(CollectibleType.COLLECTIBLE_C_SECTION) then
 		player.TearFlags = player.TearFlags | TearFlags.TEAR_HOMING
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.Synergies, CacheFlag.CACHE_TEARFLAG)
- ]]
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, TECH_IX.EvaluteCache)
+
+---@param tear EntityTear
+function TECH_IX:PostFireTear(tear)
+	local player = Mod:TryGetPlayer(tear, true)
+	if player and player:HasCollectible(TECH_IX.ID) then
+		local sizeMult = 1.5
+		if player:HasCollectible(CollectibleType.COLLECTIBLE_POLYPHEMUS) or tear:HasTearFlags(TearFlags.TEAR_BURSTSPLIT) then
+			sizeMult = sizeMult + 1
+		end
+		if player:HasCollectible(Mod.Item.VESTA.ID) then
+			sizeMult = 1
+		end
+		player:FireTechXLaser(tear.Position, tear.Velocity, tear.Size * sizeMult, player, 0.66)
+		tear:Remove()
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, TECH_IX.PostFireTear)
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, TECH_IX.PostFireTear, TearVariant.SWORD_BEAM)
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, TECH_IX.PostFireTear, TearVariant.TECH_SWORD_BEAM)
+
+---@param tear EntityTear
+function TECH_IX:LudoTear(tear)
+	Mod:DelayOneFrame(function()
+		local player = Mod:TryGetPlayer(tear, true)
+		if player and player:HasCollectible(TECH_IX.ID) and tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then
+			tear.Visible = false
+			tear.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
+			tear.CollisionDamage = 0
+			local laserRing = player:FireTechXLaser(tear.Position, tear.Velocity, tear.Size * 5, player, 0.66)
+			laserRing.Parent = tear
+			laserRing.DisableFollowParent = false
+			laserRing.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_NONE
+			laserRing:AddTearFlags(TearFlags.TEAR_SPECTRAL)
+			laserRing:AddTearFlags(TearFlags.TEAR_PIERCING)
+			Mod:GetData(laserRing).TechIXLudoParent = tear
+		end
+	end)
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, TECH_IX.LudoTear)
+
+---@param laser EntityLaser
+function TECH_IX:LudoLaserUpdate(laser)
+	local data = Mod:TryGetData(laser)
+	if data and data.TechIXLudoParent then
+		local parent = laser.Parent
+		if not parent:Exists() or parent:IsDead() then
+			laser:SetTimeout(1)
+			data.TechIXLudoParent = nil
+		else
+			if parent.Position:DistanceSquared(laser.Position) >= (laser.Radius / 2) ^ 2 then
+				parent.Position = laser.Position
+			end
+			laser.Position = parent.Position
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, TECH_IX.LudoLaserUpdate)
+
+function TECH_IX:LessDeafeningLasers(id, volume, framedelay, loop, pitch, pan)
+	if PlayerManager.AnyoneHasCollectible(TECH_IX.ID) then
+		return {id, volume / 2.5, framedelay, loop, pitch, pan}
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_SFX_PLAY, TECH_IX.LessDeafeningLasers, SoundEffect.SOUND_LASERRING_WEAK)
+Mod:AddCallback(ModCallbacks.MC_PRE_SFX_PLAY, TECH_IX.LessDeafeningLasers, SoundEffect.SOUND_LASERRING)
+Mod:AddCallback(ModCallbacks.MC_PRE_SFX_PLAY, TECH_IX.LessDeafeningLasers, SoundEffect.SOUND_LASERRING_STRONG)

@@ -25,7 +25,7 @@
 
 	<!-- New -->
 	<!-- Passive Items -->
-	<passive id="17" name="Tech IX" description="Experimental laser ring tears" gfx="tech_ix.png" cache="firedelay" quality="3" tags="tech offensive" />
+	<passive id="17" name="Tech IX" description="Experimental laser ring tears" gfx="tech_ix.png" cache="firedelay weapon tearcolor" quality="3" tags="tech offensive" />
 	<passive id="18" name="Leaking Tank" description="I'm leaking?!" gfx="leaking_tank.png" quality="0" /> <!-- Concept by SybilScribble! -->
 	<passive id="19" name="Unstable Core" description="Shockingly active" gfx="unstable_core.png" quality="0" /> <!-- Concept by SybilScribble! -->
 	<passive id="20" name="Technology -1" description="Underflow shots" gfx="technology_-1.png" quality="3" tags="tech" />

@@ -42,7 +42,7 @@ function VESTA:PostFireTear(tear)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, VESTA.PostFireTear)
+Mod:AddPriorityCallback(ModCallbacks.MC_POST_FIRE_TEAR, CallbackPriority.EARLY, VESTA.PostFireTear)
 
 ---@param bomb EntityBomb
 function VESTA:PostFireBomb(bomb)

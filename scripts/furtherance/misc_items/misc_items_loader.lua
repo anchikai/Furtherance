@@ -36,7 +36,7 @@ local collectibles = {
 	"rotten_apple",
 	"servitude",
 	"sunscreen",
-	--"tech_ix",
+	"tech_ix",
 	"technology-1",
 	"unstable_core",
 	"wine_bottle",

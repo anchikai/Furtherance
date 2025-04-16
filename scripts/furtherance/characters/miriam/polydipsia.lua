@@ -118,7 +118,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BONE_CLUB, POLYDIPSIA.OnWeaponEntityFi
 
 ---@param tear EntityTear
 function POLYDIPSIA:OnTearDeath(tear)
-	local player = Mod:TryGetPlayer(tear)
+	local player = Mod:TryGetPlayer(tear, true)
 	local data = Mod:TryGetData(tear)
 	if player and data and data.PolydipsiaShot then
 		POLYDIPSIA:SpawnPolydipsiaCreep(player, tear)
@@ -130,7 +130,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_TEAR_DEATH, POLYDIPSIA.OnTearDeath)
 ---@param tear EntityTear
 function POLYDIPSIA:OnLudoTearUpdate(tear)
 	if not tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then return end
-	local player = Mod:TryGetPlayer(tear)
+	local player = Mod:TryGetPlayer(tear, true)
 	if not player then return end
 	if player:HasCollectible(POLYDIPSIA.ID) and Mod:ShouldUpdateLudo(tear, player) then
 		POLYDIPSIA:SpawnPolydipsiaCreep(player, tear)
@@ -142,7 +142,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, POLYDIPSIA.OnLudoTearUpdate)
 ---@param bomb EntityBomb
 function POLYDIPSIA:OnBombExplode(bomb)
 	local data = Mod:TryGetData(bomb)
-	local player = Mod:TryGetPlayer(bomb)
+	local player = Mod:TryGetPlayer(bomb, true)
 	if player and data and data.PolydipsiaShot then
 		POLYDIPSIA:SpawnPolydipsiaCreep(player, bomb)
 	end
@@ -153,7 +153,7 @@ Mod:AddCallback(Mod.ModCallbacks.POST_ROCKET_EXPLODE, POLYDIPSIA.OnBombExplode)
 
 ---@param knife EntityKnife
 function POLYDIPSIA:OnKnifeUpdate(knife)
-	local player = Mod:TryGetPlayer(knife)
+	local player = Mod:TryGetPlayer(knife, true)
 	if player and player:HasCollectible(POLYDIPSIA.ID) and knife:IsFlying() then
 		local data = Mod:GetData(knife)
 		if (data.NextPuddleSpawn or 0) == 0 then
@@ -172,9 +172,9 @@ Mod:AddCallback(ModCallbacks.MC_POST_KNIFE_UPDATE, POLYDIPSIA.OnKnifeUpdate)
 
 ---@param laser EntityLaser
 function POLYDIPSIA:OnLaserUpdate(laser)
-	local player = Mod:TryGetPlayer(laser)
+	local player = Mod:TryGetPlayer(laser, true)
 	local data = Mod:TryGetData(laser)
-	if player and (data and data.PolydipsiaShot or laser.SubType ~= LaserSubType.LASER_SUBTYPE_LINEAR) then
+	if player and (data and data.PolydipsiaShot or (player:HasCollectible(POLYDIPSIA.ID) and laser.SubType ~= LaserSubType.LASER_SUBTYPE_LINEAR)) then
 		data = Mod:GetData(laser)
 		if (data.NextPuddleSpawn or 0) == 0 then
 			data.NextPuddleSpawn = laser.Timeout == 0 and 6 or 3

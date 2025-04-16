@@ -1,9 +1,8 @@
 ---Will attempt to find the player using the attached Entity, EntityRef, or EntityPtr.
 ---Will return if its a player, the player's familiar, or loop again if it has a SpawnerEntity
 ---@param ent Entity | EntityRef | EntityPtr
----@param weaponOwner nil #If specified, and it finds a familiar, will only pass the player if that familiar is a weapon-copying familiar
+---@param weaponOwner? boolean #If specified, and it finds a familiar, will only pass the player if that familiar is a weapon-copying familiar
 ---@return EntityPlayer?
----@overload fun(self: ModReference, ent: Entity | EntityRef | EntityPtr, weaponOwner: boolean): EntityPlayer | EntityFamiliar?
 function Furtherance:TryGetPlayer(ent, weaponOwner)
 	if not ent then return end
 	if string.match(getmetatable(ent).__type, "EntityPtr") then
