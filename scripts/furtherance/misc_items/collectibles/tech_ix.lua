@@ -15,7 +15,7 @@ function TECH_IX:EvaluteCache(player, cacheFlag)
 	if cacheFlag == CacheFlag.CACHE_WEAPON then
 		Mod:DelayOneFrame(function()
 			local weapon = player:GetWeapon(1)
-			if weapon and weapon:GetWeaponType() == WeaponType.WEAPON_BRIMSTONE then
+			if weapon and weapon:GetWeaponType() == WeaponType.WEAPON_BRIMSTONE and not Mod:HasBitFlags(weapon:GetModifiers(), WeaponModifier.LUDOVICO_TECHNIQUE) then
 				player:SetWeapon(Isaac.CreateWeapon(WeaponType.WEAPON_TEARS, player), 1)
 			elseif weapon and weapon:GetWeaponType() == WeaponType.WEAPON_LUDOVICO_TECHNIQUE then
 				local newWeapon = Isaac.CreateWeapon(WeaponType.WEAPON_LASER, player)
@@ -65,7 +65,6 @@ function TECH_IX:LudoTear(tear)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, TECH_IX.LudoTear)
-
 
 function TECH_IX:LessDeafeningLasers(id, volume, framedelay, loop, pitch, pan)
 	if PlayerManager.AnyoneHasCollectible(TECH_IX.ID) then
