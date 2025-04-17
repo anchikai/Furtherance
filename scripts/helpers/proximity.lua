@@ -4,6 +4,7 @@ function Furtherance:IsValidEnemyTarget(ent)
 	and ent:ToNPC()
 	and ent:IsActiveEnemy(false)
 	and ent:IsVulnerableEnemy()
+	and not ent:IsDead()
 	and not ent:HasEntityFlags(EntityFlag.FLAG_CHARM | EntityFlag.FLAG_FRIENDLY)
 	and ent.EntityCollisionClass ~= EntityCollisionClass.ENTCOLL_NONE
 	and ent:ToNPC().CanShutDoors
@@ -103,7 +104,7 @@ function Furtherance:GetClosestEntity(pos, range, partition)
 	return closestEnt, closestDistance
 end
 
----@param func fun(npc: EntityNPC)
+---@param func fun(npc: EntityNPC): boolean?
 ---@param validTarget boolean
 ---@param pos? Vector
 ---@param radius? integer

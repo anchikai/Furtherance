@@ -1,5 +1,5 @@
-<players root="gfx/characters/costumes/" 
-         portraitroot="gfx/ui/stage/" 
+<players root="gfx/characters/costumes/"
+         portraitroot="gfx/ui/stage/"
          nameimageroot="gfx/ui/boss/">
 	<player name="Leah" skin="character_001_leah.png" costumeSuffix="leah" skinColor="-1" modcostume="1"
 		heartcontainers="4" redhearts="4" brokenhearts="1" coins="6"
@@ -8,7 +8,7 @@
 		nameimage="playername_leah.png" portrait="playerportrait_leah.png"
 		birthright="Loved once more" />
 	<player name="Leah" bSkinParent="Leah" skin="character_001_leah_b.png" costumeSuffix="leah_b" skinColor="-1" modcostume="2"
-		blackhearts="2" brokenhearts="11"
+		heartcontainers="2" redhearts="2" brokenhearts="11"
 		pocketActive="Shattered Heart"
 		nameimage="playername_leah.png" portrait="playerportrait_leah_b.png"
 		birthright="Taken for granted"
@@ -39,12 +39,12 @@
 		nameimage="playername_miriam.png" portrait="playerportrait_miriam_b.png"
 		birthright="Death field"
 		achievement="The Condemned"	/>
-	
+
 	<!-- Fake Jacob for Binds of Devotion, copied from the original players.xml -->
 	<player name="FR FakeJacob" hp="6" hidden="true"
 		skin="character_002x_Jacob.png"
 		costume="52" achievement="405"
-		nameimage="PlayerName_02x_Jacob_Esau.png" 
+		nameimage="PlayerName_02x_Jacob_Esau.png"
 		portrait="PlayerPortrait_Jacob.png" skinColor="-1"
 		birthright="#JACOB_BIRTHRIGHT" />
 </players>

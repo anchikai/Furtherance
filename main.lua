@@ -182,7 +182,6 @@ Furtherance.PlayerType = {
 local characters = {
 	"leah.leah",
 	"leah_b.leah_b",
-	"leah_b.shattered_heart",
 	"peter.peter",
 	"peter_b.peter_b",
 	"miriam.miriam",

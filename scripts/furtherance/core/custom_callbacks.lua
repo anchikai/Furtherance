@@ -26,7 +26,10 @@ Furtherance.ModCallbacks = {
 	POST_RAPTURE_BOSS_DEATH = "FURTHERANCE_POST_RAPTURE_BOSS_DEATH",
 
 	---() - Return `true` if the current room should be considered similarly to story boss rooms for Keys to the Kingdom, where it grants a Holy Mantle effect instead of rapturing any enemies or bosses
-	KTTK_GRANT_HOLY_MANTLE = "FURTHERANCE_KTTK_GRANT_HOLY_MANTLE"
+	KTTK_GRANT_HOLY_MANTLE = "FURTHERANCE_KTTK_GRANT_HOLY_MANTLE",
+
+	--(EntityPickup pickup): boolean, OptionalArg: HeartSubType - Called when Shattered Heart wants to explode a heart pickup. Return `true` to stop the heart from exploding
+	SHATTERED_HEART_EXPLODE = "FURTHERANCE_SHATTERED_HEART_EXPLODE"
 }
 
 local function postBombExplode(_, bomb)

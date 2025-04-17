@@ -114,8 +114,7 @@ local pickups = {
 	"key_card",
 	"trap_card",
 	"two_of_shields",
-	"unlucky_penny",
-	"moon_heart"
+	"unlucky_penny"
 }
 
 Mod.LoopInclude(pickups, prefix .. "pickups")
