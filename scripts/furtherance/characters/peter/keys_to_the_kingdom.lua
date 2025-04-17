@@ -324,27 +324,18 @@ Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_NEW_LEVEL, KEYS_TO_THE_KINGDOM.OnNew
 
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:OnDeath(npc)
-	if not KEYS_TO_THE_KINGDOM:CanSpare(npc, true) then return end
-	if npc:IsBoss() then
-		Mod:ForEachPlayer(function(player)
-			local slots = Mod:GetActiveItemCharges(player, KEYS_TO_THE_KINGDOM.ID)
-			if #slots == 0 then return end
-			for _, slotData in ipairs(slots) do
-				if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES then
+	if not PlayerManager.AnyoneHasCollectible(KEYS_TO_THE_KINGDOM.ID) or not KEYS_TO_THE_KINGDOM:CanSpare(npc, true) then return end
+	Mod:ForEachPlayer(function(player)
+		local slots = Mod:GetActiveItemCharges(player, KEYS_TO_THE_KINGDOM.ID)
+		if #slots == 0 then return end
+		for _, slotData in ipairs(slots) do
+			if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES then
+				if npc:IsBoss() then
 					local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
 						KEYS_TO_THE_KINGDOM.SOUL_BOSS,
 						npc.Position, RandomVector():Resized(5), npc)
 					effect.Target = player
-					break
-				end
-			end
-		end)
-	else
-		Mod:ForEachPlayer(function(player)
-			local slots = Mod:GetActiveItemCharges(player, KEYS_TO_THE_KINGDOM.ID)
-			if #slots == 0 then return end
-			for _, slotData in ipairs(slots) do
-				if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES then
+				else
 					local rng = player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID)
 					local chance = rng:RandomFloat()
 					local maxChance = (npc.MaxHitPoints * 2.5) / 100
@@ -354,11 +345,11 @@ function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 							npc.Position, RandomVector():Resized(5), npc)
 						effect.Target = player
 					end
-					break
 				end
+				break
 			end
-		end)
-	end
+		end
+	end)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, KEYS_TO_THE_KINGDOM.OnDeath)
@@ -657,7 +648,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBossDeath(ent)
 		local data = Mod:TryGetData(ent)
 		if data and data.Raptured then
 			raptureDeathQueue[GetPtrHash(ent)] = true
-			Mod:DelayOneFrame(function() raptureDeathQueue[GetPtrHash(ent)] = false end)
+			Mod:DelayOneFrame(function() raptureDeathQueue[GetPtrHash(ent)] = nil end)
 		end
 	end
 end
@@ -671,7 +662,7 @@ function KEYS_TO_THE_KINGDOM:PostRaptureDeath(npc)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, KEYS_TO_THE_KINGDOM.PostRaptureDeath, EntityType.ENTITY_FALLEN)
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, KEYS_TO_THE_KINGDOM.PostRaptureDeath)
 
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:PostKrampusRapture(npc)
@@ -692,7 +683,7 @@ function KEYS_TO_THE_KINGDOM:PostKrampusRapture(npc)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, KEYS_TO_THE_KINGDOM.PostKrampusRapture, EntityType.ENTITY_FALLEN)
+Mod:AddCallback(Mod.ModCallbacks.POST_RAPTURE_BOSS_DEATH, KEYS_TO_THE_KINGDOM.PostKrampusRapture, EntityType.ENTITY_FALLEN)
 
 --#endregion
 

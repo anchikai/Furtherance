@@ -57,7 +57,6 @@ function BLOOD_CYST:KillFamiliar(npc)
 		if npc.SpawnerEntity
 			and npc.SpawnerEntity:ToFamiliar()
 			and npc.SpawnerVariant == BLOOD_CYST.FAMILIAR
-			and npc.SpawnerEntity:Kill()
 		then
 			npc:Remove()
 			npc.SpawnerEntity:Kill()

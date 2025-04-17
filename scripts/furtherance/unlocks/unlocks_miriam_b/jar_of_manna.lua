@@ -86,8 +86,8 @@ function JAR_OF_MANNA:SpawnManaOnDeath(ent)
 	end)
 
 	if needsCharge then
-		Isaac.Spawn(EntityType.ENTITY_EFFECT, JAR_OF_MANNA.EFFECT, 0, ent.Position, Vector.Zero, nil):ToEffect()
-			:SetTimeout(75)
+		Isaac.Spawn(EntityType.ENTITY_EFFECT, JAR_OF_MANNA.EFFECT, 0,
+			ent.Position, Vector.Zero, nil):ToEffect():SetTimeout(75)
 	end
 end
 

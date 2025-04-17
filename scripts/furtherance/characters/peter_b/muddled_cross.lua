@@ -184,7 +184,7 @@ end
 
 ---@param ent Entity
 function MUDDLED_CROSS:ChargeOnEnemyDeath(ent)
-	if not Mod:IsDeadEnemy(ent) then return end
+	if not Mod:IsDeadEnemy(ent) or not PlayerManager.AnyoneHasCollectible(MUDDLED_CROSS.ID) then return end
 	local effects = Mod.Room():GetEffects()
 	if Mod.Character.PETER_B.FLIP:IsRoomEffectActive() and effects:HasCollectibleEffect(MUDDLED_CROSS.ID) then
 		Mod:DelayOneFrame(function()
