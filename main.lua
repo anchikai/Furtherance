@@ -145,7 +145,7 @@ local tools = {
 }
 
 local core = {
-	"customhealthapi.core",
+	--"customhealthapi.core",
 	"hearts",
 	"custom_callbacks"
 }
@@ -164,9 +164,9 @@ Mod.LoopInclude(tools, "scripts.tools")
 Mod.LoopInclude(core, "scripts.furtherance.core")
 Mod.LoopInclude(config, "scripts.furtherance.config")
 
-if CustomHealthAPI and CustomHealthAPI.Library and CustomHealthAPI.Library.UnregisterCallbacks then
+--[[ if CustomHealthAPI and CustomHealthAPI.Library and CustomHealthAPI.Library.UnregisterCallbacks then
     CustomHealthAPI.Library.UnregisterCallbacks("Furtherance")
-end
+end ]]
 
 Furtherance.TearModifier = include("scripts.furtherance.core.tear_modifiers")
 
@@ -185,8 +185,7 @@ local characters = {
 	"peter.peter",
 	"peter_b.peter_b",
 	"miriam.miriam",
-	"miriam.tambourine",
-	"miriam.polydipsia",
+	--"miriam.polydipsia",
 	"miriam_b.miriam_b",
 	"miriam_b.polarity_shift"
 }
@@ -211,6 +210,10 @@ Mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, function(_, shaderName)
 	if shaderName == 'Peter Flip' then
 		return { FlipFactor = 0 }
 	end
+end)
+
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function()
+	print(Isaac.GetPlayer():GetHeartLimit(), Isaac.GetPlayer():GetBrokenHearts())
 end)
 
 --!End of file

@@ -7,7 +7,7 @@ function Furtherance:IsValidEnemyTarget(ent)
 	and not ent:IsDead()
 	and not ent:HasEntityFlags(EntityFlag.FLAG_CHARM | EntityFlag.FLAG_FRIENDLY)
 	and ent.EntityCollisionClass ~= EntityCollisionClass.ENTCOLL_NONE
-	and ent:ToNPC().CanShutDoors
+	and (ent:ToNPC().CanShutDoors or ent.Type == EntityType.ENTITY_DUMMY)
 end
 
 --Thank you piber!
@@ -99,7 +99,6 @@ function Furtherance:GetClosestEntity(pos, range, partition)
 			closestEnt = ent
 			closestDistance = entDistance
 		end
-		::continue::
 	end
 	return closestEnt, closestDistance
 end

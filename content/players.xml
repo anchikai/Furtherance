@@ -8,7 +8,7 @@
 		nameimage="playername_leah.png" portrait="playerportrait_leah.png"
 		birthright="Loved once more" />
 	<player name="Leah" bSkinParent="Leah" skin="character_001_leah_b.png" costumeSuffix="leah_b" skinColor="-1" modcostume="2"
-		heartcontainers="2" redhearts="2" brokenhearts="11"
+		heartcontainers="2" redhearts="2" brokenhearts="23"
 		pocketActive="Shattered Heart"
 		nameimage="playername_leah.png" portrait="playerportrait_leah_b.png"
 		birthright="Taken for granted"
