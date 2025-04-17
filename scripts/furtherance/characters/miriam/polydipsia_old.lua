@@ -1,8 +1,11 @@
+--The design of Miriam on the original workshop version was a series of compromises from the original vision, and I failed to recognize that before I finished all this
+--Though I'm too proud of the code to just delete it, so it'll remain here
+
 local Mod = Furtherance
 
 local POLYDIPSIA = {}
 
-Furtherance.Item.POLYDIPSIA = POLYDIPSIA
+--Furtherance.Item.POLYDIPSIA = POLYDIPSIA
 
 POLYDIPSIA.ID = Isaac.GetItemIdByName("Polydipsia")
 

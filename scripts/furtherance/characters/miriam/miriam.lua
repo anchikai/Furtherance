@@ -12,10 +12,11 @@ end
 ---@param player EntityPlayer
 function MIRIAM:OnPlayerInit(player)
 	if MIRIAM:IsMiriam(player) then
-		player:AddInnateCollectible(Mod.Item.POLYDIPSIA.ID)
+		--player:AddInnateCollectible(Mod.Item.POLYDIPSIA.ID)
 	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, MIRIAM.OnPlayerInit)
 
+Mod.Include("scripts.furtherance.characters.miriam.tambourine")
 Mod.Include("scripts.furtherance.characters.miriam.whirlpool")
