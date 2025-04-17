@@ -29,7 +29,10 @@ Furtherance.ModCallbacks = {
 	KTTK_GRANT_HOLY_MANTLE = "FURTHERANCE_KTTK_GRANT_HOLY_MANTLE",
 
 	--(EntityPickup pickup): boolean, OptionalArg: HeartSubType - Called when Shattered Heart wants to explode a heart pickup. Return `true` to stop the heart from exploding
-	SHATTERED_HEART_EXPLODE = "FURTHERANCE_SHATTERED_HEART_EXPLODE"
+	SHATTERED_HEART_EXPLODE = "FURTHERANCE_SHATTERED_HEART_EXPLODE",
+
+	--(ItemConfigItem Item, integer count, integer cooldown, EntityPlayer player), Optional Arg: NullItemID - Called after null effect is added to player
+	POST_ADD_NULL_EFFECT = "FURTHERANCE_POST_ADD_NULL_EFFECT"
 }
 
 local function postBombExplode(_, bomb)
@@ -47,3 +50,44 @@ local function postEpicFetusExplode(_, effect)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, postEpicFetusExplode, EntityType.ENTITY_EFFECT)
+
+---Making sure we don't trigger callback when continuing run
+---@param player EntityPlayer
+local function InitPostAddNullEffect(player, effectList)
+	if player.FrameCount > 0 then return end
+	local data = Mod:GetData(player)
+	data.EffectList = data.EffectList or {}
+	for i = 0, effectList.Size - 1 do
+		local effect = effectList:Get(i)
+		local itemConfig = effect.Item
+		if itemConfig and itemConfig:IsNull() then
+			data.EffectList[itemConfig.ID] = Mod:Clamp(effect.Count, 0, effect.Count)
+		end
+	end
+end
+
+---@param player EntityPlayer
+local function PostAddNullEffect(_, player)
+	local data = Mod:GetData(player)
+	data.EffectList = data.EffectList or {}
+	local effectList = player:GetEffects():GetEffectsList()
+	if effectList.Size >= 1 then
+		InitPostAddNullEffect(player, effectList)
+		for i = 0, effectList.Size - 1 do
+			local effect = effectList:Get(i)
+			local itemConfig = effect.Item
+			if itemConfig and itemConfig:IsNull() then
+				
+				if data.EffectList[itemConfig.ID] == nil then
+					data.EffectList[itemConfig.ID] = 0
+				end
+				data.EffectList[itemConfig.ID] = Mod:Clamp(data.EffectList[itemConfig.ID], 0, effect.Count)
+				if data.EffectList[itemConfig.ID] < effect.Count then
+					Isaac.RunCallbackWithParam(Mod.ModCallbacks.POST_ADD_NULL_EFFECT, itemConfig.ID, itemConfig, effect.Count, effect.Cooldown, player)
+				end
+				data.EffectList[itemConfig.ID] = effect.Count
+			end
+		end
+	end
+end
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, PostAddNullEffect, PlayerVariant.PLAYER)

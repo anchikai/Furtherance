@@ -19,6 +19,15 @@ end
 ---@param player EntityPlayer
 ---@return integer
 function MOON_HEART:GetMoonHearts(player)
+	if CustomHealthAPI.Helper.PlayerIsIgnored(player) then
+		return 0
+	end
+	if player:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN then
+		if player:GetSubPlayer() == nil then
+			return 0
+		end
+		return CustomHealthAPI.Library.GetHPOfKey(player:GetSubPlayer(), MOON_HEART.KEY)
+	end
 	return CustomHealthAPI.Library.GetHPOfKey(player, MOON_HEART.KEY)
 end
 
@@ -55,7 +64,8 @@ CustomHealthAPI.Library.RegisterSoulHealth(MOON_HEART.KEY, {
 ---@param spawner Entity
 ---@param seed integer
 function MOON_HEART:SpawnMoonHeart(entType, variant, subtype, _, _, spawner, seed)
-	if entType == EntityType.ENTITY_PICKUP
+	if
+		entType == EntityType.ENTITY_PICKUP
 		and variant == PickupVariant.PICKUP_HEART
 		and subtype == HeartSubType.HEART_ETERNAL
 	then
@@ -65,13 +75,25 @@ function MOON_HEART:SpawnMoonHeart(entType, variant, subtype, _, _, spawner, see
 		end
 	end
 end
-
 Mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, MOON_HEART.SpawnMoonHeart)
+
+---@param itemConfig ItemConfigItem
+---@param count integer
+---@param cooldown integer
+---@param player EntityPlayer
+function MOON_HEART:AddExtraLuna(itemConfig, count, cooldown, player)
+	if player:HasCollectible(CollectibleType.COLLECTIBLE_LUNA) then
+		player:GetEffects():AddNullEffect(NullItemID.ID_LUNA, true, math.ceil(MOON_HEART:GetMoonHearts(player) / 2))
+	end
+end
+Mod:AddCallback(Mod.ModCallbacks.POST_ADD_NULL_EFFECT, MOON_HEART.AddExtraLuna, NullItemID.ID_LUNA)
 
 ---@param pickup EntityPickup
 ---@param collider Entity
 function MOON_HEART:CollectMoonHeart(pickup, collider)
-	if pickup.SubType ~= MOON_HEART.ID then return end
+	if pickup.SubType ~= MOON_HEART.ID then
+		return
+	end
 	local player = collider:ToPlayer()
 	if player then
 		if pickup:IsShopItem() then
@@ -95,21 +117,36 @@ function MOON_HEART:CollectMoonHeart(pickup, collider)
 	end
 end
 
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, CallbackPriority.LATE, MOON_HEART.CollectMoonHeart,
-	PickupVariant.PICKUP_HEART)
+Mod:AddPriorityCallback(
+	ModCallbacks.MC_PRE_PICKUP_COLLISION,
+	CallbackPriority.LATE,
+	MOON_HEART.CollectMoonHeart,
+	PickupVariant.PICKUP_HEART
+)
 
 function MOON_HEART:SpawnLunarLight()
+	if PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_LUNA) then
+		return
+	end
 	Mod:ForEachPlayer(function(player)
 		if player.FrameCount == 0 then
 			return true
 		end
-		if CustomHealthAPI.Helper.GetTotalKeys(player, MOON_HEART.KEY) > 0 then
+		if MOON_HEART:GetMoonHearts(player) > 0 then
 			local room = Mod.Room()
-			if (room:GetType() == RoomType.ROOM_SECRET or room:GetType() == RoomType.ROOM_SUPERSECRET)
-				and room:IsFirstVisit() and #Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.HEAVEN_LIGHT_DOOR, 1) == 0
+			if
+				(room:GetType() == RoomType.ROOM_SECRET or room:GetType() == RoomType.ROOM_SUPERSECRET)
+				and room:IsFirstVisit()
+				and #Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.HEAVEN_LIGHT_DOOR, 1) == 0
 			then
-				Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.HEAVEN_LIGHT_DOOR, 1, room:GetCenterPos(),
-					Vector.Zero, nil)
+				Isaac.Spawn(
+					EntityType.ENTITY_EFFECT,
+					EffectVariant.HEAVEN_LIGHT_DOOR,
+					1,
+					room:GetCenterPos(),
+					Vector.Zero,
+					nil
+				)
 			end
 			return true
 		end
@@ -118,34 +155,42 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, MOON_HEART.SpawnLunarLight)
 
-CustomHealthAPI.Library.AddCallback("Furtherance", CustomHealthAPI.Enums.Callbacks.CAN_PICK_HEALTH, 0,
----@param player EntityPlayer
----@param key string
+CustomHealthAPI.Library.AddCallback(
+	"Furtherance",
+	CustomHealthAPI.Enums.Callbacks.CAN_PICK_HEALTH,
+	0,
+	---@param player EntityPlayer
+	---@param key string
 	function(player, key)
 		if key == MOON_HEART.KEY then
 			return player:CanPickSoulHearts()
 		end
-	end)
+	end
+)
 
 ---@generic K
 ---@param rooms table<K, RoomDescriptor>
 local function ShowSecretRoom(rooms)
-	if #rooms == 0 then return false end
+	if #rooms == 0 then
+		return false
+	end
 	local idx = Mod.GENERIC_RNG:RandomInt(#rooms) + 1
 	local room = rooms[idx]
 	room.DisplayFlags = room.DisplayFlags | 6
 	return true
 end
 
-CustomHealthAPI.Library.AddCallback("Furtherance", CustomHealthAPI.Enums.Callbacks.POST_HEALTH_DAMAGED, 0,
+CustomHealthAPI.Library.AddCallback(
+	"Furtherance",
+	CustomHealthAPI.Enums.Callbacks.POST_HEALTH_DAMAGED,
+	0,
 	function(player, flags, key, hpDamaged, wasDepleted, wasLastDamaged)
 		if key == MOON_HEART.KEY then
 			if wasDepleted then
 				local secretRooms = Mod:GetAllRooms(function(room)
 					---@cast room RoomDescriptor
 					local roomData = room.Data
-					return roomData.Type == RoomType.ROOM_SECRET
-						and not Mod:HasBitFlags(room.DisplayFlags, 1 << 2)
+					return roomData.Type == RoomType.ROOM_SECRET and not Mod:HasBitFlags(room.DisplayFlags, 1 << 2)
 				end)
 				if not ShowSecretRoom(secretRooms) then
 					local superSecretRooms = Mod:GetAllRooms(function(room)
@@ -158,4 +203,5 @@ CustomHealthAPI.Library.AddCallback("Furtherance", CustomHealthAPI.Enums.Callbac
 				end
 			end
 		end
-	end)
+	end
+)
