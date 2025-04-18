@@ -6,6 +6,8 @@ Furtherance.Item.ROTTEN_LOVE = ROTTEN_LOVE
 
 ROTTEN_LOVE.ID = Isaac.GetItemIdByName("Rotten Love")
 
+--TODO: Being entirely replaced with a new item soon
+
 ---@param firstTime boolean
 ---@param player EntityPlayer
 function ROTTEN_LOVE:SpawnHeartsOnFirstPickup(_, _, firstTime, _, _, player)

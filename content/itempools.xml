@@ -1,8 +1,5 @@
 <ItemPools>
 	<Pool Name="treasure">
-		<Item Name="Ophiuchus" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Chiron" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Juno" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Tech IX" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Leaking Tank" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Unstable Core" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -33,6 +30,9 @@
 		<Item Name="Molten Gold" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Liberation" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Itching Powder" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Butterfly" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Cosmic Omnibus" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Trepanation" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="shop">
 		<Item Name="Tambourine" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -44,6 +44,7 @@
 		<Item Name="Iron" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Astragali" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Golden Port" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Heart Embedded Coin" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="boss">
 		<Item Name="Brunch" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -51,7 +52,7 @@
 		<Item Name="Little Raincoat" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Blood Cyst" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Rotten Apple" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Dad's Wallet" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="My Belongings" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Rotten Love" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="devil">
@@ -60,19 +61,17 @@
 		<Item Name="Kareth" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Apocalypse" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Muddled Cross" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Alternate Reality" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Leah's Heart" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Rue" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Exsanguination" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Severed Ear" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Epitaph" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="angel">
 		<Item Name="Keys to the Kingdom" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Caduceus Staff" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Miriam's Well" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Jar of Manna" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Butterfly" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Alternate Reality" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Polaris" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Chi Rho" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Pallium" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -93,19 +92,20 @@
 		<Item Name="Caps Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Enter Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Shift Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Plug N' Play" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="ZZZZoptionsZZZZ" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="F4 Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Tab Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Plug N' Play" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="ZZZZoptionsZZZZ" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Muddled Cross" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Alternate Reality" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Flux" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Beginner's Luck" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Polaris" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Leah's Heart" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Molten Gold" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Astragali" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Golden Port" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Book of Books" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Epitaph" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
     </Pool>
 	<Pool Name="library">
 		<Item Name="Book of Swiftness" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -117,7 +117,7 @@
 		<Item Name="Book of Leviticus" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
     <Pool Name="shellGame">
-		
+
 	</Pool>
 	<Pool Name="goldenChest">
 		<Item Name="Polydipsia" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -138,7 +138,7 @@
 		<Item Name="Itching Powder" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="beggar">
-		
+
 	</Pool>
 	<Pool Name="demonBeggar">
 		<Item Name="Owl's Eye" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -152,18 +152,15 @@
 		<Item Name="Itching Powder" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="keyMaster">
-		
+
 	</Pool>
 	<Pool Name="batteryBum">
-		
+
 	</Pool>
 	<Pool Name="momsChest">
-		
+
 	</Pool>
 	<Pool Name="greedTreasure">
-		<Item Name="Ophiuchus" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Chiron" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Juno" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Tech IX" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Leaking Tank" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Unstable Core" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -195,6 +192,8 @@
 		<Item Name="Book of Leviticus" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Molten Gold" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Liberation" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Butterfly" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Trepanation" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="greedBoss">
 		<Item Name="Brunch" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -202,14 +201,12 @@
 		<Item Name="Little Raincoat" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Blood Cyst" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Rotten Apple" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Dad's Wallet" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="My Belongings" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Rotten Love" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="greedShop">
 		<Item Name="Esc Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Ophiuchus" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Chiron" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Juno" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="F4 Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Tech IX" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Leaking Tank" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Unstable Core" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -220,7 +217,6 @@
 		<Item Name="Pillar of Fire" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Tambourine" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Pharaoh Cat" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="F4 Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Parasitic Poofer" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="heart Embedded Coin" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Mandrake" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -230,16 +226,16 @@
 		<Item Name="Sunscreen" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Iron" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Secret Diary" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Dad's Wallet" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="My Belongings" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Exsanguination" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Molten Gold" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Astragali" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Golden Port" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Itching Powder" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Binds of Devotion" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Heart Embedded Coin" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="greedDevil">
-		<Item Name="Esc Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Owl's Eye" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="F4 Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Muddled Cross" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -248,13 +244,13 @@
 		<Item Name="Rue" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Exsanguination" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Severed Ear" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Epitaph" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="greedAngel">
 		<Item Name="Keys to the Kingdom" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Caduceus Staff" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Miriam's Well" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Jar of Manna" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Butterfly" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Polaris" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Pallium" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Prayer Journal" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -277,10 +273,10 @@
 		<Item Name="E Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Caps Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Shift Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Plug N' Play" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="ZZZZoptionsZZZZ" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="F4 Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Tab Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Plug N' Play" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="ZZZZoptionsZZZZ" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Muddled Cross" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Alternate Reality" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Flux" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -290,40 +286,59 @@
 		<Item Name="Molten Gold" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Astragali" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Golden Port" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Book of Books" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Epitaph" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="craneGame">
 		<Item Name="Polydipsia" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Tambourine" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Golden Port" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="D9" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="D16" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="The Dreidel" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Tech IX" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Technology -1" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Wine Bottle" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Sunscreen" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Plug N' Play" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="ultraSecret">
 		<Item Name="Heart Renovator" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Shattered Heart" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Spiritual Wound" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Pillar of Fire" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Firstborn Son" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Apocalypse" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Muddled Cross" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Book of Books" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Ceres?" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Pallas>" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Vesta?" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Ophiuchus?" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Chiron?" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Juno?" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Rue" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Exsanguination" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Parasitic Poofer" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Cardiomyopathy" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Kareth" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Trepanation" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="bombBum">
-		
+
 	</Pool>
 	<Pool Name="planetarium">
-		<Item Name="Ceres" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Pallas" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Vesta" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+
 	</Pool>
 	<Pool Name="oldChest">
-		
+
 	</Pool>
 	<Pool Name="babyShop">
-		
+		<Item Name="Firstborn Son" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="woodenChest">
-		
+
 	</Pool>
 	<Pool Name="rottenBeggar">
 		<Item Name="Rotten Love" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Rotten Apple" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 </ItemPools>
