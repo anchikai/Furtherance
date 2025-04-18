@@ -123,7 +123,7 @@ Furtherance.Trinket.LEVIATHANS_TENDRIL.ACHIEVEMENT = achievement("Leviathan's Te
 --Mega Satan Unlock. Used to be Trepanation but is not fitting for the unlock
 Furtherance.Card.REVERSE_FAITH.ACHIEVEMENT = achievement("Reverse Faith")
 Furtherance.Item.MUDDLED_CROSS.ACHIEVEMENT = achievement("Muddled Cross")
-Furtherance.Trinket.KEY_TO_THE_PIT.ACHIEVEMENT = achievement("Key to the Pit")
+Furtherance.Trinket.DUNGEON_KEY.ACHIEVEMENT = achievement("Key to the Pit")
 --Beast Unlock. Potentially Escort Beggar
 Furtherance.Rune.ESSENCE_OF_DEATH.ACHIEVEMENT = achievement("Essence of Death")
 
@@ -133,7 +133,7 @@ Furtherance.CompletionMarkToAchievement.PETER_B = {
 	[CompletionType.MEGA_SATAN] = achievement("Secret Diary"), --Placeholder
 	[CompletionType.ULTRA_GREEDIER] = Mod.Card.REVERSE_FAITH.ACHIEVEMENT,
 	[CompletionType.DELIRIUM] = Mod.Item.MUDDLED_CROSS.ACHIEVEMENT,
-	[CompletionType.MOTHER] = Mod.Trinket.KEY_TO_THE_PIT.ACHIEVEMENT,
+	[CompletionType.MOTHER] = Mod.Trinket.DUNGEON_KEY.ACHIEVEMENT,
 	[CompletionType.BEAST] = achievement("Secret Diary"), --Placeholder
 	[Mod.CompletionType.ALL] = Mod.Rune.ESSENCE_OF_DEATH.ACHIEVEMENT
 }

@@ -1,16 +1,16 @@
 local Mod = Furtherance
 
-local SLICK_WORM = {}
+local REBOUND_WORM = {}
 
-Furtherance.Trinket.SLICK_WORM = SLICK_WORM
+Furtherance.Trinket.REBOUND_WORM = REBOUND_WORM
 
-SLICK_WORM.ID = Isaac.GetTrinketIdByName("Slick Worm")
+REBOUND_WORM.ID = Isaac.GetTrinketIdByName("Rebound Worm")
 
 ---@param tearorBomb EntityTear | EntityBomb
 ---@param gridEnt GridEntity?
-function SLICK_WORM:PreTearAndBombCollision(tearorBomb, gridIndex, gridEnt)
+function REBOUND_WORM:PreTearAndBombCollision(tearorBomb, gridIndex, gridEnt)
 	local player = tearorBomb.SpawnerEntity and tearorBomb.SpawnerEntity:ToPlayer()
-	if gridEnt and player and player:HasTrinket(SLICK_WORM.ID) then
+	if gridEnt and player and player:HasTrinket(REBOUND_WORM.ID) then
 		local data = Mod:GetData(tearorBomb)
 		if data.SlickWormBounced then return end
 		local enemy = Mod:GetClosestEnemyInView(tearorBomb.Position, 500, tearorBomb.Velocity:Rotated(180), 90, true,
@@ -23,16 +23,16 @@ function SLICK_WORM:PreTearAndBombCollision(tearorBomb, gridIndex, gridEnt)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_TEAR_GRID_COLLISION, SLICK_WORM.PreTearAndBombCollision)
-Mod:AddCallback(ModCallbacks.MC_PRE_BOMB_GRID_COLLISION, SLICK_WORM.PreTearAndBombCollision)
+Mod:AddCallback(ModCallbacks.MC_PRE_TEAR_GRID_COLLISION, REBOUND_WORM.PreTearAndBombCollision)
+Mod:AddCallback(ModCallbacks.MC_PRE_BOMB_GRID_COLLISION, REBOUND_WORM.PreTearAndBombCollision)
 
 ---@param laser EntityLaser
-function SLICK_WORM:LaserUpdate(laser)
+function REBOUND_WORM:LaserUpdate(laser)
 	if laser.SubType ~= LaserSubType.LASER_SUBTYPE_LINEAR then
 		return
 	end
 	local player = laser.SpawnerEntity and laser.SpawnerEntity:ToPlayer()
-	if player and player:HasTrinket(SLICK_WORM.ID) then
+	if player and player:HasTrinket(REBOUND_WORM.ID) then
 		local endPoint = laser:GetEndPoint()
 		if Mod.Room():GetGridEntityFromPos(endPoint) then
 			local data = Mod:GetData(laser)
@@ -47,7 +47,8 @@ function SLICK_WORM:LaserUpdate(laser)
 			if enemy then
 				if not data.SlickWormLaser then
 					local angle = (enemy.Position - endPoint):GetAngleDegrees()
-					local slickLaser = EntityLaser.ShootAngle(laser.Variant, endPoint, angle, laser.Timeout, laser.PositionOffset, player)
+					local slickLaser = EntityLaser.ShootAngle(laser.Variant, endPoint, angle, laser.Timeout,
+					laser.PositionOffset, player)
 					for name, value in ipairs(getmetatable(laser).__propget) do
 						if not string.find(name, "Angle") then
 							slickLaser[name] = value(laser)
@@ -68,4 +69,4 @@ function SLICK_WORM:LaserUpdate(laser)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, SLICK_WORM.LaserUpdate)
+Mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, REBOUND_WORM.LaserUpdate)

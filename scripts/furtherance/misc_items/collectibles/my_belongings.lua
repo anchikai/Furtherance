@@ -1,17 +1,17 @@
 local Mod = Furtherance
 
-local DADS_WALLET = {}
+local MY_BELONGINGS = {}
 
-Furtherance.Item.DADS_WALLET = DADS_WALLET
+Furtherance.Item.MY_BELONGINGS = MY_BELONGINGS
 
-DADS_WALLET.ID = Isaac.GetItemIdByName("Dad's Wallet")
+MY_BELONGINGS.ID = Isaac.GetItemIdByName("My Belongings")
 
-DADS_WALLET.DEFAULT_UNLOCK_BACKUP = {
+MY_BELONGINGS.DEFAULT_UNLOCK_BACKUP = {
 	Card.CARD_EMERGENCY_CONTACT,
 	Card.CARD_DICE_SHARD,
 }
 
-DADS_WALLET.CARD_DROPS = {
+MY_BELONGINGS.CARD_DROPS = {
 	Card.CARD_CREDIT,
 	Card.CARD_HUMANITY,
 	Card.CARD_GET_OUT_OF_JAIL,
@@ -25,14 +25,14 @@ DADS_WALLET.CARD_DROPS = {
 ---@param itemID CollectibleType
 ---@param firstTime boolean
 ---@param player EntityPlayer
-function DADS_WALLET:OnFirstPickup(itemID, _, firstTime, _, _, player)
+function MY_BELONGINGS:OnFirstPickup(itemID, _, firstTime, _, _, player)
 	if firstTime then
 		local rng = player:GetCollectibleRNG(itemID)
 		for _ = 1, 2 do
-			local card = DADS_WALLET.CARD_DROPS[rng:RandomInt(#DADS_WALLET.CARD_DROPS) + 1]
+			local card = MY_BELONGINGS.CARD_DROPS[rng:RandomInt(#MY_BELONGINGS.CARD_DROPS) + 1]
 			local cardConfig = Mod.ItemConfig:GetCard(card)
 			if not Mod.PersistGameData:Unlocked(cardConfig.AchievementID) then
-				card = DADS_WALLET.DEFAULT_UNLOCK_BACKUP[rng:RandomInt(#DADS_WALLET.DEFAULT_UNLOCK_BACKUP) + 1]
+				card = MY_BELONGINGS.DEFAULT_UNLOCK_BACKUP[rng:RandomInt(#MY_BELONGINGS.DEFAULT_UNLOCK_BACKUP) + 1]
 			end
 			Mod.Game:Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, Mod.Room():FindFreePickupSpawnPosition(player.Position),
 			Vector.Zero, player, card, rng:GetSeed())
@@ -40,4 +40,4 @@ function DADS_WALLET:OnFirstPickup(itemID, _, firstTime, _, _, player)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, DADS_WALLET.OnFirstPickup, DADS_WALLET.ID)
+Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, MY_BELONGINGS.OnFirstPickup, MY_BELONGINGS.ID)

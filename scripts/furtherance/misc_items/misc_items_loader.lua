@@ -19,7 +19,7 @@ local collectibles = {
 	"cosmic_omnibus",
 	"crab_legs",
 	"d9",
-	"dads_wallet",
+	"my_belongings",
 	"epitaph",
 	"flux",
 	"iron",
@@ -94,7 +94,7 @@ local trinkets = {
 	"grass",
 	"hammerhead_worm",
 	"nil_num",
-	"slick_worm"
+	"rebound_worm"
 }
 
 Mod.LoopInclude(trinkets, prefix .. "trinkets")

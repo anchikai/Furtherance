@@ -66,7 +66,7 @@ Mod.LoopInclude(peter, prefix .. "peter")
 
 local peter_b = {
 	"essence_of_death",
-	"key_to_the_pit",
+	"dungeon_key",
 	"leviathans_tendril",
 	"reverse_faith",
 	"soul_of_peter",
