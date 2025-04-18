@@ -145,7 +145,7 @@ local tools = {
 }
 
 local core = {
-	--"customhealthapi.core",
+	"customhealthapi.core",
 	"hearts",
 	"custom_callbacks"
 }
