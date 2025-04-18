@@ -9,6 +9,16 @@ MOON_HEART.KEY = "HEART_MOON"
 MOON_HEART.PICKUP_SFX = Isaac.GetSoundIdByName("Moon Heart Pickup")
 
 MOON_HEART.REPLACE_CHANCE = 0.2
+MOON_HEART.ROOM_MOONLIGHT_FLAGS = {
+	---Spawn moonlight flag
+	FLAG_SPAWN = 1 << 0,
+	---Moonlight effect activation flag
+	FLAG_ACTIVATED = 1 << 1,
+	--Moonlight spawned by luna flag
+	FLAG_LUNA = 1 << 2
+}
+
+Mod.SaveManager.Utility.AddDefaultFloorData(Mod.SaveManager.DefaultSaveKeys.GLOBAL, {ActivatedMoonlights = 0})
 
 ---@param player EntityPlayer
 ---@param amount integer
@@ -132,35 +142,78 @@ Mod:AddPriorityCallback(
 )
 
 function MOON_HEART:SpawnLunarLight()
-	if PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_LUNA) then
-		return
-	end
-	Mod:ForEachPlayer(function(player)
-		if player.FrameCount == 0 then
-			return true
-		end
-		if MOON_HEART:GetMoonHearts(player) > 0 then
-			local room = Mod.Room()
-			if
-				(room:GetType() == RoomType.ROOM_SECRET or room:GetType() == RoomType.ROOM_SUPERSECRET)
-				and room:IsFirstVisit()
-				and #Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.HEAVEN_LIGHT_DOOR, 1) == 0
-			then
-				Isaac.Spawn(
-					EntityType.ENTITY_EFFECT,
-					EffectVariant.HEAVEN_LIGHT_DOOR,
-					1,
-					room:GetCenterPos(),
-					Vector.Zero,
-					nil
-				)
+	local roomDesc = Mod.Level():GetCurrentRoomDesc()
+	if roomDesc.Data.Type == RoomType.ROOM_SECRET or roomDesc.Data.Type == RoomType.ROOM_SUPERSECRET then
+		local roomSave = Mod:RoomSave()
+		local floorSave = Mod:FloorSave()
+		local allMoonHearts = 0
+		Mod:ForEachPlayer(function(player)
+			allMoonHearts = allMoonHearts + math.ceil(MOON_HEART:GetMoonHearts(player) / 2)
+		end)
+		Mod:DebugLog("Total moon hearts: ".. allMoonHearts)
+		Mod:DebugLog("Activated moonlights: ".. floorSave.ActivatedMoonlights)
+		
+		local room = Mod.Room()
+		if not roomSave.SpawnMoonlight and room:IsFirstVisit() then
+			Mod:DebugLog("Init room moonlight data")
+			roomSave.SpawnMoonlight = 0
+			if PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_LUNA) then
+				roomSave.SpawnMoonlight = Mod:AddBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_LUNA)
+				Mod:DebugLog("Adding luna flag")
 			end
-			return true
 		end
-	end)
+		if Mod:HasAnyBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_ACTIVATED | MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_LUNA) then
+			Mod:DebugLog("Moonlight was activated")
+			return
+		end
+		if (allMoonHearts - floorSave.ActivatedMoonlights) > 0 then
+			roomSave.SpawnMoonlight = Mod:AddBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_SPAWN)
+			Mod:DebugLog("Adding flag to spawn in a room")
+		else
+			roomSave.SpawnMoonlight = Mod:RemoveBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_SPAWN)
+			Mod:DebugLog("Removing flag to spawn in a room")
+		end
+		
+		Mod:DebugLog("Moonlight can be spawned?: "..tostring(Mod:HasBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_SPAWN)))
+		Mod:ForEachPlayer(function(player)
+			if player.FrameCount > 0 then
+				if #Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.HEAVEN_LIGHT_DOOR, 1) > 0 then
+					Mod:DebugLog("Moonlight already exists")
+					return true
+				end
+				if Mod:HasBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_SPAWN)
+				then
+					Isaac.Spawn(
+						EntityType.ENTITY_EFFECT,
+						EffectVariant.HEAVEN_LIGHT_DOOR,
+						1,
+						room:GetCenterPos(),
+						Vector.Zero,
+						nil
+					)
+					return true
+				end
+			end
+		end)
+		
+	end
 end
-
 Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, MOON_HEART.SpawnLunarLight)
+
+---@param moonlight EntityEffect
+function MOON_HEART:ActivateMoonlight(moonlight)
+	if moonlight.SubType == 1 then
+		local roomSave = Mod:RoomSave()
+		if moonlight:GetSprite():IsPlaying("Disappear")
+		and not Mod:HasBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_ACTIVATED) then
+			roomSave.SpawnMoonlight = Mod:AddBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_ACTIVATED)
+			Mod:DebugLog("Moonlight activated")
+			local floorSave = Mod:FloorSave()
+			floorSave.ActivatedMoonlights = floorSave.ActivatedMoonlights + 1
+		end
+	end
+end
+Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, MOON_HEART.ActivateMoonlight, EffectVariant.HEAVEN_LIGHT_DOOR)
 
 CustomHealthAPI.Library.AddCallback(
 	"Furtherance",
