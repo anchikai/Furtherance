@@ -87,7 +87,9 @@ function MOON_HEART:AddExtraLuna(player)
 	if data.MoonHeartLunaTrack ~= player:GetEffects():GetNullEffectNum(NullItemID.ID_LUNA)
 		and player:HasCollectible(CollectibleType.COLLECTIBLE_LUNA)
 	then
-		player:GetEffects():AddNullEffect(NullItemID.ID_LUNA, true, math.ceil(MOON_HEART:GetMoonHearts(player) / 2))
+		if data.MoonHeartLunaTrack < player:GetEffects():GetNullEffectNum(NullItemID.ID_LUNA) then
+			player:GetEffects():AddNullEffect(NullItemID.ID_LUNA, true, math.ceil(MOON_HEART:GetMoonHearts(player) / 2))
+		end
 		data.MoonHeartLunaTrack = player:GetEffects():GetNullEffectNum(NullItemID.ID_LUNA)
 	end
 end
