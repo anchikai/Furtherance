@@ -33,7 +33,7 @@ local leah_b = {
 	"rotten_love",
 	"essence_of_hate",
 	"reverse_hope",
-	--"moon_hearts",
+	"moon_hearts",
 }
 
 Mod.LoopInclude(leah_b, prefix .. "leah_b")

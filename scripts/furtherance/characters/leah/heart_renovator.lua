@@ -54,6 +54,7 @@ Mod:AddCallback(ModCallbacks.MC_USE_ITEM, HEART_RENOVATOR.OnUse, HEART_RENOVATOR
 ---@return number? HeartWorth
 function HEART_RENOVATOR:CannotPickRedHeartsOrWillOverflow(pickup, player)
 	local amount = HEART_RENOVATOR.HeartAmount[pickup.SubType]
+	if not amount then return end
 	local canCollect = player:CanPickRedHearts()
 	local canOverflow = false
 	if pickup.SubType == HeartSubType.HEART_BLENDED then
