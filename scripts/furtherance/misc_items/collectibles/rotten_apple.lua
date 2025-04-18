@@ -15,14 +15,7 @@ ROTTEN_APPLE.WORMS = {
 	TrinketType.TRINKET_WHIP_WORM,
 	TrinketType.TRINKET_TAPE_WORM,
 	TrinketType.TRINKET_LAZY_WORM,
-	-- TrinketType.TRINKET_RAINBOW_WORM,
-	-- TrinketType.TRINKET_OUROBOROS_WORM,
-	TrinketType.TRINKET_BRAIN_WORM,
-
-	-- Modded Worms
-	--TODO: Add later in patch
-	--[[ TrinketType.TRINKET_SLICK_WORM,
-	TrinketType.TRINKET_HAMMERHEAD_WORM, ]]
+	TrinketType.TRINKET_BRAIN_WORM
 }
 ROTTEN_APPLE.DAMAGE_UP = 2
 

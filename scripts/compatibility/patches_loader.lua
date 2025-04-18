@@ -43,8 +43,9 @@ function loader:ApplyPatches()
 end
 
 local patches = {
-
+	"furtherance"
 }
+
 for _, fileName in ipairs(patches) do
 	Furtherance.Include("scripts.compatibility.patches." .. fileName)
 end
