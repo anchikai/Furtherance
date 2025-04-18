@@ -77,16 +77,21 @@ function MOON_HEART:SpawnMoonHeart(entType, variant, subtype, _, _, spawner, see
 end
 Mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, MOON_HEART.SpawnMoonHeart)
 
----@param itemConfig ItemConfigItem
----@param count integer
----@param cooldown integer
 ---@param player EntityPlayer
-function MOON_HEART:AddExtraLuna(itemConfig, count, cooldown, player)
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_LUNA) then
+function MOON_HEART:AddExtraLuna(player)
+	if MOON_HEART:GetMoonHearts(player) == 0 then return end
+	local data = Mod:GetData(player)
+	if not data.MoonHeartLunaTrack then
+		data.MoonHeartLunaTrack = player:GetEffects():GetNullEffectNum(NullItemID.ID_LUNA)
+	end
+	if data.MoonHeartLunaTrack ~= player:GetEffects():GetNullEffectNum(NullItemID.ID_LUNA)
+		and player:HasCollectible(CollectibleType.COLLECTIBLE_LUNA)
+	then
 		player:GetEffects():AddNullEffect(NullItemID.ID_LUNA, true, math.ceil(MOON_HEART:GetMoonHearts(player) / 2))
+		data.MoonHeartLunaTrack = player:GetEffects():GetNullEffectNum(NullItemID.ID_LUNA)
 	end
 end
-Mod:AddCallback(Mod.ModCallbacks.POST_ADD_NULL_EFFECT, MOON_HEART.AddExtraLuna, NullItemID.ID_LUNA)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, MOON_HEART.AddExtraLuna)
 
 ---@param pickup EntityPickup
 ---@param collider Entity
