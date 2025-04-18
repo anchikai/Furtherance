@@ -77,7 +77,7 @@
 	<achievement name="Escort Beggar" gfx="achievement_escortbeggar.png" />
 	<achievement name="Reverse Faith" gfx="achievement_reversefaith.png" />
 	<achievement name="Muddled Cross" gfx="achievement_muddledcross.png" />
-	<achievement name="Key to the Pit" gfx="achievement_keytothepit.png" />
+	<achievement name="Dungeon Key" gfx="achievement_dungeonkey.png" />
 	<achievement name="Trepanation" gfx="achievement_trepanation.png" />
 	<achievement name="Essence of Death" gfx="achievement_essenceofdeath.png" />
 

@@ -60,7 +60,7 @@
 	<passive id="77" name="Sunscreen" description="A way to beat the heat!" gfx="sunscreen.png" quality="0" craftquality="0" tags="summonable" />
 	<passive id="81" name="Rotten Apple" description="Random worm + Damage up" gfx="rotten_apple.png" cache="damage" quality="0" craftquality="0" tags="offensive" />
 	<passive id="82" name="Beginner's Luck" description="Fading fortune" gfx="beginners_luck.png" cache="luck" quality="2" craftquality="2" persistent="true" tags="offensive nogreed" />
-	<passive id="83" name="Dad's Wallet" description="Father's fortune" gfx="dads_wallet.png" quality="1" craftquality="1" tags="offensive" />
+	<passive id="83" name="My Belongings" description="All that is evil of this world" gfx="my_belongings.png" quality="1" craftquality="1" tags="offensive" />
 	<passive id="84" name="Chi Rho" description="Technological!" gfx="chi_rho.png" achievement="Chi Rho" quality="3" craftquality="3" tag="offensive summonable" />
 	<passive id="85" name="Leah's Heart" description="Her heart beats" gfx="leahs_heart.png" achievement="Leah's Heart" cache="damage" shopprice="30" devilprice="2" quality="3" craftquality="3" tags="summonable" />
 	<passive id="86" name="Pallium" description="Authority" gfx="pallium.png" achievement="Pallium" quality="4" craftquality="4" tags="angel offensive summonable" />
@@ -105,7 +105,7 @@
 	<!-- Trinkets -->
 	<trinket id="0" name="Holy Heart" description="Protective hearts" gfx="holy_heart.png" achievement="Holy Heart"/> <!-- Concept by HoneyVee! -->
 	<trinket id="1" name="Cringe" description="You're posting it" gfx="cringe.png" /> <!-- Concept by Freg! -->
-	<trinket id="2" name="Slick Worm" description="Sliiiick" gfx="slick_worm.png" /> <!-- Concept by Freg! -->
+	<trinket id="2" name="Rebound Worm" description="Pew!" gfx="rebound_worm.png" /> <!-- Concept by Freg! -->
 	<trinket id="3" name="Grass" description="Go touch some" gfx="grass.png" /> <!-- Concept by Aeronaut! -->
 	<trinket id="4" name="Alabaster Scrap" description="FT" gfx="alabaster_scrap.png" achievement="Alabaster Scrap" cache="damage" persistent="true" />
 	<trinket id="5" name="Leah's Lock" description="No pain? no gain" gfx="leahs_lock.png" achievement="Leah's Lock" />
@@ -117,8 +117,8 @@
 	<trinket id="12" name="Leviathan's Tendril" description="An instrument to control the waves" gfx="leviathans_tendril.png" achievement="Leviathan's Tendril" />
 	<trinket id="13" name="Altruism" description="Blessing of charity" gfx="altruism.png" achievement="Altruism" />
 	<trinket id="14" name="Nil Num" description="Q" gfx="nil_num.png" />
-	<trinket id="15" name="Key to the Pit" description="Unleash the great fire" gfx="key_to_the_pit.png" achievement="Key to the Pit" />
-	<trinket id="16" name="BI-84" description="" gfx="bi-84.png" />
+	<trinket id="15" name="Dungeon Key" description="Opens challenging rooms" gfx="dungeon_key.png" achievement="Dungeon Key" />
+	<trinket id="16" name="BI-84" description="Exam approved" gfx="bi-84.png" />
 	<trinket id="17" name="Glitched Penny" description="Wealth of Corruption" gfx="glitched_penny.png" />
 	<trinket id="18" name="Hammerhead Worm" description="Thwack" gfx="hammerhead_worm.png" cache="range shotspeed damage" />
 	<trinket id="19" name="Parasol" description="Little protectors" gfx="parasol.png" achievement="Parasol" />
