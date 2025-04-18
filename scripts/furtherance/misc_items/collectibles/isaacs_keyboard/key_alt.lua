@@ -12,9 +12,8 @@ ALT_KEY.MAX_CHARGES = Mod.ItemConfig:GetCollectible(ALT_KEY.ID).MaxCharges
 ---@param player EntityPlayer
 function ALT_KEY:OnUse(_, rng, player)
 	if game:IsGreedMode() then
-		player:AnimateSad()
 		return
-	end --TODO: Remember to blacklist the item from Greed Mode
+	end
 	local level = game:GetLevel()
 	if level:IsAscent() then
 		player:AnimateSad()

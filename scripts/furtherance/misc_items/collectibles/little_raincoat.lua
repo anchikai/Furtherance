@@ -1,4 +1,5 @@
 local Mod = Furtherance
+local floor = math.floor
 
 local LITTLE_RAINCOAT = {}
 
@@ -6,15 +7,6 @@ Furtherance.Item.LITTLE_RAINCOAT = LITTLE_RAINCOAT
 
 LITTLE_RAINCOAT.ID = Isaac.GetItemIdByName("Little Raincoat")
 LITTLE_RAINCOAT.HEART_CHANCE = 0.06
-
-local floor = math.floor
-
---TODO: Revisit for rework. Idea:
---every 6 hits triggers power pill effect
---increase power pill dmg to scale off of isaac's tear dmg with a bonus for every empty heart container
---killing an enemy with power pill has a 6% chance to gain 1 empty red heart container
---guarantees power pill will be in rotation
---tick rate also scales off of empty heart containers
 
 function LITTLE_RAINCOAT:RaincoatSize(player, flag)
 	local numRaincoats = player:GetCollectibleNum(LITTLE_RAINCOAT.ID)

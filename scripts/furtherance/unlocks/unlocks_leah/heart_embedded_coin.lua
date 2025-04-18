@@ -1,6 +1,5 @@
 local Mod = Furtherance
 
---TODO: Could use a rename?
 local HEART_EMBEDDED_COIN = {}
 
 Furtherance.Item.HEART_EMBEDDED_COIN = HEART_EMBEDDED_COIN

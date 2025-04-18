@@ -10,7 +10,7 @@ ESSENCE_OF_DELUGE.SLOW_COLOR = Color(0.5, 0.5, 0.8, 1, 0, 0.04, 0.1)
 ESSENCE_OF_DELUGE.SLOW_DURATION = 150
 ESSENCE_OF_DELUGE.SLOW_VALUE = 0.5
 
---TODO: Idk seems kinda...weak? Necronomicon deals a guaranteed 40. Continuous raindrops over every enemy sounds cool.
+--TODO: To be reworked
 
 ---@param player EntityPlayer
 function ESSENCE_OF_DELUGE:OnUse(card, player, flag)

@@ -9,8 +9,6 @@ SOUL_OF_LEAH.NULL_ID = Isaac.GetNullItemIdByName("soul of leah")
 
 SOUL_OF_LEAH.HEARTS_PER_USE = 3
 
---TODO: Kinda sucks, could use a rework
-
 ---@param player EntityPlayer
 function SOUL_OF_LEAH:UseSoulOfLeah(_, player, _)
 	player:GetEffects():AddNullEffect(SOUL_OF_LEAH.NULL_ID, false, SOUL_OF_LEAH.HEARTS_PER_USE)

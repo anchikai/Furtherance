@@ -7,7 +7,6 @@ Furtherance.Item.MANDRAKE = MANDRAKE
 
 MANDRAKE.ID = Isaac.GetItemIdByName("Mandrake")
 
---TODO: Move pedestals around depending on how many there are in the room I guess? Mandrakes included.
 function MANDRAKE:SpawnFamiliarItem()
 	local room = game:GetRoom()
 	if room:GetType() == RoomType.ROOM_TREASURE and room:IsFirstVisit() then

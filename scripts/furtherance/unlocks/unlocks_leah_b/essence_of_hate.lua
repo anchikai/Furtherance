@@ -8,7 +8,7 @@ ESSENCE_OF_HATE.ID = Isaac.GetCardIdByName("Essence of Hate")
 
 ESSENCE_OF_HATE.MAX_BROKEN_HEARTS = 11
 
---TODO: This sucks, needs a rework
+--TODO: To be reworked. Requires Love Teller implementation
 
 ---@param player EntityPlayer
 function ESSENCE_OF_HATE:OnUse(_, player, _)
