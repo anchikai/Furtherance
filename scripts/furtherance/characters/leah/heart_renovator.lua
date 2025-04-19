@@ -57,19 +57,26 @@ function HEART_RENOVATOR:CannotPickRedHeartsOrWillOverflow(pickup, player)
 	if not amount then return end
 	local canCollect = player:CanPickRedHearts()
 	local canOverflow = false
-	if pickup.SubType == HeartSubType.HEART_BLENDED then
+	local isBlended = pickup.SubType == HeartSubType.HEART_BLENDED
+	if isBlended then
 		canCollect = canCollect or player:CanPickSoulHearts()
 	end
 
 	if canCollect then
 		local emptyHealth = player:GetEffectiveMaxHearts() - player:GetHearts() - (player:GetRottenHearts() * 2)
-		if emptyHealth < amount and emptyHealth >= 0 then
+		if emptyHealth < amount
+			and emptyHealth >= 0
+			and (not isBlended or player:GetEffectiveMaxHearts() + player:GetSoulHearts() == player:GetHeartLimit())
+		then
 			amount = amount - emptyHealth
 			canOverflow = true
 		end
 	end
 
 	if (not canCollect and Mod:PricedPickup(player, pickup)) or canOverflow then
+		if isBlended then
+			Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2_BUBBLES)
+		end
 		return amount
 	end
 end
