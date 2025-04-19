@@ -218,7 +218,7 @@ function TearModifier:PrintChanceLine(luck, teardropCharm)
 		(self.MaxLuck * self.MinChance - self.MinLuck * self.MaxChance) / deltaX
 	local luckString = teardropCharm and (tostring(luck - 3) .. " (+3 from teardrop charm)") or tostring(luck)
 
-	Epiphany:DebugLog("The player has a " ..
+	Mod:DebugLog("The player has a " ..
 		string.format("%.2f%%", rngRequirement * 100) ..
 		" for the " .. self.Name .. " TearModifier to activate at " .. luckString .. " luck")
 end
@@ -455,8 +455,9 @@ function TearModifier.New(params)
 
 
 			if knife:GetIsSwinging() or knife:GetIsSpinAttack() then
-				for _, enemy in ipairs(Epiphany.KnifeUtil:GetEntitiesInSwing(player, knife)) do
-					if not data[dataName][GetPtrHash(enemy)] then
+				local hitList = Mod:Set(knife:GetHitList())
+				for _, enemy in ipairs(Isaac.GetRoomEntities()) do
+					if not data[dataName][GetPtrHash(enemy)] and hitList[enemy.Index] then
 						data[dataName][GetPtrHash(enemy)] = true
 						if enemy:ToNPC() then
 							local npc = enemy:ToNPC() ---@cast npc EntityNPC
