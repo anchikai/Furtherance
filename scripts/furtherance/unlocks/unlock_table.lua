@@ -4,10 +4,15 @@ local function achievement(str)
 	return Isaac.GetAchievementIdByName(str)
 end
 
+---@alias CompletionTable {[CompletionType|FurtheranceCompletionType]: Achievement}
+
+---@type {[string]: CompletionTable}
 Furtherance.CompletionMarkToAchievement = {}
 
+---@type {[PlayerType]: CompletionTable}
 Furtherance.PlayerTypeToCompletionTable = {}
 
+---@enum FurtheranceCompletionType
 Furtherance.CompletionType = {
 	TAINTED = 15,
 	ALL = 16

@@ -187,7 +187,8 @@ local characters = {
 	"miriam.miriam",
 	--"miriam.polydipsia",
 	"miriam_b.miriam_b",
-	"miriam_b.polarity_shift"
+	"miriam_b.polarity_shift",
+	"tainted_unlock"
 }
 
 Mod.LoopInclude(characters, "scripts.furtherance.characters")
