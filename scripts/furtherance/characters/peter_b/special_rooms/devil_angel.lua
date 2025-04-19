@@ -51,13 +51,13 @@ Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM, birthri
 
 ---@param pickup EntityPickup
 local function birthrightYourSoulPrice(_, pickup)
+	if not Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP:IsFlippedRoom() then return end
 	if Mod.Room():GetType() == RoomType.ROOM_DEVIL
 		and PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.PETER_B)
 	then
 		local room_save = Mod:RoomSave()
 		local data = Mod:GetData(pickup)
-		if Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP:IsFlippedRoom()
-			and not room_save.PeterBBirthrightPurchasedDevil
+		if not room_save.PeterBBirthrightPurchasedDevil
 			and not data.PeterBBirthrightIgnorePickup
 			and pickup:IsShopItem()
 		then
@@ -79,6 +79,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, birthrightYourSoulPrice, Pic
 
 ---@param pickup EntityPickup
 local function birthrightOnShopPurchase(_, pickup, collider)
+	if not Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP:IsFlippedRoom() then return end
 	local player = collider:ToPlayer()
 	if not player then return end
 	if Mod:GetData(pickup).PeterBBirthrightFreePickup then
