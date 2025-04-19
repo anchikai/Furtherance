@@ -52,11 +52,3 @@ function CHARGED_BOMB:CollectChargedBomb(pickup, collider)
 end
 
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, CallbackPriority.LATE, CHARGED_BOMB.CollectChargedBomb, PickupVariant.PICKUP_BOMB)
---[[
-function CHARGED_BOMB:PostPickupRender(pickup)
-	--if pickup.SubType ~= CHARGED_BOMB.ID then return end
-	local pos = Isaac.WorldToScreen(pickup.Position)
-	Isaac.RenderText(pickup.Velocity:Length(), pos.X, pos.Y, 1, 1, 1, 1)
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_RENDER, CHARGED_BOMB.PostPickupRender, PickupVariant.PICKUP_BOMB) ]]

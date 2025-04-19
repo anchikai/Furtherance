@@ -1186,8 +1186,8 @@ CustomHealthAPI.Helper.HookFunctions.TakeDamage = function(ent, amount, flags, s
 		ent:GetData().CustomHealthAPISavedata.HandlingDamageCountdown = alreadyHandlingDamageCountdown
 		
 		ent:GetData().CustomHealthAPISavedata.HandlingDamageCanShackle = ent:ToPlayer() and
-		                                                                 not (player:GetEffects():HasNullEffect(NullItemID.ID_SPIRIT_SHACKLES_SOUL) or 
-		                                                                      player:GetEffects():HasNullEffect(NullItemID.ID_SPIRIT_SHACKLES_DISABLED))
+		                                                                 not (ent:ToPlayer():GetEffects():HasNullEffect(NullItemID.ID_SPIRIT_SHACKLES_SOUL) or
+		                                                                      ent:ToPlayer():GetEffects():HasNullEffect(NullItemID.ID_SPIRIT_SHACKLES_DISABLED))
 		ent:GetData().CustomHealthAPIOtherData.ShouldActivateScapular = ent:ToPlayer() and 
 		                                                                ent:ToPlayer():GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_SCAPULAR)
 	end

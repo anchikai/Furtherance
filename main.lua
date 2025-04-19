@@ -213,12 +213,9 @@ Mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, function(_, shaderName)
 	end
 end)
 
-Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function()
-	print(Isaac.GetPlayer():GetHeartLimit(), Isaac.GetPlayer():GetBrokenHearts())
-end)
-
 --!End of file
 
+Mod.Include("scripts.compatibility.patches.eid_support")
 Mod.Include("scripts.compatibility.patches_loader")
 
 if Mod.FileLoadError then

@@ -2,7 +2,7 @@ local Mod = Furtherance
 
 local SHIFT_KEY = {}
 
-Furtherance.Item.SHIFT_KEY = SHIFT_KEY
+Furtherance.Item.KEY_SHIFT = SHIFT_KEY
 
 SHIFT_KEY.ID = Isaac.GetItemIdByName("Shift Key")
 

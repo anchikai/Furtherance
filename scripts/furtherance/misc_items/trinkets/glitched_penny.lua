@@ -2,7 +2,7 @@ local Mod = Furtherance
 
 local GLITCHED_PENNY = {}
 
-Furtherance.Item.GLITCHED_PENNY = GLITCHED_PENNY
+Furtherance.Trinket.GLITCHED_PENNY = GLITCHED_PENNY
 
 GLITCHED_PENNY.ID = Isaac.GetTrinketIdByName("Glitched Penny")
 

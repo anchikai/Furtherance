@@ -2,7 +2,7 @@ local Mod = Furtherance
 
 local TWO_OF_SHIELDS = {}
 
-Furtherance.Item.TWO_OF_SHIELDS = TWO_OF_SHIELDS
+Furtherance.Card.TWO_OF_SHIELDS = TWO_OF_SHIELDS
 
 TWO_OF_SHIELDS.ID = Isaac.GetCardIdByName("Two of Shields")
 

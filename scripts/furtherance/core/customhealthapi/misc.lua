@@ -123,7 +123,7 @@ function CustomHealthAPI.Helper.GetConvertedMaxHealthType(player)
 	if CustomHealthAPI.Helper.PlayerIsBoneHeartOnly(player) then
 		return "BONE_HEART"
 	end
-	return CustomHealthAPI.PersistentData.CharactersThatConvertMaxHealth[playertype] or "SOUL_HEART"
+	return CustomHealthAPI.PersistentData.CharactersThatConvertMaxHealth[player:GetPlayerType()] or "SOUL_HEART"
 end
 
 function CustomHealthAPI.Helper.GetPlayerIndex(player)
