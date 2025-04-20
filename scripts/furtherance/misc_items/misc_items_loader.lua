@@ -11,11 +11,9 @@ local collectibles = {
 	"book_of_ambit",
 	"book_of_books",
 	"book_of_swiftness",
-	--"brainstorm",
 	"brunch",
 	"butterfly",
 	"cardiomyopathy",
-
 	"cosmic_omnibus",
 	"crab_legs",
 	"d9",
@@ -23,13 +21,11 @@ local collectibles = {
 	"epitaph",
 	"flux",
 	"iron",
-
 	"leaking_tank",
 	"little_raincoat",
 	"neass",
 	"old_camera",
-
-	"parasitic_poofer",
+	"lil_poofer",
 	"pharaoh_cat",
 	"polaris",
 	"quarantine",

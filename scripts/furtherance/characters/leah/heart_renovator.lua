@@ -148,7 +148,6 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_USE_CARD, HEART_RENOVATOR.TwoOfHearts, Card.CARD_HEARTS_2)
 
-
 HudHelper.RegisterHUDElement({
 	Name = "Heart Renovator Counter",
 	Priority = HudHelper.Priority.NORMAL,
