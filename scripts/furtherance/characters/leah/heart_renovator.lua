@@ -10,9 +10,8 @@ HEART_RENOVATOR.MAX_COUNTER = 99
 HEART_RENOVATOR.DAMAGE_MULT = 0.1
 
 local font = Mod.Font.Tempest
-local counter = Sprite()
-counter:Load("gfx/ui_heartcounter.anm2", true)
-counter:Play("Idle", true)
+local counter = Sprite("gfx/ui/hudpickups.anm2", true)
+counter:SetFrame("Idle", 15)
 HEART_RENOVATOR.CounterSprite = counter
 
 HEART_RENOVATOR.HeartAmount = {
@@ -24,12 +23,7 @@ HEART_RENOVATOR.HeartAmount = {
 }
 
 function HEART_RENOVATOR:GetMaxHeartCounter(player)
-	local maxCount = HEART_RENOVATOR.MAX_COUNTER
-
-	if Mod.Character.LEAH:IsLeah(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
-		maxCount = 999
-	end
-	return maxCount
+	return HEART_RENOVATOR.MAX_COUNTER
 end
 
 ---@param player EntityPlayer
@@ -158,22 +152,19 @@ Mod:AddCallback(ModCallbacks.MC_USE_CARD, HEART_RENOVATOR.TwoOfHearts, Card.CARD
 HudHelper.RegisterHUDElement({
 	Name = "Heart Renovator Counter",
 	Priority = HudHelper.Priority.NORMAL,
-	XPadding = -20,
-	YPadding = 8,
-	Condition = function (player, playerHUDIndex, hudLayout)
+	XPadding = 0,
+	YPadding = 6,
+	Condition = function (player)
 		return player:HasCollectible(HEART_RENOVATOR.ID)
 	end,
-	OnRender = function (player, playerHUDIndex, hudLayout, position)
+	OnRender = function (player, _, _, position)
 		local player_run_save = Mod:RunSave(player)
 		player_run_save.HeartRenovatorCounter = player_run_save.HeartRenovatorCounter or 0
 		local heartCounter = player_run_save.HeartRenovatorCounter
-		local alpha = 1
-		local color = KColor.White
-		counter.Color = Color(1, 1, 1, alpha)
-		counter:Render(position)
 		local maxCounter = HEART_RENOVATOR:GetMaxHeartCounter(player)
 		local formatLength = "%0" .. string.len(tostring(maxCounter)) .. "d"
 		local counterStr = string.format(formatLength, heartCounter)
-		font:DrawString(counterStr, position.X + 16, position.Y, color, 0, false)
+		font:DrawString(counterStr, position.X, position.Y, KColor.White, 0, false)
+		HEART_RENOVATOR.CounterSprite:Render(position - Vector(16, 0))
 	end
 }, HudHelper.HUDType.EXTRA)
