@@ -185,7 +185,7 @@ local characters = {
 	"peter.peter",
 	"peter_b.peter_b",
 	"miriam.miriam",
-	--"miriam.polydipsia",
+	"miriam.polydipsia",
 	"miriam_b.miriam_b",
 	"miriam_b.polarity_shift",
 	"tainted_unlock"
