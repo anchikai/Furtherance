@@ -7,20 +7,20 @@
 	<costume id="9" anm2path="210_gnawedleaf_statue.anm2" type="trinket" priority="50" />
 
 	<!-- Leah -->
-	<costume id="1" anm2path="Character_001_Leah_Hair.anm2" type="none" priority="99" />
-	<costume anm2path="Character_001_Leah_Pog.anm2" type="none" priority="99" />
+	<costume id="1" anm2path="character_01_leah_hair.anm2" type="none" priority="99" />
+	<costume anm2path="character_01_leah_Pog.anm2" type="none" priority="99" />
 	<!-- Tainted Leah -->
-	<costume id="2" anm2path="Character_001b_Leah_Hair.anm2" type="none" priority="99" />
-	<costume anm2path="Character_001b_Leah_Pog.anm2" type="none" priority="99" />
+	<costume id="2" anm2path="character_01b_leah_hair.anm2" type="none" priority="99" />
+	<costume anm2path="character_01b_leah_Pog.anm2" type="none" priority="99" />
 	<!-- Peter -->
-	<costume id="3" anm2path="Character_002_Peter_Drip.anm2" type="none" priority="99" />
+	<costume id="3" anm2path="character_02_peter_drip.anm2" type="none" priority="99" />
 	<!-- Tainted Peter -->
-	<costume id="4" anm2path="Character_002b_Peter_Drip.anm2" type="none" priority="99" />
-	<costume anm2path="Character_002b_Peter_Pog.anm2" type="none" priority="99" />
+	<costume id="4" anm2path="character_02b_peter_drip.anm2" type="none" priority="99" />
+	<costume anm2path="character_02b_peter_Pog.anm2" type="none" priority="99" />
 	<!-- Miriam -->
-	<costume id="5" anm2path="Character_003_Miriam_Hair.anm2" type="none" priority="99" />
-	<costume anm2path="Character_003_Miriam_Pog.anm2" type="none" priority="99" />
+	<costume id="5" anm2path="character_03_miriam_hair.anm2" type="none" priority="99" />
+	<costume anm2path="character_03_miriam_Pog.anm2" type="none" priority="99" />
 	<!-- Tainted Miriam -->
-	<costume id="6" anm2path="Character_003b_Miriam_Hair.anm2" type="none" priority="99" />
-	<costume anm2path="Character_003b_Miriam_Pog.anm2" type="none" priority="99" />
+	<costume id="6" anm2path="character_03b_miriam_hair.anm2" type="none" priority="99" />
+	<costume anm2path="character_03b_miriam_Pog.anm2" type="none" priority="99" />
 </costumes>
