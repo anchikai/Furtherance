@@ -5,14 +5,17 @@ local LOVE_TELLER = {}
 Furtherance.Slot.LOVE_TELLER = LOVE_TELLER
 
 LOVE_TELLER.ID = Isaac.GetEntityVariantByName("Love Teller")
-LOVE_TELLER.GOOD_COMPAT_CHANCE = 0.5
-LOVE_TELLER.TRUE_LOVE_COMPAT_CHANCE = 0.12
+LOVE_TELLER.GOOD_COMPAT_CHANCE = 0.45
+LOVE_TELLER.TRUE_LOVE_COMPAT_CHANCE = 0.125
 
 LOVE_TELLER.PARENT_PLAYERTYPES = {
 	[PlayerType.PLAYER_BLACKJUDAS] = PlayerType.PLAYER_JUDAS,
 	[PlayerType.PLAYER_LAZARUS2] = PlayerType.PLAYER_LAZARUS,
 	[PlayerType.PLAYER_THESOUL] = PlayerType.PLAYER_THEFORGOTTEN
 }
+
+local overlaySprite = Sprite("gfx/slot_love_teller.anm2", true)
+overlaySprite:Play("OverlayIcons")
 
 LOVE_TELLER.MATCHMAKING = {
 	[PlayerType.PLAYER_ISAAC] = {
@@ -152,7 +155,7 @@ end
 
 ---@param slot EntitySlot
 function LOVE_TELLER:OnSlotInit(slot)
-
+	slot:SetSize(slot.Size, Vector(1.5, 0.75), 24)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_SLOT_INIT, LOVE_TELLER.OnSlotInit, LOVE_TELLER.ID)
@@ -219,15 +222,12 @@ function LOVE_TELLER:OnSlotUpdate(slot)
 		sprite:RemoveOverlay()
 		Mod.SFXMan:Play(SoundEffect.SOUND_COIN_SLOT)
 		slot:SetState(Mod.SlotState.REWARD)
-	end
-	if sprite:IsFinished("Initiate") then
+	elseif sprite:IsFinished("Initiate") then
 		sprite:Play("Wiggle")
 		slot:SetTimeout(30)
-	end
-	if sprite:IsPlaying("Wiggle") and slot:GetTimeout() == 0 then
+	elseif sprite:IsPlaying("Wiggle") and slot:GetTimeout() == 0 then
 		sprite:Play("WiggleEnd")
-	end
-	if sprite:IsFinished("WiggleEnd") then
+	elseif sprite:IsFinished("WiggleEnd") then
 		local roll = data.SlotRNG:RandomFloat()
 		slot_save.SlotRNGSeed = data.SlotRNG:GetSeed()
 		local prizeResult = 0
@@ -241,9 +241,9 @@ function LOVE_TELLER:OnSlotUpdate(slot)
 		sprite:Play("Prize" .. prizeResult)
 		local player = Mod:GetData(slot).TouchedPlayer
 		if not player or not player:Exists() then
-			Isaac.Explode(slot.Position, slot, 40)
-			slot:GetSprite():Play("Death")
-			--lol
+			Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
+			slot:SetState(Mod.SlotState.IDLE)
+			sprite:Play("Idle")
 			return
 		end
 		local iconLeft, layerLeft = LOVE_TELLER:TryGetCoopIcon(player, true)
@@ -251,13 +251,16 @@ function LOVE_TELLER:OnSlotUpdate(slot)
 		local playerTypeRight = LOVE_TELLER:GetMatchMaker(player:GetPlayerType(), prizeResult)
 		local iconRight, layerRight = LOVE_TELLER:TryGetCoopIcon(playerTypeRight, false)
 		data.IconRight = {Sprite = iconRight, Layer = layerRight}
-	end
-	if string.find(sprite:GetAnimation(), "Prize")
+	elseif sprite:IsPlaying("Prize2")
+		and sprite:IsEventTriggered("Ding")
+	then
+		Mod.SFXMan:Play(SoundEffect.SOUND_THUMBSUP)
+	elseif string.find(sprite:GetAnimation(), "Prize")
 		and sprite:IsEventTriggered("Prize")
 	then
 		local num = string.gsub(sprite:GetAnimation(), "Prize", "")
 		if num == "0" then
-			Isaac.Spawn(EntityType.ENTITY_FLY, 0, 0, Mod.Room():FindFreeTilePosition(slot.Position + Vector(0, 40), 0), Vector.Zero, nil)
+			Isaac.Spawn(EntityType.ENTITY_FLY, 0, 0, slot.Position, Vector.Zero, nil)
 			Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
 			slot:SetState(Mod.SlotState.IDLE)
 		elseif num == "1" then
@@ -269,8 +272,17 @@ function LOVE_TELLER:OnSlotUpdate(slot)
 		elseif num == "2" then
 			local pos = Mod.Room():FindFreePickupSpawnPosition(slot.Position + Vector(0, 40))
 			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, CollectibleType.COLLECTIBLE_HEART, pos, Vector.Zero, nil)
-			Mod.SFXMan:Play(SoundEffect.SOUND_THUMBSUP)
+			slot:SetState(Mod.SlotState.PAYOUT)
+			slot:GetSprite():Play("Death")
 		end
+	end
+	if sprite:IsPlaying("Death")
+		and sprite:IsEventTriggered("Explosion")
+	then
+		Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BOMB_EXPLOSION, 0, slot.Position + Vector(0, 1), Vector.Zero, slot)
+		Mod.SFXMan:Play(SoundEffect.SOUND_BOSS1_EXPLOSIONS)
+	elseif sprite:IsFinished("Death") then
+		sprite:Play("Broken")
 	end
 end
 
@@ -295,7 +307,25 @@ Mod:AddCallback(ModCallbacks.MC_POST_SLOT_COLLISION, LOVE_TELLER.OnSlotCollision
 
 ---@param slot EntitySlot
 function LOVE_TELLER:SlotDrops(slot)
-
+	if slot:GetState() == Mod.SlotState.BOMBED then
+		local sprite = slot:GetSprite()
+		if not sprite:IsPlaying("Death") and sprite:GetAnimation() ~= "Broken" then
+			sprite:Play("Death", true)
+		end
+	end
+	local data = Mod:GetData(slot)
+	---@type RNG
+	local rng = data.SlotRNG
+	local num = 3
+	local pickup = PickupVariant.PICKUP_COIN
+	if rng:RandomFloat() <= 0.25 then
+		num = 2
+		pickup = PickupVariant.PICKUP_HEART
+	end
+	for _ = 1, num do
+		Isaac.Spawn(EntityType.ENTITY_PICKUP, pickup, NullPickupSubType.ANY, slot.Position, EntityPickup.GetRandomPickupVelocity(slot.Position, Mod.RandomRNG, 0), nil)
+	end
+	return false
 end
 
 Mod:AddCallback(ModCallbacks.MC_PRE_SLOT_CREATE_EXPLOSION_DROPS, LOVE_TELLER.SlotDrops, LOVE_TELLER.ID)
@@ -324,6 +354,7 @@ function LOVE_TELLER:RenderCoopIcons(slot, offset)
 	spriteRight.Scale = slotRight:GetScale()
 	spriteLeft:RenderLayer(layerLeft, renderPos + slotLeft:GetPos())
 	spriteRight:RenderLayer(layerRight, renderPos + slotRight:GetPos())
+	overlaySprite:Render(renderPos)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_SLOT_RENDER, LOVE_TELLER.RenderCoopIcons, LOVE_TELLER.ID)

@@ -44,7 +44,7 @@
 	</entity>
 
 	<!-- Slots/Beggars -->
-	<entity anm2path="slot_love_teller.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="6" name="Love Teller" numGridCollisionPoints="24" shadowSize="33" stageHP="0" variant="4826">
+	<entity anm2path="slot_love_teller.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="6" name="Love Teller" numGridCollisionPoints="24" shadowSize="33" stageHP="0" variant="4826" collisionRadiusXMulti="1.5" collisionRadiusYMulti="0.75">
     </entity>
 
 	<!-- Monsters -->
