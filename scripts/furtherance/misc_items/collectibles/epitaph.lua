@@ -233,11 +233,9 @@ Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, EPITAPH.UpdateTombstoneOnNewRoom)
 ---@return GridEntity?
 function EPITAPH:SpawnTombstone()
 	local room = Mod.Room()
-	local gridIndex = room:GetRandomTileIndex(Mod.GENERIC_RNG:GetSeed())
-	Mod.GENERIC_RNG:Next()
+	local gridIndex = room:GetRandomTileIndex(Mod.GENERIC_RNG:Next())
 	local gridSpawned = room:SpawnGridEntity(gridIndex, GridEntityType.GRID_ROCKB, EPITAPH.TOMBSTONE_GRID_VARIANT,
-		Mod.GENERIC_RNG:GetSeed())
-	Mod.GENERIC_RNG:Next()
+	Mod.GENERIC_RNG:Next())
 	if gridSpawned then
 		local gridEnt = room:GetGridEntity(gridIndex)
 		--It reverts to a different random variant upon first spawning

@@ -30,6 +30,7 @@ local leah_b = {
 	"soul_of_leah",
 	"cold_hearted",
 	"leahs_heart",
+	"love_teller",
 	"rotten_love",
 	"essence_of_hate",
 	"reverse_hope",

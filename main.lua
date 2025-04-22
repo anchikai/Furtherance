@@ -116,6 +116,7 @@ Furtherance.Pill = {}
 Furtherance.Challenge = {}
 Furtherance.Character = {}
 Furtherance.Misc = {}
+Furtherance.Slot = {}
 include("flags")
 
 local helpers = {
@@ -212,6 +213,23 @@ Mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, function(_, shaderName)
 		return { FlipFactor = 0 }
 	end
 end)
+
+function Furtherance:RunIDCheck()
+	local foundBadID = false
+	for _, subTable in pairs(Furtherance) do
+		if type(subTable) == "table" then
+			for name, itemTable in pairs(subTable) do
+				if type(itemTable) == "table" and itemTable.ID and itemTable.ID == -1 then
+					print(name, itemTable.ID)
+					foundBadID = true
+				end
+ 			end
+		end
+	end
+	if not foundBadID then
+		print("No -1 IDs found!")
+	end
+end
 
 --!End of file
 

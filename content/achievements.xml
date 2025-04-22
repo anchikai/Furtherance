@@ -47,7 +47,7 @@
 	<!-- Tainted Leah Unlocks -->
 	<achievement name="Soul of Leah" gfx="achievement_soulofleah.png" />
 	<achievement name="Leah&apos;s Heart" gfx="achievement_leahsheart.png" />
-	<!-- Mega Satan -->
+	<achievement name="Love Tellar" gfx="achievement_loveteller.png" />
 	<achievement name="Reverse Hope" gfx="achievement_reversehope.png" />
 	<achievement name="Shattered Heart" gfx="achievement_shatteredheart.png" />
 	<achievement name="Cold Hearted" gfx="achievement_coldhearted.png" />

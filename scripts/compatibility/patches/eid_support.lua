@@ -128,8 +128,8 @@ function DD:CreateCallback(descTab, appendToEnd)
 								return ret
 							else
 								return {
-					"Placeholder"
-				}
+									"Placeholder"
+								}
 							end
 						end
 
@@ -291,7 +291,7 @@ end
 		},
 }, ]]
 
-local EID_Collectibles       -- this allows modifier functions defined inside this table to index it without causing an error
+local EID_Collectibles -- this allows modifier functions defined inside this table to index it without causing an error
 EID_Collectibles = {
 	[Item.ALTERNATE_REALITY.ID] = {
 		en_us = {
@@ -1573,7 +1573,7 @@ EID_Collectibles = {
 			}
 		}
 	},
-	[Item.PARASITIC_POOFER.ID] = {
+	[Item.LIL_POOFER.ID] = {
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2564,7 +2564,7 @@ end
 local EID_Cards
 EID_Cards = {
 	[Mod.Card.ACE_OF_SHIELDS.ID] = {
-		_metadata = {12, false},
+		_metadata = { 12, false },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2585,7 +2585,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Card.CHARITY.ID] = {
-		_metadata = {2, false},
+		_metadata = { 2, false },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2606,7 +2606,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Card.FAITH.ID] = {
-		_metadata = {2, false},
+		_metadata = { 2, false },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2627,7 +2627,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Card.GOLDEN_CARD.ID] = {
-		_metadata = {12, false},
+		_metadata = { 12, false },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2648,7 +2648,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Card.HOPE.ID] = {
-		_metadata = {2, false},
+		_metadata = { 2, false },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2669,7 +2669,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Card.KEY_CARD.ID] = {
-		_metadata = {6, false},
+		_metadata = { 6, false },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2690,7 +2690,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Card.REVERSE_CHARITY.ID] = {
-		_metadata = {2, false},
+		_metadata = { 2, false },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2711,7 +2711,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Card.REVERSE_FAITH.ID] = {
-		_metadata = {2, false},
+		_metadata = { 2, false },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2732,7 +2732,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Card.REVERSE_HOPE.ID] = {
-		_metadata = {2, false},
+		_metadata = { 2, false },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2753,7 +2753,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Card.TRAP_CARD.ID] = {
-		_metadata = {1, false},
+		_metadata = { 1, false },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2774,7 +2774,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Card.TWO_OF_SHIELDS.ID] = {
-		_metadata = {12, false},
+		_metadata = { 12, false },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2795,7 +2795,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Rune.ESSENCE_OF_DEATH.ID] = {
-		_metadata = {4, true},
+		_metadata = { 4, true },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2816,7 +2816,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Rune.ESSENCE_OF_DELUGE.ID] = {
-		_metadata = {1, true},
+		_metadata = { 1, true },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2837,7 +2837,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Rune.ESSENCE_OF_DROUGHT.ID] = {
-		_metadata = {2, true},
+		_metadata = { 2, true },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2858,7 +2858,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Rune.ESSENCE_OF_HATE.ID] = {
-		_metadata = {6, true},
+		_metadata = { 6, true },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2879,7 +2879,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Rune.ESSENCE_OF_LIFE.ID] = {
-		_metadata = {2, true},
+		_metadata = { 2, true },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2900,7 +2900,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Rune.ESSENCE_OF_LOVE.ID] = {
-		_metadata = {3, true},
+		_metadata = { 3, true },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2921,7 +2921,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Rune.SOUL_OF_LEAH.ID] = {
-		_metadata = {6, true},
+		_metadata = { 6, true },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2942,7 +2942,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Rune.SOUL_OF_MIRIAM.ID] = {
-		_metadata = {12, true},
+		_metadata = { 12, true },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -2963,7 +2963,7 @@ EID_Cards = {
 		}
 	},
 	[Mod.Rune.SOUL_OF_PETER.ID] = {
-		_metadata = {6, true},
+		_metadata = { 6, true },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -3023,7 +3023,7 @@ end
 local EID_Pills
 EID_Pills = {
 	[Mod.Pill.HEARTACHE.ID_UP] = {
-		_metadata = {4, "3-"},
+		_metadata = { 4, "3-" },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
@@ -3044,7 +3044,7 @@ EID_Pills = {
 		}
 	},
 	[Mod.Pill.HEARTACHE.ID_DOWN] = {
-		_metadata = {6, "3+"},
+		_metadata = { 6, "3+" },
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
