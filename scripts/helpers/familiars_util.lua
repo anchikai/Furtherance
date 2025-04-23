@@ -1,3 +1,10 @@
+Furtherance.FamliiarDirections = {
+	"Side",
+	"Up",
+	"Side",
+	"Down"
+}
+
 ---@param player EntityPlayer
 function Furtherance:ShouldFamiliarAutoAim(player)
 	local shouldAuto = false

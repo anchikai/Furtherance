@@ -5,10 +5,10 @@ local LOVE_TELLER = {}
 Furtherance.Slot.LOVE_TELLER = LOVE_TELLER
 
 LOVE_TELLER.ID = Isaac.GetEntityVariantByName("Love Teller")
-LOVE_TELLER.GOOD_COMPAT_CHANCE = 0.45
-LOVE_TELLER.TRUE_LOVE_COMPAT_CHANCE = 0.125
+LOVE_TELLER.GOOD_COMPAT_CHANCE = 0.5
+LOVE_TELLER.TRUE_LOVE_COMPAT_CHANCE = 1
 
-LOVE_TELLER.PARENT_PLAYERTYPES = {
+LOVE_TELLER.ParentPlayerTypes = {
 	[PlayerType.PLAYER_BLACKJUDAS] = PlayerType.PLAYER_JUDAS,
 	[PlayerType.PLAYER_LAZARUS2] = PlayerType.PLAYER_LAZARUS,
 	[PlayerType.PLAYER_THESOUL] = PlayerType.PLAYER_THEFORGOTTEN
@@ -17,7 +17,7 @@ LOVE_TELLER.PARENT_PLAYERTYPES = {
 local overlaySprite = Sprite("gfx/slot_love_teller.anm2", true)
 overlaySprite:Play("OverlayIcons")
 
-LOVE_TELLER.MATCHMAKING = {
+LOVE_TELLER.Matchmaking = {
 	[PlayerType.PLAYER_ISAAC] = {
 		TrueLove = PlayerType.PLAYER_BETHANY,
 		Compatible = {PlayerType.PLAYER_JACOB, PlayerType.PLAYER_ESAU, Mod.PlayerType.LEAH}
@@ -104,6 +104,8 @@ LOVE_TELLER.MATCHMAKING = {
 	},
 }
 
+Mod.Include("scripts.furtherance.unlocks.unlocks_leah_b.love_teller_babies")
+
 local function unknownCoopIcon()
 	local sprite = Sprite("gfx/ui/coop menu.anm2", true)
 	sprite:SetFrame("Main", 0)
@@ -163,7 +165,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_SLOT_INIT, LOVE_TELLER.OnSlotInit, LOVE_TEL
 ---@param playerType PlayerType
 ---@param result integer
 function LOVE_TELLER:GetMatchMaker(playerType, result)
-	local mainPlayerType = LOVE_TELLER.PARENT_PLAYERTYPES[playerType] or playerType
+	local mainPlayerType = LOVE_TELLER.ParentPlayerTypes[playerType] or playerType
 	local entityConfigPlayer = EntityConfig.GetPlayer(mainPlayerType)
 	---@cast entityConfigPlayer EntityConfigPlayer
 	local mainPlayerConfig = entityConfigPlayer
@@ -172,10 +174,11 @@ function LOVE_TELLER:GetMatchMaker(playerType, result)
 		---@cast nonTainted EntityConfigPlayer
 		mainPlayerType = nonTainted:GetPlayerType()
 	end
-	local matchmakingList = LOVE_TELLER.MATCHMAKING[playerType]
+	local matchmakingList = LOVE_TELLER.Matchmaking[playerType]
 	if result == 0 then
 		---Grab a list of all characters that aren't compatible/true love and pick a random one
 		local avoidTypes = Mod:Set({
+			mainPlayerType,
 			matchmakingList.TrueLove,
 			matchmakingList.Compatible[1],
 			matchmakingList.Compatible[2],
@@ -183,7 +186,7 @@ function LOVE_TELLER:GetMatchMaker(playerType, result)
 		})
 		local playerTypes = {}
 		for i = 0, PlayerType.PLAYER_ISAAC_B - 1 do
-			if not avoidTypes[i] then
+			if not avoidTypes[i] and not LOVE_TELLER.ParentPlayerTypes[i] then
 				Mod:Insert(playerTypes, i)
 			end
 		end
@@ -204,6 +207,18 @@ function LOVE_TELLER:GetMatchMaker(playerType, result)
 	elseif result == 2 then
 		return matchmakingList.TrueLove
 	end
+end
+
+---@param slot EntitySlot
+---@return EntityPlayer?
+function LOVE_TELLER:TryGetPlayer(slot)
+	local player = Mod:GetData(slot).TouchedPlayer
+	if not player or not player:Exists() then
+		Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
+		slot:SetState(Mod.SlotState.IDLE)
+		slot:GetSprite():Play("Idle")
+	end
+	return player
 end
 
 ---@param slot EntitySlot
@@ -239,18 +254,14 @@ function LOVE_TELLER:OnSlotUpdate(slot)
 			prizeResult = 1
 		end
 		sprite:Play("Prize" .. prizeResult)
-		local player = Mod:GetData(slot).TouchedPlayer
-		if not player or not player:Exists() then
-			Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
-			slot:SetState(Mod.SlotState.IDLE)
-			sprite:Play("Idle")
-			return
-		end
+		local player = LOVE_TELLER:TryGetPlayer(slot)
+		if not player then return end
 		local iconLeft, layerLeft = LOVE_TELLER:TryGetCoopIcon(player, true)
 		data.IconLeft = {Sprite = iconLeft, Layer = layerLeft}
 		local playerTypeRight = LOVE_TELLER:GetMatchMaker(player:GetPlayerType(), prizeResult)
 		local iconRight, layerRight = LOVE_TELLER:TryGetCoopIcon(playerTypeRight, false)
 		data.IconRight = {Sprite = iconRight, Layer = layerRight}
+		data.MatchedPlayer = playerTypeRight
 	elseif sprite:IsPlaying("Prize2")
 		and sprite:IsEventTriggered("Ding")
 	then
@@ -270,8 +281,18 @@ function LOVE_TELLER:OnSlotUpdate(slot)
 			Mod.SFXMan:Play(SoundEffect.SOUND_SLOTSPAWN)
 			slot:SetState(Mod.SlotState.IDLE)
 		elseif num == "2" then
-			local pos = Mod.Room():FindFreePickupSpawnPosition(slot.Position + Vector(0, 40))
-			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, CollectibleType.COLLECTIBLE_HEART, pos, Vector.Zero, nil)
+			local player = LOVE_TELLER:TryGetPlayer(slot)
+			if not player then return end
+			local player_run_save = Mod:RunSave(player)
+			player_run_save.LoveTellerBabies = player_run_save.LoveTellerBabies or {}
+			local subtypeToSpawn = data.MatchedPlayer
+			local key = tostring(subtypeToSpawn)
+			player_run_save.LoveTellerBabies[key] = (player_run_save.LoveTellerBabies[key] or 0) + 1
+			local familiar = Isaac.Spawn(EntityType.ENTITY_FAMILIAR, LOVE_TELLER.BABY.FAMILIAR, subtypeToSpawn, slot.Position, Vector.Zero, player):ToFamiliar()
+			---@cast familiar EntityFamiliar
+			familiar.Player = player
+			LOVE_TELLER.BABY:UpdateBabySkin(familiar)
+			player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
 			slot:SetState(Mod.SlotState.PAYOUT)
 			slot:GetSprite():Play("Death")
 		end

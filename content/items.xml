@@ -129,7 +129,7 @@
 	<familiar id="46" name="Miriam's Well" description="Spew forth" gfx="miriams_well.png" achievement="Miriam's Well" quality="1" craftquality="1" tags="summonable monstermanual" />
 	<!-- <familiar id="60" name="Brainstorm" description="Problem solving" gfx="brainstorm.png" quality="2" craftquality="2" /> -->
 	<familiar id="63" name="Blood Cyst" description="It's about to pop" gfx="blood_cyst.png" quality="2" craftquality="2" persistent="true" tags="offensive summonable" />
-	<familiar id="64" name="Polaris" description="May the star shine bright" gfx="polaris.png" cache="familiars damage shotspeed" quality="4" craftquality="4" tags="uniquefamiliar offensive summonable monstermanual" />
+	<familiar id="64" name="Polaris" description="May the star shine bright" gfx="polaris.png" cache="damage shotspeed" quality="4" craftquality="4" tags="uniquefamiliar offensive summonable monstermanual" />
 	<familiar id="80" name="Iron" description="Hot to the touch" gfx="iron.png" quality="3" craftquality="3" tags="offensive summonable monstermanual" />
 
 	<!-- Null Items -->

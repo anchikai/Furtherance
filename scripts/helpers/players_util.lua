@@ -350,3 +350,31 @@ function Furtherance:GetStatScore(player, cacheFlag)
 	end
 	return Furtherance:Round(score)
 end
+
+---Attempts to return the Marked target used by the player. Returns nil if none are found
+---@param player EntityPlayer
+---@return Vector?
+function Furtherance:TryGetMarkedTargetAimVector(player)
+	local aimVector
+	if REPENTOGON then
+		local target = player:GetMarkedTarget()
+		if target then
+			aimVector = (target.Position - player.Position):Normalized()
+		end
+	else
+		local markedVariants = {
+			EffectVariant.TARGET,
+			EffectVariant.OCCULT_TARGET
+		}
+		for _, variant in ipairs(markedVariants) do
+			for _, mark in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, variant)) do
+				local spawnEnt = mark.SpawnerEntity and mark.SpawnerEntity:ToPlayer()
+				if spawnEnt and GetPtrHash(spawnEnt) == GetPtrHash(player) then
+					aimVector = (mark.Position - player.Position):Normalized()
+					break
+				end
+			end
+		end
+	end
+	return aimVector
+end
