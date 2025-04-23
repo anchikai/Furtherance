@@ -1453,7 +1453,7 @@ EID_Collectibles = {
 			}
 		}
 	},
-	[Item.MY_BELONGINGS.ID] = {
+	[Item.BOX_OF_BELONGINGS.ID] = {
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {

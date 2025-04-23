@@ -60,7 +60,7 @@
 	<passive id="77" name="Sunscreen" description="A way to beat the heat!" gfx="sunscreen.png" quality="0" craftquality="0" tags="summonable" />
 	<passive id="81" name="Rotten Apple" description="Random worm + Damage up" gfx="rotten_apple.png" cache="damage" quality="0" craftquality="0" tags="offensive" />
 	<passive id="82" name="Beginner's Luck" description="Fading fortune" gfx="beginners_luck.png" cache="luck" quality="2" craftquality="2" persistent="true" tags="offensive nogreed" />
-	<passive id="83" name="My Belongings" description="All that is evil of this world" gfx="my_belongings.png" quality="1" craftquality="1" tags="offensive" />
+	<passive id="83" name="Box of Belongings" description="All that is evil of this world" gfx="box_of_belongings.png" quality="1" craftquality="1" tags="offensive" />
 	<passive id="84" name="Chi Rho" description="Technological!" gfx="chi_rho.png" achievement="Chi Rho" quality="3" craftquality="3" tag="offensive summonable" />
 	<passive id="85" name="Leah's Heart" description="Her heart beats" gfx="leahs_heart.png" achievement="Leah's Heart" cache="damage" shopprice="30" devilprice="2" quality="3" craftquality="3" tags="summonable" />
 	<passive id="86" name="Pallium" description="Authority" gfx="pallium.png" achievement="Pallium" quality="4" craftquality="4" tags="angel offensive summonable" />

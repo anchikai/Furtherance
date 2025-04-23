@@ -52,7 +52,7 @@
 		<Item Name="Little Raincoat" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Blood Cyst" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Rotten Apple" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="My Belongings" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Box of Belongings" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Rotten Love" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="devil">
@@ -201,7 +201,7 @@
 		<Item Name="Little Raincoat" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Blood Cyst" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Rotten Apple" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="My Belongings" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Box of Belongings" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Rotten Love" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="greedShop">
@@ -226,7 +226,7 @@
 		<Item Name="Sunscreen" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Iron" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Secret Diary" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="My Belongings" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Box of Belongings" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Exsanguination" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Molten Gold" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Astragali" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>

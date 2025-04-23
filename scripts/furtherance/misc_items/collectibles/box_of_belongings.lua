@@ -1,12 +1,12 @@
 local Mod = Furtherance
 
-local MY_BELONGINGS = {}
+local BOX_OF_BELONGINGS = {}
 
-Furtherance.Item.MY_BELONGINGS = MY_BELONGINGS
+Furtherance.Item.BOX_OF_BELONGINGS = BOX_OF_BELONGINGS
 
-MY_BELONGINGS.ID = Isaac.GetItemIdByName("My Belongings")
+BOX_OF_BELONGINGS.ID = Isaac.GetItemIdByName("Box of Belongings")
 
-MY_BELONGINGS.CARD_DROPS = {
+BOX_OF_BELONGINGS.CARD_DROPS = {
 	Card.CARD_HUGE_GROWTH,
 	Card.CARD_ANCIENT_RECALL,
 	Card.CARD_ERA_WALK,
@@ -19,7 +19,7 @@ MY_BELONGINGS.CARD_DROPS = {
 	Card.CARD_CRACKED_KEY
 }
 
-MY_BELONGINGS.TRINKET_DROPS = {
+BOX_OF_BELONGINGS.TRINKET_DROPS = {
 	TrinketType.TRINKET_BIBLE_TRACT,
 	TrinketType.TRINKET_PAPER_CLIP,
 	TrinketType.TRINKET_MYSTERIOUS_CANDY,
@@ -53,13 +53,13 @@ MY_BELONGINGS.TRINKET_DROPS = {
 }
 
 ---@param card Card
-function MY_BELONGINGS:IsCardAvailable(card)
+function BOX_OF_BELONGINGS:IsCardAvailable(card)
 	local cardConfig = Mod.ItemConfig:GetCard(card)
 	return Mod.PersistGameData:Unlocked(cardConfig.AchievementID)
 end
 
 ---@param trinket TrinketType
-function MY_BELONGINGS:IsTrinketAvailable(trinket)
+function BOX_OF_BELONGINGS:IsTrinketAvailable(trinket)
 	local trinketConfig = Mod.ItemConfig:GetTrinket(trinket)
 	return Mod.PersistGameData:Unlocked(trinketConfig.AchievementID)
 end
@@ -67,32 +67,34 @@ end
 ---@param itemID CollectibleType
 ---@param firstTime boolean
 ---@param player EntityPlayer
-function MY_BELONGINGS:OnFirstPickup(itemID, _, firstTime, _, _, player)
+function BOX_OF_BELONGINGS:OnFirstPickup(itemID, _, firstTime, _, _, player)
 	if firstTime then
 		local cardList = {}
-		for _, card in ipairs(MY_BELONGINGS.CARD_DROPS) do
-			if MY_BELONGINGS:IsCardAvailable(card) then
+		for _, card in ipairs(BOX_OF_BELONGINGS.CARD_DROPS) do
+			if BOX_OF_BELONGINGS:IsCardAvailable(card) then
 				Mod:Insert(cardList, card)
 			end
 		end
 		local trinketList = {}
-		for _, trinket in ipairs(MY_BELONGINGS.TRINKET_DROPS) do
-			if MY_BELONGINGS:IsCardAvailable(trinket) then
+		for _, trinket in ipairs(BOX_OF_BELONGINGS.TRINKET_DROPS) do
+			if BOX_OF_BELONGINGS:IsCardAvailable(trinket) then
 				Mod:Insert(trinketList, trinket)
 			end
 		end
 		local rng = player:GetCollectibleRNG(itemID)
 		local card = cardList[rng:RandomInt(#cardList) + 1]
-		Mod.Game:Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, Mod.Room():FindFreePickupSpawnPosition(player.Position),
-		Vector.Zero, player, card, rng:GetSeed())
+		Mod.Game:Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD,
+			Mod.Room():FindFreePickupSpawnPosition(player.Position),
+			Vector.Zero, player, card, rng:GetSeed())
 		for _ = 1, 2 do
 			local index = rng:RandomInt(#trinketList) + 1
 			local trinket = trinketList[index]
-			Mod.Game:Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TRINKET, Mod.Room():FindFreePickupSpawnPosition(player.Position),
-			Vector.Zero, player, trinket, rng:GetSeed())
+			Mod.Game:Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TRINKET,
+				Mod.Room():FindFreePickupSpawnPosition(player.Position),
+				Vector.Zero, player, trinket, rng:GetSeed())
 			table.remove(trinketList, index)
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, MY_BELONGINGS.OnFirstPickup, MY_BELONGINGS.ID)
+Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, BOX_OF_BELONGINGS.OnFirstPickup, BOX_OF_BELONGINGS.ID)
