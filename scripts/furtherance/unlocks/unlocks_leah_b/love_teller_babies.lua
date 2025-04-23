@@ -6,126 +6,247 @@ Furtherance.Slot.LOVE_TELLER.BABY = LOVE_TELLER_BABY
 
 LOVE_TELLER_BABY.FAMILIAR = Isaac.GetEntityVariantByName("Love Teller Baby")
 
+LOVE_TELLER_BABY.EFFECT_COOLDOWN = 900
+LOVE_TELLER_BABY.EFFECT_CHANCE = 0.05
+LOVE_TELLER_BABY.PASSIVE_DURATION = 300
+
+function LOVE_TELLER_BABY:FamiliarRender(familiar)
+	--[[ local p = Isaac.WorldToScreen(familiar.Position)
+	local data = Mod:GetData(familiar)
+	Isaac.RenderText("Glitch Subtype: " .. (data.GlitchBabyQueueSubtype or "N/A"), p.X, p.Y - 30, 1, 1, 1, 1)
+	Isaac.RenderText("Effect cooldown: " .. (data.LoveTellerEffectCooldown or "N/A"), p.X, p.Y - 15, 1, 1, 1, 1)
+	Isaac.RenderText("Passive countdown: " .. (data.LoveTellerPassiveCountdown or "N/A"), p.X, p.Y, 1, 1, 1, 1) ]]
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_FAMILIAR_RENDER, LOVE_TELLER_BABY.FamiliarRender)
+
+---@param familiar EntityFamiliar
+---@param itemID CollectibleType
+function LOVE_TELLER_BABY:GrantCollectible(familiar, itemID, isEffect)
+	local player = familiar.Player
+	local data = Mod:GetData(familiar)
+
+	if familiar:GetDropRNG():RandomFloat() <= LOVE_TELLER_BABY.EFFECT_CHANCE and not data.LoveTellerEffectCooldown then
+		data.LoveTellerEffectCooldown = LOVE_TELLER_BABY.EFFECT_COOLDOWN
+		local item = Mod.ItemConfig:GetCollectible(itemID)
+		local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_ADD_EFFECT, familiar.SubType, familiar, itemID, isEffect)
+
+		if not result then
+			if item.Type == ItemType.ITEM_ACTIVE then
+				player:UseActiveItem(itemID, UseFlag.USE_NOANIM)
+			else
+				if isEffect then
+					player:AddCollectibleEffect(itemID, true)
+				else
+					player:AddInnateCollectible(itemID)
+				end
+				Isaac.RunCallbackWithParam(Mod.ModCallbacks.POST_LOVE_TELLER_BABY_ADD_EFFECT, familiar.SubType, familiar, itemID, isEffect)
+			end
+			data.LoveTellerPassiveCountdown = LOVE_TELLER_BABY.PASSIVE_DURATION
+		end
+	end
+	if (data.LoveTellerPassiveCountdown or 0) > 0 then
+		data.LoveTellerPassiveCountdown = data.LoveTellerPassiveCountdown - 1
+	elseif data.LoveTellerPassiveCountdown then
+		local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_REMOVE_EFFECT, familiar.SubType, familiar, itemID, isEffect)
+		if not result then
+			if isEffect then
+				player:GetEffects():RemoveCollectibleEffect(itemID)
+			else
+				player:AddInnateCollectible(itemID, -1)
+			end
+			if not player:HasCollectible(itemID) then
+				player:RemoveCostume(Mod.ItemConfig:GetCollectible(itemID))
+			end
+			Isaac.RunCallbackWithParam(Mod.ModCallbacks.POST_LOVE_TELLER_BABY_REMOVE_EFFECT, familiar.SubType, familiar, itemID, isEffect)
+		end
+		data.LoveTellerPassiveCountdown = nil
+	end
+	if (data.LoveTellerEffectCooldown or 0) > 0 then
+		data.LoveTellerEffectCooldown = data.LoveTellerEffectCooldown - 1
+	elseif data.LoveTellerEffectCooldown then
+		data.LoveTellerEffectCooldown = nil
+	end
+end
+
 ---@type {[PlayerType]: {Skin: BabySubType, OnUpdate: fun(familiar: EntityFamiliar)}}
 LOVE_TELLER_BABY.PlayerTypeBabies = {
 	[PlayerType.PLAYER_ISAAC] = {
 		Skin = BabySubType.BABY_BUDDY,
 		OnUpdate = function(familiar)
-
+			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_GUILLOTINE)
 		end
 	},
 	[PlayerType.PLAYER_MAGDALENE] = {
 		Skin = BabySubType.BABY_CUTE,
 		OnUpdate = function(familiar)
-
+			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_YUM_HEART)
 		end
 	},
 	[PlayerType.PLAYER_CAIN] = {
 		Skin = BabySubType.BABY_PICKY,
 		OnUpdate = function(familiar)
-
+			--LOVE_TELLER_BABY:GrantEffect(familiar, itemID)
 		end
 	},
 	[PlayerType.PLAYER_JUDAS] = {
 		Skin = BabySubType.BABY_BELIAL,
 		OnUpdate = function(familiar)
-
+			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_BOOK_OF_BELIAL)
 		end
 	},
 	[PlayerType.PLAYER_BLUEBABY] = {
 		Skin = BabySubType.BABY_HIVE,
 		OnUpdate = function(familiar)
-
+			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_HIVE_MIND)
 		end
 	},
 	[PlayerType.PLAYER_EVE] = {
 		Skin = BabySubType.BABY_WHORE,
 		OnUpdate = function(familiar)
-
+			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_WHORE_OF_BABYLON, true)
 		end
 	},
 	[PlayerType.PLAYER_SAMSON] = {
 		Skin = BabySubType.BABY_FIGHTING,
 		OnUpdate = function(familiar)
-
+			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_BLOODY_LUST, true)
 		end
 	},
 	[PlayerType.PLAYER_AZAZEL] = {
 		Skin = BabySubType.BABY_BEGOTTEN,
 		OnUpdate = function(familiar)
-
+			local player = familiar.Player
+			local effects = player:GetEffects()
+			if familiar:GetDropRNG():RandomFloat() <= LOVE_TELLER_BABY.EFFECT_CHANCE
+				and not effects:HasTrinketEffect(TrinketType.TRINKET_AZAZELS_STUMP)
+			then
+				effects:AddTrinketEffect(TrinketType.TRINKET_AZAZELS_STUMP)
+			end
 		end
 	},
 	[PlayerType.PLAYER_LAZARUS] = {
 		Skin = BabySubType.BABY_WRAPPED,
 		OnUpdate = function(familiar)
-
+			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_BLOODY_LUST)
+			familiar.Player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_ANEMIC, true)
 		end
 	},
 	[PlayerType.PLAYER_EDEN] = {
 		Skin = BabySubType.BABY_GLITCH,
 		OnUpdate = function(familiar)
+			local data = Mod:GetData(familiar)
+			local sprite = familiar:GetSprite()
+			if not data.GlitchBabyQueueSubtype then
+				local availableBabies = {}
+				for playerType in ipairs(LOVE_TELLER_BABY.PlayerTypeBabies) do
+					if playerType ~= PlayerType.PLAYER_EDEN then
+						Mod:Insert(availableBabies, playerType)
+					end
+				end
+				data.GlitchBabyQueueSubtype = availableBabies[familiar:GetDropRNG():RandomInt(#availableBabies) + 1]
+				LOVE_TELLER_BABY:UpdateBabySkin(familiar, BabySubType.BABY_GLITCH)
+				sprite:PlayOverlay("FloatOverlay", true)
+				Mod.SFXMan:Play(SoundEffect.SOUND_EDEN_GLITCH)
+			end
 
+			if sprite:IsOverlayPlaying() and sprite:GetOverlayFrame() == sprite:GetOverlayAnimationData():GetLength() - 1 then
+				sprite:RemoveOverlay()
+				LOVE_TELLER_BABY:UpdateBabySkin(familiar, LOVE_TELLER_BABY.PlayerTypeBabies[data.GlitchBabyQueueSubtype].Skin)
+			end
+			if not sprite:IsOverlayPlaying() then
+				LOVE_TELLER_BABY.PlayerTypeBabies[data.GlitchBabyQueueSubtype].OnUpdate(familiar)
+				if data.LoveTellerEffectCooldown then
+					data.GlitchBabyWaitSubtype = true
+				end
+			end
+			if data.GlitchBabyWaitSubtype and not data.LoveTellerEffectCooldown then
+				data.GlitchBabyWaitSubtype = nil
+				data.GlitchBabyQueueSubtype = nil
+			end
 		end
 	},
 	[PlayerType.PLAYER_THELOST] = {
 		Skin = BabySubType.BABY_WHITE,
 		OnUpdate = function(familiar)
-
+			local data = Mod:GetData(familiar)
+			if not data.LostBabyAddedMantle then
+				LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_HOLY_MANTLE, true)
+			end
 		end
 	},
 	[PlayerType.PLAYER_LILITH] = {
 		Skin = BabySubType.BABY_DARK,
 		OnUpdate = function(familiar)
-
+			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_BOX_OF_FRIENDS)
 		end
 	},
 	[PlayerType.PLAYER_KEEPER] = {
 		Skin = BabySubType.BABY_SUPER_GREED,
 		OnUpdate = function(familiar)
-
+			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_EYE_OF_GREED)
 		end
 	},
 	[PlayerType.PLAYER_APOLLYON] = {
 		Skin = BabySubType.BABY_APOLLYON,
 		OnUpdate = function(familiar)
+			local data = Mod:GetData(familiar)
+			if familiar:GetDropRNG():RandomFloat() <= LOVE_TELLER_BABY.EFFECT_CHANCE and not data.LoveTellerEffectCooldown then
+				data.LoveTellerEffectCooldown = LOVE_TELLER_BABY.EFFECT_COOLDOWN
+				Isaac.Spawn(EntityType.ENTITY_FAMILIAR, FamiliarVariant.BLUE_FLY, Mod:RandomNum(LocustSubtypes.LOCUST_OF_CONQUEST) + 1,
+					familiar.Position, Vector.Zero, nil)
+			end
 
+			if (data.LoveTellerEffectCooldown or 0) > 0 then
+				data.LoveTellerEffectCooldown = data.LoveTellerEffectCooldown - 1
+			elseif data.LoveTellerEffectCooldown then
+				data.LoveTellerEffectCooldown = nil
+			end
 		end
 	},
 	[PlayerType.PLAYER_THEFORGOTTEN] = {
 		Skin = BabySubType.BABY_BONE,
 		OnUpdate = function(familiar)
-
-		end
-	},
-	[PlayerType.PLAYER_THESOUL] = {
-		Skin = BabySubType.BABY_BOUND,
-		OnUpdate = function(familiar)
-
+			local player = familiar.Player
+			local data = Mod:GetData(familiar)
+			if not data.BoneBabyIsSoul then
+				data.BoneBabyIsSoul = false
+			end
+			local isSoul = player:GetPlayerType() == PlayerType.PLAYER_THESOUL
+			if data.BoneBabyIsSoul ~= isSoul then
+				data.BoneBabyIsSoul = isSoul
+				familiar:SetColor(Color(1, 1, 1, 1, 0.5, 0.75, 1), 15, 1, true, true)
+				Mod:GetData(familiar).LoveTellerExtra = nil
+				if not data.BoneBabyIsSoul then
+					LOVE_TELLER_BABY:UpdateBabySkin(familiar, BabySubType.BABY_BONE)
+				else
+					LOVE_TELLER_BABY:UpdateBabySkin(familiar, BabySubType.BABY_BOUND)
+				end
+			end
 		end
 	},
 	[PlayerType.PLAYER_BETHANY] = {
 		Skin = BabySubType.BABY_GLOWING,
 		OnUpdate = function(familiar)
-
+			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)
 		end
 	},
 	[PlayerType.PLAYER_JACOB] = {
 		Skin = BabySubType.BABY_SOLOMON_A,
 		OnUpdate = function(familiar)
-
+			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_FRIEND_FINDER)
 		end
 	},
 	[PlayerType.PLAYER_ESAU] = {
 		Skin = BabySubType.BABY_SOLOMON_B,
 		OnUpdate = function(familiar)
-
+			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_RED_STEW)
 		end
 	},
 	[Mod.PlayerType.LEAH] = {
 		Skin = BabySubType.BABY_LOVE,
 		OnUpdate = function(familiar)
-
+			LOVE_TELLER_BABY:GrantCollectible(familiar, Mod.Item.HEART_RENOVATOR.ID)
 		end
 	},
 	[Mod.PlayerType.PETER] = {
@@ -137,14 +258,76 @@ LOVE_TELLER_BABY.PlayerTypeBabies = {
 	[Mod.PlayerType.MIRIAM] = {
 		Skin = BabySubType.BABY_WATER,
 		OnUpdate = function(familiar)
-
+			LOVE_TELLER_BABY:GrantCollectible(familiar, Mod.Item.TAMBOURINE.ID)
 		end
 	}
 }
 
+LOVE_TELLER_BABY.PlayerTypeBabies[PlayerType.PLAYER_THESOUL] = LOVE_TELLER_BABY.PlayerTypeBabies[PlayerType.PLAYER_THEFORGOTTEN]
+
 ---@param familiar EntityFamiliar
-function LOVE_TELLER_BABY:UpdateBabySkin(familiar)
-	local skin = EntityConfig.GetBaby(LOVE_TELLER_BABY.PlayerTypeBabies[familiar.SubType].Skin):GetSpritesheetPath()
+function LOVE_TELLER_BABY:OnMantleAdd(familiar)
+	local data = Mod:GetData(familiar)
+	if not data.LostBabyAddedMantle then
+		data.LostBabyAddedMantle = true
+		familiar.Player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_HOLY_MANTLE, true)
+	end
+	return true
+end
+
+Mod:AddCallback(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_REMOVE_EFFECT, LOVE_TELLER_BABY.OnMantleAdd, PlayerType.PLAYER_THELOST)
+
+function LOVE_TELLER_BABY:StopRemoveMantle()
+	return true
+end
+
+Mod:AddCallback(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_REMOVE_EFFECT, LOVE_TELLER_BABY.StopRemoveMantle, PlayerType.PLAYER_THELOST)
+
+---@param player EntityPlayer
+---@param itemConfig ItemConfigItem
+function LOVE_TELLER_BABY:OnMantleRemove(player, itemConfig)
+	if itemConfig:IsCollectible()
+		and itemConfig.ID == CollectibleType.COLLECTIBLE_HOLY_MANTLE
+	then
+		for _, familiar in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, LOVE_TELLER_BABY.FAMILIAR, PlayerType.PLAYER_THELOST)) do
+			local data = Mod:GetData(familiar)
+			if data.LostBabyAddedMantle then
+				data.LostBabyAddedMantle = nil
+				data.LoveTellerPassiveCountdown = nil
+				break
+			end
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED, LOVE_TELLER_BABY.OnMantleRemove)
+
+---@param tear EntityTear
+function LOVE_TELLER_BABY:ForgorTears(tear)
+	local familiar = tear.SpawnerEntity and tear.SpawnerEntity:ToFamiliar()
+	if not familiar
+		or familiar.SubType ~= PlayerType.PLAYER_THEFORGOTTEN
+	then
+		return
+	end
+	local player = familiar.Player
+	local isSoul = Mod:GetData(familiar).BoneBabyIsSoul
+	if not isSoul then
+		tear:ChangeVariant(TearVariant.BONE)
+		tear:AddTearFlags(TearFlags.TEAR_BONE)
+	else
+		local c = player:GetColor()
+		local cz = player:GetColor():GetColorize()
+		tear:SetColor(Color(c.R, c.G, c.B, 0.5, c.RO, c.GO, c.BO, cz.R, cz.G, cz.B, cz.A), -1, 1, false, true)
+		tear:AddTearFlags(TearFlags.TEAR_SPECTRAL)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_FAMILIAR_FIRE_PROJECTILE, LOVE_TELLER_BABY.ForgorTears, LOVE_TELLER_BABY.FAMILIAR)
+
+---@param familiar EntityFamiliar
+function LOVE_TELLER_BABY:UpdateBabySkin(familiar, babySubType)
+	local skin = EntityConfig.GetBaby(babySubType or LOVE_TELLER_BABY.PlayerTypeBabies[familiar.SubType].Skin):GetSpritesheetPath()
 	familiar:GetSprite():ReplaceSpritesheet(0, skin, true)
 end
 
@@ -165,10 +348,35 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, LOVE_TELLER_BABY.OnFamiliarCache
 ---@param familiar EntityFamiliar
 function LOVE_TELLER_BABY:OnFamiliarInit(familiar)
 	familiar:AddToFollowers()
-	familiar:GetSprite():PlayOverlay("FloatOverlay")
 end
 
 Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, LOVE_TELLER_BABY.OnFamiliarInit, LOVE_TELLER_BABY.FAMILIAR)
+
+---@param familiar EntityFamiliar
+---@param offset Vector
+function LOVE_TELLER_BABY:PreRender(familiar, offset)
+	if familiar.SubType == BabySubType.BABY_GLITCH then return end
+	local data = Mod:GetData(familiar)
+	local sprite = familiar:GetSprite()
+	if not data.LoveTellerExtra then
+		data.LoveTellerExtra = Sprite(sprite:GetFilename(), true)
+		data.LoveTellerExtra:Play("FloatOverlay")
+		data.LoveTellerExtra:ReplaceSpritesheet(0, sprite:GetLayer(0):GetSpritesheetPath(), true)
+	end
+	local renderPos = Isaac.WorldToScreen(familiar.Position + familiar.PositionOffset)
+	if Mod.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT then
+		renderPos = Isaac.WorldToRenderPosition(familiar.Position + familiar.PositionOffset) + offset
+	end
+	for key, value in pairs(getmetatable(sprite).__propget) do
+		data.LoveTellerExtra[key] = value(sprite)
+	end
+	data.LoveTellerExtra:Render(renderPos)
+	if Mod:ShouldUpdateSprite() then
+		data.LoveTellerExtra:Update()
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_RENDER, LOVE_TELLER_BABY.PreRender, LOVE_TELLER_BABY.FAMILIAR)
 
 ---@param familiar EntityFamiliar
 function LOVE_TELLER_BABY:ShooterPriority(familiar)
@@ -181,6 +389,11 @@ Mod:AddCallback(ModCallbacks.MC_GET_FOLLOWER_PRIORITY, LOVE_TELLER_BABY.ShooterP
 function LOVE_TELLER_BABY:OnFamiliarUpdate(familiar)
 	local sprite = familiar:GetSprite()
 	local data = Mod:GetData(familiar)
+	local updateFunc = LOVE_TELLER_BABY.PlayerTypeBabies[familiar.SubType]
+
+	if updateFunc then
+		updateFunc.OnUpdate(familiar)
+	end
 
 	--Handles absolutely everything akin to a generic Brother Bobbby-like familiar
 	familiar:Shoot()

@@ -30,6 +30,14 @@ Furtherance.ModCallbacks = {
 
 	--(EntityPickup pickup): boolean, OptionalArg: HeartSubType - Called when Shattered Heart wants to explode a heart pickup. Return `true` to stop the heart from exploding
 	SHATTERED_HEART_EXPLODE = "FURTHERANCE_SHATTERED_HEART_EXPLODE",
+
+	PRE_LOVE_TELLER_BABY_ADD_EFFECT = "FURTHERANCE_PRE_LOVE_TELLER_BABY_ADD_EFFECT",
+
+	POST_LOVE_TELLER_BABY_ADD_EFFECT = "FURTHERANCE_PRE_LOVE_TELLER_BABY_ADD_EFFECT",
+
+	PRE_LOVE_TELLER_BABY_REMOVE_EFFECT = "FURTHERANCE_PRE_LOVE_TELLER_BABY_REMOVE_EFFECT",
+
+	POST_LOVE_TELLER_BABY_REMOVE_EFFECT = "FURTHERANCE_PRE_LOVE_TELLER_BABY_REMOVE_EFFECT",
 }
 
 local function postBombExplode(_, bomb)

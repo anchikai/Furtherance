@@ -221,6 +221,19 @@ function LOVE_TELLER:TryGetPlayer(slot)
 	return player
 end
 
+function LOVE_TELLER:SpawnLoveTellerBaby(player, subtype, pos)
+	local player_run_save = Mod:RunSave(player)
+	player_run_save.LoveTellerBabies = player_run_save.LoveTellerBabies or {}
+	local subtypeToSpawn = subtype
+	local key = tostring(subtypeToSpawn)
+	player_run_save.LoveTellerBabies[key] = (player_run_save.LoveTellerBabies[key] or 0) + 1
+	local familiar = Isaac.Spawn(EntityType.ENTITY_FAMILIAR, LOVE_TELLER.BABY.FAMILIAR, subtypeToSpawn, pos, Vector.Zero, player):ToFamiliar()
+	---@cast familiar EntityFamiliar
+	familiar.Player = player
+	LOVE_TELLER.BABY:UpdateBabySkin(familiar)
+	player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
+end
+
 ---@param slot EntitySlot
 function LOVE_TELLER:OnSlotUpdate(slot)
 	local sprite = slot:GetSprite()
@@ -283,15 +296,7 @@ function LOVE_TELLER:OnSlotUpdate(slot)
 		elseif num == "2" then
 			local player = LOVE_TELLER:TryGetPlayer(slot)
 			if not player then return end
-			local player_run_save = Mod:RunSave(player)
-			player_run_save.LoveTellerBabies = player_run_save.LoveTellerBabies or {}
-			local subtypeToSpawn = data.MatchedPlayer
-			local key = tostring(subtypeToSpawn)
-			player_run_save.LoveTellerBabies[key] = (player_run_save.LoveTellerBabies[key] or 0) + 1
-			local familiar = Isaac.Spawn(EntityType.ENTITY_FAMILIAR, LOVE_TELLER.BABY.FAMILIAR, subtypeToSpawn, slot.Position, Vector.Zero, player):ToFamiliar()
-			---@cast familiar EntityFamiliar
-			familiar.Player = player
-			LOVE_TELLER.BABY:UpdateBabySkin(familiar)
+			LOVE_TELLER:SpawnLoveTellerBaby(player, data.MatchedPlayer, slot.Position)
 			player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
 			slot:SetState(Mod.SlotState.PAYOUT)
 			slot:GetSprite():Play("Death")
