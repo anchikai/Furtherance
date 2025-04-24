@@ -1773,7 +1773,7 @@ EID_Collectibles = {
 			}
 		}
 	},
-	[Item.ROTTEN_LOVE.ID] = {
+	[Item.COFFEE_BREAK.ID] = {
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
