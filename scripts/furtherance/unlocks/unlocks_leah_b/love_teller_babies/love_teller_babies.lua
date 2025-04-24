@@ -9,7 +9,7 @@ Furtherance.Slot.LOVE_TELLER.BABY = LOVE_TELLER_BABY
 LOVE_TELLER_BABY.FAMILIAR = Isaac.GetEntityVariantByName("Love Teller Baby")
 
 LOVE_TELLER_BABY.EFFECT_COOLDOWN = 900
-LOVE_TELLER_BABY.EFFECT_CHANCE = 0.5
+LOVE_TELLER_BABY.EFFECT_CHANCE = 0.05
 LOVE_TELLER_BABY.PASSIVE_DURATION = 300
 
 ---@type {[PlayerType]: {Skin: BabySubType, OnUpdate: fun(familiar: EntityFamiliar), OnFire?: fun(tear: EntityTear, familiar: EntityFamiliar)}}
