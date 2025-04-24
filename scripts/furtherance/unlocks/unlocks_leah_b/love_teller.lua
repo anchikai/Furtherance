@@ -104,7 +104,7 @@ LOVE_TELLER.Matchmaking = {
 	},
 }
 
-Mod.Include("scripts.furtherance.unlocks.unlocks_leah_b.love_teller_babies")
+Mod.Include("scripts.furtherance.unlocks.unlocks_leah_b.love_teller_babies.love_teller_babies")
 
 local function unknownCoopIcon()
 	local sprite = Sprite("gfx/ui/coop menu.anm2", true)
