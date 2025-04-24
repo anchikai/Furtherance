@@ -94,14 +94,14 @@ LOVE_TELLER_BABY.PlayerTypeBabies = {
 		OnUpdate = function(familiar)
 			local data = Mod:GetData(familiar)
 			local sprite = familiar:GetSprite()
-			if not data.GlitchBabyQueueSubtype then
+			if not data.GlitchBabySubtype then
 				local availableBabies = {}
 				for playerType in ipairs(LOVE_TELLER_BABY.PlayerTypeBabies) do
 					if playerType ~= PlayerType.PLAYER_EDEN then
 						Mod:Insert(availableBabies, playerType)
 					end
 				end
-				data.GlitchBabyQueueSubtype = availableBabies[familiar:GetDropRNG():RandomInt(#availableBabies) + 1]
+				data.GlitchBabySubtype = availableBabies[familiar:GetDropRNG():RandomInt(#availableBabies) + 1]
 				LOVE_TELLER_BABY:UpdateBabySkin(familiar, BabySubType.BABY_GLITCH)
 				sprite:PlayOverlay("FloatOverlay", true)
 				Mod.SFXMan:Play(SoundEffect.SOUND_EDEN_GLITCH)
@@ -110,23 +110,23 @@ LOVE_TELLER_BABY.PlayerTypeBabies = {
 
 			if sprite:IsOverlayPlaying() and sprite:GetOverlayFrame() == sprite:GetOverlayAnimationData():GetLength() - 1 then
 				sprite:RemoveOverlay()
-				LOVE_TELLER_BABY:UpdateBabySkin(familiar, LOVE_TELLER_BABY.PlayerTypeBabies[data.GlitchBabyQueueSubtype].Skin)
+				LOVE_TELLER_BABY:UpdateBabySkin(familiar, LOVE_TELLER_BABY.PlayerTypeBabies[data.GlitchBabySubtype].Skin)
 			end
 			if not sprite:IsOverlayPlaying() then
-				LOVE_TELLER_BABY.PlayerTypeBabies[data.GlitchBabyQueueSubtype].OnUpdate(familiar)
+				LOVE_TELLER_BABY.PlayerTypeBabies[data.GlitchBabySubtype].OnUpdate(familiar)
 				if data.LoveTellerEffectCooldown then
 					data.GlitchBabyWaitSubtype = true
 				end
 			end
 			if data.GlitchBabyWaitSubtype and not data.LoveTellerEffectCooldown then
 				data.GlitchBabyWaitSubtype = nil
-				data.GlitchBabyQueueSubtype = nil
+				data.GlitchBabySubtype = nil
 			end
 		end,
 		OnFire = function (tear, familiar)
 			local data = Mod:GetData(familiar)
-			if not data.GlitchBabyQueueSubtype then return end
-			local babyTable = LOVE_TELLER_BABY.PlayerTypeBabies[data.GlitchBabyQueueSubtype]
+			if not data.GlitchBabySubtype then return end
+			local babyTable = LOVE_TELLER_BABY.PlayerTypeBabies[data.GlitchBabySubtype]
 			if babyTable.OnFire then
 				babyTable.OnFire(tear, familiar)
 			end
@@ -261,6 +261,7 @@ LOVE_TELLER_BABY.PlayerTypeBabies[PlayerType.PLAYER_THESOUL] = LOVE_TELLER_BABY.
 --#region Extra baby-specific handling
 
 local specialLoadList = {
+	"cain",
 	"esau",
 	"lazarus",
 	"miriam",
@@ -280,7 +281,7 @@ Mod.LoopInclude(specialLoadList, "scripts.furtherance.unlocks.unlocks_leah_b.lov
 function LOVE_TELLER_BABY:GrantCollectible(familiar, itemID, isEffect, delayNextRoom)
 	local player = familiar.Player
 	local data = Mod:GetData(familiar)
-	local subtype = data.GlitchBabyQueueSubtype or familiar.SubType
+	local subtype = data.GlitchBabySubtype or familiar.SubType
 
 	if familiar.FrameCount % 30 == 0
 		and not data.LoveTellerEffectCooldown
@@ -394,6 +395,12 @@ function LOVE_TELLER_BABY:UpdateBabySkin(familiar, babySubType)
 	familiar:GetSprite():ReplaceSpritesheet(0, skin, true)
 end
 
+---@param familiar EntityFamiliar
+---@param subtype integer
+function LOVE_TELLER_BABY:IsSubtype(familiar, subtype)
+	return familiar.SubType == subtype or (Mod:GetData(familiar).GlitchBabySubtype or -1) == subtype
+end
+
 --#endregion
 
 --#region On fire
@@ -423,7 +430,7 @@ function LOVE_TELLER_BABY:RenderDebug(familiar)
 	Isaac.RenderScaledText("Passive countdown: " .. (data.LoveTellerPassiveCountdown or "N/A"), x, p.Y - 25, 0.5, 0.5, 1, 1, 1, 1)
 	Isaac.RenderScaledText("ActiveHold: " .. (tostring(data.LoveTellerActiveWait) or "N/A"), x, p.Y - 20, 0.5, 0.5, 1, 1, 1, 1)
 	if familiar.SubType == PlayerType.PLAYER_EDEN then
-		Isaac.RenderScaledText("Glitch Subtype: " .. (data.GlitchBabyQueueSubtype or "N/A"), x, p.Y - 15, 0.5, 0.5, 1, 1, 1, 1)
+		Isaac.RenderScaledText("Glitch Subtype: " .. (data.GlitchBabySubtype or "N/A"), x, p.Y - 15, 0.5, 0.5, 1, 1, 1, 1)
 	end
 end
 
