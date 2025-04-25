@@ -14,6 +14,7 @@ end
 function PETER_B:UsePeterFlipRoomEffects()
 	return PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.PETER_B)
 		and Mod.Room():GetType() ~= RoomType.ROOM_DUNGEON
+		and not Mod.Room():HasCurseMist()
 end
 
 function PETER_B:BloodTears(tear)

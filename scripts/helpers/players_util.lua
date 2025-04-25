@@ -383,3 +383,14 @@ end
 function Furtherance:GetLaserRange(player)
 	return 60 + math.max(0, player.TearRange - 112) * 0.25
 end
+
+---@param player EntityPlayer
+---@param layer PlayerSpriteLayer
+function Furtherance:GetCostumeSpriteFromLayer(player, layer)
+	local layerMap = player:GetCostumeLayerMap()[layer + 1]
+	if not layerMap then return end
+	local costumeIndex = layerMap.costumeIndex
+	local costumeDescs = player:GetCostumeSpriteDescs()
+	local costumeDesc = costumeDescs[costumeIndex + 1]
+	return costumeDesc and costumeDesc:GetSprite()
+end

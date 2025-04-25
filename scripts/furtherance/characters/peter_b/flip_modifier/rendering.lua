@@ -40,7 +40,6 @@ function FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, parent)
 	end
 end
 
-
 --#region Handle entity rendering via WaterClipFlags
 
 ---@param ent Entity
@@ -183,6 +182,124 @@ function FLIP_RENDERING:MarkEnemyEffectOnDeath(npc)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, FLIP_RENDERING.MarkEnemyEffectOnDeath)
+
+--#endregion
+
+--#region Entity outline (GIGANTIC thanks to Goganidze)
+
+local wtr = 20 / 13
+local vd = Vector(0, 40)
+
+function FLIP_RENDERING:AddOutlineSprite(ent, spr)
+	local data = Mod:GetData(ent)
+	local copyspr = Sprite(spr:GetFilename(), true)
+	copyspr:SetFrame(spr:GetAnimation(), spr:GetFrame())
+	copyspr:Play(spr:GetAnimation())
+
+	for i, layer in pairs(spr:GetAllLayers()) do
+		local id = layer:GetLayerID()
+		local clayer = copyspr:GetLayer(id)
+		---@cast clayer LayerState
+		copyspr:ReplaceSpritesheet(id, layer:GetSpritesheetPath())
+		clayer:SetColor(Color(1, 1, 1, 0.5, 0, 0, 0, i))
+	end
+	copyspr:SetCustomShader("shaders/PeterBOutline")
+	copyspr:LoadGraphics()
+	copyspr.Offset = spr.Offset / 1
+	copyspr.FlipY = true
+	copyspr.Color.A = 0
+
+	data.GSGSAGS = data.GSGSAGS or {}
+	Mod:Insert(data.GSGSAGS, { copyspr, Vector(0, 0), 0 })
+end
+
+---@param ent Entity
+function FLIP_RENDERING:EntityUpdate(ent)
+	if ent:ToNPC() and ent.FrameCount < 10 or ent.FrameCount < 1 then return end
+	local data = Mod:GetData(ent)
+	if not data.GSGSAGS
+		and FLIP:IsEntitySubmerged(ent)
+	then
+		FLIP_RENDERING:AddOutlineSprite(ent, ent:GetSprite())
+		local player = ent:ToPlayer()
+		if player then
+			local head = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_HEAD)
+			local hair = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_HEAD0)
+			if head then
+				FLIP_RENDERING:AddOutlineSprite(ent, head)
+			end
+			if hair then
+				FLIP_RENDERING:AddOutlineSprite(ent, hair)
+			end
+		end
+	elseif data.GSGSAGS then
+		for _, GSGSAGS in ipairs(data.GSGSAGS) do
+			local cspr = GSGSAGS[1]
+			local spr = ent:GetSprite()
+
+			cspr.Rotation = spr.Rotation
+			cspr.Offset = -(spr.Offset + ent.PositionOffset / wtr)
+			cspr.Rotation = spr.Rotation - 180
+			cspr.FlipX = not spr.FlipX
+			cspr.FlipY = spr.FlipY
+
+			cspr:SetOverlayFrame(spr:GetOverlayAnimation(), spr:GetOverlayFrame())
+			cspr:SetFrame(spr:GetAnimation(), spr:GetFrame())
+			local gridCol = Mod.Room():GetGridCollisionAtPos(ent.Position + vd)
+			if gridCol == GridCollisionClass.COLLISION_SOLID or gridCol == GridCollisionClass.COLLISION_OBJECT
+				or gridCol == GridCollisionClass.COLLISION_WALL then
+				GSGSAGS[3] = GSGSAGS[3] * 0.8 + 0.2
+			else
+				GSGSAGS[3] = GSGSAGS[3] * 0.8
+			end
+			cspr.Color.A = GSGSAGS[3]
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, FLIP_RENDERING.EntityUpdate)
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, FLIP_RENDERING.EntityUpdate)
+Mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, FLIP_RENDERING.EntityUpdate)
+Mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, FLIP_RENDERING.EntityUpdate)
+Mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, FLIP_RENDERING.EntityUpdate)
+Mod:AddCallback(ModCallbacks.MC_POST_KNIFE_UPDATE, FLIP_RENDERING.EntityUpdate)
+Mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, FLIP_RENDERING.EntityUpdate)
+Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_UPDATE, FLIP_RENDERING.EntityUpdate)
+
+local WorldToScreen = Isaac.WorldToScreen
+
+local renderlist = {}
+
+function FLIP_RENDERING:EntityRender(ent, offset)
+	local data = Mod:GetData(ent)
+	if data.GSGSAGS then
+		Mod:inverseiforeach(data.GSGSAGS, function(GSGSAGS)
+			local cspr = GSGSAGS[1]
+			local rendermod = Mod.Room():GetRenderMode()
+			if rendermod == RenderMode.RENDER_WATER_REFLECT then
+				renderlist[#renderlist + 1] = { cspr, WorldToScreen(ent.Position) }
+			end
+		end)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, FLIP_RENDERING.EntityRender)
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_RENDER, FLIP_RENDERING.EntityRender)
+Mod:AddCallback(ModCallbacks.MC_POST_FAMILIAR_RENDER, FLIP_RENDERING.EntityRender)
+Mod:AddCallback(ModCallbacks.MC_POST_BOMB_RENDER, FLIP_RENDERING.EntityRender)
+Mod:AddCallback(ModCallbacks.MC_POST_KNIFE_RENDER, FLIP_RENDERING.EntityRender)
+Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_RENDER, FLIP_RENDERING.EntityRender)
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_RENDER, FLIP_RENDERING.EntityRender)
+Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_RENDER, FLIP_RENDERING.EntityRender)
+
+local render = Sprite().Render
+Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function()
+	for i = 1, #renderlist do
+		local sr = renderlist[i]
+		render(sr[1], sr[2])
+	end
+	renderlist = {}
+end)
 
 --#endregion
 
