@@ -378,3 +378,8 @@ function Furtherance:TryGetMarkedTargetAimVector(player)
 	end
 	return aimVector
 end
+
+---@param player EntityPlayer
+function Furtherance:GetLaserRange(player)
+	return 60 + math.max(0, player.TearRange - 112) * 0.25
+end

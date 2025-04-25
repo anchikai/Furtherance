@@ -13,10 +13,8 @@ end
 function MIRIAM_B:OnPlayerInit(player)
 	if MIRIAM_B:IsMiriam(player) then
 		player:AddInnateCollectible(Mod.Item.SPIRITUAL_WOUND.ID)
-		if not player:HasCollectible(CollectibleType.COLLECTIBLE_EYE_OF_THE_OCCULT) then
-			player:AddInnateCollectible(CollectibleType.COLLECTIBLE_EYE_OF_THE_OCCULT)
-			player:RemoveCostume(Mod.ItemConfig:GetCollectible(CollectibleType.COLLECTIBLE_EYE_OF_THE_OCCULT))
-		end
+		player:AddInnateCollectible(CollectibleType.COLLECTIBLE_MONSTROS_LUNG)
+		player:AddInnateCollectible(CollectibleType.COLLECTIBLE_TECHNOLOGY)
 	end
 end
 

@@ -108,7 +108,6 @@ local miriam_b = {
 	"jar_of_manna",
 	"reverse_charity",
 	"soul_of_miriam",
-	"spiritual_wound",
 }
 
 Mod.LoopInclude(miriam_b, prefix .. "miriam_b")
