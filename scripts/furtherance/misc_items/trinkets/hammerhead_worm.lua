@@ -54,10 +54,10 @@ Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BOMB, HAMMERHEAD_WORM.FireHammerheadWo
 function HAMMERHEAD_WORM:HammerheadWormKnife(ent, amount, flags, source, countdown)
 	if ent:IsActiveEnemy(false)
 		and source.Entity
-		and source.Entity:ToKnife()
+		and (source.Entity:ToKnife() or source.Entity:ToPlayer() and Mod:HasBitFlags(flags, DamageFlag.DAMAGE_LASER))
 	then
 		local sourceEnt = source.Entity
-		local player = sourceEnt.SpawnerEntity and sourceEnt.SpawnerEntity:ToPlayer()
+		local player = Mod:TryGetPlayer(sourceEnt, true)
 		if player and player:HasTrinket(HAMMERHEAD_WORM.ID) then
 			local rng = player:GetTrinketRNG(HAMMERHEAD_WORM.ID)
 			local damageMultiplier = HAMMERHEAD_WORM:GetMultiplier(rng)
@@ -67,31 +67,3 @@ function HAMMERHEAD_WORM:HammerheadWormKnife(ent, amount, flags, source, countdo
 end
 
 Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, HAMMERHEAD_WORM.HammerheadWormKnife)
-
----Lasers pass the "player" as the source of damage, and has the same issue as knife with CollisionDamage so we gotta do this instead :/
----
----Shoutout to RGON though for [Get/Set]DamageMult
----@param laser EntityLaser
-function HAMMERHEAD_WORM:SaveDamageMult(laser)
-	local player = laser.SpawnerEntity and laser.SpawnerEntity:ToPlayer()
-	if player and player:HasTrinket(HAMMERHEAD_WORM.ID) then
-		Mod:GetData(laser).HammerheadWormLaserMult = laser:GetDamageMultiplier()
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BRIMSTONE, HAMMERHEAD_WORM.SaveDamageMult)
-Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BRIMSTONE_BALL, HAMMERHEAD_WORM.SaveDamageMult)
-
----@param laser EntityLaser
-function HAMMERHEAD_WORM:OnLaserUpdate(laser)
-	local data = Mod:TryGetData(laser)
-	if data	and data.HammerheadWormLaserMult then
-		local player = laser.SpawnerEntity and laser.SpawnerEntity:ToPlayer()
-		---@cast player EntityPlayer
-		local rng = player:GetTrinketRNG(HAMMERHEAD_WORM.ID)
-		local damageMultiplier = HAMMERHEAD_WORM:GetMultiplier(rng)
-		laser:SetDamageMultiplier(data.HammerheadWormLaserMult * damageMultiplier)
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, HAMMERHEAD_WORM.OnLaserUpdate)
