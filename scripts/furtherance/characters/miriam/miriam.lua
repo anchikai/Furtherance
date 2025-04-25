@@ -16,6 +16,6 @@ function MIRIAM:OnPlayerInit(player)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, MIRIAM.OnPlayerInit)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, MIRIAM.OnPlayerInit, PlayerVariant.PLAYER)
 
 Mod.Include("scripts.furtherance.characters.miriam.tambourine")
