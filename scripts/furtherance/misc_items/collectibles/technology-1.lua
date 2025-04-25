@@ -21,7 +21,7 @@ function TECHNOLOGY_MINUS_1:ShootLasers(ent)
 			for _ = 1, maxLasers do
 				local laser = player:FireTechLaser(ent.Position, LaserOffset.LASER_TRACTOR_BEAM_OFFSET, RandomVector(), false, true, ent, 1)
 				laser.PositionOffset = ent.PositionOffset
-				laser.TearFlags = ent.TearFlags
+				laser.TearFlags = ent:ToBomb() and player.TearFlags or ent.TearFlags
 				laser:GetSprite().Color = player.LaserColor
 				Mod:GetData(laser).TechMinus1Laser = true
 			end
