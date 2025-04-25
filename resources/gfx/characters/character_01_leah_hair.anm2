@@ -1,8 +1,8 @@
 <AnimatedActor>
-	<Info CreatedBy="anchikai." CreatedOn="12/15/2021 3:10:33 PM" Version="112" Fps="30"/>
+	<Info CreatedBy="anchikai." CreatedOn="4/24/2025 9:21:51 PM" Version="113" Fps="30"/>
 	<Content>
 		<Spritesheets>
-			<Spritesheet Path="costumes\Character_001_Leah_Hair.png" Id="0"/>
+			<Spritesheet Path="costumes\character_01_leah_hair.png" Id="0"/>
 		</Spritesheets>
 		<Layers>
 			<Layer Name="head0" Id="0" SpritesheetId="0"/>

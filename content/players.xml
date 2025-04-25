@@ -7,7 +7,7 @@
 		pocketActive="Heart Renovator"
 		nameimage="playername_leah.png" portrait="playerportrait_leah.png"
 		birthright="Loved once more" />
-	<player name="Leah" bSkinParent="Leah" skin="character_01_leah_b.png" costumeSuffix="leah_b" skinColor="-1" modcostume="2"
+	<player name="Leah" bSkinParent="Leah" skin="character_01_leahb.png" costumeSuffix="leah_b" skinColor="-1" modcostume="2"
 		heartcontainers="2" redhearts="2" brokenhearts="23"
 		pocketActive="Shattered Heart"
 		nameimage="playername_leah.png" portrait="playerportrait_leah_b.png"
@@ -20,7 +20,7 @@
 		pocketActive="Keys to the Kingdom"
 		nameimage="playername_peter.png" portrait="playerportrait_peter.png"
 		birthright="Mercy up" />
-	<player name="Peter" bSkinParent="Peter" skin="character_02_peter_b.png" costumeSuffix="peter_b" skinColor="-1" modcostume="4"
+	<player name="Peter" bSkinParent="Peter" skin="character_02_peterb.png" costumeSuffix="peter_b" skinColor="-1" modcostume="4"
 		heartcontainers="6" redhearts="6"
 		luckmodifier="-1"
 		pocketActive="Muddled Cross"
@@ -34,8 +34,8 @@
 		items="Tambourine"
 		nameimage="playername_miriam.png" portrait="playerportrait_miriam.png"
 		birthright="Crashing waves" />
-	<player name="Miriam" bSkinParent="Miriam" skin="character_03_miriam_b.png" costumeSuffix="miriam_b" skinColor="-1" modcostume="6"
-		bonehearts="8" redhearts="4" card="55"
+	<player name="Miriam" bSkinParent="Miriam" skin="character_03_miriamb.png" costumeSuffix="miriam_b" skinColor="-1" modcostume="6"
+		bonehearts="4" redhearts="4" card="55"
 		nameimage="playername_miriam.png" portrait="playerportrait_miriam_b.png"
 		birthright="Death field"
 		achievement="The Condemned"	/>

@@ -1,8 +1,8 @@
 <AnimatedActor>
-	<Info CreatedBy="anchikai." CreatedOn="2/1/2022 2:27:51 PM" Version="113" Fps="30"/>
+	<Info CreatedBy="anchikai." CreatedOn="4/24/2025 9:21:15 PM" Version="114" Fps="30"/>
 	<Content>
 		<Spritesheets>
-			<Spritesheet Path="costumes\Character_002b_Peter_Drip.png" Id="0"/>
+			<Spritesheet Path="costumes\character_02b_peter_drip.png" Id="0"/>
 		</Spritesheets>
 		<Layers>
 			<Layer Name="head0" Id="0" SpritesheetId="0"/>
