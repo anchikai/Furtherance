@@ -23,7 +23,8 @@ function UNSTABLE_CORE:OnUse(itemID, _, player, flags, slot)
 	then
 		return
 	end
-	Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.TEAR_POOF_A, TECH_SWORD_TEAR_POOF_SUBTYPE, player.Position, Vector.Zero, nil)
+	local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.TEAR_POOF_A, TECH_SWORD_TEAR_POOF_SUBTYPE, player.Position, Vector.Zero, nil)
+	effect.SpriteScale = Vector(2, 2)
 	Mod.SFXMan:Play(SoundEffect.SOUND_LASERRING_WEAK)
 	local source = EntityRef(player)
 	local charges = player:GetActiveCharge(slot)
@@ -33,7 +34,7 @@ function UNSTABLE_CORE:OnUse(itemID, _, player, flags, slot)
 	elseif charges == 0 then
 		return
 	end
-	local carBattery = Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) and 2 or 1
+	local carBattery = player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) and 2 or 1
 	Mod:ForEachEnemy(function(npc)
 		npc:AddBurn(source, UNSTABLE_CORE.DEFAULT_DURATION, 5 * carBattery)
 		npc:SetBurnCountdown(UNSTABLE_CORE.DEFAULT_DURATION * chargeBuff * carBattery)
