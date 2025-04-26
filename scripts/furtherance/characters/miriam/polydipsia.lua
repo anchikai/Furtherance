@@ -5,7 +5,7 @@ local Mod = Furtherance
 
 local POLYDIPSIA = {}
 
---Furtherance.Item.POLYDIPSIA = POLYDIPSIA
+Furtherance.Item.POLYDIPSIA = POLYDIPSIA
 
 POLYDIPSIA.ID = Isaac.GetItemIdByName("Polydipsia")
 

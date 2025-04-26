@@ -31,11 +31,12 @@
 	<player name="Miriam" skin="character_03_miriam.png" costumeSuffix="miriam" skinColor="-1" modcostume="5"
 		heartcontainers="4" redhearts="4" soulhearts="4"
 		speedmodifier="0.25" damagemodifier="0.5"
-		items="Tambourine"
+		pocketActive="Tambourine"
 		nameimage="playername_miriam.png" portrait="playerportrait_miriam.png"
 		birthright="Crashing waves" />
-	<player name="Miriam" bSkinParent="Miriam" skin="character_03_miriamb.png" costumeSuffix="miriam_b" skinColor="-1" modcostume="6"
+	<player name="Miriam" bSkinParent="Miriam" skin="character_03_miriamb.png" costumeSuffix="miriam_b" skinColor="5" modcostume="6"
 		bonehearts="4" redhearts="4" card="55"
+		pocketActive="Polarity Shift (Spiritual Wound)"
 		nameimage="playername_miriam.png" portrait="playerportrait_miriam_b.png"
 		birthright="Death field"
 		achievement="The Condemned"	/>

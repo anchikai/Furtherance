@@ -160,7 +160,7 @@ Furtherance.Item.CADUCEUS_STAFF.ACHIEVEMENT = achievement("Caduceus Staff")
 Furtherance.Item.MIRIAMS_WELL.ACHIEVEMENT = achievement("Miriam's Well")
 Furtherance.Item.TAMBOURINE.ACHIEVEMENT = achievement("Tambourine")
 Furtherance.Item.FIRSTBORN_SON.ACHIEVEMENT = achievement("Firstborn Son")
---Furtherance.Item.POLYDIPSIA.ACHIEVEMENT = achievement("Polydipsia")
+Furtherance.Item.POLYDIPSIA.ACHIEVEMENT = achievement("Polydipsia")
 Furtherance.Character.MIRIAM_B.ACHIEVEMENT = achievement("The Condemned")
 Furtherance.Rune.ESSENCE_OF_DELUGE.ACHIEVEMENT = achievement("Essence of Deluge")
 
@@ -177,7 +177,7 @@ Furtherance.CompletionMarkToAchievement.MIRIAM = {
 	[CompletionType.ULTRA_GREEDIER] = Mod.Item.MIRIAMS_WELL.ACHIEVEMENT,
 	[CompletionType.DELIRIUM] = Mod.Item.TAMBOURINE.ACHIEVEMENT,
 	[CompletionType.MOTHER] = Mod.Item.FIRSTBORN_SON.ACHIEVEMENT,
-	--[CompletionType.BEAST] = Mod.Item.POLYDIPSIA.ACHIEVEMENT,
+	[CompletionType.BEAST] = Mod.Item.POLYDIPSIA.ACHIEVEMENT,
 	[Mod.CompletionType.TAINTED] = Mod.Character.MIRIAM_B.ACHIEVEMENT,
 	[Mod.CompletionType.ALL] = Mod.Rune.ESSENCE_OF_DELUGE.ACHIEVEMENT,
 }

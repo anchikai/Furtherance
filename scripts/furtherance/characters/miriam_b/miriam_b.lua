@@ -4,28 +4,21 @@ local MIRIAM_B = {}
 
 Furtherance.Character.MIRIAM_B = MIRIAM_B
 
-local INNATE_COLLECTIBLES = {
-	CollectibleType.COLLECTIBLE_MONSTROS_LUNG,
-	CollectibleType.COLLECTIBLE_TECHNOLOGY,
-	CollectibleType.COLLECTIBLE_SOY_MILK
-}
 
 ---@param player EntityPlayer
-function MIRIAM_B:IsMiriam(player)
+function MIRIAM_B:IsMiriamB(player)
 	return player:GetPlayerType() == Mod.PlayerType.MIRIAM_B
 end
 
 ---@param player EntityPlayer
+function MIRIAM_B:MiriamBHasBirthright(player)
+	return MIRIAM_B:IsMiriamB(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
+end
+
+---@param player EntityPlayer
 function MIRIAM_B:OnPlayerInit(player)
-	if MIRIAM_B:IsMiriam(player) then
+	if MIRIAM_B:IsMiriamB(player) then
 		player:AddInnateCollectible(Mod.Item.SPIRITUAL_WOUND.ID)
-		for _, itemID in ipairs(INNATE_COLLECTIBLES) do
-			player:AddInnateCollectible(itemID)
-			local itemConfigItem = Mod.ItemConfig:GetCollectible(itemID)
-			if not player:HasCollectible(itemID, true, true) then
-				player:RemoveCostume(itemConfigItem)
-			end
-		end
 	end
 end
 

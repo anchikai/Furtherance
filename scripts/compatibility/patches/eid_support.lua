@@ -1693,7 +1693,27 @@ EID_Collectibles = {
 			}
 		}
 	},
-	[Item.POLARITY_SHIFT.ID] = {
+	[Item.POLARITY_SHIFT.ID_1] = {
+		en_us = {
+			Name = "PlaceholderName",
+			Description = {
+				"PlaceholderDesc"
+			}
+		},
+		ru = {
+			Name = "PlaceholderName",
+			Description = {
+				"PlaceholderDesc"
+			}
+		},
+		spa = {
+			Name = "PlaceholderName",
+			Description = {
+				"PlaceholderDesc"
+			}
+		}
+	},
+	[Item.POLARITY_SHIFT.ID_2] = {
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {

@@ -17,7 +17,8 @@
 		<sample weight="1" path="faithfulheart_pickup1.wav" />
 	</sound>
 	<sound name="Tambourine">
-		<sample weight="1" path="tambourine_short.wav" /> <!-- Thank you Sillst! -->
+		<sample weight="1" path="tambourine_short.wav" />
+		<!-- Thank you Sillst! -->
 	</sound>
 	<sound name="Peter Flip">
 		<sample weight="1" path="peter_flip.wav" />
@@ -31,11 +32,20 @@
 	<sound name="Miriam Water Flow">
 		<sample weight="1" path="miriam_water_flow_loop.wav" />
 	</sound>
-	<sound name="SpiritualWoundStart">
-		<sample weight="1" path="spiritualwound_start.wav" />
+	<sound name="Spiritual Wound Start">
+		<sample weight="1" path="spiritual_wound_start.wav" />
 	</sound>
-	<sound name="SpiritualWoundLoop">
-		<sample weight="1" path="spiritualwound_loop.wav" />
+	<sound name="Death Field Start">
+		<sample weight="1" path="death_field_start.wav" />
+	</sound>
+	<sound name="Spiritual Wound Loop">
+		<sample weight="1" path="spiritual_wound_loop.wav" />
+	</sound>
+	<sound name="Chain Lightning Start">
+		<sample weight="1" path="chain_lightning_start.wav" />
+	</sound>
+	<sound name="Chain Lightning Loop">
+		<sample weight="1" path="chain_lightning_loop.wav" />
 	</sound>
 	<sound name="Cork">
 		<sample weight="1" path="cork.wav" />
