@@ -47,6 +47,9 @@
 	<sound name="Chain Lightning Loop">
 		<sample weight="1" path="chain_lightning_loop.wav" />
 	</sound>
+	<sound name="Polarity Shift Use">
+		<sample weight="1" path="polarity_shift_use.wav" />
+	</sound>
 	<sound name="Cork">
 		<sample weight="1" path="cork.wav" />
 	</sound>

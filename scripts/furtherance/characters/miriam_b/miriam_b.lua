@@ -24,5 +24,5 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, MIRIAM_B.OnPlayerInit, PlayerVariant.PLAYER)
 
-Mod.Include("scripts.furtherance.characters.miriam_b.spiritual_wound")
 Mod.Include("scripts.furtherance.characters.miriam_b.polarity_shift")
+Mod.Include("scripts.furtherance.characters.miriam_b.spiritual_wound")
