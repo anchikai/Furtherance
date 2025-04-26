@@ -77,20 +77,20 @@ function BOX_OF_BELONGINGS:OnFirstPickup(itemID, _, firstTime, _, _, player)
 		end
 		local trinketList = {}
 		for _, trinket in ipairs(BOX_OF_BELONGINGS.TRINKET_DROPS) do
-			if BOX_OF_BELONGINGS:IsCardAvailable(trinket) then
+			if BOX_OF_BELONGINGS:IsTrinketAvailable(trinket) then
 				Mod:Insert(trinketList, trinket)
 			end
 		end
 		local rng = player:GetCollectibleRNG(itemID)
 		local card = cardList[rng:RandomInt(#cardList) + 1]
 		Mod.Game:Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD,
-			Mod.Room():FindFreePickupSpawnPosition(player.Position),
+			Mod.Room():FindFreePickupSpawnPosition(player.Position, 0, true),
 			Vector.Zero, player, card, rng:GetSeed())
 		for _ = 1, 2 do
 			local index = rng:RandomInt(#trinketList) + 1
 			local trinket = trinketList[index]
 			Mod.Game:Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TRINKET,
-				Mod.Room():FindFreePickupSpawnPosition(player.Position),
+				Mod.Room():FindFreePickupSpawnPosition(player.Position, 0, true),
 				Vector.Zero, player, trinket, rng:GetSeed())
 			table.remove(trinketList, index)
 		end

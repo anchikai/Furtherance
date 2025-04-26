@@ -47,9 +47,12 @@ function KERATOCONUS:OnCollectibleRemove()
 	if not PlayerManager.AnyoneHasCollectible(KERATOCONUS.ID) then
 		Mod:ForEachEnemy(function (npc)
 			if not npc:IsBoss() then
-				npc:SetSize(1, Vector.One, 16)
-				npc.Scale = 1
-				npc:SetSpeedMultiplier(1)
+				local data = Mod:GetData(npc)
+				if data.KeratoconusOriginalVars then
+					npc:SetSize(data.KeratoconusOriginalVars[1], data.KeratoconusOriginalVars[2], 16)
+					npc.Scale = data.KeratoconusOriginalVars[3]
+					npc:SetSpeedMultiplier(data.KeratoconusOriginalVars[4])
+				end
 			end
 		end, false)
 	end
@@ -70,7 +73,11 @@ function KERATOCONUS:SizeChanging(npc)
 	local distMult = Mod:Clamp((curDist - KERATOCONUS.MIN_SIZE_DISTANCE) / (KERATOCONUS.MAX_SIZE_DISTANCE - KERATOCONUS.MIN_SIZE_DISTANCE), 0, 1)
 	local size = 1 + distMult
 	local speed = 1 + -(distMult * 0.5)
-	npc:SetSize(size, Vector(1,1), 16)
+	local data = Mod:GetData(npc)
+	if not data.KeratoconusOriginalVars then
+		data.KeratoconusOriginalVars = {npc.Size, npc.SizeMulti, npc.Scale, npc:GetSpeedMultiplier()}
+	end
+	npc:SetSize(data.KeratoconusOriginalVars[1] * size, Vector.One, 16)
 	npc.Scale = size
 	if npc:GetSpeedMultiplier() >= 1 and speed == 1 then return end
 	npc:SetSpeedMultiplier(speed)

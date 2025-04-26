@@ -28,6 +28,7 @@ function IRON:IronInit(familiar)
 	familiar.OrbitDistance = IRON.ORBIT_DISTANCE
 	familiar.OrbitSpeed = IRON.ORBIT_SPEED
 	familiar:RecalculateOrbitOffset(familiar.OrbitLayer, true)
+	IRON:IronUpdate(familiar)
 end
 
 Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, IRON.IronInit, IRON.FAMILIAR)
@@ -42,13 +43,12 @@ function IRON:TearCollision(tear)
 				tear.CollisionDamage = tear.CollisionDamage * 2
 				tear:AddTearFlags(TearFlags.TEAR_BURN)
 				tear:SetColor(IRON.TEAR_COLOR, -1, 1, false, true)
+				tear.Scale = tear.Scale * 1.5
+				tear:ResetSpriteScale(true)
 				data.WentThruIron = true
 			end
 			if tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then
 				data.CheckLeavingIron = true
-			else
-				tear.Scale = tear.Scale * 1.5
-				tear:ResetSpriteScale(true)
 			end
 			break
 		end

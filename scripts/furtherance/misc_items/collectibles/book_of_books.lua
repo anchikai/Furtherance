@@ -18,7 +18,7 @@ function BOOK_OF_BOOKS:OnUse(_, rng, player)
 			and itemConfig.ID ~= BOOK_OF_BOOKS.ID
 			and Mod.PersistGameData:Unlocked(itemConfig.AchievementID)
 		then
-			Mod:Insert(bookItemIDs)
+			Mod:Insert(bookItemIDs, itemConfig.ID)
 		end
 	end
 	player:UseActiveItem(bookItemIDs[rng:RandomInt(#bookItemIDs) + 1], false, false, true, true, -1)
