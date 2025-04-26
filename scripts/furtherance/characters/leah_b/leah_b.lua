@@ -47,6 +47,9 @@ LEAH_B.STAT_TABLE = {
 	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.01 },
 }
 
+local brokenHeart = Sprite(Mod:GetHealthPath(), true)
+brokenHeart:SetFrame("BrokenHeart", 0)
+
 --#endregion
 
 --#region Helpers
@@ -72,15 +75,6 @@ end
 --#endregion
 
 --#region Heart limit
-
----@param player EntityPlayer
-function LEAH_B:HeartLimit(player, heartLimit, keeper)
-	if LEAH_B:IsLeahB(player) then
-		return LEAH_B.TECHNICAL_HEART_LIMIT
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_PLAYER_GET_HEART_LIMIT, LEAH_B.HeartLimit)
 
 ---@param player EntityPlayer
 ---@param amount integer
@@ -200,9 +194,6 @@ Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, LEAH_B.HealBrokenHearts)
 --#endregion
 
 --#region Render incoming broken heart
-
-local brokenHeart = Sprite("gfx/ui/ui_brokenheart.anm2", true)
-brokenHeart:SetFrame(brokenHeart:GetDefaultAnimation(), 0)
 
 HudHelper.RegisterHUDElement({
 	Name = "Leah B Heart Decay",

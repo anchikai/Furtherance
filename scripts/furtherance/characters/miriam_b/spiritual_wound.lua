@@ -27,7 +27,7 @@ local INNATE_COLLECTIBLES = {
 
 ---@param player EntityPlayer
 function SPIRITUAL_WOUND:GetAttackInitSound(player)
-	if POLARITY_SHIFT:ChainLightningActive(player) then
+	if POLARITY_SHIFT:IsChainLightningActive(player) then
 		return SPIRITUAL_WOUND.SFX_CHAIN_LIGHTNING_START
 	elseif Mod.Character.MIRIAM_B:MiriamBHasBirthright(player) then
 		return SPIRITUAL_WOUND.SFX_DEATH_FIELD_START
@@ -38,7 +38,7 @@ end
 
 ---@param player EntityPlayer
 function SPIRITUAL_WOUND:GetAttackLoopSound(player)
-	if POLARITY_SHIFT:ChainLightningActive(player) then
+	if POLARITY_SHIFT:IsChainLightningActive(player) then
 		return SPIRITUAL_WOUND.SFX_CHAIN_LIGHTNING_LOOP
 	else
 		return SPIRITUAL_WOUND.SFX_LOOP
@@ -59,13 +59,15 @@ function SPIRITUAL_WOUND:SpiritualWoundCache(player, cacheFlag)
 			color = SPIRITUAL_WOUND.DEATH_FIELD_COLOR
 		end
 		player.LaserColor = color
+	elseif cacheFlag == CacheFlag.CACHE_DAMAGE then
+		player.Damage = player.Damage - 0.3
 	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, SPIRITUAL_WOUND.SpiritualWoundCache)
 
 ---@param player EntityPlayer
-function SPIRITUAL_WOUND:OnPeffectUpdate(player)
+function SPIRITUAL_WOUND:HandleFiringSFX(player)
 	local weapon = player:GetWeapon(1)
 	local data = Mod:GetData(player)
 	if weapon and player:GetFireDirection() ~= Direction.NO_DIRECTION and player:HasCollectible(SPIRITUAL_WOUND.ID) then
@@ -109,32 +111,39 @@ function SPIRITUAL_WOUND:OnPeffectUpdate(player)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SPIRITUAL_WOUND.OnPeffectUpdate)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SPIRITUAL_WOUND.HandleFiringSFX)
 
 ---@param ent Entity
 ---@param amount number
 ---@param flags DamageFlag
 ---@param source EntityRef
-function SPIRITUAL_WOUND:EntityTakeDmg(ent, amount, flags, source, countdown)
+function SPIRITUAL_WOUND:LaserDamage(ent, amount, flags, source)
 	local player = Mod:TryGetPlayer(source.Entity, true)
 	if player
 		and player:HasCollectible(SPIRITUAL_WOUND.ID)
 		and Mod:HasBitFlags(flags, DamageFlag.DAMAGE_LASER)
 		and ent:ToNPC()
 	then
-		local _countdown = 3
-		if POLARITY_SHIFT:ChainLightningActive(player) then
-			_countdown = 2
+		local hasBirthright = Mod.Character.MIRIAM_B:MiriamBHasBirthright(player)
+		local isChainLightning = POLARITY_SHIFT:IsChainLightningActive(player)
+		local countdown = 3
+		local damageMultBonus = 1
+		if hasBirthright or isChainLightning then
+			countdown = 2
+			if hasBirthright and isChainLightning and ent:HasEntityFlags(EntityFlag.FLAG_FEAR) then
+				damageMultBonus = 1.5
+			end
 		end
 		local dist = ent.Position:Distance(player.Position) / 80
 		local dmgMult = dist <= 1 and 0 or Mod:Clamp(dist * 0.15, 0, 0.5)
-		return { Damage = amount - (amount * dmgMult), DamageFlags = flags | DamageFlag.DAMAGE_COUNTDOWN, DamageCountdown = _countdown }
+		return { Damage = (amount - (amount * dmgMult) * damageMultBonus), DamageFlags = flags | DamageFlag.DAMAGE_COUNTDOWN, DamageCountdown =
+		countdown }
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, SPIRITUAL_WOUND.EntityTakeDmg)
+Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, SPIRITUAL_WOUND.LaserDamage)
 
-function SPIRITUAL_WOUND:StopSFX(id, volume, framedelay, loop, pitch, pan)
+function SPIRITUAL_WOUND:StopSFX()
 	if SPIRITUAL_WOUND.IS_FIRING then
 		return false
 	end
@@ -167,7 +176,8 @@ function SPIRITUAL_WOUND:OnCollectibleRemove(player)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, SPIRITUAL_WOUND.OnCollectibleRemove, SPIRITUAL_WOUND.ID)
+Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, SPIRITUAL_WOUND.OnCollectibleRemove, SPIRITUAL_WOUND
+.ID)
 
 ---@param player EntityPlayer
 function SPIRITUAL_WOUND:TryAddInnateItems(player)

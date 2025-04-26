@@ -80,7 +80,6 @@ end
 function FLIP:IsFlippedEnemy(ent)
 	local data = Mod:GetData(ent)
 	return (data.PeterFlipped
-			or ent:HasEntityFlags(EntityFlag.FLAG_CHARM)
 			or ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY))
 		or not ent:IsActiveEnemy(true) and FLIP:IsRoomEffectActive()
 end

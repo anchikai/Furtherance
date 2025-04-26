@@ -352,3 +352,8 @@ end
 function Furtherance:IsDeadEnemy(ent)
 	return ent:IsActiveEnemy(true) or ent:ToNPC() and ent:ToNPC().CanShutDoors
 end
+
+---@return string
+function Furtherance:GetHealthPath()
+	return not CustomHealthAPI and "gfx/ui/ui_hearts.anm2" or "gfx/ui/CustomHealthAPI/hearts.anm2"
+end

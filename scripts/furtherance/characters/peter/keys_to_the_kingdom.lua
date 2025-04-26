@@ -93,7 +93,7 @@ function KEYS_TO_THE_KINGDOM:CanSpare(ent, allowDead)
 	return ent:ToNPC()
 		and ent:IsActiveEnemy(allowDead)
 		and (allowDead and not ent:IsInvincible() or ent:IsVulnerableEnemy())
-		and not ent:HasEntityFlags(EntityFlag.FLAG_CHARM | EntityFlag.FLAG_FRIENDLY)
+		and not ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
 		and ent:ToNPC().CanShutDoors
 		and not SEL:HasStatusEffect(ent, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 		and not (Mod:TryGetData(ent) and Mod:GetData(ent).Raptured)

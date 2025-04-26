@@ -8,7 +8,7 @@
 		nameimage="playername_leah.png" portrait="playerportrait_leah.png"
 		birthright="Loved once more" />
 	<player name="Leah" bSkinParent="Leah" skin="character_01_leahb.png" costumeSuffix="leah_b" skinColor="-1" modcostume="2"
-		heartcontainers="2" redhearts="2" brokenhearts="23"
+		heartcontainers="2" redhearts="2" brokenhearts="23" healthlimit="66"
 		pocketActive="Shattered Heart"
 		nameimage="playername_leah.png" portrait="playerportrait_leah_b.png"
 		birthright="Taken for granted"
@@ -35,8 +35,8 @@
 		nameimage="playername_miriam.png" portrait="playerportrait_miriam.png"
 		birthright="Crashing waves" />
 	<player name="Miriam" bSkinParent="Miriam" skin="character_03_miriamb.png" costumeSuffix="miriam_b" skinColor="5" modcostume="6"
-		bonehearts="4" redhearts="4" card="55"
-		pocketActive="Polarity Shift (Spiritual Wound)"
+		bonehearts="4" redhearts="4" card="55" healthtype="4"
+		pocketActive="Polarity Shift"
 		nameimage="playername_miriam.png" portrait="playerportrait_miriam_b.png"
 		birthright="Death field"
 		achievement="The Condemned"	/>

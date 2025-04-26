@@ -4,12 +4,12 @@ local POLARITY_SHIFT = {}
 
 Furtherance.Item.POLARITY_SHIFT = POLARITY_SHIFT
 
-POLARITY_SHIFT.ID_1 = Isaac.GetItemIdByName("Polarity Shift (Spiritual Wound)")
-POLARITY_SHIFT.ID_2 = Isaac.GetItemIdByName("Polarity Shift (Chain Lightning)")
+POLARITY_SHIFT.ID_1 = Isaac.GetItemIdByName("Polarity Shift")
+POLARITY_SHIFT.ID_2 = Isaac.GetItemIdByName(" Polarity Shift")
 POLARITY_SHIFT.SFX = Isaac.GetSoundIdByName("Polarity Shift Use")
 
 ---@param player EntityPlayer
-function POLARITY_SHIFT:ChainLightningActive(player)
+function POLARITY_SHIFT:IsChainLightningActive(player)
 	return player:GetActiveItem(ActiveSlot.SLOT_POCKET) == POLARITY_SHIFT.ID_2
 end
 
@@ -36,7 +36,7 @@ Mod:AddCallback(ModCallbacks.MC_USE_ITEM, POLARITY_SHIFT.OnSWUse, POLARITY_SHIFT
 
 ---@param player EntityPlayer
 function POLARITY_SHIFT:DrainChainLightning(player)
-	if POLARITY_SHIFT:ChainLightningActive(player) then
+	if POLARITY_SHIFT:IsChainLightningActive(player) then
 		local charge = player:GetActiveCharge(ActiveSlot.SLOT_POCKET)
 		if charge > 0 then
 			player:SetActiveCharge(charge - 1, ActiveSlot.SLOT_POCKET)
@@ -44,6 +44,12 @@ function POLARITY_SHIFT:DrainChainLightning(player)
 		if player:GetActiveCharge(ActiveSlot.SLOT_POCKET) == 0 then
 			player:RemoveCollectible(POLARITY_SHIFT.ID_2, true, ActiveSlot.SLOT_POCKET)
 			player:SetPocketActiveItem(POLARITY_SHIFT.ID_1, ActiveSlot.SLOT_POCKET)
+			if player:GetFireDirection() ~= Direction.NO_DIRECTION then
+				Mod.SFXMan:Stop(Mod.Item.SPIRITUAL_WOUND.SFX_CHAIN_LIGHTNING_START)
+				Mod.SFXMan:Stop(Mod.Item.SPIRITUAL_WOUND.SFX_CHAIN_LIGHTNING_LOOP)
+				Mod.SFXMan:Play(Mod.Item.SPIRITUAL_WOUND:GetAttackInitSound(player))
+				Mod.SFXMan:Play(Mod.Item.SPIRITUAL_WOUND:GetAttackLoopSound(player))
+			end
 		end
 	end
 end

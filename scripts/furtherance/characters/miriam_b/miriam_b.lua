@@ -1,9 +1,26 @@
+local sin = math.sin
+local floor = math.floor
 local Mod = Furtherance
 
 local MIRIAM_B = {}
 
 Furtherance.Character.MIRIAM_B = MIRIAM_B
 
+MIRIAM_B.HEALTH_DRAIN_RATE = 30 * 5
+MIRIAM_B.BASE_HEAL_DAMAGE_THRESHOLD = 12
+MIRIAM_B.ADD_SCALING_DAMAGE_THRESHOLD = 4
+
+MIRIAM_B.FEAR_BASE_RADIUS = 62.5
+MIRIAM_B.FEAR_BASE_SCALE = 0.75
+MIRIAM_B.FEAR_DURATION = 2
+MIRIAM_B.FEAR_SCALE_PER_HEART = 0.05
+
+local heartHUD = Sprite(Mod:GetHealthPath(), true)
+heartHUD:SetFrame("RedHeartFull", 0)
+
+function MIRIAM_B:GetHealDamageThreshold()
+	return MIRIAM_B.BASE_HEAL_DAMAGE_THRESHOLD + MIRIAM_B.ADD_SCALING_DAMAGE_THRESHOLD * Mod.Level():GetAbsoluteStage()
+end
 
 ---@param player EntityPlayer
 function MIRIAM_B:IsMiriamB(player)
@@ -18,11 +35,122 @@ end
 ---@param player EntityPlayer
 function MIRIAM_B:OnPlayerInit(player)
 	if MIRIAM_B:IsMiriamB(player) then
-		player:AddInnateCollectible(Mod.Item.SPIRITUAL_WOUND.ID)
+		if not player:HasCollectible(Mod.Item.SPIRITUAL_WOUND.ID) then
+			player:AddInnateCollectible(Mod.Item.SPIRITUAL_WOUND.ID)
+		end
+		local deathAura = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.HALO, 3, player.Position, Vector.Zero, player):ToEffect()
+		---@cast deathAura EntityEffect
+		deathAura.RenderZOffset = -1000
+		deathAura.Parent = player
+		deathAura:FollowParent(player)
+		deathAura:AddEntityFlags(EntityFlag.FLAG_PERSISTENT | EntityFlag.FLAG_DONT_OVERWRITE)
+		Mod:GetData(deathAura).MiriamBFearAura = true
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, MIRIAM_B.OnPlayerInit, PlayerVariant.PLAYER)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, MIRIAM_B.OnPlayerInit)
+
+---@param player EntityPlayer
+function MIRIAM_B:HealthDrain(player)
+	local drainRate = MIRIAM_B.HEALTH_DRAIN_RATE
+	if MIRIAM_B:MiriamBHasBirthright(player) then
+		drainRate = drainRate * 2
+	end
+	if player.FrameCount > 0 and player.FrameCount % drainRate == 0 and player:GetHearts() > 0 then
+		player:AddHearts(-1)
+	end
+	local data = Mod:GetData(player)
+	local healed = false
+	local threshold = MIRIAM_B:GetHealDamageThreshold()
+	while (data.MiriamBLifeSteal or 0) >= threshold do
+		data.MiriamBLifeSteal = data.MiriamBLifeSteal - threshold
+		player:AddHearts(1)
+		healed = true
+	end
+	if healed then
+		Mod:SpawnNotifyEffect(player.Position, Furtherance.NotifySubtype.HEART)
+		Mod.SFXMan:Play(SoundEffect.SOUND_VAMP_GULP)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, MIRIAM_B.HealthDrain, Mod.PlayerType.MIRIAM_B)
+
+HudHelper.RegisterHUDElement({
+	Name = "Tainted Miriam Health Drain",
+	Priority = HudHelper.Priority.LOWEST,
+	Condition = function(player, playerHUDIndex, hudLayout)
+		return MIRIAM_B:IsMiriamB(player)
+			and not Mod:HasBitFlags(Mod.Level():GetCurses(), LevelCurse.CURSE_OF_THE_UNKNOWN)
+	end,
+	OnRender = function(player, playerHUDIndex, hudLayout, position, maxColumns)
+		local alpha = (sin(Mod.Game:GetFrameCount() * 4 * 1.5 * math.pi / 180) + 1) / 2
+		local playerHeartsHUD = Mod.HUD:GetPlayerHUD(player:GetPlayerIndex()):GetHearts()
+
+		for i, heart in ipairs(playerHeartsHUD) do
+			local offset = 0
+			local anim = heart:GetHeartAnim()
+			if (string.find(anim, "Bone")
+					or string.find(anim, "Red")
+					or string.find(anim, "Rotten"))
+				and not string.find(anim, "Empty")
+			then
+				local pos = Vector(position.X + ((i + offset - 1) % maxColumns) * 12,
+					position.Y + floor((i + offset - 1) / maxColumns) * 10)
+				heartHUD.Color = Color(0, 0, 0, alpha / 2 + 0.25, 0.5 - alpha / 2, 0, 0)
+				heartHUD:Render(pos)
+			end
+		end
+	end
+}, HudHelper.HUDType.HEALTH)
+
+---@param ent Entity
+---@param amount number
+---@param flags DamageFlag
+---@param source EntityRef
+function MIRIAM_B:HealDamageDealt(ent, amount, flags, source)
+	local player = Mod:TryGetPlayer(source.Entity, true)
+	if player
+		and MIRIAM_B:IsMiriamB(player)
+		and Mod:HasBitFlags(flags, DamageFlag.DAMAGE_LASER)
+		and ent:ToNPC()
+		and not Mod.Item.POLARITY_SHIFT:IsChainLightningActive(player)
+	then
+		local data = Mod:GetData(player)
+		data.MiriamBLifeSteal = (data.MiriamBLifeSteal or 0) + amount
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, MIRIAM_B.HealDamageDealt)
+
+---@param effect EntityEffect
+function MIRIAM_B:FearInRadius(effect)
+	if effect.SubType == 3
+		and Mod:GetData(effect).MiriamBFearAura
+	then
+		if not effect.Parent or not effect.Parent:Exists() then
+			effect:Remove()
+			return
+		end
+		local player = effect.Parent:ToPlayer()
+		if not player then return end
+		local source = EntityRef(player)
+		local size = MIRIAM_B.FEAR_BASE_SCALE + (player:GetHearts() * MIRIAM_B.FEAR_SCALE_PER_HEART)
+		effect.SpriteScale = Vector(size, size)
+		Mod:ForEachEnemy(function (npc)
+			npc:AddFear(source, 2)
+		end, true, effect.Position, MIRIAM_B.FEAR_BASE_RADIUS * size)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, MIRIAM_B.FearInRadius, EffectVariant.HALO)
+
+if Isaac.IsInGame() then
+	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.HALO, 3)) do
+		for _, _ in ipairs(Isaac.FindInRadius(ent.Position, 5, EntityPartition.PLAYER)) do
+			Mod:GetData(ent).MiriamBFearAura = true
+		end
+	end
+end
 
 Mod.Include("scripts.furtherance.characters.miriam_b.polarity_shift")
 Mod.Include("scripts.furtherance.characters.miriam_b.spiritual_wound")
