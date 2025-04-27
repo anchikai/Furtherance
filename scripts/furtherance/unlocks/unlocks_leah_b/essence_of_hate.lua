@@ -12,6 +12,7 @@ local function spawnExplodingHeart()
 		room:FindFreeTilePosition(Isaac.GetRandomPosition(), 0), Vector.Zero, nil):ToPickup()
 	---@cast heart EntityPickup
 	heart.Timeout = 32
+	heart.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
 	Mod:GetData(heart).EssenceOfHateHeart = true
 end
 
