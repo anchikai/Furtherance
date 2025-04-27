@@ -18,7 +18,7 @@
 	<entity anm2path="familiar_iron.anm2" tags="cansacrifice" boss="0" champion="0" collisionDamage="0" collisionInterval="7" collisionMass="3" collisionRadius="12" friction="1" id="3" name="Iron" numGridCollisionPoints="12" shadowSize="14" stageHP="0" variant="1605">
 		<gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
 	</entity>
-	<entity anm2path="familiar_lil_poofer.anm2" tags="cansacrifice" boss="0" champion="0" collisionDamage="0" collisionInterval="7" collisionMass="3" collisionRadius="5" friction="1" id="3" name="Lil Poofer" numGridCollisionPoints="12" shadowSize="14" stageHP="0" variant="1606">
+	<entity anm2path="familiar_lil_poofer.anm2" tags="cansacrifice" boss="0" champion="0" collisionDamage="0" collisionInterval="7" collisionMass="3" collisionRadius="5" friction="1" id="3" name="Lil Poofer" numGridCollisionPoints="12" shadowSize="7" stageHP="0" variant="1606" customtags="familiarblockprojectiles">
 		<gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
 	</entity>
 	<entity anm2path="familiar_love_teller_baby.anm2" boss="0" champion="0" collisionDamage="0" collisionMass="5" collisionRadius="7" friction="1" id="3" name="Love Teller Baby" numGridCollisionPoints="40" shadowSize="10" stageHP="0" variant="1607">
