@@ -29,6 +29,43 @@ function SHATTERED_HEART:GetHeartDamage(pickup)
 	return baseDamage + (0.5 * Mod.Game:GetLevel():GetAbsoluteStage())
 end
 
+---@param pickup EntityPickup
+function SHATTERED_HEART:ExplodeHeart(pickup)
+	local damage = SHATTERED_HEART:GetHeartDamage(pickup)
+	local radius = pickup.Size * SHATTERED_HEART.EXPLOSION_MULT
+	for _, enemy in ipairs(Isaac.FindInRadius(pickup.Position, radius, EntityPartition.ENEMY)) do
+		if Mod:IsValidEnemyTarget(enemy) then
+			enemy:TakeDamage(damage, DamageFlag.DAMAGE_EXPLOSION | DamageFlag.DAMAGE_IGNORE_ARMOR, EntityRef(pickup),
+				0)
+		end
+	end
+	Mod.SFXMan:Play(SoundEffect.SOUND_EXPLOSION_WEAK)
+	pickup:GetSprite():SetFrame("Idle", 0)
+	local kColor = pickup:GetSprite():GetTexel(Vector(4, -7), Vector.Zero, 1, 0)
+	local color = Color(kColor.Red, kColor.Green, kColor.Blue, 1)
+	local posRange = radius / 2
+
+	for _ = 1, 5 do
+		local position = Vector(Mod:RandomNum(-posRange, posRange), Mod:RandomNum(-posRange, posRange))
+		position = position + pickup.Position
+		local explosion = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BLOOD_EXPLOSION, 0, position,
+			Vector.Zero, pickup)
+		local eSprite = explosion:GetSprite()
+		eSprite:ReplaceSpritesheet(0, "gfx/effects/shattered_heart_explosion.png", true)
+		explosion.Color = color
+
+		local creep = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_RED, 0, position,
+			Vector.Zero, pickup)
+		local cSprite = creep:GetSprite()
+		cSprite:ReplaceSpritesheet(0, "gfx/effects/shattered_heart_bloodpool.png", true)
+		creep.Color = color
+		creep.SpriteScale = Vector(2.5, 2.5)
+		creep:Update()
+	end
+	pickup:BloodExplode()
+	pickup:Remove()
+end
+
 function SHATTERED_HEART:OnUse()
 	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART)) do
 		local pickup = ent:ToPickup()
@@ -38,39 +75,7 @@ function SHATTERED_HEART:OnUse()
 		if result then
 			goto skipHeart
 		end
-		local damage = SHATTERED_HEART:GetHeartDamage(pickup)
-		local radius = pickup.Size * SHATTERED_HEART.EXPLOSION_MULT
-		for _, enemy in ipairs(Isaac.FindInRadius(pickup.Position, radius, EntityPartition.ENEMY)) do
-			if Mod:IsValidEnemyTarget(enemy) then
-				enemy:TakeDamage(damage, DamageFlag.DAMAGE_EXPLOSION | DamageFlag.DAMAGE_IGNORE_ARMOR, EntityRef(pickup),
-					0)
-			end
-		end
-		Mod.SFXMan:Play(SoundEffect.SOUND_EXPLOSION_WEAK)
-		pickup:GetSprite():SetFrame("Idle", 0)
-		local kColor = pickup:GetSprite():GetTexel(Vector(2, -5), Vector.Zero, 1, 0)
-		local color = Color(kColor.Red, kColor.Green, kColor.Blue, kColor.Alpha)
-		local posRange = radius / 2
-
-		for _ = 1, 5 do
-			local position = Vector(Mod:RandomNum(-posRange, posRange), Mod:RandomNum(-posRange, posRange))
-			position = position + pickup.Position
-			local explosion = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BLOOD_EXPLOSION, 0, position,
-				Vector.Zero, pickup)
-			local eSprite = explosion:GetSprite()
-			eSprite:ReplaceSpritesheet(0, "gfx/effects/shattered_heart_explosion.png", true)
-			explosion.Color = color
-
-			local creep = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_RED, 0, position,
-				Vector.Zero, pickup)
-			local cSprite = creep:GetSprite()
-			cSprite:ReplaceSpritesheet(0, "gfx/effects/shattered_heart_bloodpool.png", true)
-			creep.Color = color
-			creep.SpriteScale = Vector(2.5, 2.5)
-			creep:Update()
-		end
-		pickup:BloodExplode()
-		pickup:Remove()
+		SHATTERED_HEART:ExplodeHeart(pickup)
 		::skipHeart::
 	end
 	return true
