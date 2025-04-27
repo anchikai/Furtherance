@@ -198,7 +198,7 @@ end
 ---@param varData integer
 function EPITAPH:UpdateSprite(gridEnt, varData)
 	local sprite = gridEnt:GetSprite()
-	sprite:Load("gfx/grid_epitaph_tombstone.anm2")
+	sprite:Load("gfx/grid/grid_epitaph_tombstone.anm2")
 	local anim = "Normal"
 	if varData > 0 and varData <= 2 then
 		anim = "Damaged" .. varData

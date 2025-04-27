@@ -1,0 +1,42 @@
+<AnimatedActor>
+	<Info CreatedBy="robot" CreatedOn="4/27/2025 6:48:35 PM" Version="124" Fps="30"/>
+	<Content>
+		<Spritesheets>
+			<Spritesheet Path="pillar_bastet.png" Id="0"/>
+			<Spritesheet Path="..\effects\censer halo.png" Id="1"/>
+		</Spritesheets>
+		<Layers>
+			<Layer Name="layer0" Id="0" SpritesheetId="0"/>
+			<Layer Name="top" Id="1" SpritesheetId="0"/>
+			<Layer Name="halo" Id="2" SpritesheetId="1"/>
+		</Layers>
+		<Nulls>
+			<Null Name="*0" Id="0" ShowRect="false"/>
+		</Nulls>
+		<Events/>
+	</Content>
+	<Animations DefaultAnimation="pillar">
+		<Animation Name="pillar" FrameNum="2" Loop="false">
+			<RootAnimation>
+				<Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="2" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
+			</RootAnimation>
+			<LayerAnimations>
+				<LayerAnimation LayerId="2" Visible="true">
+					<Frame XPosition="0" YPosition="0" XPivot="112" YPivot="112" XCrop="0" YCrop="0" Width="224" Height="224" XScale="80" YScale="80" Delay="2" Visible="true" RedTint="0" GreenTint="0" BlueTint="0" AlphaTint="64" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
+				</LayerAnimation>
+				<LayerAnimation LayerId="0" Visible="true">
+					<Frame XPosition="-16" YPosition="-17" XPivot="0" YPivot="-10" XCrop="0" YCrop="42" Width="32" Height="22" XScale="100" YScale="100" Delay="2" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
+				</LayerAnimation>
+				<LayerAnimation LayerId="1" Visible="true">
+					<Frame XPosition="-16" YPosition="-17" XPivot="0" YPivot="32" XCrop="0" YCrop="0" Width="32" Height="42" XScale="100" YScale="100" Delay="2" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
+				</LayerAnimation>
+			</LayerAnimations>
+			<NullAnimations>
+				<NullAnimation NullId="0" Visible="true">
+					<Frame XPosition="0" YPosition="-11" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
+				</NullAnimation>
+			</NullAnimations>
+			<Triggers/>
+		</Animation>
+	</Animations>
+</AnimatedActor>
