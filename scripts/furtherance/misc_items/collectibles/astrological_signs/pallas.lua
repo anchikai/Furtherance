@@ -17,10 +17,10 @@ function PALLAS:GetPallas(player, flag)
 		if flag == CacheFlag.CACHE_TEARFLAG then
 			player.TearFlags = player.TearFlags | TearFlags.TEAR_HYDROBOUNCE | TearFlags.TEAR_POP
 		end
-		if (player and player:HasCollectible(CollectibleType.COLLECTIBLE_FLAT_STONE)) then
-			if flag == CacheFlag.CACHE_DAMAGE then
-				player.Damage = player.Damage * PALLAS.FLAT_STONE_DAMAGE_BONUS
-			end
+		if (player and player:HasCollectible(CollectibleType.COLLECTIBLE_FLAT_STONE))
+			and flag == CacheFlag.CACHE_DAMAGE
+		then
+			player.Damage = player.Damage * PALLAS.FLAT_STONE_DAMAGE_BONUS
 		end
 	end
 end

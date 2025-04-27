@@ -19,11 +19,11 @@
 	<passive id="11" name="Ophiuchus?" description="The dream that holds together" gfx="ophiuchus.png" cache="tearflag damage firedelay" soulhearts="2" quality="2" craftquality="2" tags="stars tearsup offensive" />
 	<passive id="12" name="Chiron?" description="The wisest and justest" gfx="chiron.png" cache="speed" quality="3" craftquality="3" tags="syringe book stars offensive" />
 	<passive id="13" name="Juno?" description="Ruler of Everything" gfx="juno.png" soulhearts="4" quality="4" craftquality="4" tags="stars offensive" />
-	<passive id="14" name="Pallas?" description="Weathered by time" gfx="pallas.png" cache="tearflag" quality="3" craftquality="3" tags="stars offensive" />
-	<passive id="15" name="Ceres?" description="It shimmers with life..." gfx="ceres.png" cache="tearflag damage" quality="4" craftquality="4" tags="stars offensive" />
-	<passive id="16" name="Vesta?" description="Faintly visible to the naked eye" gfx="vesta.png" cache="tearflag damage tearcolor" quality="3" craftquality="3" tags="stars offensive" />
+	<passive id="14" name="Pallas?" description="Weathered by time" gfx="pallas.png" cache="tearflag damage" quality="3" craftquality="3" tags="stars offensive" />
+	<passive id="15" name="Ceres?" description="It shimmers with life..." gfx="ceres.png" cache="damage" quality="4" craftquality="4" tags="stars offensive" />
+	<passive id="16" name="Vesta?" description="Faintly visible to the naked eye" gfx="vesta.png" cache="tearflag damage" quality="3" craftquality="3" tags="stars offensive" />
 
-	<!-- New -->
+	<!-- Furtherance -->
 	<!-- Passive Items -->
 	<passive id="17" name="Tech IX" description="Experimental laser ring tears" gfx="tech_ix.png" cache="firedelay weapon tearcolor" quality="3" craftquality="3" tags="tech offensive summonable" />
 	<passive id="18" name="Leaking Tank" description="I'm leaking?!" gfx="leaking_tank.png" quality="0" craftquality="0" tags="summonable" /> <!-- Concept by SybilScribble! -->

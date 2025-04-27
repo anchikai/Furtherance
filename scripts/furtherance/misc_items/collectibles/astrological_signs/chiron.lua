@@ -58,7 +58,7 @@ function CHIRON:GetOffensiveBooks()
 end
 
 ---@param player EntityPlayer
-function CHIRON:BossBook(player) -- Roll a random book effect
+function CHIRON:BossBook(player)
 	local books = CHIRON:GetOffensiveBooks()
 	if #books == 0 then return end
 	local rng = player:GetCollectibleRNG(CHIRON.ID)

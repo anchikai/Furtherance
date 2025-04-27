@@ -1,3 +1,5 @@
+local min = math.min
+local SEL = StatusEffectLibrary
 local Mod = Furtherance
 
 local CERES = {}
@@ -6,99 +8,61 @@ Furtherance.Item.CERES = CERES
 
 CERES.ID = Isaac.GetItemIdByName("Ceres?")
 
---[[
-local game = Game()
-local rng = RNG()
+CERES.CREEP_DURATION_ON_HIT = 90
 
-function Mod:GetCeres(player, flag)
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_CERES) then
-		if flag == CacheFlag.CACHE_DAMAGE then
-			player.Damage = player.Damage + 0.5
+CERES.MODIFIER = Mod.TearModifier.New({
+	Name = "Ceres",
+	Items = {CERES.ID},
+	MinLuck = 0,
+	MaxLuck = 9,
+	MinChance = 0.05,
+	MaxChance = 0.5,
+	Color = Color(0, 0.75, 0),
+	LaserColor = Color(1, 1, 1, 1, 0, 0, 0, 1, 4, 1, 1)
+})
+
+local identifier = "FR_CERES"
+SEL.RegisterStatusEffect(identifier, nil, Color(0, 0.75, 0, 1, 0, 0, 0), nil, true)
+CERES.STATUS_CERES = SEL.StatusFlag[identifier]
+
+function CERES.MODIFIER:PostNpcHit(hitter, npc)
+	local player = Mod:TryGetPlayer(hitter)
+	if player then
+		SEL:AddStatusEffect(npc, CERES.STATUS_CERES, CERES.CREEP_DURATION_ON_HIT, EntityRef(player))
+	end
+end
+
+function CERES:GetCeres(player, flag)
+	if player:HasCollectible(CERES.ID) then
+		player.Damage = player.Damage + 0.5
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, CERES.GetCeres, CacheFlag.CACHE_DAMAGE)
+
+---@param npc EntityNPC
+function CERES:OnCeresStatusUpdate(npc)
+	local statusData = SEL:GetStatusEffectData(npc, CERES.STATUS_CERES)
+	---@cast statusData StatusEffectData
+	if statusData.Countdown % 5 == 0 then
+		local creep = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_GREEN, 0, npc.Position,
+			Vector.Zero, statusData.Source.Entity):ToEffect()
+		---@cast creep EntityEffect
+		creep.Timeout = 60
+		Mod:GetData(creep).CeresCreepOwner = npc
+	end
+end
+
+SEL.Callbacks.AddCallback(StatusEffectLibrary.Callbacks.ID.ENTITY_STATUS_EFFECT_UPDATE, CERES.OnCeresStatusUpdate, CERES.STATUS_CERES)
+
+---@param source EntityRef
+function CERES:PreventCreepDamage(ent, amount, flags, source)
+	if source.Entity and source.Entity:ToEffect() and source.Variant == EffectVariant.PLAYER_CREEP_GREEN then
+		local data = Mod:TryGetData(source.Entity)
+		if data and data.CeresCreepOwner and GetPtrHash(data.CeresCreepOwner) == GetPtrHash(ent) then
+			return false
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, Mod.GetCeres)
-
-local function clamp(value, min, max)
-	return math.min(math.max(value, min), max)
-end
-
-function Mod:InitCeresTear(tear) -- Replaces default tear to the "Seed" tear
-	if tear.SpawnerType == EntityType.ENTITY_PLAYER and tear.Parent then
-		local player = tear.Parent:ToPlayer()
-		if player:HasCollectible(CollectibleType.COLLECTIBLE_CERES) then
-			-- min is 5%, max is 50%
-			local chance = clamp(player.Luck, 0, 9) * 0.05 + 0.05
-			if player:HasTrinket(TrinketType.TRINKET_TEARDROP_CHARM) then
-				chance = 1 - (1 - chance) ^ 2
-			end
-
-			if rng:RandomFloat() <= chance then
-				local data = Mod:GetData(tear)
-				data.ceres = true
-				tear.Color = Color(0, 0.75, 0, 1, 0, 0, 0)
-			end
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, Mod.InitCeresTear)
-
-function Mod:CeresTearEffect(tear, collider)
-	if tear.SpawnerType == EntityType.ENTITY_PLAYER and tear.Parent then
-		local data = Mod:GetData(tear)
-		if data.ceres and (collider:IsEnemy() and collider:IsVulnerableEnemy() and collider:IsActiveEnemy()) then
-			for i = 0, game:GetNumPlayers() - 1 do
-				local player = Isaac.GetPlayer(i)
-				local pdata = Mod:GetData(player)
-
-				if pdata.CeresCreep == nil or 0 then
-					pdata.CeresCreep = 90
-					collider:SetColor(Color(0, 0.75, 0, 1, 0, 0, 0), 150, 1, true, false) -- Sets enemy color to green
-				end
-			end
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_PRE_TEAR_COLLISION, Mod.CeresTearEffect)
-Mod:AddCallback(ModCallbacks.MC_PRE_KNIFE_COLLISION, Mod.CeresTearEffect)
-
-function Mod:CeresCreep(player)
-	local pdata = Mod:GetData(player)
-	if pdata.CeresCreep ~= nil and pdata.CeresCreep > 0 then
-		pdata.CeresCreep = pdata.CeresCreep - 1
-		if game:GetFrameCount() % 5 == 0 then
-			local creep = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_GREEN, 0, player.Position,
-				Vector.Zero, player)
-			creep:GetData().IsCeresCreep = true
-		end
-		if pdata.CeresCreep <= 0 then
-			pdata.CeresCreep = 0
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, Mod.CeresCreep)
-
-local function isValidTarget(ent)
-	return ent:ToNPC() and ent:IsActiveEnemy(false) and not ent:HasEntityFlags(EntityFlag.FLAG_CHARM) and
-	not ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
-end
-
----@param effect EntityEffect
-function Mod:TouchCreep(effect) -- If an enemy walks over the creep
-	local player = effect.SpawnerEntity and effect.SpawnerEntity:ToPlayer()
-	if not player or not effect:GetData().IsCeresCreep then return end
-	for _, ent in ipairs(Isaac.FindInRadius(effect.Position, effect.Size, EntityPartition.ENEMY)) do
-		if isValidTarget(ent) and not ent:GetData().CeresTentacle then
-			--worm friend
-			ent:AddSlowing(EntityRef(player), 30, 0.5, Color(0.75, 0.75, 0.75, 1, 0, 0, 0))
-			ent:GetData().CeresTentacle = true
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, Mod.TouchCreep, EffectVariant.PLAYER_CREEP_GREEN)
- ]]
+Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, CERES.PreventCreepDamage)
