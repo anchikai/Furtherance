@@ -47,5 +47,5 @@
 		costume="52" achievement="405"
 		nameimage="PlayerName_02x_Jacob_Esau.png"
 		portrait="PlayerPortrait_Jacob.png" skinColor="-1"
-		birthright="#JACOB_BIRTHRIGHT" />
+		birthright="#JACOB_BIRTHRIGHT" costumeSuffix="fr_fake_jacob" />
 </players>

@@ -139,3 +139,22 @@ function Furtherance:ForEachDoor(func)
 		end
 	end
 end
+
+---@param func fun(gridEnt: GridEntity, gridIndex: integer)
+---@param gridType? GridEntityType
+---@param gridVariant? integer
+function Furtherance:ForEachGrid(func, gridType, gridVariant)
+	local room = Furtherance.Room()
+	for i = 0, room:GetGridSize() do
+		local gridEntiy = room:GetGridEntity(i)
+		if gridEntiy
+			and (not gridType or gridEntiy:GetType() == gridType)
+			and (not gridVariant or gridEntiy:GetVariant() == gridVariant)
+		then
+			local result = func(gridEntiy, i)
+			if result then
+				return true
+			end
+		end
+	end
+end

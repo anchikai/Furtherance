@@ -15,6 +15,7 @@ function BINDS_OF_DEVOTION:AddJacob(player)
 	Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, -1, jacob.Position, jacob.Velocity, jacob)
 	jacob.Position = player.Position
 	jacob:PlayExtraAnimation("Appear")
+	jacob:AddCostume(Mod.ItemConfig:GetCollectible(BINDS_OF_DEVOTION.ID))
 	Mod.HUD:AssignPlayerHUDs()
 
 	return jacob

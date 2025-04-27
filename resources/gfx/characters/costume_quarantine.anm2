@@ -1,11 +1,11 @@
 <AnimatedActor>
-	<Info CreatedBy="robot" CreatedOn="1/29/2022 3:28:29 AM" Version="112" Fps="30"/>
+	<Info CreatedBy="robot" CreatedOn="4/27/2025 8:40:01 AM" Version="104" Fps="30"/>
 	<Content>
 		<Spritesheets>
-			<Spritesheet Path="costumes\costume_grass.png" Id="0"/>
+			<Spritesheet Path="costumes\costume_quarantine.png" Id="0"/>
 		</Spritesheets>
 		<Layers>
-			<Layer Name="head" Id="0" SpritesheetId="0"/>
+			<Layer Name="head2" Id="0" SpritesheetId="0"/>
 		</Layers>
 		<Nulls/>
 		<Events/>

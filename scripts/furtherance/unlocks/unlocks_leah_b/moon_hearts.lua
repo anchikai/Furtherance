@@ -144,44 +144,44 @@ Mod:AddPriorityCallback(
 function MOON_HEART:SpawnLunarLight()
 	local roomDesc = Mod.Level():GetCurrentRoomDesc()
 	if roomDesc.Data.Type == RoomType.ROOM_SECRET or roomDesc.Data.Type == RoomType.ROOM_SUPERSECRET then
-		local roomSave = Mod:RoomSave()
-		local floorSave = Mod:FloorSave()
+		local room_save = Mod:RoomSave()
+		local floor_save = Mod:FloorSave()
 		local allMoonHearts = 0
 		Mod:ForEachPlayer(function(player)
 			allMoonHearts = allMoonHearts + math.ceil(MOON_HEART:GetMoonHearts(player) / 2)
 		end)
 		Mod:DebugLog("Total moon hearts: ".. allMoonHearts)
-		Mod:DebugLog("Activated moonlights: ".. floorSave.ActivatedMoonlights)
+		Mod:DebugLog("Activated moonlights: ".. floor_save.ActivatedMoonlights)
 		
 		local room = Mod.Room()
-		if not roomSave.SpawnMoonlight and room:IsFirstVisit() then
+		if not room_save.SpawnMoonlight and room:IsFirstVisit() then
 			Mod:DebugLog("Init room moonlight data")
-			roomSave.SpawnMoonlight = 0
+			room_save.SpawnMoonlight = 0
 			if PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_LUNA) then
-				roomSave.SpawnMoonlight = Mod:AddBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_LUNA)
+				room_save.SpawnMoonlight = Mod:AddBitFlags(room_save.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_LUNA)
 				Mod:DebugLog("Adding luna flag")
 			end
 		end
-		if Mod:HasAnyBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_ACTIVATED | MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_LUNA) then
+		if Mod:HasAnyBitFlags(room_save.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_ACTIVATED | MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_LUNA) then
 			Mod:DebugLog("Moonlight was activated")
 			return
 		end
-		if (allMoonHearts - floorSave.ActivatedMoonlights) > 0 then
-			roomSave.SpawnMoonlight = Mod:AddBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_SPAWN)
+		if (allMoonHearts - floor_save.ActivatedMoonlights) > 0 then
+			room_save.SpawnMoonlight = Mod:AddBitFlags(room_save.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_SPAWN)
 			Mod:DebugLog("Adding flag to spawn in a room")
 		else
-			roomSave.SpawnMoonlight = Mod:RemoveBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_SPAWN)
+			room_save.SpawnMoonlight = Mod:RemoveBitFlags(room_save.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_SPAWN)
 			Mod:DebugLog("Removing flag to spawn in a room")
 		end
 		
-		Mod:DebugLog("Moonlight can be spawned?: "..tostring(Mod:HasBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_SPAWN)))
+		Mod:DebugLog("Moonlight can be spawned?: "..tostring(Mod:HasBitFlags(room_save.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_SPAWN)))
 		Mod:ForEachPlayer(function(player)
 			if player.FrameCount > 0 then
 				if #Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.HEAVEN_LIGHT_DOOR, 1) > 0 then
 					Mod:DebugLog("Moonlight already exists")
 					return true
 				end
-				if Mod:HasBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_SPAWN)
+				if Mod:HasBitFlags(room_save.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_SPAWN)
 				then
 					Isaac.Spawn(
 						EntityType.ENTITY_EFFECT,
