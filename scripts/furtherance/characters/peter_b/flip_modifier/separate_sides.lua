@@ -130,10 +130,10 @@ Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_GRID_COLLISION, CallbackPriority
 function SEPARATE_SIDES:HandleDamage(ent, amount, flags, source, countdown)
 	if source.Entity then
 		--If they shouldn't collide, ignore all sources of damage from that side as well
-		--[[ local shouldNotCollide = SEPARATE_SIDES:CollisionMode(ent, source.Entity)
+		local shouldNotCollide = SEPARATE_SIDES:CollisionMode(ent, source.Entity)
 		if shouldNotCollide then
 			return false
-		end ]]
+		end
 	end
 end
 
