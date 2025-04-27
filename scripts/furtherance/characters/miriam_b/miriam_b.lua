@@ -51,14 +51,7 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, MIRIAM_B.OnPlayerInit)
 
 ---@param player EntityPlayer
-function MIRIAM_B:HealthDrain(player)
-	local drainRate = MIRIAM_B.HEALTH_DRAIN_RATE
-	if MIRIAM_B:MiriamBHasBirthright(player) then
-		drainRate = drainRate * 2
-	end
-	if player.FrameCount > 0 and player.FrameCount % drainRate == 0 and player:GetHearts() > 0 then
-		player:AddHearts(-1)
-	end
+function MIRIAM_B:TryHealFromDamageDealt(player)
 	local data = Mod:GetData(player)
 	local healed = false
 	local threshold = MIRIAM_B:GetHealDamageThreshold()
@@ -73,7 +66,35 @@ function MIRIAM_B:HealthDrain(player)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, MIRIAM_B.HealthDrain, Mod.PlayerType.MIRIAM_B)
+---@param player EntityPlayer
+function MIRIAM_B:HealthDrain(player)
+	if not Mod.Item.POLARITY_SHIFT:IsChainLightningActive(player) then return end
+	if player:GetHearts() == 0 then
+		Mod.Item.SPIRITUAL_WOUND:TryStopAttackSFX(player)
+		player:UseActiveItem(Mod.Item.POLARITY_SHIFT.ID_2, UseFlag.USE_NOANIM, ActiveSlot.SLOT_POCKET)
+		return
+	end
+	local drainRate = MIRIAM_B.HEALTH_DRAIN_RATE
+	if MIRIAM_B:MiriamBHasBirthright(player) then
+		drainRate = drainRate * 2
+	end
+	local data = Mod:GetData(player)
+
+	if data and data.FrameStartedPolarityShift then
+		local frameReference = (player.FrameCount - data.FrameStartedPolarityShift)
+		if frameReference > 0 and frameReference % drainRate == 0 and player:GetHearts() > 0 then
+			player:AddHearts(-1)
+		end
+	end
+end
+
+---@param player EntityPlayer
+function MIRIAM_B:OnPeffectUpdate(player)
+	MIRIAM_B:HealthDrain(player)
+	MIRIAM_B:TryHealFromDamageDealt(player)
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, MIRIAM_B.OnPeffectUpdate, Mod.PlayerType.MIRIAM_B)
 
 HudHelper.RegisterHUDElement({
 	Name = "Tainted Miriam Health Drain",
@@ -81,6 +102,7 @@ HudHelper.RegisterHUDElement({
 	Condition = function(player, playerHUDIndex, hudLayout)
 		return MIRIAM_B:IsMiriamB(player)
 			and not Mod:HasBitFlags(Mod.Level():GetCurses(), LevelCurse.CURSE_OF_THE_UNKNOWN)
+			and Mod.Item.POLARITY_SHIFT:IsChainLightningActive(player)
 	end,
 	OnRender = function(player, playerHUDIndex, hudLayout, position, maxColumns)
 		local alpha = (sin(Mod.Game:GetFrameCount() * 4 * 1.5 * math.pi / 180) + 1) / 2
@@ -107,7 +129,7 @@ HudHelper.RegisterHUDElement({
 ---@param amount number
 ---@param flags DamageFlag
 ---@param source EntityRef
-function MIRIAM_B:HealDamageDealt(ent, amount, flags, source)
+function MIRIAM_B:AddToDamageCounter(ent, amount, flags, source)
 	local player = Mod:TryGetPlayer(source.Entity, true)
 	if player
 		and MIRIAM_B:IsMiriamB(player)
@@ -120,7 +142,7 @@ function MIRIAM_B:HealDamageDealt(ent, amount, flags, source)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, MIRIAM_B.HealDamageDealt)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, MIRIAM_B.AddToDamageCounter)
 
 ---@param effect EntityEffect
 function MIRIAM_B:FearInRadius(effect)

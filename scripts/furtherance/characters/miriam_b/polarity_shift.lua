@@ -20,38 +20,23 @@ end
 ---@param slot ActiveSlot
 function POLARITY_SHIFT:OnSWUse(itemID, rng, player, useFlags, slot)
 	if slot == ActiveSlot.SLOT_POCKET then
-		Mod:DelayOneFrame(function()
+		if player:GetHearts() == 0 and itemID == POLARITY_SHIFT.ID_1 then
+			return
+		end
+		if itemID == POLARITY_SHIFT.ID_1 then
 			player:RemoveCollectible(itemID, true, slot)
 			player:SetPocketActiveItem(POLARITY_SHIFT.ID_2, slot)
-			player:FullCharge(ActiveSlot.SLOT_POCKET, true)
-			player:SetActiveCharge(player:GetActiveCharge(ActiveSlot.SLOT_POCKET) - 1, ActiveSlot.SLOT_POCKET)
-			player:AddCacheFlags(CacheFlag.CACHE_TEARCOLOR, true)
-		end)
+			Mod:GetData(player).FrameStartedPolarityShift = player.FrameCount
+		else
+			player:RemoveCollectible(itemID, true, ActiveSlot.SLOT_POCKET)
+			player:SetPocketActiveItem(POLARITY_SHIFT.ID_1, ActiveSlot.SLOT_POCKET)
+			Mod:GetData(player).FrameStartedPolarityShift = nil
+		end
+		player:AddCacheFlags(CacheFlag.CACHE_TEARCOLOR, true)
 		Mod.SFXMan:Play(POLARITY_SHIFT.SFX)
 		return true
 	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, POLARITY_SHIFT.OnSWUse, POLARITY_SHIFT.ID_1)
-
----@param player EntityPlayer
-function POLARITY_SHIFT:DrainChainLightning(player)
-	if POLARITY_SHIFT:IsChainLightningActive(player) then
-		local charge = player:GetActiveCharge(ActiveSlot.SLOT_POCKET)
-		if charge > 0 then
-			player:SetActiveCharge(charge - 1, ActiveSlot.SLOT_POCKET)
-		end
-		if player:GetActiveCharge(ActiveSlot.SLOT_POCKET) == 0 then
-			player:RemoveCollectible(POLARITY_SHIFT.ID_2, true, ActiveSlot.SLOT_POCKET)
-			player:SetPocketActiveItem(POLARITY_SHIFT.ID_1, ActiveSlot.SLOT_POCKET)
-			if player:GetFireDirection() ~= Direction.NO_DIRECTION then
-				Mod.SFXMan:Stop(Mod.Item.SPIRITUAL_WOUND.SFX_CHAIN_LIGHTNING_START)
-				Mod.SFXMan:Stop(Mod.Item.SPIRITUAL_WOUND.SFX_CHAIN_LIGHTNING_LOOP)
-				Mod.SFXMan:Play(Mod.Item.SPIRITUAL_WOUND:GetAttackInitSound(player))
-				Mod.SFXMan:Play(Mod.Item.SPIRITUAL_WOUND:GetAttackLoopSound(player))
-			end
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, POLARITY_SHIFT.DrainChainLightning, Mod.PlayerType.MIRIAM_B)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, POLARITY_SHIFT.OnSWUse, POLARITY_SHIFT.ID_2)

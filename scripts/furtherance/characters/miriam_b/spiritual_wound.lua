@@ -66,6 +66,31 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, SPIRITUAL_WOUND.SpiritualWoundCache)
 
+---Looks at the current attack SFX being played by the SW player and loops through the other players
+---
+---Will always stop the starting SFX, but will look to see if any players are currently firing their own appropriate looping SFX
+---to determine whether or not to stop the looping sound
+---@param player EntityPlayer
+function SPIRITUAL_WOUND:TryStopAttackSFX(player)
+	local loopSFX = SPIRITUAL_WOUND:GetAttackLoopSound(player)
+	local stopLoop = true
+	local someoneStillFiring = false
+	Mod:ForEachPlayer(function(_player)
+		if Mod:GetData(_player).FiringSpiritualWound
+			and GetPtrHash(player) ~= GetPtrHash(_player)
+			and loopSFX == SPIRITUAL_WOUND:GetAttackLoopSound(_player)
+		then
+			stopLoop = false
+			someoneStillFiring = true
+		end
+	end)
+	Mod.SFXMan:Stop(SPIRITUAL_WOUND:GetAttackInitSound(player))
+	if stopLoop then
+		Mod.SFXMan:Stop(loopSFX)
+	end
+	return someoneStillFiring
+end
+
 ---@param player EntityPlayer
 function SPIRITUAL_WOUND:HandleFiringSFX(player)
 	local weapon = player:GetWeapon(1)
@@ -86,28 +111,7 @@ function SPIRITUAL_WOUND:HandleFiringSFX(player)
 		end
 	elseif data.FiringSpiritualWound then
 		data.FiringSpiritualWound = false
-		local startSFX = SPIRITUAL_WOUND:GetAttackInitSound(player)
-		local loopSFX = SPIRITUAL_WOUND:GetAttackLoopSound(player)
-		local stopStart = true
-		local stopLoop = true
-		local someoneStillFiring = false
-		Mod:ForEachPlayer(function(_player)
-			if Mod:GetData(_player).FiringSpiritualWound then
-				if startSFX == SPIRITUAL_WOUND:GetAttackInitSound(_player) then
-					stopStart = false
-				elseif loopSFX == SPIRITUAL_WOUND:GetAttackLoopSound(_player) then
-					stopLoop = false
-				end
-				someoneStillFiring = true
-			end
-		end)
-		if stopStart then
-			Mod.SFXMan:Stop(SPIRITUAL_WOUND:GetAttackInitSound(player))
-		end
-		if stopLoop then
-			Mod.SFXMan:Stop(SPIRITUAL_WOUND:GetAttackLoopSound(player))
-		end
-		SPIRITUAL_WOUND.IS_FIRING = someoneStillFiring
+		SPIRITUAL_WOUND.IS_FIRING = SPIRITUAL_WOUND:TryStopAttackSFX(player)
 	end
 end
 
