@@ -9,8 +9,8 @@ Furtherance.Trinket.LEVIATHANS_TENDRIL = LEVIATHANS_TENDRIL
 LEVIATHANS_TENDRIL.ID = Isaac.GetTrinketIdByName("Leviathan's Tendril")
 
 -- 2Spooky radius
-LEVIATHANS_TENDRIL.FEAR_RADIUS = 90 ^ 2
-LEVIATHANS_TENDRIL.FEAR_CHANCE = 0.1
+LEVIATHANS_TENDRIL.FEAR_RADIUS = 80
+LEVIATHANS_TENDRIL.FEAR_CHANCE = 0.05
 LEVIATHANS_TENDRIL.FEAR_DURATION = 90
 LEVIATHANS_TENDRIL.REFLECT_CHANCE = 0.25
 LEVIATHANS_TENDRIL.LEVIATHAN_CHANCE_BUFF = 0.05
@@ -31,12 +31,15 @@ LEVIATHANS_TENDRIL.WORM_FRIEND_COLOR = wormFriendColor
 local function redirectProjectile(player, projectile, angleOffset)
 	-- redirect it in a direction away from the player
 	local delta = projectile.Position - player.Position
-	projectile.Velocity = delta:Rotated(angleOffset):Resized(projectile.Velocity:Length())
-
-	-- let it hit other enemies and stop homing
-	projectile:AddProjectileFlags(ProjectileFlags.HIT_ENEMIES)
-	projectile:ClearProjectileFlags(ProjectileFlags.SMART)
-	projectile.Target = nil
+	local tear = Isaac.Spawn(EntityType.ENTITY_TEAR, TearVariant.BLUE, 0,
+		projectile.Position, delta:Rotated(angleOffset):Resized(projectile.Velocity:Length() * 1.5), player):ToTear()
+	---@cast tear EntityTear
+	tear:AddTearFlags(TearFlags.TEAR_HOMING)
+	tear.Color = Color.TearHoming
+	tear.CollisionDamage = tear.CollisionDamage * projectile.CollisionDamage
+	tear.Scale = Mod:TearDamageToScale(tear)
+	tear:ResetSpriteScale(true)
+	projectile:Remove()
 end
 
 ---@param proj EntityProjectile

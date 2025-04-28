@@ -6,12 +6,15 @@ Furtherance.Rune.ESSENCE_OF_DROUGHT = ESSENCE_OF_DROUGHT
 
 ESSENCE_OF_DROUGHT.ID = Isaac.GetCardIdByName("Essence of Drought")
 
-function ESSENCE_OF_DROUGHT:OnUse()
+function ESSENCE_OF_DROUGHT:OnUse(_, player)
 	local room = Mod.Game:GetRoom()
 	room:StopRain()
+	local source = EntityRef(player)
 	Mod:ForEachEnemy(function(npc)
 		if not npc:IsBoss() then
 			npc:AddEntityFlags(EntityFlag.FLAG_BLEED_OUT | EntityFlag.FLAG_ICE)
+		else
+			npc:AddBleeding(source, 150)
 		end
 	end, true)
 end

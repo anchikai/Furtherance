@@ -137,5 +137,6 @@
 	<null name="polaris color" cache="damage shotspeed tearflag" persistent="true" />
 	<null name="soul of leah" persistent="true" />
 	<null name="backspace penalty" persistent="true" />
+	<null name="unlucky penny" persistent="true" cache="damage luck" />
 	<null name="soul of miriam" persistent="true" cooldown="1200" />
 </items>

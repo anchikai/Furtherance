@@ -731,7 +731,7 @@ EID_Collectibles = {
 			Name = "Cosmic Omnibus",
 			Description = {
 				"Teleports Isaac to a random unvisited special room on the floor",
-				"{{Planetarium}} If all special rooms on the floor have been visited, teleports Isaac to a new Planetarium room",
+				"{{Planetarium}} If all special rooms on the floor have been visited, teleports Isaac to an extra Planetarium room",
 				"Subsequent uses sends Isaac to a random special room on the floor"
 			}
 		},
@@ -2324,9 +2324,10 @@ local EID_Trinkets
 EID_Trinkets = {
 	[Trinket.ABYSSAL_PENNY.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Abyssal Penny",
 			Description = {
-				"PlaceholderDesc"
+				"Picking up a coin spawns a damaging creep, dealing 40 damage per second",
+				"Creep size and duration scales with the value of the coin"
 			}
 		},
 		ru = {
@@ -2344,9 +2345,10 @@ EID_Trinkets = {
 	},
 	[Trinket.ALABASTER_SCRAP.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Alabaster Scrap",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} {{Damage}} +0.5 Damage for every item that counts towards the {{Seraphim}} Seraphim transformation",
+				"Trinket does not grant progress to the transformation but is marked as such, granting +0.5 Damage by default"
 			}
 		},
 		ru = {
@@ -2364,9 +2366,10 @@ EID_Trinkets = {
 	},
 	[Trinket.ALMAGEST_SCRAP.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Almagest Scrap",
 			Description = {
-				"PlaceholderDesc"
+				"{{Planetarium}} Treasure Rooms are replaced with Planetariums",
+				"{{BrokenHeart}} Items inside grant broken hearts"
 			}
 		},
 		ru = {
@@ -2384,9 +2387,10 @@ EID_Trinkets = {
 	},
 	[Trinket.ALTRUISM.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Altruism",
 			Description = {
-				"PlaceholderDesc"
+				"25% chance to refund the price Isaac paid to a beggar",
+				"{{Demon Beggar}} Inflicts fake damage that doesn't remove any health"
 			}
 		},
 		ru = {
@@ -2404,9 +2408,9 @@ EID_Trinkets = {
 	},
 	[Trinket.BI_84.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "BI-84",
 			Description = {
-				"PlaceholderDesc"
+				"{{Collectible68}} 25% chance to grant a random Technology-related item for the room"
 			}
 		},
 		ru = {
@@ -2424,9 +2428,10 @@ EID_Trinkets = {
 	},
 	[Trinket.CRINGE.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Cringe",
 			Description = {
-				"PlaceholderDesc"
+				"{{Petrify}} Taking damage petrifies all enemies in the room for 1 second",
+				"Replaces Isaac's hurt sounds with the \"Bruh\" sound effect"
 			}
 		},
 		ru = {
@@ -2444,9 +2449,9 @@ EID_Trinkets = {
 	},
 	[Trinket.DUNGEON_KEY.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Dungeon Key",
 			Description = {
-				"PlaceholderDesc"
+				"Opens Challenge Room doors regardless of Isaac's health"
 			}
 		},
 		ru = {
@@ -2464,9 +2469,9 @@ EID_Trinkets = {
 	},
 	[Trinket.ESCAPE_PLAN.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Escape Plan",
 			Description = {
-				"PlaceholderDesc"
+				"Taking damage has a 10% chance to teleport Isaac to the starting room"
 			}
 		},
 		ru = {
@@ -2484,9 +2489,10 @@ EID_Trinkets = {
 	},
 	[Trinket.GLITCHED_PENNY.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Glitched Penny",
 			Description = {
-				"PlaceholderDesc"
+				"Picking up a coin has a 25% chance to use a random active item",
+				"{{Battery}} Only uses actives found in the {{TreasureRoom}} Treasure Room pool that have at least 1 charge"
 			}
 		},
 		ru = {
@@ -2504,9 +2510,10 @@ EID_Trinkets = {
 	},
 	[Trinket.GRASS.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Grass",
 			Description = {
-				"PlaceholderDesc"
+				"Replaces all prop decorations with grass",
+				"Walking over grass grants a {{Speed}} +0.05 Speed up for the room"
 			}
 		},
 		ru = {
@@ -2524,9 +2531,9 @@ EID_Trinkets = {
 	},
 	[Trinket.HAMMERHEAD_WORM.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Hammerhead Worm",
 			Description = {
-				"PlaceholderDesc"
+				"Isaac's tears are slightly randomized in damage, range, and shotspeed"
 			}
 		},
 		ru = {
@@ -2544,9 +2551,13 @@ EID_Trinkets = {
 	},
 	[Trinket.HOLY_HEART.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Holy Heart",
 			Description = {
-				"PlaceholderDesc"
+				"Picking up a heart has a chance to grant a {{Collectible313}} Holy Mantle shield depending on the type of heart",
+				"{{HalfSoulHeart}}: 5% chance",
+				"{{SoulHeart}}: 10% chance",
+				"{{BlackHeart}}: 10% chance",
+				"{{EternalHeart}}: 50% chance"
 			}
 		},
 		ru = {
@@ -2564,9 +2575,10 @@ EID_Trinkets = {
 	},
 	[Trinket.LEAHS_LOCK.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Leah's Lock",
 			Description = {
-				"PlaceholderDesc"
+				"25% chance to fire {{Charm}} Charm or {{Fear}} Fear tears",
+				"Not affected by luck"
 			}
 		},
 		ru = {
@@ -2583,10 +2595,23 @@ EID_Trinkets = {
 		}
 	},
 	[Trinket.LEVIATHANS_TENDRIL.ID] = {
+		_modifier = function(descObj, desc)
+			local player = FR_EID:ClosestPlayerTo(descObj.Entity)
+			if player:HasPlayerForm(PlayerForm.PLAYERFORM_EVIL_ANGEL) then
+				return desc
+			end
+			return ""
+		end,
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Leviathan's Tendril",
 			Description = {
-				"PlaceholderDesc"
+				"25% chance to deflect projectiles away from Isaac, gaining homing and increased velocity",
+				"{{Fear}} 5% chance to inflict fear when near enemies",
+				function(descObj)
+					return EID_Trinkets[Trinket.LEVIATHANS_TENDRIL.ID]._modifier(descObj,
+					"{{Leviathan}} Additional +5% chance to each effect"
+				)
+				end
 			}
 		},
 		ru = {
@@ -2604,9 +2629,9 @@ EID_Trinkets = {
 	},
 	[Trinket.NIL_NUM.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Nil Num",
 			Description = {
-				"PlaceholderDesc"
+				"2% chance to get destroyed and spawn a duplicate of one of Isaac's passive items in his inventory when hit"
 			}
 		},
 		ru = {
@@ -2624,9 +2649,9 @@ EID_Trinkets = {
 	},
 	[Trinket.PARASOL.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Parasol",
 			Description = {
-				"PlaceholderDesc"
+				"All of Isaac's familiars block projectiles"
 			}
 		},
 		ru = {
@@ -2644,9 +2669,9 @@ EID_Trinkets = {
 	},
 	[Trinket.REBOUND_WORM.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Rebound Worm",
 			Description = {
-				"PlaceholderDesc"
+				"Tears ricochet off of walls and grid entities, firing at the closest enemy in range"
 			}
 		},
 		ru = {
@@ -2664,9 +2689,9 @@ EID_Trinkets = {
 	},
 	[Trinket.SALINE_SPRAY.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Saline Spray",
 			Description = {
-				"PlaceholderDesc"
+				"{{Collectible596}} Chance to shoot freezing tears"
 			}
 		},
 		ru = {
@@ -2684,9 +2709,10 @@ EID_Trinkets = {
 	},
 	[Trinket.WORMWOOD_LEAF.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Wormwood Leaf",
 			Description = {
-				"PlaceholderDesc"
+				"10% chance to negate damage and turn Isaac into an invulnerable immobile statue for 2 seconds",
+				"Grants Isaac a half second of invulnerability afterwards"
 			}
 		},
 		ru = {
@@ -2741,9 +2767,9 @@ EID_Cards = {
 	[Mod.Card.ACE_OF_SHIELDS.ID] = {
 		_metadata = { 12, false },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Ace of Shields",
 			Description = {
-				"PlaceholderDesc"
+				"{{Battery}} Turns all pickups, chests and non-boss enemies into Micro Batteries"
 			}
 		},
 		ru = {
@@ -2762,9 +2788,9 @@ EID_Cards = {
 	[Mod.Card.CHARITY.ID] = {
 		_metadata = { 2, false },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "XXIV - Charity",
 			Description = {
-				"PlaceholderDesc"
+				"{{Collectible" .. Mod.Item.JAR_OF_MANNA.ID .. "}} Triggers 3 free uses of Jar of Manna"
 			}
 		},
 		ru = {
@@ -2783,9 +2809,9 @@ EID_Cards = {
 	[Mod.Card.FAITH.ID] = {
 		_metadata = { 2, false },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "XXV - Faith",
 			Description = {
-				"PlaceholderDesc"
+				"{{Confessional}} Spawns a Confessional"
 			}
 		},
 		ru = {
@@ -2804,9 +2830,10 @@ EID_Cards = {
 	[Mod.Card.GOLDEN_CARD.ID] = {
 		_metadata = { 12, false },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Golden Card",
 			Description = {
-				"PlaceholderDesc"
+				"Random card effect",
+				"50% chance to destroy itself with each use"
 			}
 		},
 		ru = {
@@ -2825,9 +2852,10 @@ EID_Cards = {
 	[Mod.Card.HOPE.ID] = {
 		_metadata = { 2, false },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "XXIII - Hope",
 			Description = {
-				"PlaceholderDesc"
+				"For the duration of the room, enemies have a 20% chance to drop a random pickup upon death",
+				"Dropped pickups cannot be collectibles, chests, or trinkets"
 			}
 		},
 		ru = {
@@ -2846,9 +2874,9 @@ EID_Cards = {
 	[Mod.Card.KEY_CARD.ID] = {
 		_metadata = { 6, false },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Key Card",
 			Description = {
-				"PlaceholderDesc"
+				"{{LadderRoom}} Spawns a crawlspace"
 			}
 		},
 		ru = {
@@ -2867,9 +2895,9 @@ EID_Cards = {
 	[Mod.Card.REVERSE_CHARITY.ID] = {
 		_metadata = { 2, false },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "XXIV - Charity?",
 			Description = {
-				"PlaceholderDesc"
+				"Duplicates all pickups in the room and turns them into shop items"
 			}
 		},
 		ru = {
@@ -2885,12 +2913,13 @@ EID_Cards = {
 			}
 		}
 	},
+	--TODO: Moon Heart icon
 	[Mod.Card.REVERSE_FAITH.ID] = {
 		_metadata = { 2, false },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "XXV - Faith?",
 			Description = {
-				"PlaceholderDesc"
+				"Spawns 2 Moon Hearts"
 			}
 		},
 		ru = {
@@ -2909,9 +2938,9 @@ EID_Cards = {
 	[Mod.Card.REVERSE_HOPE.ID] = {
 		_metadata = { 2, false },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "XXIII - Hope?",
 			Description = {
-				"PlaceholderDesc"
+				"Teleports Isaac to an extra Challenge room"
 			}
 		},
 		ru = {
@@ -2930,9 +2959,9 @@ EID_Cards = {
 	[Mod.Card.TRAP_CARD.ID] = {
 		_metadata = { 1, false },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Trap Card",
 			Description = {
-				"PlaceholderDesc"
+				"{{Chained}} Chains down the nearest enemy"
 			}
 		},
 		ru = {
@@ -2951,9 +2980,9 @@ EID_Cards = {
 	[Mod.Card.TWO_OF_SHIELDS.ID] = {
 		_metadata = { 12, false },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Two of Shields",
 			Description = {
-				"PlaceholderDesc"
+				"{{Battery}} Doubles Isaac's active item charges",
 			}
 		},
 		ru = {
@@ -2972,9 +3001,9 @@ EID_Cards = {
 	[Mod.Rune.ESSENCE_OF_DEATH.ID] = {
 		_metadata = { 4, true },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Essence of Death",
 			Description = {
-				"PlaceholderDesc"
+				"{{Collectible693}} Kills all non-boss enemies in the room and spawns a Swarm fly orbital for each one"
 			}
 		},
 		ru = {
@@ -2993,9 +3022,10 @@ EID_Cards = {
 	[Mod.Rune.ESSENCE_OF_DELUGE.ID] = {
 		_metadata = { 1, true },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Essence of Deluge",
 			Description = {
-				"PlaceholderDesc"
+				"Spawns 15 drain drops over each enemy over the course of 5 seconds",
+				"{{Slow}} Rain drops slow enemies and damage them for 66% of Isaac's damage"
 			}
 		},
 		ru = {
@@ -3014,9 +3044,10 @@ EID_Cards = {
 	[Mod.Rune.ESSENCE_OF_DROUGHT.ID] = {
 		_metadata = { 2, true },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Essence of Drought",
 			Description = {
-				"PlaceholderDesc"
+				"{{BleedingOut}} Inflicts permanent bleeding on all non-boss enemies in the room. Bosses instead bleed for 5 seconds",
+				"{{Freezing}} Enemies will become frozen statues upon death"
 			}
 		},
 		ru = {
@@ -3035,9 +3066,10 @@ EID_Cards = {
 	[Mod.Rune.ESSENCE_OF_HATE.ID] = {
 		_metadata = { 6, true },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Essence of Hate",
 			Description = {
-				"PlaceholderDesc"
+				"{{Collectible" .. Item.SHATTERED_HEART.ID .. "}} Spawns 6 {{Heart}} Red Hearts that explode shortly after spawning",
+				"These hearts cannot be collected"
 			}
 		},
 		ru = {
@@ -3056,9 +3088,9 @@ EID_Cards = {
 	[Mod.Rune.ESSENCE_OF_LIFE.ID] = {
 		_metadata = { 2, true },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Essence of Life",
 			Description = {
-				"PlaceholderDesc"
+				"{{Collectible658}} Spawns 1 Minisaac for each enemy in the room"
 			}
 		},
 		ru = {
@@ -3077,9 +3109,9 @@ EID_Cards = {
 	[Mod.Rune.ESSENCE_OF_LOVE.ID] = {
 		_metadata = { 3, true },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Essence of Love",
 			Description = {
-				"PlaceholderDesc"
+				"{{Friendly}} Turns all non-boss enemies into permanent friendly companions"
 			}
 		},
 		ru = {
@@ -3095,12 +3127,15 @@ EID_Cards = {
 			}
 		}
 	},
+	--TODO: Modifier for keeper to only grant 1 Coin Heart
 	[Mod.Rune.SOUL_OF_LEAH.ID] = {
 		_metadata = { 6, true },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Soul of Leah",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} The max amount of heart containers is increased by 3",
+				"{{ArrowDown}} {{BrokenHeart}} +3 Broken Hearts",
+				"{{Warning}} Cannot increase max heart containers past 24, but still grants Broken Hearts"
 			}
 		},
 		ru = {
@@ -3119,9 +3154,11 @@ EID_Cards = {
 	[Mod.Rune.SOUL_OF_MIRIAM.ID] = {
 		_metadata = { 12, true },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Soul of Miriam",
 			Description = {
-				"PlaceholderDesc"
+				"Starts raining in the room and fills the room with water",
+				"A damaging creep will slowly and infinitely grow from the center of the room",
+				"Lasts 40 seconds between rooms and floors"
 			}
 		},
 		ru = {
@@ -3140,9 +3177,10 @@ EID_Cards = {
 	[Mod.Rune.SOUL_OF_PETER.ID] = {
 		_metadata = { 6, true },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Soul of Peter",
 			Description = {
-				"PlaceholderDesc"
+				"Adds 5 rooms randomly on the map",
+				"Rooms can either be a default room or a 10% chance of being a random special room",
 			}
 		},
 		ru = {
@@ -3200,9 +3238,9 @@ EID_Pills = {
 	[Mod.Pill.HEARTACHE.ID_UP] = {
 		_metadata = { 4, "3-" },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Heartache Up",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowDown}} {{BrokenHeart}} +1 Broken Heart"
 			}
 		},
 		ru = {
@@ -3221,9 +3259,9 @@ EID_Pills = {
 	[Mod.Pill.HEARTACHE.ID_DOWN] = {
 		_metadata = { 6, "3+" },
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Heartache Down",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} {{BrokenHeart}} -1 Broken Heart"
 			}
 		},
 		ru = {
@@ -3276,14 +3314,17 @@ for id, pillDescData in pairs(EID_Pills) do
 	end
 end
 
-local EID_Entities = {
+local EID_Entities
+EID_Entities = {
 	[EntityType.ENTITY_PICKUP] = {
 		[PickupVariant.PICKUP_BOMB] = {
 			[Mod.Pickup.CHARGED_BOMB.ID] = {
 				en_us = {
-					Name = "PlaceholderName",
+					Name = "Charged Bomb",
 					Description = {
-						"PlaceholderDesc"
+						"{{Bomb}} +1 Bomb",
+						"{{Battery}} Fully recharges one of Isaac's active items",
+						"{{Warning}} 1% chance to explode if Isaac has more than a half heart of health"
 					}
 				},
 				ru = {
@@ -3303,9 +3344,9 @@ local EID_Entities = {
 		[PickupVariant.PICKUP_GRAB_BAG] = {
 			[Mod.Pickup.GOLDEN_SACK.ID] = {
 				en_us = {
-					Name = "PlaceholderName",
+					Name = "Golden Sack",
 					Description = {
-						"PlaceholderDesc"
+						"80% chance to spawn another Golden Sack somewhere in the room upon pickup"
 					}
 				},
 				ru = {
@@ -3324,10 +3365,28 @@ local EID_Entities = {
 		},
 		[PickupVariant.PICKUP_HEART] = {
 			[Mod.Pickup.MOON_HEART.ID] = {
+				---@param descObj EID_DescObj
+				---@param noLuna string
+				---@param hasLuna string
+				_modifier = function(descObj, noLuna, hasLuna)
+					local player = FR_EID:ClosestPlayerTo(descObj.Entity)
+					if player:HasCollectible(CollectibleType.COLLECTIBLE_LUNA) then
+						return hasLuna
+					else
+						return noLuna
+					end
+				end,
 				en_us = {
-					Name = "PlaceholderName",
+					Name = "Moon Heart",
 					Description = {
-						"PlaceholderDesc"
+						"{{SoulHeart}} Functions like a Soul Heart",
+						"{{SecretRoom}} Secret and Super Secret Rooms will contain a {{Collectible589}} Luna beam",
+						function (descObj)
+							return EID_Entities[5][10][Mod.Pickup.MOON_HEART.ID]._modifier(descObj,
+							"The number of Luna beams available is dependent on the amount of Moon Hearts available across all players (e.g. Can only find one beam on the floor)",
+							"{{Collectible589}} Grants an additional {{Tears}} +0.5 Fire rate for every Moon Heart Isaac has when interacting with a Luna beam"
+						)
+						end,
 					}
 				},
 				ru = {
@@ -3347,9 +3406,10 @@ local EID_Entities = {
 		[PickupVariant.PICKUP_COIN] = {
 			[Mod.Pickup.UNLUCKY_PENNY.ID] = {
 				en_us = {
-					Name = "PlaceholderName",
+					Name = "Unlucky Penny",
 					Description = {
-						"PlaceholderDesc"
+						"{{ArrowDown}} {{Luck}} -1 Luck",
+						"{{ArrowUp}} {{Damage}} +0.5 Damage"
 					}
 				},
 				ru = {
@@ -3368,7 +3428,22 @@ local EID_Entities = {
 		},
 	},
 	[EntityType.ENTITY_SLOT] = {
+		--TODO: Will need to return the player's True Love and a description of their effect
+		_modifier = function ()
 
+		end,
+		[Mod.Slot.LOVE_TELLER.ID] = {
+			en_us = {
+				Name = "Love Teller",
+				Description = {
+					"{{Coin}} Costs 5 coins to use",
+					"Randomly pairs Isaac with another character, disregarding unlocks. Grants a reward depending on the matchup",
+					"{{EmptyHeart}} Spawns a fly",
+					"{{HalfHeart}} Spawns two random {{Heart}} Red Hearts",
+					"{{Heart}} Spawns a unique familiar related to the selected character"
+				}
+			}
+		}
 	},
 }
 
@@ -3403,12 +3478,106 @@ end
 
 local EID_Birthrights
 EID_Birthrights = {
-
+	[Mod.PlayerType.LEAH] = {
+		en_us = {
+			Name = "Leah",
+			Description = {
+				"PlaceholderDesc"
+			}
+		}
+	},
+	[Mod.PlayerType.PETER] = {
+		en_us = {
+			Name = "Peter",
+			Description = {
+				"PlaceholderDesc"
+			}
+		}
+	},
+	[Mod.PlayerType.MIRIAM] = {
+		en_us = {
+			Name = "Miriam",
+			Description = {
+				"PlaceholderDesc"
+			}
+		}
+	},
+	[Mod.PlayerType.LEAH_B] = {
+		en_us = {
+			Name = "Tainted Leah",
+			Description = {
+				"PlaceholderDesc"
+			}
+		}
+	},
+	[Mod.PlayerType.PETER_B] = {
+		en_us = {
+			Name = "Tainted Peter",
+			Description = {
+				"PlaceholderDesc"
+			}
+		}
+	},
+	[Mod.PlayerType.MIRIAM_B] = {
+		en_us = {
+			Name = "Tainted Miriam",
+			Description = {
+				"PlaceholderDesc"
+			}
+		}
+	},
 }
 
 local EID_Characters
 EID_Characters = {
-
+	[Mod.PlayerType.LEAH] = {
+		en_us = {
+			Name = "Leah",
+			Description = {
+				"PlaceholderDesc"
+			}
+		}
+	},
+	[Mod.PlayerType.PETER] = {
+		en_us = {
+			Name = "Peter",
+			Description = {
+				"PlaceholderDesc"
+			}
+		}
+	},
+	[Mod.PlayerType.MIRIAM] = {
+		en_us = {
+			Name = "Miriam",
+			Description = {
+				"PlaceholderDesc"
+			}
+		}
+	},
+	[Mod.PlayerType.LEAH_B] = {
+		en_us = {
+			Name = "Tainted Leah",
+			Description = {
+				"PlaceholderDesc"
+			}
+		}
+	},
+	[Mod.PlayerType.PETER_B] = {
+		en_us = {
+			Name = "Tainted Peter",
+			Description = {
+				"PlaceholderDesc"
+			}
+		}
+	},
+	[Mod.PlayerType.MIRIAM_B] = {
+		en_us = {
+			Name = "Tainted Miriam",
+			Description = {
+				"PlaceholderDesc"
+			}
+		}
+	},
 }
 
 for playerId, brDescData in pairs(EID_Birthrights) do

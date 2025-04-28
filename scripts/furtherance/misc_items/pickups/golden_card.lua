@@ -7,6 +7,7 @@ Furtherance.Card.GOLDEN_CARD = GOLDEN_CARD
 GOLDEN_CARD.ID = Isaac.GetCardIdByName("Golden Card")
 
 GOLDEN_CARD.REPLACE_CHANCE = 0.025
+GOLDEN_CARD.REMOVAL_CHANCE = 0.5
 
 ---Especially important to do all these checks as the card can be picked back up and dropped again, giving it a new InitSeed
 ---@param entType EntityType
@@ -63,7 +64,7 @@ Mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, GOLDEN_CARD.SpawnGoldenCard)
 ---@param flags UseFlag
 function GOLDEN_CARD:OnUse(card, player, flags)
 	local rng = player:GetCardRNG(card)
-	if rng:RandomFloat() <= 0.5 then
+	if rng:RandomFloat() <= GOLDEN_CARD.REMOVAL_CHANCE then
 		if Mod:HasBitFlags(flags, UseFlag.USE_OWNED) then
 			player:AddCard(card)
 		end

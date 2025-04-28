@@ -14,7 +14,6 @@ function TWO_OF_SHIELDS:UseAceOfShields(_, player, _)
 		then
 			local charge = player:GetActiveCharge(slot)
 			player:AddActiveCharge(charge == charge and 2 or charge * 2, slot, true, false, false)
-			break
 		end
 	end
 end

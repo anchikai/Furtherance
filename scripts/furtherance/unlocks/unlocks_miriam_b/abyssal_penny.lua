@@ -12,8 +12,13 @@ function ABYSSAL_PENNY:CollectCoin(pickup, collider)
 		local water = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL, 0,
 			pickup.Position, Vector.Zero, player):ToEffect()
 		---@cast water EntityEffect
-		water.Scale = 1.5
-		water.Size = water.Size * 1.5
+		local value = pickup:GetCoinValue()
+		if value > 99 then
+			value = 5
+		end
+		water.Scale = 1.5 + (value * 0.1)
+		water.Size = water.Size * 1.5 + (value * 0.1)
+		water:SetTimeout(90 + (30 * value))
 		water:Update()
 	end
 end

@@ -7,10 +7,11 @@ Furtherance.Trinket.HOLY_HEART = HOLY_HEART
 HOLY_HEART.ID = Isaac.GetTrinketIdByName("Holy Heart")
 
 HOLY_HEART.HeartMantleChance = {
-	[HeartSubType.HEART_ETERNAL] = 0.33,
-	[HeartSubType.HEART_SOUL] = 0.05,
+	[HeartSubType.HEART_ETERNAL] = 0.5,
+	[HeartSubType.HEART_SOUL] = 0.1,
+	[HeartSubType.HEART_BLACK] = 0.1,
 	[HeartSubType.HEART_BLENDED] = 0.05,
-	[HeartSubType.HEART_HALF_SOUL] = 0.02,
+	[HeartSubType.HEART_HALF_SOUL] = 0.05,
 }
 
 ---@param pickup EntityPickup
@@ -28,10 +29,25 @@ function HOLY_HEART:CollectHeart(pickup, collider)
 		and HOLY_HEART.HeartMantleChance[pickup.SubType]
 	then
 		local rng = player:GetTrinketRNG(HOLY_HEART.ID)
-		if rng:RandomFloat() <= HOLY_HEART.HeartMantleChance[pickup.SubType] then
+		local mantleChance = HOLY_HEART.HeartMantleChance[pickup.SubType]
+		local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.HOLY_HEART_GET_MANTLE_CHANCE, pickup.SubType, pickup, player, mantleChance)
+		if result and type(result) == "number" then
+			mantleChance = result
+		end
+		if rng:RandomFloat() <= mantleChance then
 			player:UseCard(Card.CARD_HOLY, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
 		end
 	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_COLLISION, HOLY_HEART.CollectHeart)
+
+function HOLY_HEART:BlendedHeart(pickup, player, chance)
+	--Can only collect it
+	if player:GetHearts() == (player:GetEffectiveMaxHearts() - 1) then
+		chance = 0.05
+	end
+	return chance
+end
+
+Mod:AddCallback(Mod.ModCallbacks.HOLY_HEART_GET_MANTLE_CHANCE, HOLY_HEART.BlendedHeart, HeartSubType.HEART_BLENDED)

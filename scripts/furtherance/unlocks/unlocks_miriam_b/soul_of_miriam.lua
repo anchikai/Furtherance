@@ -24,7 +24,7 @@ function SOUL_OF_MIRIAM:OnUse(card, player, flags)
 	SOUL_OF_MIRIAM:SpawnExpandingCreep()
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_CARD, SOUL_OF_MIRIAM.OnUse)
+Mod:AddCallback(ModCallbacks.MC_USE_CARD, SOUL_OF_MIRIAM.OnUse, SOUL_OF_MIRIAM.ID)
 
 function SOUL_OF_MIRIAM:OnSOMRoom()
 	local effects = Mod.Room():GetEffects()
