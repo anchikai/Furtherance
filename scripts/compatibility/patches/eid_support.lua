@@ -14,6 +14,8 @@ end
 local Item = Mod.Item
 local Trinket = Mod.Trinket
 
+---@param entity Entity
+---@return EntityPlayer
 function FR_EID:ClosestPlayerTo(entity) --This seems to error for some people sooo yeah
 	if not entity then return EID.player end
 
@@ -24,7 +26,19 @@ function FR_EID:ClosestPlayerTo(entity) --This seems to error for some people so
 	end
 end
 
+if EID.HealthUpData then
+	EID.HealthUpData["5.100." .. tostring(Item.BRUNCH.ID)] = 2
+	EID.HealthUpData["5.100." .. tostring(Item.LITTLE_RAINCOAT.ID)] = 1
+	EID.HealthUpData["5.100." .. tostring(Item.COFFEE_BREAK.ID)] = 1
+end
+
+if EID.HealingItemData then
+	EID.HealingItemData["5.100." .. tostring(Item.BRUNCH.ID)] = true
+	EID.HealingItemData["5.100." .. tostring(Item.COFFEE_BREAK.ID)] = true
+end
+
 --#region Icons
+
 local player_icons = Sprite()
 player_icons:Load("gfx/ui/eid_character_icons.anm2", true)
 
@@ -295,9 +309,10 @@ local EID_Collectibles -- this allows modifier functions defined inside this tab
 EID_Collectibles = {
 	[Item.ALTERNATE_REALITY.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Alternate Reality",
 			Description = {
-				"PlaceholderDesc"
+				"Sends Isaac to a completely random stage with a random stage variant",
+				"Includes any floor from The Basement to The Void, any floor variant including the alt path"
 			}
 		},
 		ru = {
@@ -317,7 +332,13 @@ EID_Collectibles = {
 		en_us = {
 			Name = "PlaceholderName",
 			Description = {
-				"PlaceholderDesc"
+				"{{Warning}}Removes all passive items in exchange for two of any of the following stat buffs selected at random per item removed:",
+				"{{Speed}} +0.05 Speed",
+				"{{Tears}} -0.5 Tear delay",
+				"{{Damage}} +1 Damage",
+				"{{Range}} +0.3 Range",
+				"{{Shotspeed}} +0.1 Shot speed",
+				"{{Luck}} +1 Luck"
 			}
 		},
 		ru = {
@@ -335,9 +356,9 @@ EID_Collectibles = {
 	},
 	[Item.ASTRAGALI.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Astragali",
 			Description = {
-				"PlaceholderDesc"
+				"Rerolls all chests in the room into other chest variants"
 			}
 		},
 		ru = {
@@ -355,9 +376,11 @@ EID_Collectibles = {
 	},
 	[Item.BEGINNERS_LUCK.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Beginner's Luck",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}}{{Luck}} +10 Luck",
+				"For every new unexplored room you enter, {{Luck}} -1 Luck until the luck bonus reaches 0",
+				"Luck is granted back on the next floor"
 			}
 		},
 		ru = {
@@ -375,9 +398,10 @@ EID_Collectibles = {
 	},
 	[Item.BINDS_OF_DEVOTION.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Binds of Devotion",
 			Description = {
-				"PlaceholderDesc"
+				"{{Player19}} Spawns Jacob as a second character without Esau",
+				"When he dies, permanently removes Binds of Devotion and any item that he has picked up from his inventory",
 			}
 		},
 		ru = {
@@ -395,9 +419,10 @@ EID_Collectibles = {
 	},
 	[Item.BLOOD_CYST.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Blood Cyst",
 			Description = {
-				"PlaceholderDesc"
+				"Spawns a Blood Cyst in a random spot upon entering an uncleared room",
+				"Damaging the Blood Cyst will cause it to explode, shooting out a fountain of 20 tears"
 			}
 		},
 		ru = {
@@ -415,9 +440,12 @@ EID_Collectibles = {
 	},
 	[Item.BOOK_OF_AMBIT.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Book of Ambit",
 			Description = {
-				"PlaceholderDesc"
+				"{{Timer}} Receive for the room:",
+				"{{ArrowUp}} {{Range}} +5 Range",
+				"{{ArrowUp}} {{Shotspeed}} +1.5 Shot speed",
+				"{{Collectible48}} Piercing tears"
 			}
 		},
 		ru = {
@@ -435,9 +463,9 @@ EID_Collectibles = {
 	},
 	[Item.BOOK_OF_BOOKS.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Book of Books",
 			Description = {
-				"PlaceholderDesc"
+				"Uses a random book active item"
 			}
 		},
 		ru = {
@@ -455,9 +483,9 @@ EID_Collectibles = {
 	},
 	[Item.BOOK_OF_GUIDANCE.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Book of Guidance",
 			Description = {
-				"PlaceholderDesc"
+				"{{Collectible175}} For the remainder of the floor, all doors are unlocked as if used with Dad's Key"
 			}
 		},
 		ru = {
@@ -474,10 +502,17 @@ EID_Collectibles = {
 		}
 	},
 	[Item.BOOK_OF_LEVITICUS.ID] = {
+		---@param descObj EID_DescObj
+		_modifier = function(descObj)
+			local desc = EID:getDescriptionObj(5, 350, Card.CARD_REVERSE_TOWER, descObj.Entity, true)
+			return desc and desc.Description or "{{Card72}} Uses XVI - The Tower?"
+		end,
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Book of Leviticus",
 			Description = {
-				"PlaceholderDesc"
+				function(descObj)
+					return EID_Collectibles[Item.BOOK_OF_LEVITICUS.ID]._modifier(descObj)
+				end
 			}
 		},
 		ru = {
@@ -494,10 +529,17 @@ EID_Collectibles = {
 		}
 	},
 	[Item.BOOK_OF_SWIFTNESS.ID] = {
+		---@param descObj EID_DescObj
+		_modifier = function(descObj)
+			local desc = EID:getDescriptionObj(5, 350, Card.CARD_ERA_WALK, descObj.Entity, true)
+			return desc and desc.Description or "{{Card54}} Uses Era Walk"
+		end,
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Book of Swiftness",
 			Description = {
-				"PlaceholderDesc"
+				function(descObj)
+					return EID_Collectibles[Item.BOOK_OF_SWIFTNESS.ID]._modifier(descObj)
+				end
 			}
 		},
 		ru = {
@@ -515,9 +557,11 @@ EID_Collectibles = {
 	},
 	[Item.BRUNCH.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Brunch",
 			Description = {
-				"PlaceholderDesc"
+				"↑ {{Heart}} +2 Health",
+				"{{HealingRed}} Heals 4 hearts",
+				"{{ArrowUp}} {{Shotspeed}} +0.16 Shot speed"
 			}
 		},
 		ru = {
@@ -535,9 +579,9 @@ EID_Collectibles = {
 	},
 	[Item.BUTTERFLY.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Butterfly",
 			Description = {
-				"PlaceholderDesc"
+				"Taking damage causes Isaac to shoot out tears at 50% damage in random directions for one second"
 			}
 		},
 		ru = {
@@ -555,9 +599,11 @@ EID_Collectibles = {
 	},
 	[Item.CADUCEUS_STAFF.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Caduceus Staff",
 			Description = {
-				"PlaceholderDesc"
+				"5% chance for damage taken to not remove any health and grant either a {{Heart}} Red Heart, {{SoulHeart}} Soul Heart, or half of both depending on Isaac's health",
+				"If effect wasn't triggered upon taking damage, doubles chance to trigger on next damage",
+				"Chance resets upon effect activating"
 			}
 		},
 		ru = {
@@ -575,9 +621,10 @@ EID_Collectibles = {
 	},
 	[Item.CARDIOMYOPATHY.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Cardiomyopathy",
 			Description = {
-				"PlaceholderDesc"
+				"{{Timer}} Picking up {{Heart}} Red Hearts has a chance to grant invincibility for 1 second",
+				"Chance is a stacking 25% for each half a heart the heart would grant"
 			}
 		},
 		ru = {
@@ -595,9 +642,11 @@ EID_Collectibles = {
 	},
 	[Item.CERES.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Ceres?",
 			Description = {
-				"PlaceholderDesc"
+				"5% chance to shoot a green tear that causes the enemy to start leaving green creep for 3 seconds",
+				"{{Luck}} 50% chance at 9 luck",
+				"The creep deals 30 damage per second to other enemies",
 			}
 		},
 		ru = {
@@ -615,9 +664,11 @@ EID_Collectibles = {
 	},
 	[Item.CHIRON.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Chiron?",
 			Description = {
-				"PlaceholderDesc"
+				--Book of Secrets description
+				"{{Timer}} Each floor, grants one of these effects for the floor:#{{Collectible54}} Treasure Map#{{Collectible21}} Compass#{{Collectible246}} Blue Map",
+				"{{BossRoom}} Entering a boss room activates a random \"offensive\" book"
 			}
 		},
 		ru = {
@@ -635,9 +686,10 @@ EID_Collectibles = {
 	},
 	[Item.CHI_RHO.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Chi Rho",
 			Description = {
-				"PlaceholderDesc"
+				"{{Collectible643}} 2% chance to fire a holy beam while shooting",
+				"{{Luck}} 15% chance at 15 luck"
 			}
 		},
 		ru = {
@@ -655,9 +707,10 @@ EID_Collectibles = {
 	},
 	[Item.COLD_HEARTED.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Cold Hearted",
 			Description = {
-				"PlaceholderDesc"
+				"{{Freezing}} Touching enemies freezes them",
+				"{{Slow}} Touching bosses slows them for 5 seconds"
 			}
 		},
 		ru = {
@@ -675,9 +728,11 @@ EID_Collectibles = {
 	},
 	[Item.COSMIC_OMNIBUS.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Cosmic Omnibus",
 			Description = {
-				"PlaceholderDesc"
+				"Teleports Isaac to a random unvisited special room on the floor",
+				"{{Planetarium}} If all special rooms on the floor have been visited, teleports Isaac to a new Planetarium room",
+				"Subsequent uses sends Isaac to a random special room on the floor"
 			}
 		},
 		ru = {
@@ -695,9 +750,9 @@ EID_Collectibles = {
 	},
 	[Item.CRAB_LEGS.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Crab Legs",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} Walking in a perpendicular direction to the direction you're shooting grants {{Speed}} +0.3 Speed"
 			}
 		},
 		ru = {
@@ -715,9 +770,9 @@ EID_Collectibles = {
 	},
 	[Item.D16.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "D16",
 			Description = {
-				"PlaceholderDesc"
+				"Rerolls all heart pickups in the room into other heart variants"
 			}
 		},
 		ru = {
@@ -735,9 +790,9 @@ EID_Collectibles = {
 	},
 	[Item.D9.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "D9",
 			Description = {
-				"PlaceholderDesc"
+				"Rerolls all trinkets in the room into other trinkets"
 			}
 		},
 		ru = {
@@ -755,9 +810,11 @@ EID_Collectibles = {
 	},
 	[Item.EPITAPH.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Epitaph",
 			Description = {
-				"PlaceholderDesc"
+				"{{Colletible545}} 10% chance for dead enemies to revive upon room clear, similar to Book of the Dead",
+				"Dying with this item will create a tombstone in a random room on the same floor you died on for the next run",
+				"Bombing the tombstone 3 times spawns {{Coin}}3-5 coins, {{Key}} 2-3 keys, and the first and last passive items in you had in your inventory the previous run"
 			}
 		},
 		ru = {
@@ -775,9 +832,10 @@ EID_Collectibles = {
 	},
 	[Item.EXSANGUINATION.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Exsanguination",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} Every heart pickup grants a permament {{Damage}} +0.05 Damage up",
+				"Newly spawned hearts have a 50% chance to disappear after 2 seconds"
 			}
 		},
 		ru = {
@@ -795,9 +853,12 @@ EID_Collectibles = {
 	},
 	[Item.FIRSTBORN_SON.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Firstborn Son",
 			Description = {
-				"PlaceholderDesc"
+				"{{Collectible634}} When in an uncleared room with enemies, will turn into a homing exploding ghost",
+				"The ghost will target the enemy with the folowing priorities: 1. Highest health, 2. Closest to the ghost, 3. Non-bosses over bosses",
+				"Will instantly kill the targeted enemy and does not damage other enemies. If a boss, deals 10% of their maximum health instead",
+				"{{Warning}} Cannot have additional copies of the familiar"
 			}
 		},
 		ru = {
@@ -815,9 +876,11 @@ EID_Collectibles = {
 	},
 	[Item.FLUX.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Flux",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} Grants {{Range}} +9.75 Range and spectral tears",
+				"Tears only move when Isaac moves",
+				"Shoot tears in the opposite direction that mirror Isaac's movement"
 			}
 		},
 		ru = {
@@ -835,9 +898,10 @@ EID_Collectibles = {
 	},
 	[Item.GOLDEN_PORT.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Golden Port",
 			Description = {
-				"PlaceholderDesc"
+				"{{Battery}} Using an uncharged active fully recharges it at the cost of 5 cents",
+				"Only works when the item has no charges"
 			}
 		},
 		ru = {
@@ -855,9 +919,9 @@ EID_Collectibles = {
 	},
 	[Item.HEART_EMBEDDED_COIN.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Heart Embedded Coin",
 			Description = {
-				"PlaceholderDesc"
+				"{{Coin}} Picking up {{Heart}} Red Hearts while at full health gives that heart's worth in coins instead"
 			}
 		},
 		ru = {
@@ -875,9 +939,11 @@ EID_Collectibles = {
 	},
 	[Item.HEART_RENOVATOR.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Heart Renovator",
 			Description = {
-				"PlaceholderDesc"
+				"Can pick up {{Heart}} Red Hearts while at full red health puts them in a special counter, up to 99 total health",
+				"{{Warning}} Double tapping {{ButtonRT}} consumes 2 hearts from the counter and grants a {{BrokenHeart}} Broken Heart",
+				"{{ArrowUp}} Upon use, removes a Broken Heart and grants a permanent {{Damage}} +0.5 Damage up"
 			}
 		},
 		ru = {
@@ -895,9 +961,10 @@ EID_Collectibles = {
 	},
 	[Item.IRON.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Iron",
 			Description = {
-				"PlaceholderDesc"
+				"Orbital",
+				"{{Collectible257}} Friendly tears hitting it will double in size and damage and burn enemeis"
 			}
 		},
 		ru = {
@@ -915,9 +982,9 @@ EID_Collectibles = {
 	},
 	[Item.ITCHING_POWDER.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Itching Powder",
 			Description = {
-				"PlaceholderDesc"
+				"Taking damage will deal fake damage one second later"
 			}
 		},
 		ru = {
@@ -935,9 +1002,11 @@ EID_Collectibles = {
 	},
 	[Item.JAR_OF_MANNA.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Jar of Manna",
 			Description = {
-				"PlaceholderDesc"
+				"{{Battery}} Must be charged by killing enemiesm spawning a Manna Orb that grants +1 charge",
+				"{{Collectible464}} Grants whatever Isaac needs the most",
+				"{{Collectible644}} If Isaac is already satisfied in health and pickups, increases Isaac's lowest stat out of Speed, Fire rate, Damage, Range, Shot speed, and Luck"
 			}
 		},
 		ru = {
@@ -955,9 +1024,11 @@ EID_Collectibles = {
 	},
 	[Item.JUNO.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Juno?",
 			Description = {
-				"PlaceholderDesc"
+				"+2 {{SoulHeart}} Soul Hearts",
+				"{{{Collectible722}} 3% chance to fire a tear that chains them in place for 2 seconds",
+				"{{Luck}} 25% chance at 11 luck"
 			}
 		},
 		ru = {
@@ -975,9 +1046,12 @@ EID_Collectibles = {
 	},
 	[Item.KARETH.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Kareth",
 			Description = {
-				"PlaceholderDesc"
+				"{{Warning}} Replaces all pedestals with 1-3 trinkets dependent on the collectible's quality",
+				"{{Quality0}}-{{Quality1}}: 1 trinket",
+				"{{Quality2}}: 2 trinkets",
+				"{{Quality3}}-{{Quality4}}: 3 trinkets"
 			}
 		},
 		ru = {
@@ -995,9 +1069,12 @@ EID_Collectibles = {
 	},
 	[Item.KERATOCONUS.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Keratoconus",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} {{Range}} +2 Range",
+				"{{ArrowDown}} {{Shotspeed}} -0.15 Shot speed",
+				"Enemies far away from Isaac will appear larger in size and become closer to their regular size when getting closer",
+				"{{Slow}} Enemies are slowed depending on their distance from Isaac, farther away having a stronger effect"
 			}
 		},
 		ru = {
@@ -1014,10 +1091,15 @@ EID_Collectibles = {
 		}
 	},
 	[Item.KEYS_TO_THE_KINGDOM.ID] = {
-		en_us = {
-			Name = "PlaceholderName",
+		en_us = { --123 filigree feather
+			Name = "Keys to the Kingdom",
 			Description = {
-				"PlaceholderDesc"
+				"Has different interactions depending on the room",
+				"{{Timer}} Rooms with enemies will \"spare\" them, removing them from the room and granting a random stat up per enemy for the duration of the floor",
+				"{{BossRoom}}: Rooms with bosses will begin a 30 second countdown. Afterwards, spares the boss and grants 3 stronger, permanent random stat ups compared to sparing enemies",
+				"{{Blank}} Getting hit or hurting the boss will add 10 seconds to the countdown",
+				"{{AngelRoom}}: Instantly spares angels, dropping a {{Collectible238}}{{Collectible239}} key piece, or if Isaac has them already, a random {{ItemPoolAngel}}angel room item",
+				"{{DevilRoom}}: Removes all Devil Deals from the room. Grants a random permanent for each deal removed"
 			}
 		},
 		ru = {
@@ -1035,9 +1117,9 @@ EID_Collectibles = {
 	},
 	[Item.KEY_ALT.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Alt Key",
 			Description = {
-				"PlaceholderDesc"
+				"Restarts the floor on a random variant of the alt path, or if on the alt path, a random variant of the normal path"
 			}
 		},
 		ru = {
@@ -1055,9 +1137,11 @@ EID_Collectibles = {
 	},
 	[Item.KEY_BACKSPACE.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Backspace Key",
 			Description = {
-				"PlaceholderDesc"
+				"{{Warning}} Removes 2 of your earliest passive items and sends you to the previous floor. If Isaac does not have enough passive items to sacrifice, he dies",
+				"The floor is newly generated but remains the same floor variant as when last you visited it",
+				"Subsequent uses adds 2 to the amount of passives to be removed"
 			}
 		},
 		ru = {
@@ -1075,9 +1159,9 @@ EID_Collectibles = {
 	},
 	[Item.KEY_C.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "C Key",
 			Description = {
-				"PlaceholderDesc"
+				"{{Library}} Teleports Isaac to a Library with 5 books"
 			}
 		},
 		ru = {
@@ -1094,10 +1178,16 @@ EID_Collectibles = {
 		}
 	},
 	[Item.KEY_CAPS.ID] = {
+		_modifier = function(descObj)
+			local desc = EID:getDescriptionObj(5, 350, Card.CARD_HUGE_GROWTH, descObj.Entity, true)
+			return desc and desc.Description or "{{Card52}} Uses Huge Growth"
+		end,
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Caps Key",
 			Description = {
-				"PlaceholderDesc"
+				function(descObj)
+					return EID_Collectibles[Item.KEY_CAPS.ID]._modifier(descObj)
+				end
 			}
 		},
 		ru = {
@@ -1115,9 +1205,9 @@ EID_Collectibles = {
 	},
 	[Item.KEY_E.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "E Key",
 			Description = {
-				"PlaceholderDesc"
+				"{{GigaBomb}} Spawns an unlit Giga Bomb"
 			}
 		},
 		ru = {
@@ -1135,9 +1225,9 @@ EID_Collectibles = {
 	},
 	[Item.KEY_ENTER.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Enter Key",
 			Description = {
-				"PlaceholderDesc"
+				"{{BossRushRoom}} Opens a Boss Rush door in the current room, regardless of in-game time"
 			}
 		},
 		ru = {
@@ -1155,9 +1245,10 @@ EID_Collectibles = {
 	},
 	[Item.KEY_ESC.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Esc Key",
 			Description = {
-				"PlaceholderDesc"
+				"Teleports Isaac to a random room",
+				"Heals Isaac with Red and Soul Hearts if he has less than 6 hearts"
 			}
 		},
 		ru = {
@@ -1175,9 +1266,13 @@ EID_Collectibles = {
 	},
 	[Item.KEY_F4.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "F4 Key",
 			Description = {
-				"PlaceholderDesc"
+				"Teleports you to another random special room that has not been explored yet depending on what consumables you have the least of",
+				"Coins: {{ArcadeRoom}}",
+				"Bombs: {{SuperSecretRoom}}, {{IsaacsRoom}}, {{SecretRoom}}",
+				"Keys: {{Shop}}, {{TreasureRoom}}, {{DiceRoom}}, {{Library}}, {{ChestRoom}}, {{Planetarium}}",
+				"Can teleport Isaac to any of the rooms above if all consumable counts are equal"
 			}
 		},
 		ru = {
@@ -1195,9 +1290,10 @@ EID_Collectibles = {
 	},
 	[Item.KEY_Q.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Q Key",
 			Description = {
-				"PlaceholderDesc"
+				"Triggers the effect of the pocket item Isaac holds without using it",
+				"Max charge changes depending on the pocket item's assigned \"mimic charge\", or if an eternal item, its actual charge"
 			}
 		},
 		ru = {
@@ -1215,9 +1311,10 @@ EID_Collectibles = {
 	},
 	[Item.KEY_SHIFT.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Shift Key",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} +15 Damage",
+				"The damage up wears off over 1 minute"
 			}
 		},
 		ru = {
@@ -1235,9 +1332,9 @@ EID_Collectibles = {
 	},
 	[Item.KEY_SPACEBAR.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Spacebar Key",
 			Description = {
-				"PlaceholderDesc"
+				"{{ErrorRoom}} Teleports Isaac to the I AM ERROR room"
 			}
 		},
 		ru = {
@@ -1255,9 +1352,10 @@ EID_Collectibles = {
 	},
 	[Item.KEY_TAB.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Tab Key",
 			Description = {
-				"PlaceholderDesc"
+				"Full mapping effect",
+				"{{UltraSecretRoom}} Reveals the Ultra Secret room"
 			}
 		},
 		ru = {
@@ -1275,9 +1373,9 @@ EID_Collectibles = {
 	},
 	[Item.KEY_TILDE.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Tilde Key",
 			Description = {
-				"PlaceholderDesc"
+				"{{Timer}} Activates a random debug command for the room"
 			}
 		},
 		ru = {
@@ -1295,9 +1393,10 @@ EID_Collectibles = {
 	},
 	[Item.LEAHS_HEART.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Leah's Heart",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} {{Damage}} +20% Damage",
+				"Using an active item removes the damage bonus for the floor, but grants 2 {{SoulHeart}} Soul Hearts and a {{Collectible313}} Holy Mantle shield",
 			}
 		},
 		ru = {
@@ -1315,9 +1414,10 @@ EID_Collectibles = {
 	},
 	[Item.LEAKING_TANK.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Leaking Tank",
 			Description = {
-				"PlaceholderDesc"
+				"{{Collectible317}} Leave a trail of damaging creep that deals 30 damage per second",
+				"Frequency of producing creep increases with each empty heart container"
 			}
 		},
 		ru = {
@@ -1335,9 +1435,9 @@ EID_Collectibles = {
 	},
 	[Item.LIBERATION.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Liberation",
 			Description = {
-				"PlaceholderDesc"
+				"Killing enemies has a 5% chance to grant flight and open all doors in the current room"
 			}
 		},
 		ru = {
@@ -1355,9 +1455,13 @@ EID_Collectibles = {
 	},
 	[Item.LITTLE_RAINCOAT.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Little Raincoat",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} Size down",
+				"Spawns a {{Pill}} Power Pill! and adds it to the current run's pill pool",
+				"Every 6 hits, activate a Power Pill! effect",
+				"Power Pill! now deals 15 + Isaac's damage and can damage the same enemy more often the more empty heart containers he has",
+				"Killing enemies with Power Pill! has a 6% to grant +1 {{EmptyHeart}} Heart Container",
 			}
 		},
 		ru = {
@@ -1375,9 +1479,9 @@ EID_Collectibles = {
 	},
 	[Item.MANDRAKE.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Mandrake",
 			Description = {
-				"PlaceholderDesc"
+				"Allows Isaac to choose between one item and a familiar item"
 			}
 		},
 		ru = {
@@ -1395,9 +1499,11 @@ EID_Collectibles = {
 	},
 	[Item.MIRIAMS_WELL.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Miriam's Well",
 			Description = {
-				"PlaceholderDesc"
+				"Orbital",
+				"Blocks projectiles",
+				"When blocking a projectile, creates a large damaging creep that deals half of Isaac's damage. Afterwards, cannot do so again for 8 seconds"
 			}
 		},
 		ru = {
@@ -1415,9 +1521,9 @@ EID_Collectibles = {
 	},
 	[Item.MOLTEN_GOLD.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Molten Gold",
 			Description = {
-				"PlaceholderDesc"
+				"Taking damage has a 25% chance to activate a random rune"
 			}
 		},
 		ru = {
@@ -1435,9 +1541,14 @@ EID_Collectibles = {
 	},
 	[Item.MUDDLED_CROSS.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Muddled Cross",
 			Description = {
-				"PlaceholderDesc"
+				"Spawns a pool at the entrance of certain special rooms that reveal an alternate room",
+				"On use, changes the current room into the previewed room",
+				"{{TreasureRoom}} <-> {{RedTreasureRoom}}",
+				"{{UltraSecretRoom}} <-> {{Planetarium}} Planetarium items grant broken hearts",
+				"{{Shop}} <-> {{Library}} Library books cost money",
+				"{{DevilRoom}} <-> {{AngelRoom}} Angel room items cost money. Devil room items disappear after picking one up",
 			}
 		},
 		ru = {
@@ -1455,9 +1566,9 @@ EID_Collectibles = {
 	},
 	[Item.BOX_OF_BELONGINGS.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Box of Belongings",
 			Description = {
-				"PlaceholderDesc"
+				"Spawns 2 random special cards/object and a trinket from a unique pool"
 			}
 		},
 		ru = {
@@ -1475,9 +1586,9 @@ EID_Collectibles = {
 	},
 	[Item.OLD_CAMERA.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Old Camera",
 			Description = {
-				"PlaceholderDesc"
+				"No effect at the moment! Sorry!"
 			}
 		},
 		ru = {
@@ -1495,9 +1606,12 @@ EID_Collectibles = {
 	},
 	[Item.OPHIUCHUS.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Ophiuchus?",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} {{Tears}} -0.4 Tear Delay",
+				"{{ArrowUp}} {{Damage}} +0.3 Damage",
+				"Spectral tears",
+				"Isaac's tears move in waves"
 			}
 		},
 		ru = {
@@ -1515,9 +1629,10 @@ EID_Collectibles = {
 	},
 	[Item.OWLS_EYE.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Owl's Eye",
 			Description = {
-				"PlaceholderDesc"
+				"8% chance to fire a homing and piercing tear that deals double damage",
+				"{{Luck}} 100% chance at 12 luck"
 			}
 		},
 		ru = {
@@ -1534,10 +1649,18 @@ EID_Collectibles = {
 		}
 	},
 	[Item.PALLAS.ID] = {
+		_modifier = function(descObj, flatStone)
+			local player = FR_EID:ClosestPlayerTo(descObj.Entity)
+			if player:HasCollectible(CollectibleType.COLLECTIBLE_FLAT_STONE) then
+				return flatStone
+			end
+			return ""
+		end,
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Pallas?",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} {{Tearsize}}+20% Tear size",
+				"{{Collectible529}} Isaac's tears bounce off the floor after floating for a short time"
 			}
 		},
 		ru = {
@@ -1555,9 +1678,10 @@ EID_Collectibles = {
 	},
 	[Item.PALLIUM.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Pallium",
 			Description = {
-				"PlaceholderDesc"
+				"{{Collectible658}} On room clear, spawns 1-3 Minisaacs",
+				"Minisaacs disappear on the next floor"
 			}
 		},
 		ru = {
@@ -1575,9 +1699,11 @@ EID_Collectibles = {
 	},
 	[Item.LIL_POOFER.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Lil Poofer",
 			Description = {
-				"PlaceholderDesc"
+				"Blocks projectiles",
+				"Each projectile blocked has it grow in size",
+				"After taking 10 hits, it explodes. The explosion {{HealingRed}} Heals players in its radius for {{HalfHeart}} +1 Half Red Heart, deals 10 damage to enemies, and leaves 6 lines of damaging creep in a radial spread that deal 20 damage per second"
 			}
 		},
 		ru = {
@@ -1595,9 +1721,11 @@ EID_Collectibles = {
 	},
 	[Item.PHARAOH_CAT.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Pharoh Cat",
 			Description = {
-				"PlaceholderDesc"
+				"A Bastet Statue in will appear in a random location in an uncleared room",
+				"Projectiles in its aura will be instantly destroyed",
+				"Statue is destroyed once the room is cleared"
 			}
 		},
 		ru = {
@@ -1615,9 +1743,9 @@ EID_Collectibles = {
 	},
 	[Item.PILLAR_OF_CLOUDS.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Pillar of Clouds",
 			Description = {
-				"PlaceholderDesc"
+				"No effect at the moment. Sorry!"
 			}
 		},
 		ru = {
@@ -1635,9 +1763,11 @@ EID_Collectibles = {
 	},
 	[Item.PILLAR_OF_FIRE.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Pillar of Fire",
 			Description = {
-				"PlaceholderDesc"
+				"Taking damage has a 5% chance to shoot out 5 flames from Isaac",
+				"{{Burning}} Flames will target enemies and shoot fire projectiles that inflict burn",
+				"Flames disspate after a short period of time"
 			}
 		},
 		ru = {
@@ -1655,9 +1785,9 @@ EID_Collectibles = {
 	},
 	[Item.PLUG_N_PLAY.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Plug N' Play",
 			Description = {
-				"PlaceholderDesc"
+				"{{Collectible721}} Spawns a glitched item"
 			}
 		},
 		ru = {
@@ -1675,9 +1805,14 @@ EID_Collectibles = {
 	},
 	[Item.POLARIS.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Polaris",
 			Description = {
-				"PlaceholderDesc"
+				"Grants {{Shotspeed}} Shot speed and/or {{Damage}} Damage and one of the following effects per room depending on the color of the familiar:",
+				"{{ColorRed}}Red{{CR}}: 31.4% chance. +2 Shot speed, {{Tearsize}} -50% Tear size",
+				"{{ColorOrange}}Orange{CR}}: 20.8% chance. +1.5 Shot speed, +0.5 Damage",
+				"{{ColorYellow}}Yellow{CR}}: 28.3% chance. +1 Shot speed, +1 damage, 50% chance for a heart to spawn upon room clear",
+				"White: 16.4% chance. +0.5 Shot speed, +1.5 Damage, 10% chance for {{Collectible374}} tears. {{Luck}} 50% chance at 9 luck",
+				"{{ColorBlue}}Blue{CR}}: +2 Damage, {{Tearsize}} +100% Tear size, tears inflict {{Burning}}burning",
 			}
 		},
 		ru = {
@@ -1695,7 +1830,7 @@ EID_Collectibles = {
 	},
 	[Item.POLARITY_SHIFT.ID_1] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Polarity Shift",
 			Description = {
 				"PlaceholderDesc"
 			}
@@ -1715,7 +1850,7 @@ EID_Collectibles = {
 	},
 	[Item.POLARITY_SHIFT.ID_2] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Polarity Shift",
 			Description = {
 				"PlaceholderDesc"
 			}
@@ -1755,9 +1890,10 @@ EID_Collectibles = {
 	},
 	[Item.QUARANTINE.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Quarantine",
 			Description = {
-				"PlaceholderDesc"
+				"{{Fear}} Entering an uncleared room fears all enemies for 6 seconds",
+				"{{Poison}} Getting close to enemies during this period poisons them for 2x Isaac's damage"
 			}
 		},
 		ru = {
@@ -1775,9 +1911,10 @@ EID_Collectibles = {
 	},
 	[Item.ROTTEN_APPLE.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Rotten Apple",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} {{Damage}} +2 Damage",
+				"Permanently grants a random worm trinket effect"
 			}
 		},
 		ru = {
@@ -1795,9 +1932,12 @@ EID_Collectibles = {
 	},
 	[Item.COFFEE_BREAK.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Coffee Break",
 			Description = {
-				"PlaceholderDesc"
+				"↑ {{Heart}} +1 Health",
+				"↑ {{Soul Heart}} +1 Soul Heart",
+				"{{HealingRed}} Heals 2 hearts",
+				"{{ArrowUp}} {{Speed}} +0.2 Speed"
 			}
 		},
 		ru = {
@@ -1815,9 +1955,9 @@ EID_Collectibles = {
 	},
 	[Item.RUE.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Rue",
 			Description = {
-				"PlaceholderDesc"
+				"{{Collectible118}} Taking damage fires a Brimstone laser as the nearest enemy"
 			}
 		},
 		ru = {
@@ -1835,9 +1975,9 @@ EID_Collectibles = {
 	},
 	[Item.SECRET_DIARY.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Secret Diary",
 			Description = {
-				"PlaceholderDesc"
+				"{{Timer}} Receive a {{Collectible619}}Birthright effect for the room"
 			}
 		},
 		ru = {
@@ -1855,9 +1995,12 @@ EID_Collectibles = {
 	},
 	[Item.SERVITUDE.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Servitude",
 			Description = {
-				"PlaceholderDesc"
+				"Using with a pedestal nearby will note the item down. Does not discharge and can no longer be recharged normally",
+				"Clearing a room reduces charges instead of gaining",
+				"Reaching 0 charge without taking damage spawns a copy of the item it noted",
+				"{{Warning}} Taking damage while the item has charge will discharge it, forgets the noted item, and grants {{BrokenHeart}} +1 Broken Heart",
 			}
 		},
 		ru = {
@@ -1875,9 +2018,12 @@ EID_Collectibles = {
 	},
 	[Item.SEVERED_EAR.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Severed Ear",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} {{Damage}} +20% Damage",
+				"{{ArrowUp}} {{Range}} +1.2 Range",
+				"{{ArrowDown}} {{Tears}} +20% Tear delay",
+				"{{ArrowDown}} {{Shotspeed}} -0.6 Shot speed",
 			}
 		},
 		ru = {
@@ -1895,9 +2041,9 @@ EID_Collectibles = {
 	},
 	[Item.SHATTERED_HEART.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Shattered Heart",
 			Description = {
-				"PlaceholderDesc"
+				"Explodes all hearts in the room, dealing damage based on the heart and leaves damaging creep"
 			}
 		},
 		ru = {
@@ -1915,9 +2061,9 @@ EID_Collectibles = {
 	},
 	[Item.SPIRITUAL_WOUND.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Spiritual Wound",
 			Description = {
-				"PlaceholderDesc"
+				"Funny aaa star wars"
 			}
 		},
 		ru = {
@@ -1935,9 +2081,9 @@ EID_Collectibles = {
 	},
 	[Item.SUNSCREEN.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Sunscreen",
 			Description = {
-				"PlaceholderDesc"
+				"Immunity to fire"
 			}
 		},
 		ru = {
@@ -1955,9 +2101,10 @@ EID_Collectibles = {
 	},
 	[Item.TAMBOURINE.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Tambourine",
 			Description = {
-				"PlaceholderDesc"
+				"Inflicts extreme knockback to enemies in a small radius around Isaac",
+				"Spawns a giant damaging blue creep for one second"
 			}
 		},
 		ru = {
@@ -1975,9 +2122,9 @@ EID_Collectibles = {
 	},
 	[Item.TECHNOLOGY_MINUS_1.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Technology -1",
 			Description = {
-				"PlaceholderDesc"
+				"Tears have a 3.14% chance to fire 3 lasers in random directions"
 			}
 		},
 		ru = {
@@ -1995,9 +2142,10 @@ EID_Collectibles = {
 	},
 	[Item.TECH_IX.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Tech IX",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowDown}} +5 Tear delay",
+				"{{Collectible395}} Isaac's tears are replaced with small green piercing and spectral technology rings"
 			}
 		},
 		ru = {
@@ -2015,9 +2163,10 @@ EID_Collectibles = {
 	},
 	[Item.THE_DREIDEL.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "The Driedel",
 			Description = {
-				"PlaceholderDesc"
+				"Reduces 1-4 random stats and spawns 1 random item from the current room's item pool",
+				"Quality of the spawned item will depend on the amount of stats lowered"
 			}
 		},
 		ru = {
@@ -2035,9 +2184,9 @@ EID_Collectibles = {
 	},
 	[Item.TREPANATION.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Trepanation",
 			Description = {
-				"PlaceholderDesc"
+				"{{Collectible531}} Fire a Haemolacria-like shot every 15 tears"
 			}
 		},
 		ru = {
@@ -2055,9 +2204,10 @@ EID_Collectibles = {
 	},
 	[Item.UNSTABLE_CORE.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Unstable Core",
 			Description = {
-				"PlaceholderDesc"
+				"{{Burning}} Using an active item burns enemies in a small radius around Isaac",
+				"Burn lasts longer the more charges the active item has"
 			}
 		},
 		ru = {
@@ -2075,9 +2225,13 @@ EID_Collectibles = {
 	},
 	[Item.VESTA.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Vesta?",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} {{Damage}} +50% Damage",
+				"{{ArrowDown}} {{Tearsize}} Permanent micro-sized tears",
+				"Spectral tears",
+				"{{Collectible224}} 10% chance for tears to split into 4",
+				"{{Luck}} 100% chance at 10 luck"
 			}
 		},
 		ru = {
@@ -2095,9 +2249,10 @@ EID_Collectibles = {
 	},
 	[Item.WINE_BOTTLE.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Wine Bottle",
 			Description = {
-				"PlaceholderDesc"
+				"Fires a high-velocity cork every 15 tears",
+				"Cork deals double damage and is 50% larger"
 			}
 		},
 		ru = {
@@ -2115,9 +2270,9 @@ EID_Collectibles = {
 	},
 	[Item.ZZZZOPTIONSZZZZ.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "ZZZZoptionsZZZZ",
 			Description = {
-				"PlaceholderDesc"
+				"{{Collectible721}} Allows Isaac to choose between one item and a glitched item"
 			}
 		},
 		ru = {

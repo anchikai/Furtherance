@@ -42,21 +42,20 @@ function ALT_KEY:OnUse(_, rng, player)
 		return false
 	end
 	local newStage = stageList[rng:RandomInt(#stageList) + 1]
+	Mod:Insert(newStage, true)
 	local player_floor_save = Mod:FloorSave(player)
 	player_floor_save.SkipFloorRecharge = true
-	local floor_save = Mod:FloorSave()
-	floor_save.AltKeyNewStage = newStage
-	game:StartStageTransition(false, 0, player)
+	Mod.Item.ALTERNATE_REALITY:QueueNewStage(newStage[1], newStage[2], true)
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, ALT_KEY.OnUse, ALT_KEY.ID)
 
 function ALT_KEY:SelectNewLevel()
 	local floor_save = Mod:FloorSave()
-	if floor_save.AltKeyNewStage then
-		StageTransition.SetSameStage(true)
-		local stage, stageType    = floor_save.AltKeyNewStage[1], floor_save.AltKeyNewStage[2]
-		floor_save.AltKeyNewStage = nil
+	if floor_save.QueueNewStage then
+		local stage, stageType = floor_save.QueueNewStage[1], floor_save.QueueNewStage[2]
+		StageTransition.SetSameStage(floor_save.QueueNewStage[3] or false)
+		floor_save.QueueNewStage = nil
 		return { stage, stageType }
 	end
 end

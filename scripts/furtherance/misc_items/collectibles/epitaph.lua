@@ -23,7 +23,7 @@ local reviveLocations = {}
 
 ---No active items, no trinkets, no starting items
 ---@param historyItem HistoryItem
-function EPITAPH:IsValidItemToSave(historyItem)
+function EPITAPH:IsValidPassive(historyItem)
 	return historyItem:GetTime() > 1
 		and not historyItem:IsTrinket()
 		and Mod.ItemConfig:GetCollectible(historyItem:GetItemID()).Type ~= ItemType.ITEM_ACTIVE
@@ -41,13 +41,13 @@ function EPITAPH:SavePlayerInventoryOnDeath(player)
 		local firstItem
 		local lastItem
 		for _, historyItem in ipairs(history) do
-			if EPITAPH:IsValidItemToSave(historyItem) then
+			if EPITAPH:IsValidPassive(historyItem) then
 				firstItem = historyItem:GetItemID()
 			end
 		end
 		Furtherance:inverseiforeach(history, function(historyItem)
 			if (not firstItem or historyItem:GetItemID() ~= firstItem)
-				and EPITAPH:IsValidItemToSave(historyItem)
+				and EPITAPH:IsValidPassive(historyItem)
 			then
 				lastItem = historyItem:GetItemID()
 			end

@@ -16,9 +16,11 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, SHIFT_KEY.OnUse, SHIFT_KEY.ID)
 
+---@param player EntityPlayer
 function SHIFT_KEY:DamageDecrease(player)
 	-- every 0.5 seconds
-	if player:GetEffects():HasCollectibleEffect(SHIFT_KEY.ID) and Mod.Game:GetFrameCount() % 15 == 0 then
+	local effects = player:GetEffects()
+	if effects:HasCollectibleEffect(SHIFT_KEY.ID) and effects:GetCollectibleEffect(SHIFT_KEY.ID).Cooldown % 15 == 0 then
 		player:AddCacheFlags(CacheFlag.CACHE_DAMAGE, true)
 	end
 end

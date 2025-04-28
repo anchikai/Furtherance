@@ -4,7 +4,7 @@
 	<active id="1" name="Tilde Key" description="Dirty cheater" gfx="key_tilde.png" maxcharges="12" initcharge="0" quality="0" craftquality="0" />
 	<active id="2" name="Alt Key" description="Reality" gfx="key_alt.png" maxcharges="2" chargetype="special" quality="4" craftquality="4" tags="nocantrip nochallenge nogreed" />
 	<active id="3" name="Spacebar Key" description="Feedback loop" gfx="key_spacebar.png" maxcharges="12" quality="4" craftquality="4" tags="nocantrip" />
-	<active id="4" name="Backspace Key" description="No, go back!" gfx="key_backspace.png" maxcharges="2" quality="1" craftquality="1" tags="offensive nocantrip" />
+	<active id="4" name="Backspace Key" description="No, go back!" gfx="key_backspace.png" maxcharges="12" quality="3" craftquality="3" tags="offensive nocantrip nochallenge" />
 	<active id="5" name="Q Key" description="Plagiarism" gfx="key_q.png" maxcharges="6" quality="4" craftquality="4" tags="nocantrip offensive" />
 	<active id="6" name="E Key" description="Quite explosive" gfx="key_e.png" maxcharges="6" quality="3" craftquality="3" tags="nocantrip offensive" />
 	<active id="7" name="C Key" description="Encyclopedia Support" gfx="key_c.png" maxcharges="6" initcharge="0" quality="3" craftquality="3" tags="nocantrip offensive" />
@@ -136,6 +136,6 @@
 	<null name="hope" />
 	<null name="polaris color" cache="damage shotspeed tearflag" persistent="true" />
 	<null name="soul of leah" persistent="true" />
-	<null name="kttk denied deals" persistent="true" />
+	<null name="backspace penalty" persistent="true" />
 	<null name="soul of miriam" persistent="true" cooldown="1200" />
 </items>

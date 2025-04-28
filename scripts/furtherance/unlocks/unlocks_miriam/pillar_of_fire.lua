@@ -11,7 +11,7 @@ PILLAR_OF_FIRE.INIT_SPEED = 6.5
 PILLAR_OF_FIRE.RADIUS = 500
 PILLAR_OF_FIRE.FIRE_FIRE_RATE_DEVIANCE = 5
 PILLAR_OF_FIRE.FIRE_FIRE_RATE = 60
-PILLAR_OF_FIRE.BASE_CHANCE = 0.05
+PILLAR_OF_FIRE.MIN_CHANCE = 0.05
 PILLAR_OF_FIRE.MAX_CHANCE = 0.5
 PILLAR_OF_FIRE.LUCK_VALUE = 0.05
 PILLAR_OF_FIRE.FIRE_SCALE = 0.75
@@ -20,7 +20,7 @@ function PILLAR_OF_FIRE:TrySpawnFlamesOnDamage(ent)
 	local player = ent:ToPlayer()
 	if player and player:HasCollectible(PILLAR_OF_FIRE.ID) then
 		local rng = player:GetCollectibleRNG(PILLAR_OF_FIRE.ID)
-		if Mod:DoesLuckChanceTrigger(PILLAR_OF_FIRE.BASE_CHANCE, PILLAR_OF_FIRE.MAX_CHANCE, PILLAR_OF_FIRE.LUCK_VALUE, player.Luck, rng) then
+		if Mod:DoesLuckChanceTrigger(PILLAR_OF_FIRE.MIN_CHANCE, PILLAR_OF_FIRE.MAX_CHANCE, PILLAR_OF_FIRE.LUCK_VALUE, player.Luck, rng) then
 			for _ = 1, 5 do
 				local fire = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.HOT_BOMB_FIRE, 0,
 					player.Position, RandomVector():Resized(PILLAR_OF_FIRE.INIT_SPEED), player)

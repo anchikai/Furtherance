@@ -6,6 +6,7 @@ Furtherance.Item.ROTTEN_APPLE = ROTTEN_APPLE
 
 ROTTEN_APPLE.ID = Isaac.GetItemIdByName("Rotten Apple")
 
+ROTTEN_APPLE.DAMAGE_UP = 2
 ROTTEN_APPLE.WORMS = {
 	TrinketType.TRINKET_PULSE_WORM,
 	TrinketType.TRINKET_WIGGLE_WORM,
@@ -17,7 +18,6 @@ ROTTEN_APPLE.WORMS = {
 	TrinketType.TRINKET_LAZY_WORM,
 	TrinketType.TRINKET_BRAIN_WORM
 }
-ROTTEN_APPLE.DAMAGE_UP = 2
 
 ---@param itemID CollectibleType
 ---@param player EntityPlayer

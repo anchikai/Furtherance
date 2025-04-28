@@ -7,6 +7,7 @@ Furtherance.Item.TECH_IX = TECH_IX
 TECH_IX.ID = Isaac.GetItemIdByName("Tech IX")
 
 TECH_IX.LASER_COLOR = Color(0, 1, 0, 1, 0, 1, 0.6)
+TECH_IX.FIREDELAY_UP = 5
 
 ---@param player EntityPlayer
 ---@param cacheFlag CacheFlag
@@ -26,7 +27,7 @@ function TECH_IX:EvaluteCache(player, cacheFlag)
 	elseif cacheFlag == CacheFlag.CACHE_TEARCOLOR then
 		player.LaserColor = TECH_IX.LASER_COLOR
 	elseif cacheFlag == CacheFlag.CACHE_FIREDELAY then
-		player.MaxFireDelay = player.MaxFireDelay + 5
+		player.MaxFireDelay = player.MaxFireDelay + TECH_IX.FIREDELAY_UP
 	elseif player:HasCollectible(CollectibleType.COLLECTIBLE_C_SECTION) then
 		player.TearFlags = player.TearFlags | TearFlags.TEAR_HOMING
 	end

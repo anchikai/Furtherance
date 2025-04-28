@@ -42,6 +42,19 @@ function ALTERNATE_REALITY:GetAvailableStages(stage)
 	return stageList
 end
 
+---@param levelStage LevelStage
+---@param stageType StageType
+---@param sameStage? boolean
+function ALTERNATE_REALITY:QueueNewStage(levelStage, stageType, sameStage)
+	local floor_save = Mod:FloorSave()
+	floor_save.AlternateRealityNewStage = {levelStage, stageType}
+	Mod.Game:StartStageTransition(sameStage or false, 0, nil)
+	Mod:ForEachPlayer(function (player)
+		player:GetSprite():SetFrame("Appear", 7)
+		player:GetSprite():Stop()
+	end)
+end
+
 ---@param rng RNG
 ---@param player EntityPlayer
 function ALTERNATE_REALITY:OnUse(_, rng, player)
@@ -49,20 +62,19 @@ function ALTERNATE_REALITY:OnUse(_, rng, player)
 	if level:IsAscent() then player:AnimateSad() return end
 	local stageList = ALTERNATE_REALITY:GetAvailableStages()
 	local randomStage = stageList[rng:RandomInt(#stageList) + 1]
-	local floor_save = Mod:FloorSave()
-	floor_save.AlternateRealityNewStage = randomStage
-	Mod.Game:StartStageTransition(false, 0, player)
-	Mod:DelayOneFrame(function() player:AnimateAppear() end)
+	ALTERNATE_REALITY:QueueNewStage(randomStage[1], randomStage[2], false)
 	return {Discharge = true, Remove = true, ShowAnim = false}
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, ALTERNATE_REALITY.OnUse, ALTERNATE_REALITY.ID)
 
 function ALTERNATE_REALITY:SelectNewLevel()
-local floor_save = Mod:FloorSave()
-	if floor_save.AlternateRealityNewStage then
-		local stage, stageType = floor_save.AlternateRealityNewStage[1], floor_save.AlternateRealityNewStage[2]
-		return {stage, stageType}
+	local floor_save = Mod:FloorSave()
+	if floor_save.QueueNewStage then
+		local stage, stageType = floor_save.QueueNewStage[1], floor_save.QueueNewStage[2]
+		StageTransition.SetSameStage(floor_save.QueueNewStage[3] or false)
+		floor_save.QueueNewStage = nil
+		return { stage, stageType }
 	end
 end
 

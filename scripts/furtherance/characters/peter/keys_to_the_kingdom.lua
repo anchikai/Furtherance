@@ -10,7 +10,6 @@ Furtherance.Item.KEYS_TO_THE_KINGDOM = KEYS_TO_THE_KINGDOM
 
 KEYS_TO_THE_KINGDOM.ID = Isaac.GetItemIdByName("Keys to the Kingdom")
 KEYS_TO_THE_KINGDOM.EFFECT = Isaac.GetEntityVariantByName("Keys to the Kingdom Effects")
-KEYS_TO_THE_KINGDOM.DEVIL_NULL_ID = Isaac.GetNullItemIdByName("kttk denied deals")
 
 --SubTypes of the Effect
 KEYS_TO_THE_KINGDOM.SOUL = 1
@@ -751,6 +750,7 @@ Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_UPDATE, CallbackPriority.IMPORTA
 ---@param player EntityPlayer
 function KEYS_TO_THE_KINGDOM:DenyHisOfferings(player)
 	if Mod.Room():GetType() == RoomType.ROOM_DEVIL then
+		local numPickups = 0
 		Mod:inverseiforeach(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE), function(ent)
 			local pickup = ent:ToPickup()
 			---@cast pickup EntityPickup
@@ -758,25 +758,15 @@ function KEYS_TO_THE_KINGDOM:DenyHisOfferings(player)
 				Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.CRACK_THE_SKY, 10, pickup.Position, Vector.Zero, nil)
 				Mod.SFXMan:Play(SoundEffect.SOUND_LIGHTBOLT)
 				pickup:Remove()
-				player:AddNullItemEffect(KEYS_TO_THE_KINGDOM.DEVIL_NULL_ID, false)
+				numPickups = numPickups + 1
 			end
 		end)
+		if numPickups > 0 then
+			KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), numPickups, false)
+			Mod.SFXMan:Play(SoundEffect.SOUND_HOLY)
+		end
 		return true
 	end
 end
-
----@param player EntityPlayer
-function KEYS_TO_THE_KINGDOM:StatsOnNextFloor(player)
-	local effectNum = player:GetEffects():GetNullEffectNum(KEYS_TO_THE_KINGDOM.DEVIL_NULL_ID)
-	if effectNum > 0 then
-		Mod:DelayOneFrame(function()
-			KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), effectNum, false)
-			Mod.SFXMan:Play(SoundEffect.SOUND_HOLY)
-		end)
-		player:GetEffects():RemoveNullEffect(KEYS_TO_THE_KINGDOM.DEVIL_NULL_ID, -1)
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_NEW_LEVEL, KEYS_TO_THE_KINGDOM.StatsOnNextFloor)
 
 --#endregion

@@ -18,7 +18,7 @@ function GOLDEN_PORT:OnDischargedUse(player)
 		and usedActive
 	then
 		player:AddCoins(-5)
-		player:AddActiveCharge(6, ActiveSlot.SLOT_PRIMARY, true, true, false)
+		player:AddActiveCharge(6, ActiveSlot.SLOT_PRIMARY, true, false, false)
 	end
 end
 
