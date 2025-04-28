@@ -50,6 +50,15 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, MIRIAM_B.OnPlayerInit)
 
+function MIRIAM_B:NoSoulHearts(player)
+	if MIRIAM_B:IsMiriamB(player) then
+		return 0
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, MIRIAM_B.NoSoulHearts, AddHealthType.SOUL)
+Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, MIRIAM_B.NoSoulHearts, AddHealthType.BLACK)
+
 ---@param player EntityPlayer
 function MIRIAM_B:TryHealFromDamageDealt(player)
 	local data = Mod:GetData(player)
