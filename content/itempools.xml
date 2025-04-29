@@ -342,35 +342,35 @@
 	</Pool>
 	<Pool Name="escortBeggar">
 		<!-- Treasure Map -->
-		<Item Id=54 Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="54" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Compass -->
-		<Item Id=21 Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="21" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Blue Map -->
-		<Item Id=246 Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="246" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Book of Secrets -->
-		<Item Id=287 Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="287" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- The Ladder -->
-		<Item Id=60 Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="60" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Teleport! -->
-		<Item Id=44 Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="44" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Teleport 2.0 -->
-		<Item Id=419 Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="419" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Ventricle Razor -->
-		<Item Id=396 Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="396" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Lost Soul -->
-		<Item Id=612 Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="612" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- We Need To Go Deeper! -->
-		<Item Id=84 Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="84" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Spelunker Hat -->
-		<Item Id=91 Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="91" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Moving Box -->
-		<Item Id=523 Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="523" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- How To Jump -->
-		<Item Id=282 Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="282" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Red Key -->
-		<Item Id=580 Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="580" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Undefined -->
-		<Item Id=324 Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="324" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Cosmic Omnibus" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 </ItemPools>
