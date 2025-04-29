@@ -49,6 +49,9 @@
 	<!-- Slots/Beggars -->
 	<entity anm2path="slot_love_teller.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="6" name="Love Teller" numGridCollisionPoints="24" shadowSize="33" stageHP="0" variant="4826" collisionRadiusXMulti="1.5" collisionRadiusYMulti="0.75">
     </entity>
+	<entity anm2path="slot_escort_beggar.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="6" name="Escort Beggar" numGridCollisionPoints="24" shadowSize="15" stageHP="0" variant="4">
+        <gibs amount="6" blood="1" bone="1" eye="1" gut="1" large="0"/>
+    </entity>
 
 	<!-- Monsters -->
 	<entity anm2path="monsters/hostikai.anm2" baseHP="30" boss="0" champion="1" collisionDamage="1" collisionMass="15" collisionRadius="13" friction="1" id="27" name="Hostikai" numGridCollisionPoints="12" portrait="1" reroll="true" shadowSize="25" stageHP="0" variant="0" subtype="3070">
