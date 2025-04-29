@@ -33,7 +33,7 @@ local leah_b = {
 	"love_teller",
 	"essence_of_hate",
 	"reverse_hope",
-	"moon_hearts",
+	"moon_heart",
 }
 
 Mod.LoopInclude(leah_b, prefix .. "leah_b")
@@ -71,6 +71,7 @@ local peter_b = {
 	"reverse_faith",
 	"soul_of_peter",
 	"trepanation",
+	"escort_beggar",
 }
 
 Mod.LoopInclude(peter_b, prefix .. "peter_b")

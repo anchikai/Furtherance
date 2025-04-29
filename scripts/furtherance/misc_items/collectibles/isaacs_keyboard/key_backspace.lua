@@ -11,6 +11,14 @@ BACKSPACE_KEY.NULL_ID = Isaac.GetItemIdByName("backspace penalty")
 function BACKSPACE_KEY:UseBackSpace(_, _, player)
 	local level = Mod.Level()
 	local stage = level:GetStage()
+	if stage == LevelStage.STAGE1_1 then
+		if not Mod.Game:IsGreedMode() then
+			Mod.Item.ALTERNATE_REALITY:QueueNewStage(LevelStage.STAGE8, StageType.STAGETYPE_ORIGINAL)
+		else
+			Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
+			return true
+		end
+	end
 	if stage == LevelStage.STAGE8 then
 		Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
 		return true

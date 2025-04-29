@@ -51,7 +51,7 @@ Furtherance.CompletionMarkToAchievement.LEAH = {
 	[CompletionType.MOTHER] = Mod.Item.OWLS_EYE.ACHIEVEMENT,
 	[CompletionType.BEAST] = Mod.Item.EXSANGUINATION.ACHIEVEMENT,
 	[Mod.CompletionType.TAINTED] = Mod.Character.LEAH_B.ACHIEVEMENT,
-	[Mod.CompletionType.ALL] = achievement("Essence of Love")
+	[Mod.CompletionType.ALL] = Mod.Rune.ESSENCE_OF_LOVE.ACHIEVEMENT
 }
 Furtherance.PlayerTypeToCompletionTable[Mod.PlayerType.LEAH] = Mod.CompletionMarkToAchievement.LEAH
 
@@ -61,21 +61,21 @@ Furtherance.PlayerTypeToCompletionTable[Mod.PlayerType.LEAH] = Mod.CompletionMar
 
 Furtherance.Rune.SOUL_OF_LEAH.ACHIEVEMENT = achievement("Soul of Leah")
 Furtherance.Item.LEAHS_HEART.ACHIEVEMENT = achievement("Leah's Heart")
---Mega Satan Unlock. Used to be Rotten Hearts but is not fit for this unlock
+Furtherance.Slot.LOVE_TELLER.ACHIEVEMENT = achievement("Love Teller")
+Furtherance.Card.REVERSE_HOPE.ACHIEVEMENT = achievement("Reverse Hope")
 Furtherance.Item.SHATTERED_HEART.ACHIEVEMENT = achievement("Shattered Heart")
 Furtherance.Item.COLD_HEARTED.ACHIEVEMENT = achievement("Cold Hearted")
---Beast Unlock. Moon Hearts
-Furtherance.Card.REVERSE_HOPE.ACHIEVEMENT = achievement("Reverse Hope")
+Furtherance.Pickup.MOON_HEART.ACHIEVEMENT = achievement("Moon Heart")
 Furtherance.Rune.ESSENCE_OF_HATE.ACHIEVEMENT = achievement("Essence of Hate")
 
 Furtherance.CompletionMarkToAchievement.LEAH_B = {
 	[TaintedMarksGroup.SOULSTONE] = Mod.Rune.SOUL_OF_LEAH.ACHIEVEMENT,
 	[TaintedMarksGroup.POLAROID_NEGATIVE] = Mod.Item.LEAHS_HEART.ACHIEVEMENT,
-	[CompletionType.MEGA_SATAN] = achievement("Secret Diary"), --Placeholder
+	[CompletionType.MEGA_SATAN] = Mod.Slot.LOVE_TELLER.ACHIEVEMENT,
 	[CompletionType.ULTRA_GREEDIER] = Mod.Card.REVERSE_HOPE.ACHIEVEMENT,
 	[CompletionType.DELIRIUM] = Mod.Item.SHATTERED_HEART.ID,
 	[CompletionType.MOTHER] = Mod.Item.COLD_HEARTED.ACHIEVEMENT,
-	[CompletionType.BEAST] = achievement("Moon Hearts"), --Placeholderish, need to actually get around to implementing it with CustomHealthAPI. Scary....
+	[CompletionType.BEAST] = Mod.Pickup.MOON_HEART.ACHIEVEMENT,
 	[Mod.CompletionType.ALL] = Mod.Rune.ESSENCE_OF_HATE.ACHIEVEMENT
 }
 Furtherance.PlayerTypeToCompletionTable[Mod.PlayerType.LEAH_B] = Mod.CompletionMarkToAchievement.LEAH_B
@@ -125,21 +125,21 @@ Furtherance.PlayerTypeToCompletionTable[Mod.PlayerType.PETER] = Mod.CompletionMa
 
 Furtherance.Rune.SOUL_OF_PETER.ACHIEVEMENT = achievement("Soul of Peter")
 Furtherance.Trinket.LEVIATHANS_TENDRIL.ACHIEVEMENT = achievement("Leviathan's Tendril")
---Mega Satan Unlock. Used to be Trepanation but is not fitting for the unlock
+Furtherance.Slot.ESCORT_BEGGAR.ACHIEVEMENT = achievement("Escort Beggar")
 Furtherance.Card.REVERSE_FAITH.ACHIEVEMENT = achievement("Reverse Faith")
 Furtherance.Item.MUDDLED_CROSS.ACHIEVEMENT = achievement("Muddled Cross")
 Furtherance.Trinket.DUNGEON_KEY.ACHIEVEMENT = achievement("Key to the Pit")
---Beast Unlock. Potentially Escort Beggar
+Furtherance.Item.TREPANATION.ACHIEVEMENT = achievement("Trepanation")
 Furtherance.Rune.ESSENCE_OF_DEATH.ACHIEVEMENT = achievement("Essence of Death")
 
 Furtherance.CompletionMarkToAchievement.PETER_B = {
 	[TaintedMarksGroup.SOULSTONE] = Mod.Rune.SOUL_OF_PETER.ACHIEVEMENT,
 	[TaintedMarksGroup.POLAROID_NEGATIVE] = Mod.Trinket.LEVIATHANS_TENDRIL.ACHIEVEMENT,
-	[CompletionType.MEGA_SATAN] = achievement("Secret Diary"), --Placeholder
+	[CompletionType.MEGA_SATAN] = Mod.Slot.ESCORT_BEGGAR.ACHIEVEMENT,
 	[CompletionType.ULTRA_GREEDIER] = Mod.Card.REVERSE_FAITH.ACHIEVEMENT,
 	[CompletionType.DELIRIUM] = Mod.Item.MUDDLED_CROSS.ACHIEVEMENT,
 	[CompletionType.MOTHER] = Mod.Trinket.DUNGEON_KEY.ACHIEVEMENT,
-	[CompletionType.BEAST] = achievement("Secret Diary"), --Placeholder
+	[CompletionType.BEAST] = Mod.Item.TREPANATION.ACHIEVEMENT,
 	[Mod.CompletionType.ALL] = Mod.Rune.ESSENCE_OF_DEATH.ACHIEVEMENT
 }
 Furtherance.PlayerTypeToCompletionTable[Mod.PlayerType.PETER_B] = Mod.CompletionMarkToAchievement.PETER_B

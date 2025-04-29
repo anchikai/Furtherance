@@ -51,7 +51,7 @@
 	<achievement name="Reverse Hope" gfx="achievement_reversehope.png" />
 	<achievement name="Shattered Heart" gfx="achievement_shatteredheart.png" />
 	<achievement name="Cold Hearted" gfx="achievement_coldhearted.png" />
-	<achievement name="Moon Hearts" gfx="achievement_moonhearts.png" />
+	<achievement name="Moon Heart" gfx="achievement_moonheart.png" />
 	<achievement name="Essence of Hate" gfx="achievement_essenceofhate.png" />
 
 	<!-- Peter Unlocks -->
