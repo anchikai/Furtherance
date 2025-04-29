@@ -114,3 +114,45 @@ BLOOD_CHEST = Isaac.GetEntityVariantByName("Blood Chest")
 PENITENT_CHEST = Isaac.GetEntityVariantByName("Penitent Chest")
 
 _ = {} ---@type any
+
+--[[
+	MinimapAPI:AddPickup(
+		id, -- ID of the pickup, can be a string
+		Icon, -- see AddIcon
+		EntityType,
+		number variant,
+		number subtype,
+		function,
+		icongroup,
+		number priority) -- Icons with higher priorities will be displayed over other icons. Default = 13000
+
+	MinimapAPI:AddIcon(
+		id, -- ID of the icon, will be put inside of Icon in add pickup
+		Sprite,
+		string animationName,
+		number frame,
+		(optional) Color color)
+]]
+
+---@param id string
+---@param icon string @Same ID you used in :AddIcon()
+---@param entType EntityType
+---@param variant integer
+---@param subtype integer
+---@param func fun(): boolean
+---@param iconGroup "slots" | "keys" | "cards" | "coins" | "other" | "hearts" | "bombs"
+---@param number? number @default: `13000`
+function MinimapAPI:AddPickup(id, icon, entType, variant, subtype, func, iconGroup, number)
+end
+
+---@param id string
+---@param sprite Sprite
+---@param animationName string
+---@param frame number
+---@param color? Color
+function MinimapAPI:AddIcon(id, sprite, animationName, frame, color)
+end
+
+MinimapAPI.PickupSlotMachineNotBroken = function() return true end
+MinimapAPI.PickupChestNotCollected = function() return true end
+MinimapAPI.PickupNotCollected = function() return true end

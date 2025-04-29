@@ -43,7 +43,8 @@ function loader:ApplyPatches()
 end
 
 local patches = {
-	"furtherance"
+	"furtherance",
+	"minimapi"
 }
 
 for _, fileName in ipairs(patches) do
