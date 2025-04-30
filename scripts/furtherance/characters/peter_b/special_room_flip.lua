@@ -102,8 +102,8 @@ local GRID_ID_TO_POOP_VARIANT = {
 	[1501] = GridPoopVariant.CHARMING
 }
 local GRID_ID_TO_ENTITY = {
-	[1400] = {EntityType.ENTITY_FIREPLACE, 0},
-	[1410] = {EntityType.ENTITY_FIREPLACE, 1},
+	[1400] = { EntityType.ENTITY_FIREPLACE, 0 },
+	[1410] = { EntityType.ENTITY_FIREPLACE, 1 },
 	--Don't need to be respawned even if they overlap I guess? Effects are likely a unique exception
 	--[5000] = {EntityType.ENTITY_EFFECT, EffectVariant.DEVIL},
 	--[5001] = {EntityType.ENTITY_EFFECT, EffectVariant.ANGEL}
@@ -177,18 +177,16 @@ function SPECIAL_ROOM_FLIP:UpdateRoom()
 	end
 
 	if roomToLoad then
-		for index = 0, room:GetGridSize() - 1 do
-			local gridEnt = room:GetGridEntity(index)
-			if gridEnt then
-				gridIndexes[index] = true
-				room:RemoveGridEntityImmediate(index, 0, false)
-			end
-		end
-		Mod:inverseiforeach(Isaac.GetRoomEntities(), function (ent, key)
-			if not ent:ToPlayer() and not ent:ToFamiliar() then
-				ent:Remove()
-			end
+		Mod.Foreach.Grid(function (gridEnt, gridIndex)
+			gridIndexes[gridIndex] = true
+			room:RemoveGridEntityImmediate(gridIndex, 0, false)
 		end)
+		Mod.Foreach.Entity(function (entity, index)
+
+			if not entity:ToPlayer() and not entity:ToFamiliar() then
+				entity:Remove()
+			end
+		end, {Inverse = true})
 		local oldSpawns = level:GetCurrentRoomDesc().Data.Spawns
 		local occupiedSpawns = {}
 		for i = 0, #oldSpawns - 1 do
@@ -221,7 +219,7 @@ function SPECIAL_ROOM_FLIP:UpdateRoom()
 		Mod.Game:ChangeRoom(curIndex)
 	end
 	if spawnPos then
-		Mod:ForEachPlayer(function (player)
+		Mod.Foreach.Player(function(player)
 			player.Position = spawnPos
 		end)
 	end
@@ -262,15 +260,15 @@ function SPECIAL_ROOM_FLIP:InvalidateFlip(pickup, collider)
 		and Mod:CanPlayerBuyShopItem(player, pickup)
 		and SPECIAL_ROOM_FLIP:CanFlipRoom()
 	then
-		Mod:KillDevilPedestals(pickup)
 		local room_save = Mod:RoomSave()
 		room_save.MuddledCrossFlippedRoom = true
-		for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, Mod.Item.MUDDLED_CROSS.PUDDLE)) do
-			ent:ToEffect().Timeout = 4
-			if ent.SubType == 0 then
-				Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 2, ent.Position, Vector.Zero, nil)
+
+		Mod.Foreach.Effect(function(effect, index)
+			effect.Timeout = 4
+			if effect.SubType == 0 then
+				Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 2, effect.Position, Vector.Zero, nil)
 			end
-		end
+		end, Mod.Item.MUDDLED_CROSS.PUDDLE)
 	end
 end
 

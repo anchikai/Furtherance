@@ -58,14 +58,12 @@ end
 Mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, FIRSTBORN_SON.OnFamiliarUpdate, FIRSTBORN_SON.FAMILIAR)
 
 Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FIRSTBORN_SON.FAMILIAR)) do
-		local familiar = ent:ToFamiliar()
-		---@cast familiar EntityFamiliar
+	Mod.Foreach.Familiar(function (familiar, index)
 		familiar.State = 0
 		familiar.FireCooldown = FIRSTBORN_SON.PURGATORY_DELAY
 		familiar:SetColor(Color.Default, -1, 1, false, true)
 		familiar.Visible = true
-	end
+	end, FIRSTBORN_SON.FAMILIAR)
 end)
 
 --#endregion
@@ -154,9 +152,7 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, FIRSTBORN_SON.OnEffectUpdate, EffectVariant.PURGATORY)
 
 function FIRSTBORN_SON:OnRoomClear()
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FIRSTBORN_SON.FAMILIAR)) do
-		local familiar = ent:ToFamiliar()
-		---@cast familiar EntityFamiliar
+	Mod.Foreach.Familiar(function (familiar, index)
 		FIRSTBORN_SON:OnFamiliarInit(familiar)
 		if familiar.State == 1 then
 			familiar:SetColor(Color.Default, -1, 1, false, true)
@@ -164,7 +160,7 @@ function FIRSTBORN_SON:OnRoomClear()
 			familiar.State = 0
 			familiar.Visible = true
 		end
-	end
+	end, FIRSTBORN_SON.FAMILIAR)
 end
 
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR, CallbackPriority.LATE, FIRSTBORN_SON.OnRoomClear)

@@ -48,14 +48,12 @@ function ASTRAGALI:UseAstragali(_, _, player, flags)
 			Mod:Insert(rerollChestList, chestVariant)
 		end
 	end
-	for _, entity in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP)) do
-		local pickup = entity:ToPickup()
-		---@cast pickup EntityPickup
+	Mod.Foreach.Pickup(function (pickup, index)
 		if ASTRAGALI.IsChest[pickup.Variant] and pickup.SubType == ChestSubType.CHEST_CLOSED then
 			local choice = rng:RandomInt(#rerollChestList) + 1
 			pickup:Morph(EntityType.ENTITY_PICKUP, choice, ChestSubType.CHEST_CLOSED)
 		end
-	end
+	end)
 	return true
 end
 

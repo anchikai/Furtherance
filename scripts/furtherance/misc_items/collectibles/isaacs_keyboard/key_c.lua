@@ -25,12 +25,11 @@ function C_KEY:CKeyTeleported()
 		and roomDesc.Data.Variant == 5
 		and roomDesc.Data.Type == RoomType.ROOM_LIBRARY
 	then
-		for i = 0, room:GetGridSize() - 1 do
-			local grid = room:GetGridEntity(i)
-			if grid and not grid:ToDoor() then
-				room:RemoveGridEntity(i, 0, true)
+		Mod.Foreach.Grid(function (gridEnt, gridIndex)
+			if not gridEnt:ToDoor() then
+				room:RemoveGridEntity(gridIndex, 0, true)
 			end
-		end
+		end)
 	end
 	cKeyLibrary = false
 end

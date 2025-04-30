@@ -13,13 +13,12 @@ ACE_OF_SHIELDS.BlacklistedPickupVariants = Mod:Set({
 })
 
 function ACE_OF_SHIELDS:OnUse(_, player)
-	for _, ent in pairs(Isaac.FindByType(EntityType.ENTITY_PICKUP)) do
-		if not ACE_OF_SHIELDS.BlacklistedPickupVariants[ent.Variant] then
-			local pickup = ent:ToPickup()
-			---@cast pickup EntityPickup
+	Mod.Foreach.Pickup(function (pickup, index)
+		if not ACE_OF_SHIELDS.BlacklistedPickupVariants[pickup.Variant] then
 			pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_LIL_BATTERY, BatterySubType.BATTERY_MICRO)
 		end
-	end
+	end)
+
 	Mod:ForEachEnemy(function(npc)
 		if not npc:IsBoss() then
 			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_LIL_BATTERY, BatterySubType.BATTERY_MICRO,

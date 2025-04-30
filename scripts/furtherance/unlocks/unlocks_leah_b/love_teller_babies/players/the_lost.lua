@@ -24,14 +24,14 @@ local function onMantleRemove(_, player, itemConfig)
 	if itemConfig:IsCollectible()
 		and itemConfig.ID == CollectibleType.COLLECTIBLE_HOLY_MANTLE
 	then
-		for _, familiar in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, Mod.Slot.LOVE_TELLER.BABY.FAMILIAR)) do
+		Mod.Foreach.Familiar(function (familiar, index)
 			local data = Mod:GetData(familiar)
 			if data.LostBabyAddedMantle then
 				data.LostBabyAddedMantle = nil
 				data.LoveTellerPassiveCountdown = nil
-				break
+				return true
 			end
-		end
+		end, Mod.Slot.LOVE_TELLER.BABY.FAMILIAR)
 	end
 end
 

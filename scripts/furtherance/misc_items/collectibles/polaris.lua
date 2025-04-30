@@ -165,7 +165,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, POLARIS.PolarisTearBuffs)
 
 POLARIS.WHITE_MODIFIER = Mod.TearModifier.New({
 	Name = "Polaris White",
-	RngGetter = function (player)
+	RngGetter = function(player)
 		if POLARIS:GetColorBuff(player) == POLARIS.COLOR.WHITE then
 			return player:GetCollectibleRNG(POLARIS.ID)
 		end
@@ -201,7 +201,7 @@ end
 
 POLARIS.BLUE_MODIFIER = Mod.TearModifier.New({
 	Name = "Polaris Blue",
-	RngGetter = function (player)
+	RngGetter = function(player)
 		if POLARIS:GetColorBuff(player) == POLARIS.COLOR.BLUE then
 			return player:GetCollectibleRNG(POLARIS.ID)
 		end
@@ -225,7 +225,7 @@ end
 ---@param rng RNG
 ---@param pos Vector
 function POLARIS:OnRoomClear(rng, pos)
-	local hasYellowPolaris = Mod:ForEachPlayer(function (player)
+	local hasYellowPolaris = Mod.Foreach.Player(function(player)
 		if POLARIS:GetColorBuff(player) == POLARIS.COLOR.YELLOW then
 			return true
 		end

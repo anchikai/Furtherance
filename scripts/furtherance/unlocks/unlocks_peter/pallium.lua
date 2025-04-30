@@ -21,14 +21,12 @@ end
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR, CallbackPriority.LATE, PALLIUM.OnRoomClear)
 
 function PALLIUM:RemoveMinisaacs()
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FamiliarVariant.MINISAAC)) do
-		local familiar = ent:ToFamiliar()
-		---@cast familiar EntityFamiliar
+	Mod.Foreach.Familiar(function (familiar, index)
 		local familiar_floor_save = Mod.SaveManager.TryGetFloorSave(familiar)
 		if familiar_floor_save and familiar_floor_save.PalliumMinisaac then
 			familiar:Remove()
 		end
-	end
+	end, FamiliarVariant.MINISAAC)
 end
 
 Mod:AddCallback(Mod.SaveManager.SaveCallbacks.PRE_FLOOR_DATA_RESET, PALLIUM.RemoveMinisaacs)

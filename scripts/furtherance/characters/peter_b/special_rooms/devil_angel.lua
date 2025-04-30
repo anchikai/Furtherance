@@ -25,11 +25,7 @@ end
 Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, angelRoomBackdrop, RoomType.ROOM_DEVIL)
 
 local function angelRoomShop()
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
-		local pickup = ent:ToPickup()
-		---@cast pickup EntityPickup
-		Mod.Card.REVERSE_CHARITY:MakeBalancedShopItem(pickup)
-	end
+	Mod.Foreach.Pickup(Mod.Card.REVERSE_CHARITY.MakeBalancedShopItem, PickupVariant.PICKUP_COLLECTIBLE)
 end
 
 Mod:AddCallback(Mod.ModCallbacks.POST_MUDDLED_CROSS_ROOM_FLIP, angelRoomShop, RoomType.ROOM_ANGEL)
@@ -85,15 +81,13 @@ local function birthrightOnShopPurchase(_, pickup, collider)
 	if Mod:GetData(pickup).PeterBBirthrightFreePickup then
 		local room_save = Mod:RoomSave()
 		room_save.PeterBBirthrightPurchasedDevil = true
-		for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
-			local data = Mod:GetData(ent)
+		Mod.Foreach.Pickup(function (_pickup, index)
+			local data = Mod:GetData(_pickup)
 			if data.PeterBBirthrightFreePickup then
-				local _pickup = ent:ToPickup()
-				---@cast _pickup EntityPickup
 				_pickup.AutoUpdatePrice = true
 				data.PeterBBirthrightFreePickup = nil
 			end
-		end
+		end, PickupVariant.PICKUP_COLLECTIBLE)
 	elseif Mod:CanPlayerBuyShopItem(player, pickup) then
 		Mod:KillDevilPedestals(pickup)
 	end

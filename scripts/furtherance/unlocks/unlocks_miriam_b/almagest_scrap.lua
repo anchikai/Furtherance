@@ -30,10 +30,8 @@ function ALMAGEST_SCRAP:ShouldUpdateTreasureRoom()
 end
 
 local function updateTreasureDoors(filename)
-	local room = Mod.Room()
-	for i = DoorSlot.NO_DOOR_SLOT + 1, DoorSlot.NUM_DOOR_SLOTS - 1 do
-		local door = room:GetDoor(i)
-		if door and door.TargetRoomType == RoomType.ROOM_TREASURE then
+	Mod.Foreach.Door(function (door, doorSlot)
+		if door.TargetRoomType == RoomType.ROOM_TREASURE then
 			local roomDesc = Mod.Level():GetRoomByIdx(door.TargetRoomIndex)
 			--First visit and actually a treasure room
 			if roomDesc.VisitedCount == 0
@@ -46,7 +44,7 @@ local function updateTreasureDoors(filename)
 				Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, door.Position, Vector.Zero, nil)
 			end
 		end
-	end
+	end)
 end
 
 --#endregion
@@ -120,11 +118,7 @@ function ALMAGEST_SCRAP:UpdateFirstVisitPlanetarium()
 		updateTreasureDoors("gfx/grid/door_00x_planetariumdoor.anm2")
 	end
 	if Mod:RoomSave().AlmagestPlanetarium and Mod.Room():IsFirstVisit() then
-		for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
-			local pickup = ent:ToPickup()
-			---@cast pickup EntityPickup
-			ALMAGEST_SCRAP:TurnToAlmagestShopItem(pickup)
-		end
+		Mod.Foreach.Pickup(ALMAGEST_SCRAP.TurnToAlmagestShopItem, PickupVariant.PICKUP_COLLECTIBLE)
 	end
 end
 

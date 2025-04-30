@@ -58,11 +58,9 @@ function POLYDIPSIA:SpawnPolydipsiaCreep(player, ent, enemyPos)
 	--Epic Fetus
 	if ent:ToEffect() then
 		--They only exist for one frame and do change size with the explosion radius
-		for _, eff in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.BOMB_CRATER)) do
-			if eff.Position:DistanceSquared(pos) <= 0 then
-				size = 15 * eff.SpriteScale.X
-			end
-		end
+		Mod.Foreach.EffectInRadius(pos, 0, function (effect, index)
+			size = 15 * effect.SpriteScale.X
+		end, EffectVariant.BOMB_CRATER)
 	elseif player:HasCollectible(CollectibleType.COLLECTIBLE_POLYPHEMUS) then
 		size = size + 15
 	end

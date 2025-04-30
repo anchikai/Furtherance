@@ -6,14 +6,12 @@ Furtherance.Item.D16 = D16
 
 D16.ID = Isaac.GetItemIdByName("D16")
 
-function D16:OnUse(itemID, rng, player, flags, slot)
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP)) do
-		if not Mod.Card.ACE_OF_SHIELDS.BlacklistedPickupVariants[ent.Variant] then
-			local pickup = ent:ToPickup()
-			---@cast pickup EntityPickup
-			pickup:Morph(ent.Type, PickupVariant.PICKUP_HEART, NullPickupSubType.ANY)
+function D16:OnUse()
+	Mod.Foreach.Pickup(function (pickup, index)
+		if not Mod.Card.ACE_OF_SHIELDS.BlacklistedPickupVariants[pickup.Variant] then
+			pickup:Morph(pickup.Type, PickupVariant.PICKUP_HEART, NullPickupSubType.ANY)
 		end
-	end
+	end)
 	return true
 end
 

@@ -53,7 +53,7 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, BINDS_OF_DEVOTION.AddNewJacob, BINDS_OF_DEVOTION.ID)
 
 function BINDS_OF_DEVOTION:RemoveJacob(player, itemID)
-	Mod:ForEachPlayer(function(_player, playerIndex)
+	Mod.Foreach.Player(function(_player, playerIndex)
 		if _player:GetPlayerType() == BINDS_OF_DEVOTION.PLAYER_FAKE_JACOB
 			and Mod:IsSameEntity(_player.Parent, player)
 			and _player:Exists()

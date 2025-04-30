@@ -159,7 +159,7 @@ local config = {
 }
 
 Furtherance.Spawn = include("scripts.helpers.spawn")
-Furtherance.ForEach = include("scripts.helpers.for_each")
+Furtherance.Foreach = include("scripts.helpers.for_each")
 
 Mod.LoopInclude(helpers, "scripts.helpers")
 Dump = include("scripts.helpers.everything_function")

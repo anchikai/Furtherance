@@ -57,7 +57,7 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_NEW_ROOM_TEMP_EFFECTS, BI_84.RandomTechItem)
 
 function BI_84:RemoveTechWisps()
-	Mod:ForEachPlayer(function(player)
+	Mod.Foreach.Player(function(player)
 		BI_84:TryRemoveTechWisp(player)
 	end)
 end

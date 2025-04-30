@@ -103,21 +103,14 @@ Mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, LEVIATHANS_TENDRIL.WormFriendCo
 
 ---@param ent Entity
 function LEVIATHANS_TENDRIL:WormFriendKilledEnemy(ent)
-	local wormFriends = Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FamiliarVariant.WORM_FRIEND)
-	local killedByLeviathanWormFriend = false
-
-	for _, worm in ipairs(wormFriends) do
-		local familiar = worm:ToFamiliar()
-		---@cast familiar EntityFamiliar
+	local killedByLeviathanWormFriend = Mod.Foreach.Familiar(function(familiar)
 		local player = familiar.Player
 		if player and player:HasTrinket(LEVIATHANS_TENDRIL.ID) and familiar.Target and GetPtrHash(familiar.Target) == GetPtrHash(ent) then
-			killedByLeviathanWormFriend = true
-			break
+			return true
 		end
-	end
-
+	end, FamiliarVariant.WORM_FRIEND)
 	if killedByLeviathanWormFriend then
-		Mod.Game:Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, ent.Position, Vector.Zero, ent, HeartSubType.HEART_BLACK, ent.DropSeed)
+		Mod.Spawn.Heart(HeartSubType.HEART_BLACK, ent.Position, nil, ent, ent.DropSeed)
 	end
 end
 

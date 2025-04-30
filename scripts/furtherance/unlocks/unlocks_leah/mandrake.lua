@@ -11,9 +11,7 @@ function MANDRAKE:SpawnFamiliarItem()
 	local room = game:GetRoom()
 	if room:GetType() == RoomType.ROOM_TREASURE and room:IsFirstVisit() then
 		if PlayerManager.AnyoneHasCollectible(MANDRAKE.ID) then
-			for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
-				local pickup = ent:ToPickup()
-				---@cast pickup EntityPickup
+			Mod.Foreach.Pickup(function (pickup, index)
 				if Mod:GetData(pickup).MandrakeItem then return end
 				local optionIndex = pickup.OptionsPickupIndex
 				if optionIndex == 0 then
@@ -35,7 +33,7 @@ function MANDRAKE:SpawnFamiliarItem()
 				if pickup:IsShopItem() then
 					mandrakeSpawn:MakeShopItem(-1)
 				end
-			end
+			end, PickupVariant.PICKUP_COLLECTIBLE)
 		end
 	end
 end

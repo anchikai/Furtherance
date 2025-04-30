@@ -63,22 +63,20 @@ function MUDDLED_CROSS:TryFlip(player)
 		and not isXFlipped
 		and MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ALLOWED_SPECIAL_ROOMS[room:GetType()]
 	then
-		local puddles = Isaac.FindByType(EntityType.ENTITY_EFFECT, MUDDLED_CROSS.PUDDLE)
 		local flipped
-		for _, ent in ipairs(puddles) do
-			if player.Position:DistanceSquared(ent.Position) <= (player.Size + ent.Size) ^ 2 then
-				flipped = MUDDLED_CROSS:TryFlipY()
-				break
-			end
-		end
-		if #puddles > 0 and flipped == false then
+		Mod.Foreach.EffectInRadius(player.Position, player.Size, function(effect, index)
+			flipped = MUDDLED_CROSS:TryFlipY()
+			return true
+		end, MUDDLED_CROSS.PUDDLE)
+
+		if flipped == false then
 			Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
-			for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, Mod.Item.MUDDLED_CROSS.PUDDLE)) do
-				ent:ToEffect().Timeout = 4
-				if ent.SubType == 0 then
-					Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 2, ent.Position, Vector.Zero, nil)
+			Mod.Foreach.Effect(function(effect, index)
+				effect.Timeout = 4
+				if effect.SubType == 0 then
+					Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 2, effect.Position, Vector.Zero, nil)
 				end
-			end
+			end, Mod.Item.MUDDLED_CROSS.PUDDLE)
 			return false
 		elseif flipped then
 			return true
@@ -205,7 +203,7 @@ function MUDDLED_CROSS:ChargeOnEnemyDeath(ent)
 		then
 			return
 		end
-		Mod:ForEachPlayer(function(player)
+		Mod.Foreach.Player(function(player)
 			local slots = Mod:GetActiveItemCharges(player, MUDDLED_CROSS.ID)
 			local CHARGE_FRACTION = MUDDLED_CROSS:GetChargeFractionPerKill(player)
 			for _, slotData in ipairs(slots) do

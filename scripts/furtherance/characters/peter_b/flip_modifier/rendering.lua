@@ -120,13 +120,11 @@ function FLIP_RENDERING:TearSplash(tearOrProj)
 	if not FLIP.PETER_EFFECTS_ACTIVE then return end
 	local renderFlag = Mod:GetData(tearOrProj).PeterFlippedIgnoredRenderFlag
 
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
-		if ent.Position:DistanceSquared(tearOrProj.Position) <= 1
-			and FLIP.TEAR_DEATH_EFFECTS[ent.Variant]
-		then
-			Mod:GetData(ent).PeterFlippedIgnoredRenderFlag = renderFlag
+	Mod.Foreach.EffectInRadius(tearOrProj.Position, 1, function(effect)
+		if FLIP.TEAR_DEATH_EFFECTS[effect.Variant] then
+			Mod:GetData(effect).PeterFlippedIgnoredRenderFlag = renderFlag
 		end
-	end
+	end)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_TEAR_DEATH, FLIP_RENDERING.TearSplash)
@@ -136,11 +134,11 @@ function FLIP_RENDERING:PostBombExplode(bomb)
 	if not FLIP.PETER_EFFECTS_ACTIVE then return end
 	local renderFlag = Mod:GetData(bomb).PeterFlippedIgnoredRenderFlag
 
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
-		if ent.Position:DistanceSquared(bomb.Position) <= 1 and FLIP.TEAR_DEATH_EFFECTS[ent.Variant] then
-			Mod:GetData(ent).PeterFlippedIgnoredRenderFlag = renderFlag
+	Mod.Foreach.EffectInRadius(bomb.Position, 1, function(effect)
+		if FLIP.TEAR_DEATH_EFFECTS[effect.Variant] then
+			Mod:GetData(effect).PeterFlippedIgnoredRenderFlag = renderFlag
 		end
-	end
+	end)
 end
 
 Mod:AddCallback(Mod.ModCallbacks.POST_BOMB_EXPLODE, FLIP_RENDERING.PostBombExplode)
@@ -172,13 +170,13 @@ Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, FLIP.MarkEnemyEffectOnInit)
 function FLIP_RENDERING:MarkEnemyEffectOnDeath(npc)
 	if not FLIP.PETER_EFFECTS_ACTIVE then return end
 
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
-		if ent.Position:DistanceSquared(npc.Position) <= 324
-			and Mod.Item.KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[ent.Variant]
+	Mod.Foreach.EffectInRadius(npc.Position, 324, function(effect)
+		if FLIP.TEAR_DEATH_EFFECTS[effect.Variant]
+			and Mod.Item.KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[effect.Variant]
 		then
-			FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, npc)
+			FLIP_RENDERING:SetAppropriateWaterClipFlag(effect, npc)
 		end
-	end
+	end)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, FLIP_RENDERING.MarkEnemyEffectOnDeath)

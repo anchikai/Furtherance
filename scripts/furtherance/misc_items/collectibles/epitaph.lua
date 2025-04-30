@@ -110,7 +110,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, EPITAPH.TrackCoopGhost)
 function EPITAPH:OnGameOver(isGameOver)
 	if isGameOver then
 		local game_save = Mod:GameSave()
-		Mod:ForEachPlayer(function(player)
+		Mod.Foreach.Player(function(player)
 			local player_run_save = Mod:RunSave(player)
 			if player_run_save.EpitaphInventory then
 				game_save.EpitaphTombstones = game_save.EpitaphTombstones or {}
@@ -211,18 +211,13 @@ function EPITAPH:UpdateSprite(gridEnt, varData)
 end
 
 function EPITAPH:UpdateTombstoneOnNewRoom()
-	local room = Mod.Room()
 	local hasTombstone = false
-	for i = 0, room:GetGridSize() - 1 do
-		local gridEnt = room:GetGridEntity(i)
-		if gridEnt
-			and gridEnt:GetType() == GridEntityType.GRID_ROCKB
-			and gridEnt:GetVariant() == EPITAPH.TOMBSTONE_GRID_VARIANT
-		then
-			EPITAPH:UpdateSprite(gridEnt, gridEnt:GetSaveState().VarData)
+
+	Mod.Foreach.Grid(function (gridEnt, gridIndex)
+		EPITAPH:UpdateSprite(gridEnt, gridEnt:GetSaveState().VarData)
 			hasTombstone = true
-		end
-	end
+	end, GridEntityType.GRID_ROCKB, EPITAPH.TOMBSTONE_GRID_VARIANT)
+
 	if hasTombstone then
 		EPITAPH.PLAY_JINGLE = Mod.GENERIC_RNG:RandomFloat() <= EPITAPH.JINGLE_CHANCE
 	end
@@ -266,20 +261,21 @@ function EPITAPH:TombstoneUpdate(gridEnt)
 	if not EPITAPH:IsTombstone(gridEnt) or gridEnt.VarData >= 3 then
 		return
 	end
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.BOMB_EXPLOSION)) do
-		local dist = ent.Position:DistanceSquared(gridEnt.Position)
-		if dist <= (120 * ent.SpriteScale.X) ^ 2 and ent.FrameCount == 1 then
+
+	Mod.Foreach.Effect(function(effect, index)
+		local dist = effect.Position:DistanceSquared(gridEnt.Position)
+		if dist <= (120 * effect.SpriteScale.X) ^ 2 and effect.FrameCount == 1 then
 			EPITAPH:DamageTombstone(gridEnt)
 		end
-	end
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.MAMA_MEGA_EXPLOSION)) do
-		local effect = ent:ToEffect()
-		---@cast effect EntityEffect
-		local dist = ent.Position:DistanceSquared(gridEnt.Position)
+	end, EffectVariant.BOMB_EXPLOSION)
+
+	Mod.Foreach.Effect(function(effect, index)
+		local dist = effect.Position:DistanceSquared(gridEnt.Position)
 		if dist <= effect.Scale ^ 2 then
 			EPITAPH:DestroyTombstone(gridEnt)
 		end
-	end
+	end, EffectVariant.MAMA_MEGA_EXPLOSION)
+
 	if EPITAPH.PLAY_JINGLE then
 		EPITAPH:DistanceBasedJingle(gridEnt.Position)
 	end

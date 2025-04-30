@@ -176,11 +176,11 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, MIRIAM_B.FearInRadius, EffectVariant.HALO)
 
 if Isaac.IsInGame() then
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.HALO, 3)) do
-		for _, _ in ipairs(Isaac.FindInRadius(ent.Position, 5, EntityPartition.PLAYER)) do
-			Mod:GetData(ent).MiriamBFearAura = true
-		end
-	end
+	Mod.Foreach.Effect(function (effect, index)
+		Mod.Foreach.PlayerInRadius(effect.Position, 5, function (player)
+			Mod:GetData(player).MiriamBFearAura = true
+		end)
+	end, EffectVariant.HALO, 3)
 end
 
 Mod.Include("scripts.furtherance.characters.miriam_b.polarity_shift")

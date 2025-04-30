@@ -16,12 +16,14 @@ end
 ---@function
 function Furtherance:KillChoice(pickup)
 	if pickup.OptionsPickupIndex ~= 0 then
-		Mod:inverseiforeach(Isaac.FindByType(EntityType.ENTITY_PICKUP), function(ent)
+		local pickups = Isaac.FindByType(EntityType.ENTITY_PICKUP)
+		for i = #pickups, 1, -1 do
+			local ent = pickups[i]
 			if pickup.OptionsPickupIndex == ent:ToPickup().OptionsPickupIndex and GetPtrHash(pickup) ~= GetPtrHash(ent) then
 				Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, ent.Position, Vector.Zero, nil)
 				ent:Remove()
 			end
-		end)
+		end
 	end
 end
 
@@ -178,11 +180,12 @@ function Furtherance:PayPickupPrice(player, pickup)
 		end
 	elseif price == PickupPrice.PRICE_FREE then
 		if not player:TryRemoveTrinket(TrinketType.TRINKET_STORE_CREDIT) then
-			Mod:ForEachPlayer(function(player)
-				if player:TryRemoveTrinket(TrinketType.TRINKET_STORE_CREDIT) then
-					return true
+			for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PLAYER)) do
+				local _player = ent:ToPlayer()
+				if _player and _player:TryRemoveTrinket(TrinketType.TRINKET_STORE_CREDIT) then
+					return
 				end
-			end)
+			end
 		end
 	end
 end
@@ -194,8 +197,10 @@ function Furtherance:KillDevilPedestals(ignoredPickup, filter)
 	local ignoredHash = GetPtrHash(ignoredPickup) or -1
 	local level = Mod.Level()
 	local isDarkRoom = level:GetStage() == LevelStage.STAGE6 and level:GetStageType() == StageType.STAGETYPE_ORIGINAL
+	local pickups = Isaac.FindByType(EntityType.ENTITY_PICKUP)
 
-	Mod:inverseiforeach(Isaac.FindByType(EntityType.ENTITY_PICKUP), function(ent)
+	for i = #pickups, 1, -1 do
+		local ent = pickups[i]
 		local pickup = ent:ToPickup() ---@cast pickup EntityPickup
 		if GetPtrHash(pickup) ~= ignoredHash
 			and (Mod:IsDevilDealItem(pickup)
@@ -207,7 +212,7 @@ function Furtherance:KillDevilPedestals(ignoredPickup, filter)
 			Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, pickup.Position, Vector.Zero, nil)
 			pickup:Remove()
 		end
-	end)
+	end
 end
 
 ---@param itemPoolType ItemPoolType

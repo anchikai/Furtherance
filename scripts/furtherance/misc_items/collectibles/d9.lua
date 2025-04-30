@@ -7,11 +7,9 @@ Furtherance.Item.D9 = D9
 D9.ID = Isaac.GetItemIdByName("D9")
 
 function D9:UseD9()
-	local itemPool = Mod.Game:GetItemPool()
-	for _, entity in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TRINKET)) do
-		local trinket = itemPool:GetTrinket()
-		entity:ToPickup():Morph(entity.Type, entity.Variant, trinket)
-	end
+	Mod.Foreach.Pickup(function (pickup, index)
+		pickup:Morph(pickup.Type, pickup.Variant, NullPickupSubType.ANY)
+	end, PickupVariant.PICKUP_TRINKET)
 	return true
 end
 

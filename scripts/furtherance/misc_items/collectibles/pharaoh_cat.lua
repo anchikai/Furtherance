@@ -46,9 +46,7 @@ function PHARAOH_CAT:Die(ent)
 end
 
 function PHARAOH_CAT:OnRoomClear()
-	for _, effect in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, PHARAOH_CAT.EFFECT)) do
-		PHARAOH_CAT:Die(effect)
-	end
+	Mod.Foreach.Effect(PHARAOH_CAT.Die, PHARAOH_CAT.EFFECT)
 end
 
 Mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, PHARAOH_CAT.OnRoomClear)
@@ -79,13 +77,12 @@ Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, PHARAOH_CAT.OnBastetStatueUp
 
 function PHARAOH_CAT:PreGridCollision(player, index, gridEnt)
 	if not gridEnt then
-		local cat = Isaac.FindByType(EntityType.ENTITY_EFFECT, PHARAOH_CAT.EFFECT)[1]
-		if cat then
-			local catIndex = Mod.Room():GetGridIndex(cat.Position)
+		Mod.Foreach.Effect(function (effect)
+			local catIndex = Mod.Room():GetGridIndex(effect.Position)
 			if index == catIndex then
 				return true
 			end
-		end
+		end, PHARAOH_CAT.EFFECT)
 	end
 end
 

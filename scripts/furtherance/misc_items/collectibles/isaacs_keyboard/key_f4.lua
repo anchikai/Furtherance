@@ -138,16 +138,15 @@ function F4_KEY:UpdateDoorsAndShadow()
 	local fxParams = room:GetFXParams()
 	fxParams.ShadowAlpha = 2
 	fxParams.LightColor = KColor(1, 1, 1, 0)
-	for i = DoorSlot.NO_DOOR_SLOT + 1, DoorSlot.NUM_DOOR_SLOTS - 1 do
-		local door = room:GetDoor(i)
-		if door and not door:IsLocked() then
+	Mod.Foreach.Door(function (door, doorSlot)
+		if door:IsLocked() then
 			door:Open()
 			if door:IsOpen() then
 				door:GetSprite():Play(door.OpenAnimation)
 				door:GetSprite():SetLastFrame()
 			end
 		end
-	end
+	end)
 end
 
 ---@param player EntityPlayer

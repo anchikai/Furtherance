@@ -67,17 +67,14 @@ function SHATTERED_HEART:ExplodeHeart(pickup)
 end
 
 function SHATTERED_HEART:OnUse()
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART)) do
-		local pickup = ent:ToPickup()
-		---@cast pickup EntityPickup
+	Mod.Foreach.Pickup(function (pickup, index)
 		local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.SHATTERED_HEART_EXPLODE, pickup.SubType,
 			pickup:ToPickup())
 		if result then
-			goto skipHeart
+			return
 		end
 		SHATTERED_HEART:ExplodeHeart(pickup)
-		::skipHeart::
-	end
+	end, PickupVariant.PICKUP_HEART)
 	return true
 end
 

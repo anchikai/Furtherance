@@ -33,7 +33,7 @@ function ALTERNATE_REALITY:GetAvailableStages(stage)
 		for stageType = 0, maxVariant do
 			if stageType == StageType.STAGETYPE_GREEDMODE then goto skipGreed end
 			if level:IsStageAvailable(levelStage, stageType) then
-				Mod:Insert(stageList, {levelStage, stageType})
+				Mod:Insert(stageList, { levelStage, stageType })
 			end
 
 			::skipGreed::
@@ -47,9 +47,9 @@ end
 ---@param sameStage? boolean
 function ALTERNATE_REALITY:QueueNewStage(levelStage, stageType, sameStage)
 	local floor_save = Mod:FloorSave()
-	floor_save.AlternateRealityNewStage = {levelStage, stageType}
+	floor_save.AlternateRealityNewStage = { levelStage, stageType }
 	Mod.Game:StartStageTransition(sameStage or false, 0, nil)
-	Mod:ForEachPlayer(function (player)
+	Mod.Foreach.Player(function(player)
 		player:GetSprite():SetFrame("Appear", 7)
 		player:GetSprite():Stop()
 	end)
@@ -59,11 +59,14 @@ end
 ---@param player EntityPlayer
 function ALTERNATE_REALITY:OnUse(_, rng, player)
 	local level = game:GetLevel()
-	if level:IsAscent() then player:AnimateSad() return end
+	if level:IsAscent() then
+		player:AnimateSad()
+		return
+	end
 	local stageList = ALTERNATE_REALITY:GetAvailableStages()
 	local randomStage = stageList[rng:RandomInt(#stageList) + 1]
 	ALTERNATE_REALITY:QueueNewStage(randomStage[1], randomStage[2], false)
-	return {Discharge = true, Remove = true, ShowAnim = false}
+	return { Discharge = true, Remove = true, ShowAnim = false }
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, ALTERNATE_REALITY.OnUse, ALTERNATE_REALITY.ID)

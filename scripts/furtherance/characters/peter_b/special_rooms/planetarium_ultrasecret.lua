@@ -44,11 +44,7 @@ Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, ultraSecretB
 
 local function postUltraSecretRoomFlip()
 	if PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.PETER_B) then return end
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
-		local pickup = ent:ToPickup()
-		---@cast pickup EntityPickup
-		Mod.Trinket.ALMAGEST_SCRAP:TurnToAlmagestShopItem(pickup)
-	end
+	Mod.Foreach.Pickup(Mod.Trinket.ALMAGEST_SCRAP.TurnToAlmagestShopItem, PickupVariant.PICKUP_COLLECTIBLE)
 end
 
 Mod:AddCallback(Mod.ModCallbacks.POST_MUDDLED_CROSS_ROOM_FLIP, postUltraSecretRoomFlip, RoomType.ROOM_PLANETARIUM)

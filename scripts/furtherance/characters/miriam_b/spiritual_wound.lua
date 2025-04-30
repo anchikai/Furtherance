@@ -75,7 +75,7 @@ function SPIRITUAL_WOUND:TryStopAttackSFX(player)
 	local loopSFX = SPIRITUAL_WOUND:GetAttackLoopSound(player)
 	local stopLoop = true
 	local someoneStillFiring = false
-	Mod:ForEachPlayer(function(_player)
+	Mod.Foreach.Player(function(_player)
 		if Mod:GetData(_player).FiringSpiritualWound
 			and GetPtrHash(player) ~= GetPtrHash(_player)
 			and loopSFX == SPIRITUAL_WOUND:GetAttackLoopSound(_player)

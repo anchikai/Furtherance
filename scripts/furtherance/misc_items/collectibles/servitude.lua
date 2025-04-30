@@ -17,15 +17,15 @@ function SERVITUDE:GetNearestCollectible(player)
 	local nearestCollectible = nil
 	local nearestDistance
 
-	for _, collectible in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
-		local distance = player.Position:DistanceSquared(collectible.Position)
-		if collectible.SubType ~= CollectibleType.COLLECTIBLE_NULL then
+	Mod.Foreach.Pickup(function (pickup, index)
+		local distance = player.Position:DistanceSquared(pickup.Position)
+		if pickup.SubType ~= CollectibleType.COLLECTIBLE_NULL then
 			if not nearestDistance or distance < nearestDistance then
 				nearestDistance = distance
-				nearestCollectible = collectible
+				nearestCollectible = pickup
 			end
 		end
-	end
+	end, PickupVariant.PICKUP_COLLECTIBLE)
 
 	return nearestCollectible
 end

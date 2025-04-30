@@ -113,11 +113,10 @@ Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, shopRoomFlip, RoomType
 
 local function libraryShop()
 	if PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.PETER_B) then return end
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP)) do
-		local pickup = ent:ToPickup()
-		---@cast pickup EntityPickup
+
+	Mod.Foreach.Pickup(function (pickup, index)
 		pickup:MakeShopItem(-1)
-	end
+	end, PickupVariant.PICKUP_COLLECTIBLE)
 end
 
 Mod:AddCallback(Mod.ModCallbacks.POST_MUDDLED_CROSS_ROOM_FLIP, libraryShop, RoomType.ROOM_LIBRARY)

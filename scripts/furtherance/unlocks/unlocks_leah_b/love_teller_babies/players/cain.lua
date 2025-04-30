@@ -22,16 +22,16 @@ local function chestCollision(_, pickup, collider)
 
 	local cainLoveTellerBaby
 	local numBabies = 0
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, Mod.Slot.LOVE_TELLER.BABY.FAMILIAR)) do
-		local familiar = ent:ToFamiliar()
-		---@cast familiar EntityFamiliar
+
+	Mod.Foreach.Familiar(function (familiar, index)
 		if Mod.Slot.LOVE_TELLER.BABY:IsSubtype(familiar, PlayerType.PLAYER_CAIN)
 			and GetPtrHash(familiar.Player) == GetPtrHash(player)
 		then
 			cainLoveTellerBaby = familiar
 			numBabies = numBabies + 1
 		end
-	end
+	end, Mod.Slot.LOVE_TELLER.BABY.FAMILIAR)
+
 	if not cainLoveTellerBaby then return end
 	local keys = player:GetNumKeys()
 	Mod:DelayOneFrame(function()

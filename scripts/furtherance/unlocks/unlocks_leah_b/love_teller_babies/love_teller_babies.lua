@@ -123,7 +123,7 @@ LOVE_TELLER_BABY.PlayerTypeBabies = {
 				data.GlitchBabySubtype = nil
 			end
 		end,
-		OnFire = function (tear, familiar)
+		OnFire = function(tear, familiar)
 			local data = Mod:GetData(familiar)
 			if not data.GlitchBabySubtype then return end
 			local babyTable = LOVE_TELLER_BABY.PlayerTypeBabies[data.GlitchBabySubtype]
@@ -341,10 +341,10 @@ function LOVE_TELLER_BABY:GrantCollectible(familiar, itemID, isEffect, delayNext
 end
 
 function LOVE_TELLER_BABY:RemoveActiveItemWait()
-	for _, familiar in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, LOVE_TELLER_BABY.FAMILIAR)) do
+	Mod.Foreach.Familiar(function(familiar, index)
 		local data = Mod:GetData(familiar)
 		data.LoveTellerActiveWait = nil
-	end
+	end, LOVE_TELLER_BABY.FAMILIAR)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, LOVE_TELLER_BABY.RemoveActiveItemWait)
@@ -371,7 +371,7 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, LOVE_TELLER_BABY.EmergencyRemoveItem, EntityType.ENTITY_FAMILIAR)
 
 function LOVE_TELLER_BABY:EmergencyRemoveCostumePlayer()
-	Mod:ForEachPlayer(function (player)
+	Mod.Foreach.Player(function(player)
 		if not player then return end
 		local data = Mod:GetData(player)
 

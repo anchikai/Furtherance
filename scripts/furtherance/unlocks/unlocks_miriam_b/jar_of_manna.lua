@@ -45,7 +45,7 @@ function JAR_OF_MANNA:OnUse(_, _, player)
 		local lowestStats = {}
 		local lowestStat
 		if player.MoveSpeed < 2 then
-			lowestStats = {1}
+			lowestStats = { 1 }
 			lowestStat = playerStats[1]
 		end
 		for i = 2, #playerStats do
@@ -79,7 +79,7 @@ function JAR_OF_MANNA:SpawnManaOnDeath(ent)
 	then
 		return
 	end
-	local needsCharge = Mod:ForEachPlayer(function(player)
+	local needsCharge = Mod.Foreach.Player(function(player)
 		if JAR_OF_MANNA:GetNeededChargeSlot(player) then
 			return true
 		end

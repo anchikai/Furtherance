@@ -31,22 +31,21 @@ Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, provideFlipp
 
 local function updateCollectibles()
 	local roomDesc = Mod.Level():GetCurrentRoomDesc()
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
-		local pickup = ent:ToPickup()
-		---@cast pickup EntityPickup
+
+	Mod.Foreach.Pickup(function (pickup, index)
 		pickup:Morph(pickup.Type, pickup.Variant, 0, true, true, false)
 		if Mod:HasBitFlags(roomDesc.Flags, RoomDescriptor.FLAG_DEVIL_TREASURE) then
 			pickup:MakeShopItem(-1)
 		elseif pickup:IsShopItem() then
 			pickup.Price = 0
 		end
-	end
+	end, PickupVariant.PICKUP_COLLECTIBLE)
+
 	if not PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.PETER_B) then return end
+
 	Mod:DelayOneFrame(function()
 		local room = Mod.Room()
-		for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
-			local pickup = ent:ToPickup()
-			---@cast pickup EntityPickup
+		Mod.Foreach.Pickup(function (pickup, index)
 			if Mod:GetData(pickup).PeterBBirthrightTreasure then return end
 			local optionIndex = pickup.OptionsPickupIndex
 			if optionIndex == 0 then
@@ -62,7 +61,7 @@ local function updateCollectibles()
 			if pickup:IsShopItem() then
 				pickupSpawn:MakeShopItem(-1)
 			end
-		end
+		end, PickupVariant.PICKUP_COLLECTIBLE)
 	end)
 end
 

@@ -33,7 +33,7 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, LEAHS_HEART.HeartDamage, CacheFl
 
 -- Done on this instead of MC_POST_PLAYER_NEW_LEVEL as it runs before floor save is reset
 function LEAHS_HEART:OnNewFloor()
-	Mod:ForEachPlayer(function(player)
+	Mod.Foreach.Player(function(player)
 		if player:HasCollectible(LEAHS_HEART.ID) then
 			player:AddCacheFlags(CacheFlag.CACHE_DAMAGE, true)
 		end

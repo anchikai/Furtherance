@@ -87,11 +87,9 @@ function FLIP_SHADER:FreezeEnemiesDuringFlip()
 			Isaac.GetPlayer():UseActiveItem(CollectibleType.COLLECTIBLE_PAUSE, false, false, false, false, -1)
 			Isaac.GetPlayer():GetEffects():RemoveCollectibleEffect(CollectibleType.COLLECTIBLE_PAUSE)
 			FLIP.PAUSE_ENEMIES_DURING_FLIP = true
-			for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PROJECTILE)) do
-				if not ent:IsDead() then
-					ent:Die()
-				end
-			end
+			Mod.Foreach.Projectile(function (projectile, index)
+				projectile:Die()
+			end, nil, nil, {Inverse = true})
 		end
 	else
 		if FLIP.PAUSE_ENEMIES_DURING_FLIP then

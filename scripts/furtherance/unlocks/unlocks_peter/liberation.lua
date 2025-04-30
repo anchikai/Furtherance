@@ -18,7 +18,7 @@ function LIBERATION:TryActivateLiberation(ent)
 		if rng:RandomFloat() <= LIBERATION.PROC_CHANCE then
 			effects:AddCollectibleEffect(LIBERATION.ID)
 			player:UseActiveItem(CollectibleType.COLLECTIBLE_DADS_KEY, false, false, true, false, -1)
-			Mod:ForEachPlayer(function(_player)
+			Mod.Foreach.Player(function(_player)
 				if _player:HasCollectible(LIBERATION.ID) then
 					_player:AddCacheFlags(CacheFlag.CACHE_FLYING, true)
 					_player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_BIBLE, true)

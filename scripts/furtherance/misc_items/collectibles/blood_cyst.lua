@@ -9,11 +9,13 @@ BLOOD_CYST.FAMILIAR = Isaac.GetEntityVariantByName("Blood Cyst")
 
 function BLOOD_CYST:RespawnCyst()
 	local room = Mod.Room()
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, BLOOD_CYST.FAMILIAR)) do
-		ent:Remove()
-	end
+	Mod.Foreach.Familiar(function(familiar, index)
+		familiar:Remove()
+	end, BLOOD_CYST.FAMILIAR, -1, { Inverse = true })
+
 	if room:IsClear() or not PlayerManager.AnyoneHasCollectible(BLOOD_CYST.ID) then return end
-	Mod:ForEachPlayer(function(player)
+
+	Mod.Foreach.Player(function(player)
 		for _ = 1, player:GetCollectibleNum(BLOOD_CYST.ID) do
 			local position = Isaac.GetFreeNearPosition(room:GetRandomPosition(0), 40)
 			Isaac.Spawn(EntityType.ENTITY_FAMILIAR, BLOOD_CYST.FAMILIAR, 0, position, Vector.Zero, player)

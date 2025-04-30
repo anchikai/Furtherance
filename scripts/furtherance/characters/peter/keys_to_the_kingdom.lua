@@ -139,13 +139,12 @@ function KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
 	Mod:DelayOneFrame(function()
 		npc:GetSprite():SetLastFrame()
 		Mod:DelayOneFrame(function()
-			for _, effect in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT)) do
-				if KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[effect.Variant]
-					and effect.Position:DistanceSquared(npc.Position) <= (effect.Size + npc.Size + 25) ^ 2
-				then
-					effect:Remove()
-				end
-			end
+			Mod.Foreach.EffectInRadius(npc.Position, npc.Size + 25,
+				function(effect, index)
+					if KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[effect.Variant] then
+						effect:Remove()
+					end
+				end, nil, nil, { Inverse = true })
 			for _, soundID in ipairs(KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS) do
 				Mod.SFXMan:Stop(soundID)
 			end
@@ -324,7 +323,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_NEW_LEVEL, KEYS_TO_THE_KINGDOM.OnNew
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 	if not PlayerManager.AnyoneHasCollectible(KEYS_TO_THE_KINGDOM.ID) or not KEYS_TO_THE_KINGDOM:CanSpare(npc, true) then return end
-	Mod:ForEachPlayer(function(player)
+	Mod.Foreach.Player(function(player)
 		local slots = Mod:GetActiveItemCharges(player, KEYS_TO_THE_KINGDOM.ID)
 		if #slots == 0 then return end
 		for _, slotData in ipairs(slots) do
@@ -562,7 +561,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	local spotlight = statusData.CustomData.Spotlight
 	spotlight.Timeout = 60
 	KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
-	Mod:ForEachPlayer(function(player)
+	Mod.Foreach.Player(function(player)
 		if player:HasCollectible(KEYS_TO_THE_KINGDOM.ID) then
 			local numStats = 2
 			if PETER:IsPeter(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
@@ -666,23 +665,22 @@ Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, KEYS_TO_THE_KINGDOM.PostRaptureD
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:PostKrampusRapture(npc)
 	if npc.Variant ~= 1 then return end
-	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
-		if ent.FrameCount == 0
-			and (ent.SubType == CollectibleType.COLLECTIBLE_LUMP_OF_COAL
-				or ent.SubType == CollectibleType.COLLECTIBLE_HEAD_OF_KRAMPUS)
+	Mod.Foreach.Pickup(function(pickup, index)
+		if pickup.FrameCount == 0
+			and (pickup.SubType == CollectibleType.COLLECTIBLE_LUMP_OF_COAL
+				or pickup.SubType == CollectibleType.COLLECTIBLE_HEAD_OF_KRAMPUS)
 		then
 			local itemPool = Mod.Game:GetItemPool()
-			local pickup = ent:ToPickup()
-			---@cast pickup EntityPickup
 			local newItem = itemPool:GetCollectible(ItemPoolType.POOL_DEVIL, true, npc.DropSeed,
 				CollectibleType.COLLECTIBLE_LUMP_OF_COAL)
-			pickup:Morph(ent.Type, ent.Variant, newItem)
-			break
+			pickup:Morph(pickup.Type, pickup.Variant, newItem)
+			return true
 		end
-	end
+	end, PickupVariant.PICKUP_COLLECTIBLE)
 end
 
-Mod:AddCallback(Mod.ModCallbacks.POST_RAPTURE_BOSS_DEATH, KEYS_TO_THE_KINGDOM.PostKrampusRapture, EntityType.ENTITY_FALLEN)
+Mod:AddCallback(Mod.ModCallbacks.POST_RAPTURE_BOSS_DEATH, KEYS_TO_THE_KINGDOM.PostKrampusRapture,
+	EntityType.ENTITY_FALLEN)
 
 --#endregion
 
@@ -751,16 +749,16 @@ Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_UPDATE, CallbackPriority.IMPORTA
 function KEYS_TO_THE_KINGDOM:DenyHisOfferings(player)
 	if Mod.Room():GetType() == RoomType.ROOM_DEVIL then
 		local numPickups = 0
-		Mod:inverseiforeach(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE), function(ent)
-			local pickup = ent:ToPickup()
-			---@cast pickup EntityPickup
+
+		Mod.Foreach.Pickup(function(pickup, index)
 			if pickup:IsShopItem() then
 				Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.CRACK_THE_SKY, 10, pickup.Position, Vector.Zero, nil)
 				Mod.SFXMan:Play(SoundEffect.SOUND_LIGHTBOLT)
 				pickup:Remove()
 				numPickups = numPickups + 1
 			end
-		end)
+		end, PickupVariant.PICKUP_COLLECTIBLE, nil, { Inverse = true })
+
 		if numPickups > 0 then
 			KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), numPickups, false)
 			Mod.SFXMan:Play(SoundEffect.SOUND_HOLY)
