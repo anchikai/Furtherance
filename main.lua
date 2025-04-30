@@ -134,7 +134,7 @@ local helpers = {
 	"npc_util",
 	"custom_callbacks",
 	"rooms_helper",
-	"pickups_helper"
+	"pickups_helper",
 }
 
 local tools = {
@@ -157,6 +157,9 @@ local config = {
 	"settings_setup",
 	"mcm_setup",
 }
+
+Furtherance.Spawn = include("scripts.helpers.spawn")
+Furtherance.ForEach = include("scripts.helpers.for_each")
 
 Mod.LoopInclude(helpers, "scripts.helpers")
 Dump = include("scripts.helpers.everything_function")
