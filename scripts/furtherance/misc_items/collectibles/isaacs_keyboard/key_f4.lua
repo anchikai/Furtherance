@@ -191,17 +191,8 @@ Mod:AddCallback(ModCallbacks.MC_USE_ITEM, F4_KEY.OnUse, F4_KEY.ID)
 
 --#endregion
 
-function F4_KEY:DarkenScreen(shaderName)
-	if shaderName == "AltF4PowerDown" then
-		return { PowerValue = isPoweredDown and 0.5 or 0 }
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, F4_KEY.DarkenScreen)
-
 function F4_KEY:StopAltF4()
 	local floor_save = Mod:FloorSave()
-	isPoweredDown = false
 	floor_save.AltF4Shutdown = nil
 	local fxParams = Mod.Room():GetFXParams()
 	fxParams.ShadowAlpha = 0

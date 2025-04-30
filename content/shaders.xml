@@ -1,30 +1,4 @@
 <shaders>
-<shader name="Peter Flip HUD">
-        <parameters>
-        </parameters>
-        <vertex><![CDATA[
-            attribute vec3 Position;
-            attribute vec4 Color;
-            attribute vec2 TexCoord;
-            varying vec4 Color0;
-            varying vec2 TexCoord0;
-            uniform mat4 Transform;
-            void main(void) {
-                Color0 = Color;
-                TexCoord0 = TexCoord;
-                gl_Position = Transform * vec4(Position.xyz, 1.0);
-            }
-        ]]></vertex>
-        <fragment><![CDATA[
-            varying lowp vec4 Color0;
-            varying mediump vec2 TexCoord0;
-            uniform sampler2D Texture0;
-            void main(void) {
-                vec4 Color = Color0 * texture2D(Texture0, TexCoord0);
-                gl_FragColor = Color;
-            }
-        ]]></fragment>
-    </shader>
     <shader name="Peter Flip">
         <parameters>
             <param name="FlipFactor" type="float" />
@@ -76,40 +50,6 @@
                 Color.g *= 1.0f - (FlipFactorOut * 0.225f);
                 Color.b *= 1.0f - (FlipFactorOut * 0.225f);
                 gl_FragColor = Color*MirrorFactor;
-            }
-        ]]></fragment>
-    </shader>
-	 <shader name="AltF4PowerDown">
-         <parameters>
-            <param name="PowerValue" type="float" />
-        </parameters>
-        <vertex><![CDATA[
-            attribute vec3 Position;
-            attribute vec4 Color;
-            attribute vec2 TexCoord;
-			attribute float PowerValue;
-            varying vec4 Color0;
-            varying vec2 TexCoord0;
-			varying float PowerValue0;
-            uniform mat4 Transform;
-            void main(void) {
-                Color0 = Color;
-                TexCoord0 = TexCoord;
-				PowerValue0 = PowerValue;
-                gl_Position = Transform * vec4(Position.xyz, 1.0);
-            }
-        ]]></vertex>
-        <fragment><![CDATA[
-            varying lowp vec4 Color0;
-            varying mediump vec2 TexCoord0;
-			varying lowp float PowerValue0;
-            uniform sampler2D Texture0;
-            void main(void) {
-                vec4 Color = Color0 * texture2D(Texture0, TexCoord0);
-				Color.r *= 1.0f - PowerValue0;
-				Color.g *= 1.0f - PowerValue0;
-				Color.b *= 1.0f - PowerValue0;
-                gl_FragColor = Color;
             }
         ]]></fragment>
     </shader>

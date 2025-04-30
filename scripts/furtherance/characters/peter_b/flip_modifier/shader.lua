@@ -119,12 +119,12 @@ function FLIP_SHADER:PeterFlip(name)
 			Isaac.RenderText("Room Flip Factor:" .. tostring(MUDDLED_CROSS.FLIP_FACTOR), 50, 75, 1, 1, 1, 1)
 		end
 		return { FlipFactor = Mod.Game:IsPauseMenuOpen() and 0 or factor }
-	elseif name == "Peter Flip HUD" then
+	--[[ elseif name == "Peter Flip HUD" then
 		if FLIP.PETER_EFFECTS_ACTIVE then
 			Mod.HUD:SetVisible(true)
 			Mod.HUD:Render()
 			Mod.HUD:SetVisible(false)
-		end
+		end ]]
 	end
 end
 
