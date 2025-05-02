@@ -202,6 +202,7 @@ Mod.LoopInclude(challenges, "scripts.furtherance.challenges")
 
 Mod.Include("scripts.furtherance.unlocks.unlock_loader")
 Mod.Include("scripts.furtherance.misc_items.misc_items_loader")
+Mod.Include("scripts.furtherance.commands")
 
 -- shader crash fix by AgentCucco
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, function()

@@ -96,7 +96,7 @@
 	<achievement name="Firstborn Son" gfx="achievement_firstbornson.png" />
 	<achievement name="Polydipsia" gfx="achievement_polydipsia.png" />
 	<achievement name="The Condemned" gfx="achievement_taintedmiriam.png" />
-	<achievement name="Essence of Deluge" gfx="achievement_essenceofdeluge" />
+	<achievement name="Essence of Deluge" gfx="achievement_essenceofdeluge.png" />
 
 	<!-- Tainted Miriam Unlocks -->
 	<achievement name="Soul of Miriam" gfx="achievement_soulofmiriam.png" />
@@ -104,7 +104,9 @@
 	<achievement name="Golden Sack" gfx="achievement_goldensack.png" />
 	<achievement name="Reverse Charity" gfx="achievement_reversecharity.png" />
 	<achievement name="Spiritual Wound" gfx="achievement_spiritualwound.png" />
-	<achievement name="Abyssal Penny" gfx="achievement_abyssalpenny.png" />
+	<achievement name="Abyssal Penny" gfx="achievement_abbysalpenny.png" />
 	<achievement name="Jar of Manna" gfx="achievement_jarofmanna.png" />
-	<achievement name="Essence of Drought" gfx="achievement_essenceofdrought" />
+	<achievement name="Essence of Drought" gfx="achievement_essenceofdrought.png" />
+
+	<achievement name="Furtherance 100%" gfx="achievement_essenceofdrought.png" />
 </achievements>
