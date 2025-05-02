@@ -31,10 +31,8 @@ LEVIATHANS_TENDRIL.WORM_FRIEND_COLOR = wormFriendColor
 local function redirectProjectile(player, projectile, angleOffset)
 	-- redirect it in a direction away from the player
 	local delta = projectile.Position - player.Position
-	local tear = Isaac.Spawn(EntityType.ENTITY_TEAR, TearVariant.BLUE, 0,
-		projectile.Position, delta:Rotated(angleOffset):Resized(projectile.Velocity:Length() * 1.5), player):ToTear()
-	---@cast tear EntityTear
-	tear:AddTearFlags(TearFlags.TEAR_HOMING)
+	local tear = Mod.Spawn.Tear(TearVariant.BLUE, projectile.Position,
+		delta:Rotated(angleOffset):Resized(projectile.Velocity:Length() * 1.5), TearFlags.TEAR_HOMING, player)
 	tear.Color = Color.TearHoming
 	tear.CollisionDamage = tear.CollisionDamage * projectile.CollisionDamage
 	tear.Scale = Mod:TearDamageToScale(tear)

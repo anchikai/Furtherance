@@ -9,8 +9,7 @@ REVERSE_FAITH.ID = Isaac.GetCardIdByName("ReverseFaith")
 function REVERSE_FAITH:UseReverseFaith(card, player, flag)
 	local room = Mod.Room()
 	for _ = 1, 2 do
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, Mod.Pickup.MOON_HEART.ID,
-			room:FindFreePickupSpawnPosition(player.Position, 40), Vector.Zero, player)
+		Mod.Spawn.Heart(Mod.Pickup.MOON_HEART.ID, room:FindFreePickupSpawnPosition(player.Position, 40), nil, player)
 	end
 end
 
