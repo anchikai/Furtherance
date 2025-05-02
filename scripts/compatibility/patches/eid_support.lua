@@ -3494,8 +3494,8 @@ for type, variantDescData in pairs(EID_Entities) do
 	end
 end
 
-local EID_Birthrights
-EID_Birthrights = {
+local EID_Characters
+EID_Characters = {
 	[Mod.PlayerType.LEAH] = {
 		en_us = {
 			Name = "Leah",
@@ -3546,8 +3546,8 @@ EID_Birthrights = {
 	},
 }
 
-local EID_Characters
-EID_Characters = {
+local EID_Birthrights
+EID_Birthrights = {
 	[Mod.PlayerType.LEAH] = {
 		en_us = {
 			Name = "Leah",
