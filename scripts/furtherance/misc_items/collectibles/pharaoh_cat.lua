@@ -27,7 +27,7 @@ function PHARAOH_CAT:SpawnStatueOnNewRoom()
 
 		room:SetGridPath(gridIndex, 3999)
 		Isaac.Spawn(EntityType.ENTITY_EFFECT, PHARAOH_CAT.EFFECT, 0,
-		freeGridPos, Vector.Zero, nil)
+			freeGridPos, Vector.Zero, nil)
 	end
 end
 
@@ -40,7 +40,7 @@ function PHARAOH_CAT:Die(ent)
 		local dustCloud = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DUST_CLOUD, 0,
 			ent.Position, RandomVector():Resized(Mod:RandomNum(4, 7) - Mod:RandomNum()), nil):ToEffect()
 		---@cast dustCloud EntityEffect
-		dustCloud:SetTimeout(30)
+		dustCloud.Timeout = 30
 	end
 	ent:Remove()
 end
@@ -77,7 +77,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, PHARAOH_CAT.OnBastetStatueUp
 
 function PHARAOH_CAT:PreGridCollision(player, index, gridEnt)
 	if not gridEnt then
-		Mod.Foreach.Effect(function (effect)
+		Mod.Foreach.Effect(function(effect)
 			local catIndex = Mod.Room():GetGridIndex(effect.Position)
 			if index == catIndex then
 				return true

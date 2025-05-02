@@ -39,6 +39,8 @@ LEAH_B.HEART_CONTAINER_INCREASE = Mod:Set({
 	AddHealthType.BONE
 })
 
+LEAH_B.BIRTHRIGHT_HEART_UPGRADE_CHANCE = 0.2
+
 LEAH_B.STAT_TABLE = {
 	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.05 },
 	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = 0.025}, --Set for tears, not firedelay.
@@ -54,8 +56,18 @@ brokenHeart:SetFrame("BrokenHeart", 0)
 
 --#region Helpers
 
+---@param player EntityPlayer
 function LEAH_B:IsLeahB(player)
 	return player:GetPlayerType() == Mod.PlayerType.LEAH_B
+end
+
+---@param player? EntityPlayer
+function LEAH_B:LeahBHasBirthright(player)
+	if not player then
+		return PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.LEAH_B)
+	else
+		return LEAH_B:IsLeahB(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
+	end
 end
 
 ---@param player EntityPlayer
@@ -241,15 +253,23 @@ Mod:AddCallback(ModCallbacks.MC_POST_RENDER, LEAH_B.Render)
 ---@param spawner Entity
 ---@param seed integer
 function LEAH_B:ReplaceHearts(entType, variant, subtype, pos, spawner, seed)
-	if entType == EntityType.ENTITY_PICKUP
-		and variant == PickupVariant.PICKUP_HEART
+	if variant == PickupVariant.PICKUP_HEART
 		and PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.LEAH_B)
 		and not Mod.Core.HEARTS.RedHearts[subtype]
 	then
-		return {entType, variant, LEAH_B.SPECIAL_HEART_TO_RED_HEART[subtype] or HeartSubType.HEART_FULL, seed}
+		local heartSubtype = LEAH_B.SPECIAL_HEART_TO_RED_HEART[subtype] or HeartSubType.HEART_FULL
+		if LEAH_B:LeahBHasBirthright() and RNG(seed):RandomFloat() <= LEAH_B.BIRTHRIGHT_HEART_UPGRADE_CHANCE then
+			local floor_save = Mod:FloorSave()
+			floor_save.LeahBBirthrightHeartUpgrade = floor_save.LeahBBirthrightHeartUpgrade or {}
+			if floor_save.LeahBBirthrightHeartUpgrade[tostring(seed)] then
+				floor_save.LeahBBirthrightHeartUpgrade[tostring(seed)] = true
+				heartSubtype = Mod.Core.HEARTS.HeartValueIncrease[heartSubtype] or heartSubtype
+			end
+		end
+		return {entType, variant, heartSubtype, seed}
 	end
 end
 
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, CallbackPriority.IMPORTANT, LEAH_B.ReplaceHearts)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, CallbackPriority.IMPORTANT, LEAH_B.ReplaceHearts, EntityType.ENTITY_PICKUP)
 
 --#endregion

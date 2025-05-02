@@ -22,7 +22,7 @@ function CARDIOMYOPATHY:CollectHeart(pickup, collider)
 		and Mod.Core.HEARTS.RedHearts[pickup.Variant]
 	then
 		local rng = player:GetCollectibleRNG(CARDIOMYOPATHY.ID)
-		if rng:RandomFloat() <= CARDIOMYOPATHY.DEFAULT_SHIELD_CHANCE * Mod.Item.HEART_RENOVATOR.HeartAmount[pickup.Variant] then
+		if rng:RandomFloat() <= CARDIOMYOPATHY.DEFAULT_SHIELD_CHANCE * Mod.Core.HEARTS.HeartAmount[pickup.Variant] then
 			player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_BOOK_OF_SHADOWS, true, CARDIOMYOPATHY.INVULNERABILITY_DURATION)
 		end
 		if rng:RandomFloat() <= Mod:Clamp(player.Luck / CARDIOMYOPATHY.MAX_LUCK, CARDIOMYOPATHY.MIN_CHANCE, CARDIOMYOPATHY.MAX_CHANCE) then

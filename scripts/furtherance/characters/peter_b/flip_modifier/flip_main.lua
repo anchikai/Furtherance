@@ -121,7 +121,11 @@ end
 --#region Update if Peter Flip Room Effects should be active
 
 function FLIP:OnUpdate()
-	FLIP.PETER_EFFECTS_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
+	local effectsStatus = PETER_B:UsePeterFlipRoomEffects()
+	if FLIP.PETER_EFFECTS_ACTIVE ~= effectsStatus then
+		FLIP.PETER_EFFECTS_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
+		FLIP.RENDERING:UpdateReflections()
+	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, FLIP.OnUpdate)

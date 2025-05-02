@@ -54,6 +54,7 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, FLIP_RENDERING.FlipIfRelatedEntity)
 
 function FLIP_RENDERING:UpdateReflections()
+	FLIP.PETER_EFFECTS_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
 	if FLIP.PETER_EFFECTS_ACTIVE then
 		for _, ent in ipairs(Isaac.GetRoomEntities()) do
 			FLIP_RENDERING:SetAppropriateWaterClipFlag(ent)
@@ -66,6 +67,9 @@ Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, FLIP_RENDERING.UpdateReflections)
 
 function FLIP_RENDERING:UpdateShouldUsePeter()
 	FLIP.PETER_EFFECTS_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
+	if FLIP.PETER_EFFECTS_ACTIVE then
+		FLIP_RENDERING:UpdateReflections()
+	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, FLIP_RENDERING.UpdateShouldUsePeter)

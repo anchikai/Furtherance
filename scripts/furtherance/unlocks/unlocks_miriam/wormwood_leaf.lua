@@ -12,9 +12,10 @@ WORMWOOD_LEAF.CHANCE = 0.1
 local function rockCrumble(pos)
 	Mod.SFXMan:Play(SoundEffect.SOUND_ROCK_CRUMBLE)
 	for _ = 1, 5 do
-		local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DUST_CLOUD, 0, pos, RandomVector():Resized(3), nil):ToEffect()
+		local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DUST_CLOUD, 0, pos, RandomVector():Resized(3),
+			nil):ToEffect()
 		---@cast effect EntityEffect
-		effect:SetTimeout(30)
+		effect.Timeout = 30
 		effect.SpriteOffset = Vector(0, -10)
 	end
 end
@@ -64,9 +65,9 @@ function WORMWOOD_LEAF:NoMovement(entity, _, button)
 	if player
 		and player:GetEffects():HasTrinketEffect(WORMWOOD_LEAF.ID)
 		and (button == ButtonAction.ACTION_LEFT
-		or button == ButtonAction.ACTION_RIGHT
-		or button == ButtonAction.ACTION_UP
-		or button == ButtonAction.ACTION_DOWN)
+			or button == ButtonAction.ACTION_RIGHT
+			or button == ButtonAction.ACTION_UP
+			or button == ButtonAction.ACTION_DOWN)
 	then
 		return 0
 	end

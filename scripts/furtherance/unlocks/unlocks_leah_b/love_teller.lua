@@ -20,87 +20,87 @@ overlaySprite:Play("OverlayIcons")
 LOVE_TELLER.Matchmaking = {
 	[PlayerType.PLAYER_ISAAC] = {
 		TrueLove = PlayerType.PLAYER_BETHANY,
-		Compatible = {PlayerType.PLAYER_JACOB, PlayerType.PLAYER_ESAU, Mod.PlayerType.LEAH}
+		Compatible = { PlayerType.PLAYER_JACOB, PlayerType.PLAYER_ESAU, Mod.PlayerType.LEAH }
 	},
 	[PlayerType.PLAYER_MAGDALENE] = {
 		TrueLove = Mod.PlayerType.PETER,
-		Compatible = {PlayerType.PLAYER_JUDAS, PlayerType.PLAYER_LAZARUS, PlayerType.PLAYER_BETHANY}
+		Compatible = { PlayerType.PLAYER_JUDAS, PlayerType.PLAYER_LAZARUS, PlayerType.PLAYER_BETHANY }
 	},
 	[PlayerType.PLAYER_CAIN] = {
 		TrueLove = PlayerType.PLAYER_EVE,
-		Compatible = {PlayerType.PLAYER_AZAZEL, PlayerType.PLAYER_EDEN, PlayerType.PLAYER_LILITH}
+		Compatible = { PlayerType.PLAYER_AZAZEL, PlayerType.PLAYER_EDEN, PlayerType.PLAYER_LILITH }
 	},
 	[PlayerType.PLAYER_JUDAS] = {
 		TrueLove = PlayerType.PLAYER_LAZARUS,
-		Compatible = {PlayerType.PLAYER_MAGDALENE, PlayerType.PLAYER_BETHANY, Mod.PlayerType.PETER}
+		Compatible = { PlayerType.PLAYER_MAGDALENE, PlayerType.PLAYER_BETHANY, Mod.PlayerType.PETER }
 	},
 	[PlayerType.PLAYER_BLUEBABY] = {
 		TrueLove = PlayerType.PLAYER_THELOST,
-		Compatible = {PlayerType.PLAYER_KEEPER, PlayerType.PLAYER_APOLLYON, PlayerType.PLAYER_THEFORGOTTEN}
+		Compatible = { PlayerType.PLAYER_KEEPER, PlayerType.PLAYER_APOLLYON, PlayerType.PLAYER_THEFORGOTTEN }
 	},
 	[PlayerType.PLAYER_EVE] = {
 		TrueLove = PlayerType.PLAYER_CAIN,
-		Compatible = {PlayerType.PLAYER_AZAZEL, PlayerType.PLAYER_EDEN, PlayerType.PLAYER_LILITH}
+		Compatible = { PlayerType.PLAYER_AZAZEL, PlayerType.PLAYER_EDEN, PlayerType.PLAYER_LILITH }
 	},
 	[PlayerType.PLAYER_SAMSON] = {
 		TrueLove = Mod.PlayerType.MIRIAM,
-		Compatible = {PlayerType.PLAYER_JACOB, PlayerType.PLAYER_ESAU, Mod.PlayerType.LEAH}
+		Compatible = { PlayerType.PLAYER_JACOB, PlayerType.PLAYER_ESAU, Mod.PlayerType.LEAH }
 	},
 	[PlayerType.PLAYER_AZAZEL] = {
 		TrueLove = PlayerType.PLAYER_LILITH,
-		Compatible = {PlayerType.PLAYER_CAIN, PlayerType.PLAYER_EVE, PlayerType.PLAYER_EDEN}
+		Compatible = { PlayerType.PLAYER_CAIN, PlayerType.PLAYER_EVE, PlayerType.PLAYER_EDEN }
 	},
 	[PlayerType.PLAYER_LAZARUS] = {
 		TrueLove = PlayerType.PLAYER_JUDAS,
-		Compatible = {PlayerType.PLAYER_MAGDALENE, PlayerType.PLAYER_BETHANY, Mod.PlayerType.PETER}
+		Compatible = { PlayerType.PLAYER_MAGDALENE, PlayerType.PLAYER_BETHANY, Mod.PlayerType.PETER }
 	},
 	[PlayerType.PLAYER_EDEN] = {
 		TrueLove = PlayerType.PLAYER_EDEN,
-		Compatible = {PlayerType.PLAYER_ISAAC, PlayerType.PLAYER_BLUEBABY, PlayerType.PLAYER_THEFORGOTTEN}
+		Compatible = { PlayerType.PLAYER_ISAAC, PlayerType.PLAYER_BLUEBABY, PlayerType.PLAYER_THEFORGOTTEN }
 	},
 	[PlayerType.PLAYER_THELOST] = {
 		TrueLove = PlayerType.PLAYER_BLUEBABY,
-		Compatible = {PlayerType.PLAYER_APOLLYON, PlayerType.PLAYER_THEFORGOTTEN, PlayerType.PLAYER_KEEPER}
+		Compatible = { PlayerType.PLAYER_APOLLYON, PlayerType.PLAYER_THEFORGOTTEN, PlayerType.PLAYER_KEEPER }
 	},
 	[PlayerType.PLAYER_LILITH] = {
 		TrueLove = PlayerType.PLAYER_AZAZEL,
-		Compatible = {PlayerType.PLAYER_CAIN, PlayerType.PLAYER_EVE, PlayerType.PLAYER_EDEN}
+		Compatible = { PlayerType.PLAYER_CAIN, PlayerType.PLAYER_EVE, PlayerType.PLAYER_EDEN }
 	},
 	[PlayerType.PLAYER_KEEPER] = {
 		TrueLove = PlayerType.PLAYER_APOLLYON,
-		Compatible = {PlayerType.PLAYER_BLUEBABY, PlayerType.PLAYER_THELOST, PlayerType.PLAYER_THEFORGOTTEN}
+		Compatible = { PlayerType.PLAYER_BLUEBABY, PlayerType.PLAYER_THELOST, PlayerType.PLAYER_THEFORGOTTEN }
 	},
 	[PlayerType.PLAYER_APOLLYON] = {
 		TrueLove = PlayerType.PLAYER_KEEPER,
-		Compatible = {PlayerType.PLAYER_BLUEBABY, PlayerType.PLAYER_THELOST, PlayerType.PLAYER_THEFORGOTTEN}
+		Compatible = { PlayerType.PLAYER_BLUEBABY, PlayerType.PLAYER_THELOST, PlayerType.PLAYER_THEFORGOTTEN }
 	},
 	[PlayerType.PLAYER_THEFORGOTTEN] = {
 		TrueLove = PlayerType.PLAYER_ESAU,
-		Compatible = {PlayerType.PLAYER_SAMSON, PlayerType.PLAYER_BETHANY, PlayerType.PLAYER_JACOB}
+		Compatible = { PlayerType.PLAYER_SAMSON, PlayerType.PLAYER_BETHANY, PlayerType.PLAYER_JACOB }
 	},
 	[PlayerType.PLAYER_BETHANY] = {
 		TrueLove = PlayerType.PLAYER_ISAAC,
-		Compatible = {PlayerType.PLAYER_JACOB, PlayerType.PLAYER_ESAU, Mod.PlayerType.LEAH}
+		Compatible = { PlayerType.PLAYER_JACOB, PlayerType.PLAYER_ESAU, Mod.PlayerType.LEAH }
 	},
 	[PlayerType.PLAYER_JACOB] = {
 		TrueLove = Mod.PlayerType.LEAH,
-		Compatible = {PlayerType.PLAYER_SAMSON, PlayerType.PLAYER_BETHANY, PlayerType.PLAYER_ESAU}
+		Compatible = { PlayerType.PLAYER_SAMSON, PlayerType.PLAYER_BETHANY, PlayerType.PLAYER_ESAU }
 	},
 	[PlayerType.PLAYER_ESAU] = {
 		TrueLove = PlayerType.PLAYER_THEFORGOTTEN,
-		Compatible = {PlayerType.PLAYER_SAMSON, PlayerType.PLAYER_BETHANY,PlayerType.PLAYER_JACOB}
+		Compatible = { PlayerType.PLAYER_SAMSON, PlayerType.PLAYER_BETHANY, PlayerType.PLAYER_JACOB }
 	},
 	[Mod.PlayerType.LEAH] = {
 		TrueLove = PlayerType.PLAYER_JACOB,
-		Compatible = {PlayerType.PLAYER_SAMSON, PlayerType.PLAYER_BETHANY,PlayerType.PLAYER_ESAU}
+		Compatible = { PlayerType.PLAYER_SAMSON, PlayerType.PLAYER_BETHANY, PlayerType.PLAYER_ESAU }
 	},
 	[Mod.PlayerType.PETER] = {
 		TrueLove = PlayerType.PLAYER_MAGDALENE,
-		Compatible = {PlayerType.PLAYER_JUDAS, PlayerType.PLAYER_LAZARUS,PlayerType.PLAYER_BETHANY}
+		Compatible = { PlayerType.PLAYER_JUDAS, PlayerType.PLAYER_LAZARUS, PlayerType.PLAYER_BETHANY }
 	},
 	[Mod.PlayerType.MIRIAM] = {
 		TrueLove = PlayerType.PLAYER_SAMSON,
-		Compatible = {PlayerType.PLAYER_ISAAC, PlayerType.PLAYER_JACOB, Mod.PlayerType.LEAH}
+		Compatible = { PlayerType.PLAYER_ISAAC, PlayerType.PLAYER_JACOB, Mod.PlayerType.LEAH }
 	},
 }
 
@@ -227,7 +227,8 @@ function LOVE_TELLER:SpawnLoveTellerBaby(player, subtype, pos)
 	local subtypeToSpawn = subtype
 	local key = tostring(subtypeToSpawn)
 	player_run_save.LoveTellerBabies[key] = (player_run_save.LoveTellerBabies[key] or 0) + 1
-	local familiar = Isaac.Spawn(EntityType.ENTITY_FAMILIAR, LOVE_TELLER.BABY.FAMILIAR, subtypeToSpawn, pos, Vector.Zero, player):ToFamiliar()
+	local familiar = Isaac.Spawn(EntityType.ENTITY_FAMILIAR, LOVE_TELLER.BABY.FAMILIAR, subtypeToSpawn, pos, Vector.Zero,
+		player):ToFamiliar()
 	---@cast familiar EntityFamiliar
 	familiar.Player = player
 	LOVE_TELLER.BABY:UpdateBabySkin(familiar)
@@ -270,10 +271,10 @@ function LOVE_TELLER:OnSlotUpdate(slot)
 		local player = LOVE_TELLER:TryGetPlayer(slot)
 		if not player then return end
 		local iconLeft, layerLeft = LOVE_TELLER:TryGetCoopIcon(player, true)
-		data.IconLeft = {Sprite = iconLeft, Layer = layerLeft}
+		data.IconLeft = { Sprite = iconLeft, Layer = layerLeft }
 		local playerTypeRight = LOVE_TELLER:GetMatchMaker(player:GetPlayerType(), prizeResult)
 		local iconRight, layerRight = LOVE_TELLER:TryGetCoopIcon(playerTypeRight, false)
-		data.IconRight = {Sprite = iconRight, Layer = layerRight}
+		data.IconRight = { Sprite = iconRight, Layer = layerRight }
 		data.MatchedPlayer = playerTypeRight
 	elseif sprite:IsPlaying("Prize2")
 		and sprite:IsEventTriggered("Ding")
@@ -289,7 +290,8 @@ function LOVE_TELLER:OnSlotUpdate(slot)
 			slot:SetState(Mod.SlotState.IDLE)
 		elseif num == "1" then
 			for _ = 1, 2 do
-				Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, NullPickupSubType.ANY, slot.Position, EntityPickup.GetRandomPickupVelocity(slot.Position, Mod.RandomRNG, 1), nil)
+				Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, NullPickupSubType.ANY, slot.Position,
+					EntityPickup.GetRandomPickupVelocity(slot.Position, Mod.RandomRNG, 1), nil)
 			end
 			Mod.SFXMan:Play(SoundEffect.SOUND_SLOTSPAWN)
 			slot:SetState(Mod.SlotState.IDLE)
@@ -305,7 +307,8 @@ function LOVE_TELLER:OnSlotUpdate(slot)
 	if sprite:IsPlaying("Death")
 		and sprite:IsEventTriggered("Explosion")
 	then
-		Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BOMB_EXPLOSION, 0, slot.Position + Vector(0, 1), Vector.Zero, slot)
+		Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BOMB_EXPLOSION, 0, slot.Position + Vector(0, 1), Vector.Zero,
+			slot)
 		Mod.SFXMan:Play(SoundEffect.SOUND_BOSS1_EXPLOSIONS)
 	elseif sprite:IsFinished("Death") then
 		sprite:Play("Broken")
@@ -349,7 +352,8 @@ function LOVE_TELLER:SlotDrops(slot)
 		pickup = PickupVariant.PICKUP_HEART
 	end
 	for _ = 1, num do
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, pickup, NullPickupSubType.ANY, slot.Position, EntityPickup.GetRandomPickupVelocity(slot.Position, Mod.RandomRNG, 0), nil)
+		Isaac.Spawn(EntityType.ENTITY_PICKUP, pickup, NullPickupSubType.ANY, slot.Position,
+			EntityPickup.GetRandomPickupVelocity(slot.Position, Mod.RandomRNG, 0), nil)
 	end
 	return false
 end

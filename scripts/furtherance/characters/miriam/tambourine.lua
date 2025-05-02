@@ -29,7 +29,7 @@ function TAMBOURINE:OnUse(_, _, player)
 	Mod.SFXMan:Play(TAMBOURINE.SFX)
 	local creep = Mod.Item.POLYDIPSIA:SpawnPolydipsiaCreep(player, player)
 	creep.SpriteScale = Vector.Zero
-	creep:SetTimeout(30)
+	creep.Timeout = 30
 	Mod:GetData(creep).TambourinePolydipsiaSizeUp = true
 	return true
 end
@@ -42,7 +42,7 @@ function TAMBOURINE:RapidlyUpdateSize(effect)
 	if data and data.TambourinePolydipsiaSizeUp then
 		if effect.SpriteScale.X < 2.5 then
 			local scale = effect.SpriteScale
-			scale:Lerp(Vector(4,4), 0.1)
+			scale:Lerp(Vector(4, 4), 0.1)
 		else
 			data.TambourinePolydipsiaSizeUp = nil
 		end

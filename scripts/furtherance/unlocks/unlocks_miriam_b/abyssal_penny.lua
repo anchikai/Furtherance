@@ -18,7 +18,7 @@ function ABYSSAL_PENNY:CollectCoin(pickup, collider)
 		end
 		water.Scale = 1.5 + (value * 0.1)
 		water.Size = water.Size * 1.5 + (value * 0.1)
-		water:SetTimeout(90 + (30 * value))
+		water.Timeout = 90 + (30 * value)
 		water:Update()
 	end
 end

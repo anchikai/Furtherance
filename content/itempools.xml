@@ -56,7 +56,6 @@
 	</Pool>
 	<Pool Name="devil">
 		<Item Name="Owl's Eye" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Spiritual Wound" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Kareth" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Apocalypse" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Muddled Cross" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -304,7 +303,6 @@
 		<Item Name="Heart Renovator" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Crab Legs" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Shattered Heart" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Spiritual Wound" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Apocalypse" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Muddled Cross" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Book of Books" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>

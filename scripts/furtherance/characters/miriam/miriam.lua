@@ -10,6 +10,11 @@ function MIRIAM:IsMiriam(player)
 end
 
 ---@param player EntityPlayer
+function MIRIAM:MiriamHasBirthright(player)
+	return MIRIAM:IsMiriam(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
+end
+
+---@param player EntityPlayer
 function MIRIAM:OnPlayerInit(player)
 	if MIRIAM:IsMiriam(player) then
 		player:AddInnateCollectible(Mod.Item.POLYDIPSIA.ID)

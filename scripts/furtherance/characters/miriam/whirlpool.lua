@@ -1,5 +1,6 @@
 --#region Variables
 
+local floor = math.floor
 local Mod = Furtherance
 local MIRIAM = Mod.Character.MIRIAM
 
@@ -33,7 +34,7 @@ function WHIRLPOOL:SpawnWhirlpool(ent, enemyPos)
 		:ToEffect()
 	---@cast whirlpool EntityEffect
 	whirlpool.CollisionDamage = (player and player.Damage or 3.5) * 0.33
-	whirlpool.LifeSpan = 60
+	whirlpool.Timeout = 60
 	Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2_WATERTHRASHING, 0.25, 30, false, 0.8)
 	if player then
 		if ent:ToLaser()
@@ -54,6 +55,10 @@ function WHIRLPOOL:WhirlpoolOnFire(dir, amount, owner, weapon)
 	local player = Mod:TryGetPlayer(owner)
 	if not player or not MIRIAM:IsMiriam(player) then return end
 	local previousNum = weapon:GetNumFired() - amount
+	local threshold = WHIRLPOOL.THRESHOLD
+	if MIRIAM:MiriamHasBirthright(player) then
+		threshold = threshold - floor(threshold / 3)
+	end
 
 	if (previousNum % WHIRLPOOL.THRESHOLD) + amount >= WHIRLPOOL.THRESHOLD then
 		Mod:GetData(player).MiriamQueueWhirlpoolShot = true
@@ -193,8 +198,8 @@ function WHIRLPOOL:OnEffectUpdate(effect)
 	if sprite:IsFinished("Appear") then
 		sprite:Play("Idle")
 	elseif sprite:IsPlaying("Idle") then
-		if effect.LifeSpan > 0 then
-			effect.LifeSpan = effect.LifeSpan - 1
+		if effect.Timeout > 0 then
+			effect.Timeout = effect.Timeout - 1
 		else
 			effect:Die()
 			sprite:Play("Death", true)

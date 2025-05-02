@@ -55,20 +55,23 @@ function POLYDIPSIA:SpawnPolydipsiaCreep(player, ent, enemyPos)
 		(player:GetTearPoisonDamage() * 0.666) / player.Damage, 5, player)
 	local creep = player:SpawnAquariusCreep(tearParams)
 	local size = ent.Size
+	if Mod.Character.MIRIAM:MiriamHasBirthright(player) then
+		size = ent.Size * 1.25
+	end
 	--Epic Fetus
 	if ent:ToEffect() then
 		--They only exist for one frame and do change size with the explosion radius
-		Mod.Foreach.EffectInRadius(pos, 0, function (effect, index)
+		Mod.Foreach.EffectInRadius(pos, 0, function(effect, index)
 			size = 15 * effect.SpriteScale.X
 		end, EffectVariant.BOMB_CRATER)
 	elseif player:HasCollectible(CollectibleType.COLLECTIBLE_POLYPHEMUS) then
 		size = size + 15
 	end
 	if ent:ToKnife() and ent.SubType ~= KnifeSubType.CLUB_HITBOX then
-		creep:SetTimeout(Mod:RandomNum(floor(POLYDIPSIA.CREEP_TIMEOUT / 4), floor(POLYDIPSIA.CREEP_TIMEOUT / 2)))
+		creep.Timeout = Mod:RandomNum(floor(POLYDIPSIA.CREEP_TIMEOUT / 4), floor(POLYDIPSIA.CREEP_TIMEOUT / 2))
 	else
 		POLYDIPSIA:UpdateCreepSize(creep, size)
-		creep:SetTimeout(90)
+		creep.Timeout = 90
 		creep:GetSprite():Play("BigBlood0" .. Mod:RandomNum(6))
 	end
 	if ent:ToLaser() then
@@ -83,8 +86,8 @@ function POLYDIPSIA:SpawnPolydipsiaCreep(player, ent, enemyPos)
 		if not Mod:IsSameEntity(eff, creep) and creep.Position:DistanceSquared(existingCreep.Position) <= (creep.Size + existingCreep.Size) ^ 2 and existingCreep.FrameCount > 1 then
 			local data = Mod:GetData(existingCreep)
 			data.PolydipsiaPenalty = (data.PolydipsiaPenalty or 0)
-			existingCreep:SetTimeout(Mod:Clamp(existingCreep.Timeout + 30 - data.PolydipsiaPenalty, 0,
-				POLYDIPSIA.CREEP_TIMEOUT))
+			existingCreep.Timeout = Mod:Clamp(existingCreep.Timeout + 30 - data.PolydipsiaPenalty, 0,
+				POLYDIPSIA.CREEP_TIMEOUT)
 			data.PolydipsiaPenalty = math.max(0, data.PolydipsiaPenalty + 5)
 		end
 	end
@@ -100,9 +103,11 @@ function POLYDIPSIA:OnWeaponEntityFire(weaponEnt)
 			---@cast weaponEnt EntityTear
 			weaponEnt.Scale = weaponEnt.Scale * 1.4
 			weaponEnt:AddTearFlags(TearFlags.TEAR_KNOCKBACK)
-			weaponEnt.Mass = weaponEnt.Mass * 1.5
-			weaponEnt:SetKnockbackMultiplier(weaponEnt.KnockbackMultiplier * 5)
+			local knockbackMult = Mod.Character.MIRIAM:MiriamHasBirthright(player) and 10 or 5
+			weaponEnt:SetKnockbackMultiplier(weaponEnt.KnockbackMultiplier * knockbackMult)
 		end
+		local massMult = Mod.Character.MIRIAM:MiriamHasBirthright(player) and 3 or 1.5
+		weaponEnt.Mass = weaponEnt.Mass * massMult
 	end
 end
 

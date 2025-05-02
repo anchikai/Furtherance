@@ -18,6 +18,20 @@ HEARTS.SoulHearts = Mod:Set({
 	HeartSubType.HEART_BLENDED,
 })
 
+HEARTS.HeartValueIncrease = {
+	[HeartSubType.HEART_HALF] = HeartSubType.HEART_FULL,
+	[HeartSubType.HEART_FULL] = HeartSubType.HEART_DOUBLEPACK,
+	[HeartSubType.HEART_HALF_SOUL] = HeartSubType.HEART_SOUL
+}
+
+HEARTS.HeartAmount = {
+	[HeartSubType.HEART_FULL] = 2,
+	[HeartSubType.HEART_SCARED] = 2,
+	[HeartSubType.HEART_DOUBLEPACK] = 4,
+	[HeartSubType.HEART_HALF] = 1,
+	[HeartSubType.HEART_BLENDED] = 2,
+}
+
 ---@param player EntityPlayer
 function HEARTS:CanCollectHeart(player, heartSubType)
 	return HEARTS.RedHearts[heartSubType] and player:CanPickRedHearts()

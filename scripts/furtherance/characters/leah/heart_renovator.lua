@@ -14,14 +14,6 @@ local counter = Sprite("gfx/ui/hudpickups.anm2", true)
 counter:SetFrame("Idle", 15)
 HEART_RENOVATOR.CounterSprite = counter
 
-HEART_RENOVATOR.HeartAmount = {
-	[HeartSubType.HEART_FULL] = 2,
-	[HeartSubType.HEART_SCARED] = 2,
-	[HeartSubType.HEART_DOUBLEPACK] = 4,
-	[HeartSubType.HEART_HALF] = 1,
-	[HeartSubType.HEART_BLENDED] = 2,
-}
-
 function HEART_RENOVATOR:GetMaxHeartCounter(player)
 	return HEART_RENOVATOR.MAX_COUNTER
 end
@@ -47,7 +39,7 @@ Mod:AddCallback(ModCallbacks.MC_USE_ITEM, HEART_RENOVATOR.OnUse, HEART_RENOVATOR
 ---@param player EntityPlayer
 ---@return number? HeartWorth
 function HEART_RENOVATOR:CannotPickRedHeartsOrWillOverflow(pickup, player)
-	local amount = HEART_RENOVATOR.HeartAmount[pickup.SubType]
+	local amount = Mod.Core.HEARTS.HeartAmount[pickup.SubType]
 	if not amount then return end
 	local canCollect = player:CanPickRedHearts()
 	local canOverflow = false

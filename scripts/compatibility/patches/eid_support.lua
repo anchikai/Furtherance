@@ -37,19 +37,22 @@ if EID.HealingItemData then
 	EID.HealingItemData["5.100." .. tostring(Item.COFFEE_BREAK.ID)] = true
 end
 
+if EID.ItemReminderBlacklist then
+	EID.ItemReminderBlacklist["5.100."..Item.SPIRITUAL_WOUND.ID] = true
+end
+
 --#region Icons
 
-local player_icons = Sprite()
-player_icons:Load("gfx/ui/eid_character_icons.anm2", true)
+local player_icons = Sprite("gfx/ui/eid_fr_players_icon.anm2", true)
 
-local offsetX, offsetY = 6, 6
+local offsetX, offsetY = 2, 1
 
-EID:addIcon("Leah", "Main", 1, 16, 16, offsetX, offsetY, player_icons)
-EID:addIcon("Peter", "Main", 2, 16, 16, offsetX, offsetY, player_icons)
-EID:addIcon("Miriam", "Main", 3, 16, 16, offsetX, offsetY, player_icons)
-EID:addIcon("LeahB", "Main", 21, 16, 16, offsetX, offsetY, player_icons)
-EID:addIcon("PeterB", "Main", 21, 16, 16, offsetX, offsetY, player_icons)
-EID:addIcon("MiriamB", "Main", 20, 16, 16, offsetX, offsetY, player_icons)
+EID:addIcon("Leah", "Leah", 0, 18, 12, offsetX, offsetY, player_icons)
+EID:addIcon("Peter", "Peter", 0, 18, 12, offsetX, offsetY, player_icons)
+EID:addIcon("Miriam", "Miriam", 0, 18, 12, offsetX, offsetY, player_icons)
+EID:addIcon("LeahB", "LeahB", 0, 18, 12, offsetX, offsetY, player_icons)
+EID:addIcon("PeterB", "PeterB", 0, 18, 12, offsetX, offsetY, player_icons)
+EID:addIcon("MiriamB", "MiriamB", 0, 18, 12, offsetX, offsetY, player_icons)
 
 -- Assign Player Icons for Birthright
 EID.InlineIcons["Player" .. Mod.PlayerType.LEAH] = EID.InlineIcons["Leah"]
@@ -57,10 +60,10 @@ EID.InlineIcons["Player" .. Mod.PlayerType.PETER] = EID.InlineIcons["Peter"]
 EID.InlineIcons["Player" .. Mod.PlayerType.MIRIAM] = EID.InlineIcons["Miriam"]
 EID.InlineIcons["Player" .. Mod.PlayerType.LEAH_B] = EID.InlineIcons["LeahB"]
 EID.InlineIcons["Player" .. Mod.PlayerType.PETER_B] = EID.InlineIcons["PeterB"]
-EID.InlineIcons["Player" .. Mod.PlayerType.MIRIAM] = EID.InlineIcons["MiriamB"]
+EID.InlineIcons["Player" .. Mod.PlayerType.MIRIAM_B] = EID.InlineIcons["MiriamB"]
 
 -- Assign card icons
-local cardFronts = Sprite("gfx/ui/eid_furtherance_cardfronts.anm2", true)
+local cardFronts = Sprite("gfx/ui/eid_fr_cardfronts.anm2", true)
 for _, card in pairs(Mod.Card) do
 	if card.ID then
 		local name = Mod.ItemConfig:GetCard(card.ID).Name
@@ -75,6 +78,11 @@ for _, rune in pairs(Mod.Rune) do
 		EID:addIcon("Card" .. rune.ID, name, 0, metadata[1], metadata[2], metadata[3], metadata[4], cardFronts)
 	end
 end
+
+local eid_icons = Sprite("gfx/ui/eid_fr_icons.anm2", true)
+
+EID:addIcon("StrengthStatus", "Strength", 0, 10, 9, 1, 1, eid_icons)
+EID:addIcon("MoonHeart", "Moon Heart", 0, 10, 9, 1, 1, eid_icons)
 
 --#endregion
 
@@ -99,7 +107,7 @@ end
 EID._currentMod = "Furtherance"
 EID:setModIndicatorName("Furtherance")
 local CustomSprite = Sprite()
-CustomSprite:Load("gfx/ui/eid_furtherance_mod_icon.anm2", true)
+CustomSprite:Load("gfx/ui/eid_fr_mod_icon.anm2", true)
 EID:addIcon("Furtherance ModIcon", "Main", 0, 8, 8, 6, 6, CustomSprite)
 EID:setModIndicatorIcon("Furtherance ModIcon")
 
@@ -1659,7 +1667,12 @@ EID_Collectibles = {
 			Name = "Pallas?",
 			Description = {
 				"↑ {{Tearsize}}+20% Tear size",
-				"#{{Collectible529}} Isaac's tears bounce off the floor after floating for a short time"
+				"#{{Collectible529}} Isaac's tears bounce off the floor after floating for a short time",
+				function(descObj)
+					return EID_Collectibles[Item.PALLAS.ID]._modifier(descObj,
+					"#{{Collectible540}} + Flat Stone: {{Damage}} +16% damage and {{Tearsize}} x2 Tear size"
+				)
+				end
 			}
 		},
 		ru = {
@@ -1831,27 +1844,11 @@ EID_Collectibles = {
 		en_us = {
 			Name = "Polarity Shift",
 			Description = {
-				"PlaceholderDesc"
-			}
-		},
-		ru = {
-			Name = "PlaceholderName",
-			Description = {
-				"PlaceholderDesc"
-			}
-		},
-		spa = {
-			Name = "PlaceholderName",
-			Description = {
-				"PlaceholderDesc"
-			}
-		}
-	},
-	[Item.POLARITY_SHIFT.ID_2] = {
-		en_us = {
-			Name = "Polarity Shift",
-			Description = {
-				"PlaceholderDesc"
+				"Changes Spiritual Wound to Chain Lightning",
+				"#Can only be activated while you have {{Heart}} Red Hearts",
+				"#While active:",
+				"#{{Blank}} Life steal is disabled, instead rapidly draining {{Heart}} Red Hearts.",
+				"#{{Blank}} Less delay between damaging enemies"
 			}
 		},
 		ru = {
@@ -2290,6 +2287,8 @@ EID_Collectibles = {
 		}
 	},
 }
+
+EID_Collectibles[Item.POLARITY_SHIFT.ID_2] = EID_Collectibles[Item.POLARITY_SHIFT.ID_1]
 
 for id, collectibleDescData in pairs(EID_Collectibles) do
 	for language, descData in pairs(collectibleDescData) do
@@ -2914,13 +2913,12 @@ EID_Cards = {
 			}
 		}
 	},
-	--TODO: Moon Heart icon
 	[Mod.Card.REVERSE_FAITH.ID] = {
 		_metadata = { 2, false },
 		en_us = {
 			Name = "XXV - Faith?",
 			Description = {
-				"Spawns 2 Moon Hearts"
+				"Spawns 2 {{MoonHeart}} Moon Hearts"
 			}
 		},
 		ru = {
@@ -3378,17 +3376,20 @@ EID_Entities = {
 						return noLuna
 					end
 				end,
+
+				_AppendToEnd = false,
+
 				en_us = {
-					Name = "Moon Heart",
+					Name = "{{MoonHeart}} Moon Heart",
 					Description = {
 						"{{SoulHeart}} Functions like a Soul Heart",
 						"#{{SecretRoom}} Secret and Super Secret Rooms will contain a {{Collectible589}} Luna beam",
 						function(descObj)
 							return EID_Entities[5][10][Mod.Pickup.MOON_HEART.ID]._modifier(descObj,
-								"#The number of Luna beams available is dependent on the amount of Moon Hearts available across all players (e.g. Can only find one beam on the floor)",
+								"#The number of Luna beams available is dependent on the amount of Moon Hearts available across all players (e.g. 1 Moon Heart = Can only find 1 beam on the floor)",
 								"#{{Collectible589}} Grants an additional {{Tears}} +0.5 Fire rate for every Moon Heart Isaac has when interacting with a Luna beam"
 							)
-						end,
+						end
 					}
 				},
 				ru = {
@@ -3454,7 +3455,6 @@ EID_Entities = {
 
 				end,
 				en_us = {
-
 					Name = "Escort Beggar",
 					Description = {
 						"PlaceholderDesc"
@@ -3500,7 +3500,7 @@ EID_Characters = {
 		en_us = {
 			Name = "Leah",
 			Description = {
-				"PlaceholderDesc"
+				"{{Tears}} +0.2 Tears for every {{BrokenHeart}} Broken Heart"
 			}
 		}
 	},
@@ -3508,7 +3508,7 @@ EID_Characters = {
 		en_us = {
 			Name = "Peter",
 			Description = {
-				"PlaceholderDesc"
+				"{{Battery}} {{SoulHeart}} Soul/Black Hearts will instead charge {{Collectible" .. Mod.Item.KEYS_TO_THE_KINGDOM.ID .. "}} Keys to the Kingdom instead of your health if still needs charges"
 			}
 		}
 	},
@@ -3516,7 +3516,8 @@ EID_Characters = {
 		en_us = {
 			Name = "Miriam",
 			Description = {
-				"PlaceholderDesc"
+				"Every 12 tears, a whirlpool will spawn where the tear landed. It sucks enemies into it in a spiral motion, dealing constant damage",
+				"#Whirlpool lasts 2 seconds"
 			}
 		}
 	},
@@ -3524,7 +3525,11 @@ EID_Characters = {
 		en_us = {
 			Name = "Tainted Leah",
 			Description = {
-				"PlaceholderDesc"
+				"{{EmptyHeart}} Maximum of 24 heart containers",
+				"#{{BrokenHeart}} Health above one heart will be slowly be replaced with Broken Hearts, 1 every 20 seconds",
+				"#{{Heart}} Damaging enemies may have them drop a special Scared Heart. It disappears after 10 seconds and be collected by enemies, damaging them",
+				"#↑ All stats up for every Half Red Heart you have",
+				"#{{SoulHeart}} Soul/Black Hearts are replaced with Red Hearts"
 			}
 		}
 	},
@@ -3532,7 +3537,11 @@ EID_Characters = {
 		en_us = {
 			Name = "Tainted Peter",
 			Description = {
-				"PlaceholderDesc"
+				"Permanent water rooms",
+				"#Peter and non-boss enemies exist separately between the water",
+				"#Walking below an enemy will submerge them. They gain {{StrengthStatus}} Strength and take 25% less damage",
+				"#{{Collectible" .. Mod.Item.MUDDLED_CROSS.ID .. "}} On use: Enemies and players swap sides for X * 5 seconds, where X is 1 + number of submerged enemies",
+				"#While room is flipped: Cannot recharge Muddled Cross, cannot interact with enemies. {{Weakness}} Weakness instead of Strength"
 			}
 		}
 	},
@@ -3540,7 +3549,11 @@ EID_Characters = {
 		en_us = {
 			Name = "Tainted Miriam",
 			Description = {
-				"PlaceholderDesc"
+				"{{BoneHeart}} Heart containers converted to Bone Hearts",
+				"#{{SoulHeart}} Can't use Soul Hearts as health",
+				"#{{Collectible" .. Mod.Item.SPIRITUAL_WOUND.ID .. "}} Spiritual Wound: Rapidly fire a wide arc of short homing lasers. Has a small delay to how often it damages an enemy",
+				"#{{Fear}} Fear aura that increases in size with {{Heart}} Red Hearts",
+				"#{{HealingRed}} Heal a Half Red Heart after dealing enough damage",
 			}
 		}
 	},
@@ -3552,7 +3565,8 @@ EID_Birthrights = {
 		en_us = {
 			Name = "Leah",
 			Description = {
-				"PlaceholderDesc"
+				"{{ArrowUp}} {{Damage}} Damage bonus from {{Collectible" .. Item.HEART_RENOVATOR.ID .. "}} is doubled",
+				"Killing 20 enemies activates a normal damage bonus Heart Renovator effect"
 			}
 		}
 	},
@@ -3560,7 +3574,7 @@ EID_Birthrights = {
 		en_us = {
 			Name = "Peter",
 			Description = {
-				"PlaceholderDesc"
+				"Time to spare bosses reduced from 30 seconds to 15 seconds"
 			}
 		}
 	},
@@ -3568,7 +3582,9 @@ EID_Birthrights = {
 		en_us = {
 			Name = "Miriam",
 			Description = {
-				"PlaceholderDesc"
+				"Increased knockback",
+				"#Whirlpools spawn every 8 tears",
+				"#Increased tear knockback"
 			}
 		}
 	},
@@ -3576,7 +3592,9 @@ EID_Birthrights = {
 		en_us = {
 			Name = "Tainted Leah",
 			Description = {
-				"PlaceholderDesc"
+				"20% chance to upgrade any spawned {{Heart}} Red Hearts",
+				"#Enemies that collide with the specially dropped Scared Hearts will have it also act like it was collected by Isaac",
+				"#{{Collectible" .. Item.SHATTERED_HEART.ID .. "}} double damage of exploded hearts"
 			}
 		}
 	},
@@ -3584,7 +3602,13 @@ EID_Birthrights = {
 		en_us = {
 			Name = "Tainted Peter",
 			Description = {
-				"PlaceholderDesc"
+				"Provides bonuses to specially flipped rooms",
+				"#{{TreasureRoom}} {{RedTreasureRoom}} : Allows two items to choose from",
+				"#{{Planetarium}} : Planetarium items no longer grant broken hearts",
+				"#{{Library}} : Library books no longer cost money",
+				"#{{Shop}} : {{Player33}} Tainted Keeper-style shops",
+				"#{{DevilRoom}} : One item can be taken for free without removing the others",
+				"#{{AngelRoom}} : {{Collectible64}} Steam Sale effect",
 			}
 		}
 	},

@@ -68,8 +68,9 @@ function LIL_POOFER:Explode(familiar)
 	local bffs = familiar.Player:HasCollectible(CollectibleType.COLLECTIBLE_BFFS)
 	local radius = familiar.Size * LIL_POOFER.EXPLOSION_SIZE_RANGE_MULT
 	local source = EntityRef(familiar)
-	Mod:ForEachEnemy(function (npc)
-		npc:TakeDamage(LIL_POOFER.EXPLOSION_DMG * familiar:GetMultiplier(), DamageFlag.DAMAGE_EXPLOSION | DamageFlag.DAMAGE_IGNORE_ARMOR, source, 0)
+	Mod:ForEachEnemy(function(npc)
+		npc:TakeDamage(LIL_POOFER.EXPLOSION_DMG * familiar:GetMultiplier(),
+			DamageFlag.DAMAGE_EXPLOSION | DamageFlag.DAMAGE_IGNORE_ARMOR, source, 0)
 	end, true, familiar.Position, radius)
 	for _, ent in ipairs(Isaac.FindInRadius(familiar.Position, radius, EntityPartition.PLAYER)) do
 		local player = ent:ToPlayer()
@@ -85,15 +86,16 @@ function LIL_POOFER:Explode(familiar)
 	--These are all effects that the original Poofer spawns
 	Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF02, 3, familiar.Position, Vector.Zero, nil)
 	Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF02, 4, familiar.Position, Vector.Zero, nil)
-	local explosion = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BOMB_EXPLOSION, 0, familiar.Position, Vector.Zero, nil)
+	local explosion = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BOMB_EXPLOSION, 0, familiar.Position,
+		Vector.Zero, nil)
 	explosion.Color = Color(1, 0, 0, 1)
 	local poof02 = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF02, 5, familiar.Position, Vector.Zero, nil)
 	poof02.Color.A = 0.4
 	for _ = 1, 8 do
 		local dustCloud = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DUST_CLOUD, 0,
-		familiar.Position, RandomVector():Resized(Mod:RandomNum(1, 8) - Mod:RandomNum()), nil)
+			familiar.Position, RandomVector():Resized(Mod:RandomNum(1, 8) - Mod:RandomNum()), nil)
 		dustCloud.Color = Color(0.619608, 0.0431373, 0.0588235)
-		dustCloud:ToEffect():SetTimeout(30)
+		dustCloud:ToEffect().Timeout = 30
 	end
 	local creepMiddle = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_RED, 0, familiar.Position,
 		Vector.Zero, familiar)

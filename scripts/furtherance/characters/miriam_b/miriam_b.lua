@@ -183,5 +183,48 @@ if Isaac.IsInGame() then
 	end, EffectVariant.HALO, 3)
 end
 
+--#region No Soul Hearts
+
+---@param entType EntityType
+---@param variant PickupVariant
+---@param subtype integer
+---@param spawner Entity
+---@param seed integer
+function MIRIAM_B:ReplaceHearts(entType, variant, subtype, pos, spawner, seed)
+	if entType == EntityType.ENTITY_PICKUP
+		and variant == PickupVariant.PICKUP_HEART
+		and PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.MIRIAM_B)
+		and Mod.Core.HEARTS.RedHearts[subtype]
+	then
+		local hasNoMiriamB = Mod.Foreach.Player(function (player, index)
+			if not MIRIAM_B:IsMiriamB(player) then
+				return true
+			end
+		end)
+		if hasNoMiriamB then return end
+		return {entType, variant, Mod.Character.MIRIAM_B.SPECIAL_HEART_TO_RED_HEART[subtype] or HeartSubType.HEART_FULL, seed}
+	end
+end
+
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, CallbackPriority.IMPORTANT, MIRIAM_B.ReplaceHearts)
+
+---@param pickup EntityPickup
+---@param collider Entity
+function MIRIAM_B:NoSoulHeartCollision(pickup, collider)
+	local player = collider:ToPlayer()
+	if player
+		and MIRIAM_B:IsMiriamB(player)
+		and Mod.Core.HEARTS.SoulHearts[pickup.SubType]
+		and (pickup.SubType ~= HeartSubType.HEART_BLENDED
+		or not player:CanPickRedHearts())
+	then
+		return pickup:IsShopItem()
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, MIRIAM_B.NoSoulHeartCollision)
+
+--#endregion
+
 Mod.Include("scripts.furtherance.characters.miriam_b.polarity_shift")
 Mod.Include("scripts.furtherance.characters.miriam_b.spiritual_wound")

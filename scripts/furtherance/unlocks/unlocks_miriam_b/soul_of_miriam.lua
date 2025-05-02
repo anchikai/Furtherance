@@ -11,7 +11,7 @@ function SOUL_OF_MIRIAM:SpawnExpandingCreep()
 	local creep = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL, 0,
 		Mod.Room():GetCenterPos(), Vector.Zero, nil):ToEffect()
 	---@cast creep EntityEffect
-	creep:SetTimeout(-1)
+	creep.Timeout = -1
 	creep:Update()
 	Mod:GetData(creep).SoulOfMiriamCreep = true
 end
@@ -60,9 +60,10 @@ function SOUL_OF_MIRIAM:SOMCreepUpdate(effect)
 		if effects:HasNullEffect(SOUL_OF_MIRIAM.NULL_ID) then
 			effect.SpriteScale = effect.SpriteScale + Vector(0.01, 0.01)
 		else
-			effect:SetTimeout(60)
+			effect.Timeout = 60
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, SOUL_OF_MIRIAM.SOMCreepUpdate, EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL)
+Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, SOUL_OF_MIRIAM.SOMCreepUpdate,
+	EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL)
