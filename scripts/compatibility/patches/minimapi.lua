@@ -1,7 +1,7 @@
 local Mod = Furtherance
 local loader = Mod.PatchesLoader
 
-local sprite = Sprite("gfx/ui/minimap_icons.anm2")
+local sprite = Sprite("gfx/ui/furtherance_minimap_icons.anm2")
 
 local function minimapPatch()
 	MinimapAPI:AddIcon("MoonHeart", sprite, "MoonHeart", 0)

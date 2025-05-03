@@ -1,8 +1,8 @@
 <AnimatedActor>
-	<Info CreatedBy="anchikai." CreatedOn="4/28/2025 10:07:01 PM" Version="23" Fps="30"/>
+	<Info CreatedBy="anchikai." CreatedOn="5/2/2025 9:59:06 PM" Version="24" Fps="30"/>
 	<Content>
 		<Spritesheets>
-			<Spritesheet Path="minimap_icons.png" Id="0"/>
+			<Spritesheet Path="furtherance_minimap_icons.png" Id="0"/>
 		</Spritesheets>
 		<Layers>
 			<Layer Name="" Id="0" SpritesheetId="0"/>
