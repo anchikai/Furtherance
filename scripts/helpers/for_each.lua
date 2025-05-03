@@ -64,7 +64,7 @@ local function forEach(ent, i, func, searchParams, variant, subtype)
 		local castEnt = doCast(ent)
 		if castEnt and (not searchParams or searchParams.UseEnemySearchParams and isValidEnemyTarget(castEnt, searchParams)) then
 			local index = REPENTOGON and castEnt:ToPlayer() and castEnt:GetPlayerIndex() or i
-			local result = func(ent, index)
+			local result = func(castEnt, index)
 			if result ~= nil then
 				return result
 			end
