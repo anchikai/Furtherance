@@ -75,12 +75,13 @@ Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, Mod.Finale)]]
 
 function Mod:ExitRoom(player)
 	local level = game:GetLevel()
-	local room = game:GetRoom()
 	local data = Mod:GetData(player)
+
 	if data.SleptInMomsBed == true then
 		if (level:GetCurrentRoomIndex() == 109 or level:GetCurrentRoomIndex() == 122) then
 			if player.Position.Y > 712 then
 				Isaac.ExecuteCommand("goto d.0")
+				level.LeaveDoor = -1
 				game:StartRoomTransition(-3, Direction.DOWN, RoomTransitionAnim.WALK, player, -1)
 				if level:GetRoomByIdx(135, 0).Clear == false then
 					level:GetRoomByIdx(135, 0).Clear = true

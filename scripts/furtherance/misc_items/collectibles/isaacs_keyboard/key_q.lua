@@ -16,7 +16,9 @@ function Q_KEY:OnUse(_, rng, player, flags, slot)
 		if Mod.Item.KEY_SPACEBAR:IsEndStage() then
 			Isaac.Spawn(EntityType.ENTITY_SHOPKEEPER, 2, 0, player.Position, Vector.Zero, nil)
 		else
-			Mod.Game:StartRoomTransition(Mod.Level():QueryRoomTypeIndex(RoomType.ROOM_ERROR, false, rng), Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT)
+			local level = Mod.Level()
+			level.LeaveDoor = -1
+			Mod.Game:StartRoomTransition(level:QueryRoomTypeIndex(RoomType.ROOM_ERROR, false, rng), Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT)
 		end
 	else
 		local pocketItem = player:GetPocketItem(PillCardSlot.PRIMARY)

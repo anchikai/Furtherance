@@ -31,6 +31,7 @@ function SPACEBAR_KEY:OnUse(_, rng, player)
 	if SPACEBAR_KEY:IsEndStage() then
 		Isaac.Spawn(EntityType.ENTITY_SHOPKEEPER, 2, 0, player.Position, Vector.Zero, nil)
 	else
+		Mod.Level().LeaveDoor = -1
 		Mod.Game:StartRoomTransition(Mod.Level():QueryRoomTypeIndex(RoomType.ROOM_ERROR, false, rng), Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT)
 	end
 	local remove = false

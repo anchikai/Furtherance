@@ -10,6 +10,7 @@ local cKeyLibrary = false
 
 function C_KEY:Onuse(_, _, player)
 	Isaac.ExecuteCommand("goto s.library.5")
+	Mod.Level().LeaveDoor = -1
 	Mod.Game:StartRoomTransition(GridRooms.ROOM_DEBUG_IDX, -1, RoomTransitionAnim.TELEPORT, player)
 	cKeyLibrary = true
 	return {Discharge = true, Remove = true, ShowAnim = false}

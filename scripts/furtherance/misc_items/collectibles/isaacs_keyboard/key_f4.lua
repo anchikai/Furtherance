@@ -125,6 +125,7 @@ function F4_KEY:OnRegularUse(player, rng)
 	if #unvisitedRooms > 0 then
 		local choice = rng:RandomInt(#unvisitedRooms) + 1
 		local roomIndex = unvisitedRooms[choice]
+		level.LeaveDoor = -1
 		Mod.Game:StartRoomTransition(roomIndex, Direction.NO_DIRECTION, 3)
 		return true
 	else

@@ -22,7 +22,7 @@ function ALT_KEY:OnUse(_, rng, player)
 	local stage = level:GetStage()
 	local stageList = Mod.Item.ALTERNATE_REALITY:GetAvailableStages(stage)
 	local stageType = level:GetStageType()
-	if #stageList <= 1 then
+	if #stageList == 0 then
 		player:AnimateSad()
 		return false
 	end
@@ -34,7 +34,7 @@ function ALT_KEY:OnUse(_, rng, player)
 		if useRepentance and stageTable[2] < StageType.STAGETYPE_REPENTANCE
 			or not useRepentance and stageTable[2] >= StageType.STAGETYPE_REPENTANCE
 		then
-			table.remove(stageTable, i)
+			table.remove(stageList, i)
 		end
 	end)
 	if #stageList <= 1 then

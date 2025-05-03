@@ -89,12 +89,12 @@ function ALTERNATE_REALITY:NewReality()
 	local room = game:GetRoom()
 	if floor_save.AlternateRealityNewStage then
 		local level = Mod.Level()
+		level.LeaveDoor = -1
 		game:ChangeRoom(level:GetRandomRoomIndex(false, room:GetSpawnSeed()))
 		level:ShowMap()
 		level:ApplyBlueMapEffect()
 		level:ApplyCompassEffect(true)
 		level:ApplyMapEffect()
-		level.LeaveDoor = -1
 		floor_save.AlternateRealityNewStage = nil
 	end
 end

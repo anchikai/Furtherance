@@ -16,6 +16,7 @@ function ESC_KEY:UseEsc(_, rng, player, slot, data)
 		player:UseCard(Card.CARD_FOOL)
 	else
 		local randomRoom = level:QueryRoomTypeIndex(RoomType.ROOM_DEFAULT, false, rng)
+		level.LeaveDoor = -1
 		Mod.Game:StartRoomTransition(randomRoom, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT)
 	end
 	player:AddCollectible(CollectibleType.COLLECTIBLE_DOGMA)
