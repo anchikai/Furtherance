@@ -55,7 +55,7 @@ local function isValidEnemyTarget(ent, searchParams)
 end
 
 local function varSubtypeCheck(ent, variant, subtype)
-	local entSubtype = ent:ToPlayer() and ent:GetPlayerType() or ent.SubType
+	local entSubtype = ent:ToPlayer() and ent:ToPlayer():GetPlayerType() or ent.SubType
 	return (not variant or ent.Variant == variant) and (not subtype or entSubtype == subtype)
 end
 
@@ -124,14 +124,14 @@ end
 local function startForEachPartition(func, partition, pos, radius, variant, subtype, searchParams, noPartition)
 	local loopTable
 	local isVector = getmetatable(pos).__type == "Vector"
+	if not isVector then
+		pos = pos.Position
+	end
 	if not partition then
 		loopTable = Isaac.GetRoomEntities()
-	elseif noPartition then
+	elseif not noPartition then
 		--Automatically accounts for collision spheres
 		---@cast partition EntityPartition
-		if not isVector then
-			pos = pos.Position
-		end
 		---@cast pos Vector
 		loopTable = Isaac.FindInRadius(pos, radius, partition)
 	else
@@ -139,14 +139,14 @@ local function startForEachPartition(func, partition, pos, radius, variant, subt
 		loopTable = {}
 		local posCompare
 		if isVector then
-			posCompare = Vector.Zero
+			posCompare = 0
 		else
 			posCompare = pos.Size
 		end
 		local byType = Isaac.FindByType(partition, variant, subtype, true, searchParams and searchParams.Friendly or false)
 		for _, ent in ipairs(byType) do
-			if ent.Position:DistanceSquared(pos.Position) <= (ent.Size + posCompare) ^ 2 then
-				table[#loopTable + 1] = ent
+			if ent.Position:DistanceSquared(pos) <= (ent.Size + posCompare) ^ 2 then
+				loopTable[#loopTable + 1] = ent
 			end
 		end
 	end

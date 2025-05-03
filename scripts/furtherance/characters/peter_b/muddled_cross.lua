@@ -30,7 +30,7 @@ MUDDLED_CROSS.FLIP_X_SPEED = 0.15
 
 --#region Flip on use
 
-function MUDDLED_CROSS:FlipX()
+function MUDDLED_CROSS:EnemyFlip()
 	local room = Mod.Room()
 	local effects = room:GetEffects()
 	local isFlipped = effects:HasCollectibleEffect(MUDDLED_CROSS.ID)
@@ -43,8 +43,9 @@ function MUDDLED_CROSS:FlipX()
 	end
 end
 
-function MUDDLED_CROSS:TryFlipY()
+function MUDDLED_CROSS:TryRoomFlip()
 	local successful = MUDDLED_CROSS.SPECIAL_ROOM_FLIP:TryFlipSpecialRoom()
+	print(successful)
 	if successful then
 		MUDDLED_CROSS.TARGET_FLIP = 1
 		Mod.SFXMan:Play(MUDDLED_CROSS.SFX_ROOM_FLIP)
@@ -56,16 +57,17 @@ function MUDDLED_CROSS:TryFlip(player)
 	local isPeter = Mod.Character.PETER_B:IsPeterB(player)
 	local room = Mod.Room()
 	local enemiesActive = room:GetAliveEnemiesCount() > 0
-	local isXFlipped = Mod.Character.PETER_B.FLIP.FLIP_FACTOR >= 0.95
+	local peterFlipActive = Mod.Character.PETER_B.FLIP.FLIP_FACTOR >= 0.95
 
 	if not MUDDLED_CROSS.SPECIAL_ROOM_FLIP:IsFlippedRoom()
 		and (not isPeter or not enemiesActive)
-		and not isXFlipped
+		and not peterFlipActive
 		and MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ALLOWED_SPECIAL_ROOMS[room:GetType()]
 	then
 		local flipped
+
 		Mod.Foreach.EffectInRadius(player.Position, player.Size, function(effect, index)
-			flipped = MUDDLED_CROSS:TryFlipY()
+			flipped = MUDDLED_CROSS:TryRoomFlip()
 			return true
 		end, MUDDLED_CROSS.PUDDLE)
 
@@ -82,7 +84,7 @@ function MUDDLED_CROSS:TryFlip(player)
 			return true
 		end
 	elseif isPeter then
-		MUDDLED_CROSS:FlipX()
+		MUDDLED_CROSS:EnemyFlip()
 		return true
 	end
 end
@@ -92,9 +94,10 @@ end
 function MUDDLED_CROSS:OnUse(itemID, rng, player, flags)
 	if not Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) then
 		local flipped = MUDDLED_CROSS:TryFlip(player)
+
 		if not flipped then
-			local roomNotFound = flipped == false
-			return { Discharge = roomNotFound, Remove = false, ShowAnim = roomNotFound }
+			Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
+			return { Discharge = false, Remove = false, ShowAnim = true }
 		else
 			Mod.Game:ShakeScreen(10)
 		end

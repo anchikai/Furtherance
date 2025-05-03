@@ -7,7 +7,7 @@ Furtherance.Pickup.UNLUCKY_PENNY = UNLUCKY_PENNY
 UNLUCKY_PENNY.ID = Isaac.GetEntitySubTypeByName("Unlucky Penny")
 UNLUCKY_PENNY.NULL_ID = Isaac.GetNullItemIdByName("unlucky penny")
 
-UNLUCKY_PENNY.REPLACE_CHANCE = 0.5
+UNLUCKY_PENNY.REPLACE_CHANCE = 0.25
 
 ---@param entType EntityType
 ---@param variant PickupVariant
@@ -18,6 +18,7 @@ function UNLUCKY_PENNY:SpawnChargedBomb(entType, variant, subtype, _, _, spawner
 	if entType == EntityType.ENTITY_PICKUP
 		and variant == PickupVariant.PICKUP_COIN
 		and subtype == CoinSubType.COIN_LUCKYPENNY
+		and not spawner
 	then
 		local rng = RNG(seed)
 		if rng:RandomFloat() <= UNLUCKY_PENNY.REPLACE_CHANCE then
