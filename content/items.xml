@@ -82,20 +82,20 @@
 	<active id="29" name="Heart Renovator" description="Eternal triumph" gfx="heart_renovator.png" achievement="Heart Renovator" maxcharges="3" cache = "damage range" quality="3" craftquality="3" tags="angel nolostbr nocantrip" />
 	<active id="33" name="Shattered Heart" description="Eternal sorrow" gfx="shattered_heart.png" achievement="Shattered Heart" chargetype="timed" maxcharges="300" quality="2" craftquality="2" tags="nolostbr nocantrip" />
 	<active id="34" name="Keys to the Kingdom" description="Strength in salvation" gfx="keys_to_the_kingdom.png" achievement="Keys to the Kingdom" maxcharges="6" chargetype="special" quality="4" craftquality="4" tags="angel" />
-	<active id="36" name="Muddled Cross" description="Change your perspective" gfx="muddled_cross.png" achievement="Muddled Cross" maxcharges="300" chargetype="special" quality="4" craftquality="4" cooldown="150" tags="offensive" />
+	<active id="36" name="Muddled Cross" description="Change your perspective" gfx="muddled_cross.png" achievement="Muddled Cross" maxcharges="300" chargetype="special" quality="4" craftquality="4" cooldown="150" tags="offensive" customtag="nometronome" />
 	<active id="48" name="Book of Guidance" description="The exodus ends" gfx="book_of_guidance.png" achievement="Book of Guidance" maxcharges="12" quality="3" craftquality="3" tags="book offensive" />
 	<active id="49" name="Jar of Manna" description="Fill with faith" gfx="jar_of_manna.png" achievement="Jar of Manna" maxcharges="20" chargetype="special" quality="4" craftquality="4" initcharge="0" tags="nocantrip offensive" />
 	<active id="50" name="Tambourine" description="It's rattling!" gfx="tambourine.png" achievement="Tambourine" chargetype="timed" maxcharges="300" quality="0" craftquality="0" tags="offensive" />
 	<active id="51" name="The Dreidel" description="Reroll the elements" gfx="the_dreidel.png" achievement="The Dreidel" maxcharges="6" quality="4" craftquality="4" tags="offensive" />
-	<active id="52" name="Apocalypse" maxcharges="0" description="In the End" gfx="apocalypse.png" achievement="Apocalypse" cache="damage firedelay range shotspeed speed luck" shopprice="30" devilprice="2" quality="4" craftquality="4" tags="offensive nocantrip" />
+	<active id="52" name="Apocalypse" maxcharges="0" description="In the End" gfx="apocalypse.png" achievement="Apocalypse" cache="damage firedelay range shotspeed speed luck" shopprice="30" devilprice="2" quality="4" craftquality="4" tags="offensive nocantrip" customtag="nometronome" />
 	<active id="55" name="Old Camera" description="Paranormal photos" gfx="old_camera.png" maxcharges="6" quality="3" craftquality="3" />
 	<active id="57" name="Alternate Reality" description="All" gfx="alternate_reality.png" quality="0" craftquality="0" tags="nochallenge offensive nogreed" />
 	<active id="61" name="Cosmic Omnibus" description="Soar above the heavens" gfx="cosmic_omnibus.png" maxcharges="6" quality="3" craftquality="3" tags="book offensive" />
 	<active id="65" name="D9" description="Reroll your journey" gfx="d9.png" maxcharges="4" quality="3" craftquality="3" tags="offensive" />
-	<active id="72" name="Polarity Shift" description="Reverberating force" gfx="polarity_shift.png" cache="tearflag tearcolor" hidden="true" maxcharges="0" quality="0" craftquality="0" />
-	<active id="72" name=" Polarity Shift" description="Reverberating force" gfx="polarity_shift_alt.png" cache="tearflag tearcolor" hidden="true" maxcharges="0" quality="0" craftquality="0" />
+	<active id="72" name="Polarity Shift" description="Reverberating force" gfx="polarity_shift.png" cache="tearflag tearcolor" hidden="true" maxcharges="0" quality="0" craftquality="0" customtag="nometronome" />
+	<active id="72" name=" Polarity Shift" description="Reverberating force" gfx="polarity_shift_alt.png" cache="tearflag tearcolor" hidden="true" maxcharges="0" quality="0" craftquality="0" customtag="nometronome" />
 	<active id="73" name="Book of Books" description="Endless books!" gfx="book_of_books.png" maxcharges="6" quality="4" craftquality="4" tags="book offensive" /> <!-- Concept by retro100! -->
-	<active id="75" name="Servitude" description="7 years of labour" gfx="servitude.png" maxcharges="8" quality="2" craftquality="2" chargetype="special" tags="nocantrip" />
+	<active id="75" name="Servitude" description="7 years of labour" gfx="servitude.png" maxcharges="8" quality="2" craftquality="2" chargetype="special" tags="nocantrip" customtag="nometronome" />
 	<active id="78" name="Secret Diary" description="No one can know" gfx="secret_diary.png" achievement="Secret Diary" maxcharges="6" quality="3" craftquality="3" tags="book nocantrip" />
 	<active id="79" name="D16" description="Rerolls hearts" gfx="d16.png" achievement="D16" maxcharges="4" quality="1" craftquality="1" tags="offensive" />
 	<active id="91" name="Prayer Journal" description="Scripture" gfx="prayer_journal.png" achievement="Prayer Journal" maxcharges="4" quality="2" craftquality="2" tags="book nolostbr" />

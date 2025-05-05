@@ -37,6 +37,14 @@ if EID.HealingItemData then
 	EID.HealingItemData["5.100." .. tostring(Item.COFFEE_BREAK.ID)] = true
 end
 
+if EID.SingleUseCollectibles then
+	EID.SingleUseCollectibles[Item.ALTERNATE_REALITY.ID] = true
+	EID.SingleUseCollectibles[Item.KEY_C.ID] = true
+	EID.SingleUseCollectibles[Item.KEY_ENTER.ID] = true
+	EID.SingleUseCollectibles[Item.KEY_ESC.ID] = true
+	EID.SingleUseCollectibles[Item.APOCALYPSE.ID] = true
+end
+
 if EID.ItemReminderBlacklist then
 	EID.ItemReminderBlacklist["5.100."..Item.SPIRITUAL_WOUND.ID] = true
 end
