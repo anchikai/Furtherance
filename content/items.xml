@@ -72,7 +72,7 @@
 	<passive id="96" name="Liberation" description="Let go your earthly tether" gfx="liberation.png" achievement="Liberation" cache="flying" quality="1" craftquality="1" tags="offensive summonable" />
 	<passive id="97" name="Severed Ear" description="Battle trophy" gfx="severed_ear.png" achievement="Severed Ear" cache="damage firedelay range shotspeed" quality="2" craftquality="2" tags="offensive summonable" />
 	<passive id="98" name="Golden Port" description="Money charge" gfx="golden_port.png" achievement="Golden Port" quality="3" craftquality="3" tags="offensive summonable nocantrip" />
-	<passive id="99" name="Itching Powder" description="Double damage?" gfx="itching_powder.png" achievement="Itching Powder" quality="1" craftquality="1" tags="nolostbr summonable" />
+	<passive id="99" name="Itching Powder" description="Double damage?" gfx="itching_powder.png" achievement="Itching Powder" quality="1" craftquality="1" cooldown="30" persistent="true" tags="nolostbr summonable" />
 	<passive id="100" name="Epitaph" description="Down for the count" gfx="epitaph.png" quality="2" craftquality="2" tags="lazarusshared offensive nochallenge noeden" /> <!-- Concept by DLNT! -->
 
 	<!-- Active Items -->
