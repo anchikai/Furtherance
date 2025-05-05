@@ -338,7 +338,7 @@ EID_Collectibles = {
 	},
 	[Item.APOCALYPSE.ID] = {
 		en_us = {
-			Name = "PlaceholderName",
+			Name = "Apocalypse",
 			Description = {
 				"!!! Removes all passive items in exchange for two of any of the following stat buffs selected at random per item removed:",
 				"#{{Speed}} +0.05 Speed",
@@ -1849,6 +1849,30 @@ EID_Collectibles = {
 				"#While active:",
 				"#{{Blank}} Life steal is disabled, instead rapidly draining {{Heart}} Red Hearts.",
 				"#{{Blank}} Less delay between damaging enemies"
+			}
+		},
+		ru = {
+			Name = "PlaceholderName",
+			Description = {
+				"PlaceholderDesc"
+			}
+		},
+		spa = {
+			Name = "PlaceholderName",
+			Description = {
+				"PlaceholderDesc"
+			}
+		}
+	},
+	[Item.POLYDIPSIA.ID] = {
+		en_us = {
+			Name = "Polydipsia",
+			Description = {
+				"↓ {{Tears}} x0.5 Tears multiplier",
+				"#↓ {{Tears}} +8 Tear delay",
+				"#Isaac's tears are shot in an arc",
+				"#Isaac's tears leave creep, its size scaling with the size of the tear",
+				"#{{Damage}} The creep deals 66% of Isaac's damage per second and inherits his tear effects"
 			}
 		},
 		ru = {
