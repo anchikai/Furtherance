@@ -1222,7 +1222,7 @@ EID_Collectibles = {
 		en_us = {
 			Name = "E Key",
 			Description = {
-				"{{GigaBomb}} Spawns an unlit Giga Bomb"
+				"{{GigaBomb}} Spawns a lit Giga Bomb"
 			}
 		},
 		ru = {
