@@ -5,7 +5,7 @@ local BACKSPACE_KEY = {}
 Furtherance.Item.KEY_BACKSPACE = BACKSPACE_KEY
 
 BACKSPACE_KEY.ID = Isaac.GetItemIdByName("Backspace Key")
-BACKSPACE_KEY.NULL_ID = Isaac.GetItemIdByName("backspace penalty")
+BACKSPACE_KEY.NULL_ID = Isaac.GetNullItemIdByName("backspace penalty")
 
 ---@param player EntityPlayer
 function BACKSPACE_KEY:UseBackSpace(_, _, player)
