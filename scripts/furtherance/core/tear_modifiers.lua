@@ -235,6 +235,17 @@ function TearModifier:GetResetColor(object)
 	end
 end
 
+function TearModifier:IsValidEnemyTarget(ent)
+	return ent
+	and ent:ToNPC()
+	and ent:IsActiveEnemy(false)
+	and ent:IsVulnerableEnemy()
+	and not ent:IsDead()
+	and not ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
+	and ent.EntityCollisionClass ~= EntityCollisionClass.ENTCOLL_NONE
+	and (ent:ToNPC().CanShutDoors or ent.Type == EntityType.ENTITY_DUMMY)
+end
+
 ---@class TearModifierParams
 ---@field Name string @The string identifier for this TearModifier.
 ---@field Items CollectibleType[]? @List of items that cause this TearModifier to activate.
@@ -375,7 +386,7 @@ function TearModifier.New(params)
 		local data = getData(tear)
 		if data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
 			local npc = collider:ToNPC()
-			if npc and not npc:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) then
+			if TearModifier:IsValidEnemyTarget(npc) then
 				-- I know it's ugly but the logic is making my brain melt
 				local skip = false
 				if tear:HasTearFlags(TearFlags.TEAR_LUDOVICO)
@@ -459,8 +470,8 @@ function TearModifier.New(params)
 				for _, enemy in ipairs(Isaac.GetRoomEntities()) do
 					if not data[dataName][GetPtrHash(enemy)] and hitList[enemy.Index] then
 						data[dataName][GetPtrHash(enemy)] = true
-						if enemy:ToNPC() then
-							local npc = enemy:ToNPC() ---@cast npc EntityNPC
+						local npc = enemy:ToNPC()
+						if npc and TearModifier:IsValidEnemyTarget(npc) then
 							if not self:IsOnCooldown(npc, self.Cooldown.KnifeSwing) then
 								self:PostNpcHit(knife, npc, true)
 							end
@@ -488,7 +499,7 @@ function TearModifier.New(params)
 		local data = getData(knife)
 		if data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
 			local npc = collider:ToNPC()
-			if npc then
+			if npc and TearModifier:IsValidEnemyTarget(npc) then
 				-- normal knife and sumptorium knife
 				if knife.Variant == KnifeVariant.MOMS_KNIFE or knife.Variant == KnifeVariant.SUMPTORIUM then
 					if not self:IsOnCooldown(npc, self.Cooldown.KnifeHit) then
@@ -586,9 +597,8 @@ function TearModifier.New(params)
 
 			for _, entity in ipairs(Isaac.FindInRadius(point, laser.Size, EntityPartition.ENEMY)) do
 				local npc = entity:ToNPC()
-				if not npc then goto continue end
 
-				if not collidedWithEntity[GetPtrHash(npc)] then
+				if npc and TearModifier:IsValidEnemyTarget(npc) and not collidedWithEntity[GetPtrHash(npc)] then
 					if not self:PreEntityCollision(laser, npc, false) then
 						collidedWithEntity[GetPtrHash(npc)] = true
 					end
@@ -599,8 +609,6 @@ function TearModifier.New(params)
 
 					self:PostNpcHit(laser, npc)
 				end
-
-				::continue::
 			end
 		end
 	end)
@@ -625,8 +633,9 @@ function TearModifier.New(params)
 
 		--#region Cain Bag code
 		Epiphany:AddExtraCallback(Epiphany.ExtraCallbacks.CAIN_POST_SWING_HIT, function(_, bag, entity, player, SbData, dmgDealt)
-			if player and entity:ToNPC() and self:CheckTearAffected(player) then
-				self:PostNpcHit(bag, entity:ToNPC(), nil, nil, true)
+			local npc = entity:ToNPC()
+			if player and npc and TearModifier:IsValidEnemyTarget(npc) and self:CheckTearAffected(player) then
+				self:PostNpcHit(bag, npc, nil, nil, true)
 			end
 		end)
 
@@ -649,7 +658,8 @@ function TearModifier.New(params)
 
 		Epiphany:AddExtraCallback(Epiphany.ExtraCallbacks.CAIN_POST_BAG_HIT, function(_, bag, entity, TbData, dmgDealt)
 			if TbData[modInitial .. self.Name] and not TbData[modInitial .. self.Name .. "_Disabled"] then
-				if entity:ToNPC() then
+				local npc = entity:ToNPC()
+				if npc and TearModifier:IsValidEnemyTarget(npc) then
 					self:PostNpcHit(bag, entity:ToNPC(), nil, nil, true)
 				end
 			end
@@ -726,15 +736,15 @@ function TearModifier.New(params)
 			local bomb = source.Entity and source.Entity:ToBomb()
 			local effect = source.Entity and source.Entity:ToEffect()
 			local data = getData(bomb)
-			if bomb and data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
-				local npc = entity:ToNPC()
+			local npc = entity:ToNPC()
+
+			if bomb and npc and TearModifier:IsValidEnemyTarget(npc) and data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
 				if bomb.IsFetus and npc then
 					self:PostNpcHit(bomb, npc)
 				end
 			end
 			local eData = getData(effect)
-			if effect and eData[modInitial .. self.Name] and not eData[modInitial .. self.Name .. "_Disabled"] then
-				local npc = entity:ToNPC()
+			if effect and npc and TearModifier:IsValidEnemyTarget(npc) and eData[modInitial .. self.Name] and not eData[modInitial .. self.Name .. "_Disabled"] then
 				if npc then
 					self:PostNpcHit(effect, npc)
 				end
@@ -750,7 +760,7 @@ function TearModifier.New(params)
 				end
 
 				local npc = collider:ToNPC()
-				if npc then
+				if npc and TearModifier:IsValidEnemyTarget(npc) then
 					self:PostNpcHit(bomb, npc)
 				end
 
