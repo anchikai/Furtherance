@@ -45,41 +45,6 @@ function Furtherance:CompareColors(col1, col2)
 	end
 end ]]
 
----@return EntityPlayer[]
-function Furtherance:GetAllMainPlayers()
-	local players = PlayerManager.GetPlayers()
-	local mainPlayers = {}
-	for _, player in ipairs(players) do
-		if player:GetMainTwin():GetPlayerType() == player:GetPlayerType()	--Is the main twin of 2 players
-			and not player.Parent											--Not a strawmann-like spawned-in player.
-		then
-			Furtherance:Insert(mainPlayers, player)
-		end
-	end
-	return mainPlayers
-end
-
----Executes given function for every player
----Return anything to end the loop early
----@param func fun(player: EntityPlayer, playerIndex: integer): any?
-function Furtherance:ForEachPlayer(func)
-	for i, player in ipairs(PlayerManager.GetPlayers()) do
-		if func(player, player:GetPlayerIndex()) then
-			return true
-		end
-	end
-end
-
----@param func fun(player: EntityPlayer, playerIndex: integer): any?
-function Furtherance:ForEachMainPlayer(func)
-	local players = Furtherance:GetAllMainPlayers()
-	for _, player in ipairs(players) do
-		if func(player, player:GetPlayerIndex()) then
-			return true
-		end
-	end
-end
-
 ---@param player EntityPlayer
 ---@return boolean canControl
 function Furtherance:PlayerCanControl(player)

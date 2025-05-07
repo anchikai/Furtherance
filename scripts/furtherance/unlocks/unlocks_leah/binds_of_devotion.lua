@@ -73,8 +73,9 @@ function BINDS_OF_DEVOTION:FakobDied(entity)
 	local player = entity:ToPlayer()
 	if player and player:IsDead() then
 		if player:GetPlayerType() == BINDS_OF_DEVOTION.PLAYER_FAKE_JACOB then
-			Mod:ForEachMainPlayer(function(_player)
-				if Mod:IsSameEntity(player.Parent, _player) then
+			--Find the player that owns the now dead Jacob
+			Mod.Foreach.Player(function (_player, index)
+				if not _player.Parent and Mod:IsSameEntity(player.Parent, _player) then
 					_player:RemoveCollectible(BINDS_OF_DEVOTION.ID)
 				end
 			end)
