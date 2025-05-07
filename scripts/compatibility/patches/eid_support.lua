@@ -520,7 +520,7 @@ EID_Collectibles = {
 	[Item.BOOK_OF_LEVITICUS.ID] = {
 		---@param descObj EID_DescObj
 		_modifier = function(descObj)
-			local desc = EID:getDescriptionObj(5, 300, Card.CARD_REVERSE_TOWER, descObj.Entity, true)
+			local desc = EID:getDescriptionObj(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, Card.CARD_REVERSE_TOWER, descObj.Entity, true)
 			return desc and desc.Description or "{{Card72}} Uses XVI - The Tower?"
 		end,
 		en_us = {
@@ -547,7 +547,7 @@ EID_Collectibles = {
 	[Item.BOOK_OF_SWIFTNESS.ID] = {
 		---@param descObj EID_DescObj
 		_modifier = function(descObj)
-			local desc = EID:getDescriptionObj(5, 300, Card.CARD_ERA_WALK, descObj.Entity, true)
+			local desc = EID:getDescriptionObj(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, Card.CARD_ERA_WALK, descObj.Entity, true)
 			return desc and desc.Description or "{{Card54}} Uses Era Walk"
 		end,
 		en_us = {
@@ -1194,7 +1194,7 @@ EID_Collectibles = {
 	},
 	[Item.KEY_CAPS.ID] = {
 		_modifier = function(descObj)
-			local desc = EID:getDescriptionObj(5, 350, Card.CARD_HUGE_GROWTH, descObj.Entity, true)
+			local desc = EID:getDescriptionObj(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, Card.CARD_HUGE_GROWTH, descObj.Entity, true)
 			return desc and desc.Description or "{{Card52}} Uses Huge Growth"
 		end,
 		en_us = {
