@@ -104,11 +104,13 @@ function MUDDLED_CROSS:OnUse(itemID, rng, player, flags)
 	end
 	if Mod.Character.PETER_B:IsPeterB(player) then
 		local extraCooldown = Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) and FIVE_SECONDS or 0
-		Mod:ForEachEnemy(function(npc)
-			if Mod:GetData(npc).PeterFlipped then
+
+		Mod.Foreach.NPC(function (npc, index)
+			if npc:IsActiveEnemy(false) and Mod:GetData(npc).PeterFlipped then
 				extraCooldown = extraCooldown + HALF_FIVE_SECONDS
 			end
-		end, false)
+		end)
+
 		Mod:DelayOneFrame(function()
 			local tempEffect = Mod.Room():GetEffects():GetCollectibleEffect(MUDDLED_CROSS.ID)
 			tempEffect.Cooldown = tempEffect.Cooldown + extraCooldown
@@ -189,12 +191,12 @@ function MUDDLED_CROSS:ChargeOnEnemyDeath(ent)
 	local effects = Mod.Room():GetEffects()
 	if Mod.Character.PETER_B.FLIP:IsRoomEffectActive() and effects:HasCollectibleEffect(MUDDLED_CROSS.ID) then
 		Mod:DelayOneFrame(function()
-			local aliveFlippedEnemies = false
-			Mod:ForEachEnemy(function(_npc)
-				if GetPtrHash(_npc) ~= GetPtrHash(ent) and Mod:GetData(_npc).PeterFlipped then
-					aliveFlippedEnemies = true
+			local aliveFlippedEnemies = Mod.Foreach.NPC(function (npc, index)
+				if GetPtrHash(npc) ~= GetPtrHash(ent) and Mod:GetData(npc).PeterFlipped then
+					return true
 				end
-			end, true)
+			end, nil, nil, nil, {UseEnemySearchParams = true})
+
 			if not aliveFlippedEnemies then
 				effects:RemoveCollectibleEffect(MUDDLED_CROSS.ID, -1)
 			end

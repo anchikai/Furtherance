@@ -57,7 +57,7 @@
 	<passive id="74" name="Keratoconus" description="Soft gazing eyes" gfx="keratoconus.png" achievement="Keratoconus" cache="shotspeed range" quality="2" craftquality="2" tags="offensive summonable" />
 	<passive id="76" name="Cardiomyopathy" description="My chest hurts" gfx="cardiomyopathy.png" quality="2" craftquality="2" tags="nolostbr summonable" />
 	<passive id="77" name="Sunscreen" description="Beat the heat!" gfx="sunscreen.png" quality="0" craftquality="0" tags="summonable" />
-	<passive id="81" name="Rotten Apple" description="Random worm + Damage up" gfx="rotten_apple.png" cache="damage" quality="0" craftquality="0" tags="offensive" />
+	<passive id="81" name="Rotten Apple" description="Random worm + Damage up" gfx="rotten_apple.png" cache="damage" quality="1" craftquality="1" tags="offensive" />
 	<passive id="82" name="Beginner's Luck" description="Fading fortune" gfx="beginners_luck.png" cache="luck" quality="2" craftquality="2" persistent="true" tags="offensive nogreed" />
 	<passive id="83" name="Box of Belongings" description="All that is evil of this world" gfx="box_of_belongings.png" quality="1" craftquality="1" tags="offensive" />
 	<passive id="84" name="Chi Rho" description="Faithful intervention" gfx="chi_rho.png" achievement="Chi Rho" quality="3" craftquality="3" tag="offensive summonable" />

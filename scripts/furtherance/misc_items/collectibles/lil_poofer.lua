@@ -68,13 +68,15 @@ function LIL_POOFER:Explode(familiar)
 	local bffs = familiar.Player:HasCollectible(CollectibleType.COLLECTIBLE_BFFS)
 	local radius = familiar.Size * LIL_POOFER.EXPLOSION_SIZE_RANGE_MULT
 	local source = EntityRef(familiar)
-	Mod:ForEachEnemy(function(npc)
+
+	--Damage enemies
+	Mod.Foreach.NPCInRadius(familiar.Position, radius, function (npc, index)
 		npc:TakeDamage(LIL_POOFER.EXPLOSION_DMG * familiar:GetMultiplier(),
 			DamageFlag.DAMAGE_EXPLOSION | DamageFlag.DAMAGE_IGNORE_ARMOR, source, 0)
-	end, true, familiar.Position, radius)
-	for _, ent in ipairs(Isaac.FindInRadius(familiar.Position, radius, EntityPartition.PLAYER)) do
-		local player = ent:ToPlayer()
-		---@cast player EntityPlayer
+	end, nil, nil, {UseEnemySearchParams = true})
+
+	--Heal players
+	Mod.Foreach.PlayerInRadius(familiar.Position, radius, function (player, index)
 		if player:GetHearts() < player:GetEffectiveMaxHearts()
 			and player:GetHealthType() == HealthType.RED
 		then
@@ -82,7 +84,8 @@ function LIL_POOFER:Explode(familiar)
 			Mod:SpawnNotifyEffect(player.Position, Furtherance.NotifySubtype.HEART)
 			Mod.SFXMan:Play(SoundEffect.SOUND_VAMP_GULP)
 		end
-	end
+	end)
+
 	--These are all effects that the original Poofer spawns
 	Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF02, 3, familiar.Position, Vector.Zero, nil)
 	Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF02, 4, familiar.Position, Vector.Zero, nil)
@@ -91,24 +94,33 @@ function LIL_POOFER:Explode(familiar)
 	explosion.Color = Color(1, 0, 0, 1)
 	local poof02 = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF02, 5, familiar.Position, Vector.Zero, nil)
 	poof02.Color.A = 0.4
+
+	--Dust clouds
 	for _ = 1, 8 do
 		local dustCloud = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DUST_CLOUD, 0,
 			familiar.Position, RandomVector():Resized(Mod:RandomNum(1, 8) - Mod:RandomNum()), nil)
 		dustCloud.Color = Color(0.619608, 0.0431373, 0.0588235)
 		dustCloud:ToEffect().Timeout = 30
 	end
+
+	--Creep in the middle
 	local creepMiddle = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_RED, 0, familiar.Position,
 		Vector.Zero, familiar)
 	creepMiddle:Update()
+
+	--Random blood explosions
 	for _ = 1, 5 do
 		local position = Vector(Mod:RandomNum(-radius, radius), Mod:RandomNum(-radius, radius))
 		position = position + familiar.Position
 		Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BLOOD_EXPLOSION, 0, position,
 			Vector.Zero, familiar)
 	end
+
+	--Spawn 6-directional radial of blood creep
 	local scale = bffs and 1.5 or 1
 	local spritescale = Vector(scale, scale)
 	local randomOffset = Mod:RandomNum(-15, 15)
+
 	for i = 1, 2 do
 		for j = 1, 6 do
 			local rotation = (360 / 6) * j
@@ -119,6 +131,7 @@ function LIL_POOFER:Explode(familiar)
 			creapSpread:Update()
 		end
 	end
+
 	Mod.SFXMan:Play(SoundEffect.SOUND_BOSS1_EXPLOSIONS)
 	Mod.SFXMan:Play(SoundEffect.SOUND_DEATH_BURST_LARGE)
 end

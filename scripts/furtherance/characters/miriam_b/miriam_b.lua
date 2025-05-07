@@ -167,9 +167,11 @@ function MIRIAM_B:FearInRadius(effect)
 		local source = EntityRef(player)
 		local size = MIRIAM_B.FEAR_BASE_SCALE + (player:GetHearts() * MIRIAM_B.FEAR_SCALE_PER_HEART)
 		effect.SpriteScale = Vector(size, size)
-		Mod:ForEachEnemy(function (npc)
-			npc:AddFear(source, 2)
-		end, true, effect.Position, MIRIAM_B.FEAR_BASE_RADIUS * size)
+		Mod.Foreach.NPCInRadius(effect.Position, MIRIAM_B.FEAR_BASE_RADIUS * size, function (npc, index)
+			if npc:IsActiveEnemy(false) then
+				npc:AddFear(source, 2)
+			end
+		end, nil, nil)
 	end
 end
 

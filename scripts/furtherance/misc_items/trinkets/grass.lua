@@ -46,9 +46,8 @@ Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, GRASS.OverrideDecoration)
 
 ---@param gridEnt GridEntityDecoration
 function GRASS:DetectGrassPlayer(gridEnt)
-	for _, ent in ipairs(Isaac.FindInRadius(gridEnt.Position, 20, EntityPartition.PLAYER)) do
-		local player = ent:ToPlayer()
-		if player and player:HasTrinket(GRASS.ID) then
+	Mod.Foreach.PlayerInRadius(gridEnt.Position, 20, function (player, index)
+		if player:HasTrinket(GRASS.ID) then
 			local data = Mod:GetData(player)
 			if not data.GrassIndexCrossed or not data.GrassIndexCrossed[gridEnt:GetGridIndex()] then
 				data.GrassIndexCrossed = data.GrassIndexCrossed or {}
@@ -56,7 +55,7 @@ function GRASS:DetectGrassPlayer(gridEnt)
 				player:GetEffects():AddTrinketEffect(GRASS.ID)
 			end
 		end
-	end
+	end)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_GRID_ENTITY_DECORATION_UPDATE, GRASS.DetectGrassPlayer)

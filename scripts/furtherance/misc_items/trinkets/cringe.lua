@@ -12,9 +12,9 @@ CRINGE.FREEZE_DURATION = 30
 function CRINGE:CringeDMG(entity)
 	local player = entity:ToPlayer()
 	if player and player:HasTrinket(CRINGE.ID) then
-		Mod:ForEachEnemy(function (npc)
+		Mod.Foreach.NPC(function (npc, index)
 			npc:AddFreeze(EntityRef(player), CRINGE.FREEZE_DURATION)
-		end, true)
+		end, nil, nil, nil, {UseEnemySearchParams = true})
 	end
 end
 

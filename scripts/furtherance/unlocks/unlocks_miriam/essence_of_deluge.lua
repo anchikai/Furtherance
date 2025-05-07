@@ -15,7 +15,7 @@ ESSENCE_OF_DELUGE.SLOW_VALUE = 0.5
 ---@param player EntityPlayer
 function ESSENCE_OF_DELUGE:OnUse(card, player, flag)
 	Isaac.CreateTimer(function ()
-		Mod:ForEachEnemy(function(npc)
+		Mod.Foreach.NPC(function (npc, index)
 			local rainDrop = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.RAIN_DROP, 0,
 				npc.Position, Vector.Zero, player):ToEffect()
 			rainDrop.Parent = npc
@@ -24,7 +24,7 @@ function ESSENCE_OF_DELUGE:OnUse(card, player, flag)
 			local anim = RNG():RandomInt(4)
 			rainDrop:GetSprite():Play("Drop0" .. anim)
 			Mod:GetData(rainDrop).DelugeRainDrop = true
-		end, true)
+		end, nil, nil, nil, {UseEnemySearchParams = true})
 	end, 15, 10, false)
 end
 

@@ -1,4 +1,4 @@
----@diagnostic disable: param-type-mismatch
+---@diagnostic disable: param-type-mismatch, inject-field
 local game = Game()
 
 local Foreach = {}
@@ -34,6 +34,10 @@ end
 ---@field Inverse boolean?
 ---@field ShouldCache boolean?
 
+---@class DebugSearchParams
+---@field NPCOnly boolean?
+---@field EntityOnly boolean?
+
 ---@class AllowEnemySearchParams: SearchParams
 ---@field UseEnemySearchParams boolean?
 ---@field Dead boolean?
@@ -61,7 +65,10 @@ end
 
 local function forEach(ent, i, func, searchParams, variant, subtype)
 	if varSubtypeCheck(ent, variant, subtype) then
-		local castEnt = doCast(ent)
+		local castEnt = searchParams and searchParams.EntityOnly and ent or doCast(ent)
+		if searchParams and searchParams.NPCOnly and not ent:ToNPC() then
+			castEnt = nil
+		end
 		if castEnt and (not searchParams or searchParams.UseEnemySearchParams and isValidEnemyTarget(castEnt, searchParams)) then
 			local index = REPENTOGON and castEnt:ToPlayer() and castEnt:GetPlayerIndex() or i
 			local result = func(castEnt, index)
@@ -95,7 +102,7 @@ end
 ---@param entType? EntityType
 ---@param variant? integer @default: `-1`
 ---@param subtype? integer @default: `-1`
----@param searchParams? SearchParams | AllowEnemySearchParams
+---@param searchParams? SearchParams | AllowEnemySearchParams | DebugSearchParams
 local function startForEachType(func, entType, variant, subtype, searchParams)
 	local loopTable
 	if REPENTOGON and entType == EntityType.ENTITY_PLAYER then
@@ -119,7 +126,7 @@ end
 ---@param radius number
 ---@param variant? integer @default: `-1`
 ---@param subtype? integer @default: `-1`
----@param searchParams? SearchParams | AllowEnemySearchParams
+---@param searchParams? SearchParams | AllowEnemySearchParams | DebugSearchParams
 ---@param noPartition? boolean @default: `false`
 local function startForEachPartition(func, partition, pos, radius, variant, subtype, searchParams, noPartition)
 	local loopTable
@@ -358,12 +365,13 @@ end
 
 ---@generic V
 ---@param func fun(npc: EntityNPC, index: integer): V?
----@param entType EntityType
+---@param entType? EntityType @default: `-1`
 ---@param variant? integer @default: `-1`
 ---@param subtype? integer @default: `-1`
 ---@param searchParams? AllowEnemySearchParams @Extended list of search parameters catered towards enemies. If given a table, will go through the default list of requirements for a valid enemy target. Use the table's parameters to adjust the specifics of the search
 ---@return V?
 function Foreach.NPC(func, entType, variant, subtype, searchParams)
+	searchParams.NPCOnly = true
 	return startForEachType(func, entType, variant, subtype, searchParams)
 end
 
@@ -444,6 +452,7 @@ end
 ---@param searchParams? SearchParams
 ---@return V?
 function Foreach.Entity(func, searchParams)
+	searchParams.EntityOnly = true
 	return startForEachType(func, nil, nil, nil, searchParams)
 end
 
@@ -454,6 +463,7 @@ end
 ---@param searchParams? SearchParams
 ---@return V?
 function Foreach.EntityInRadius(pos, radius, func, searchParams)
+	searchParams.EntityOnly = true
 	return startForEachPartition(func, nil, pos, radius, nil, nil, searchParams)
 end
 

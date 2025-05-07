@@ -109,9 +109,7 @@ function JAR_OF_MANNA:MannaPickup(effect)
 	end
 	if sprite:GetAnimation() == "Collect" then return end
 
-	for _, ent in ipairs(Isaac.FindInRadius(effect.Position, JAR_OF_MANNA.EFFECT_RADIUS, EntityPartition.PLAYER)) do
-		local player = ent:ToPlayer()
-		---@cast player EntityPlayer
+	Mod.Foreach.PlayerInRadius(effect.Position, JAR_OF_MANNA.EFFECT_RADIUS, function (player, index)
 		local slot = JAR_OF_MANNA:GetNeededChargeSlot(player)
 		if slot then
 			local c = player:GetColor()
@@ -120,7 +118,7 @@ function JAR_OF_MANNA:MannaPickup(effect)
 		end
 		effect.Timeout = 0
 		sprite:Play("Collect")
-	end
+	end)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, JAR_OF_MANNA.MannaPickup, JAR_OF_MANNA.EFFECT)

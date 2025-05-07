@@ -11,10 +11,12 @@ TAMBOURINE.SFX = Isaac.GetSoundIdByName("Tambourine")
 ---@param player EntityPlayer
 function TAMBOURINE:OnUse(_, _, player)
 	local source = EntityRef(player)
-	Mod:ForEachEnemy(function(npc)
-		local dir = (npc.Position - player.Position):Resized(15)
-		npc:AddKnockback(source, dir, 15, true)
-	end, false, player.Position, 125)
+	Mod.Foreach.NPCInRadius(player.Position, 125, function (npc, index)
+		if npc:IsActiveEnemy(false) then
+			local dir = (npc.Position - player.Position):Resized(15)
+			npc:AddKnockback(source, dir, 15, true)
+		end
+	end)
 	local bigSplash = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BIG_SPLASH, 0, player.Position, Vector.Zero, nil):ToEffect()
 	---@cast bigSplash EntityEffect
 	bigSplash.SpriteScale = Vector(1.5, 1.5)

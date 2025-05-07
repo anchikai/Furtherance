@@ -69,15 +69,17 @@ function LEVIATHANS_TENDRIL:FearEnemies(player)
 	if player:HasTrinket(LEVIATHANS_TENDRIL.ID) then
 		local rng = player:GetTrinketRNG(LEVIATHANS_TENDRIL.ID)
 		local fearChance = LEVIATHANS_TENDRIL.FEAR_CHANCE * player:GetTrinketMultiplier(LEVIATHANS_TENDRIL.ID)
+		local source = EntityRef(player)
+
 		if player:HasPlayerForm(PlayerForm.PLAYERFORM_EVIL_ANGEL) then
 			fearChance = fearChance + 0.05
 		end
-		local source = EntityRef(player)
-		Mod:ForEachEnemy(function(npc)
+
+		Mod.Foreach.NPCInRadius(player.Position, LEVIATHANS_TENDRIL.FEAR_RADIUS, function (npc, index)
 			if rng:RandomFloat() <= fearChance then
 				npc:AddFear(source, LEVIATHANS_TENDRIL.FEAR_DURATION)
 			end
-		end, true, player.Position, LEVIATHANS_TENDRIL.FEAR_RADIUS)
+		end, nil, nil, {UseEnemySearchParams = true})
 	end
 end
 

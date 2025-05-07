@@ -33,21 +33,19 @@ end
 ---@param player? EntityPlayer
 function SHATTERED_HEART:ExplodeHeart(pickup, player)
 	local damage = SHATTERED_HEART:GetHeartDamage(pickup)
-	if player and Mod.Character.LEAH_B:LeahBHasBirthright(player) then
-		damage = damage * 2
-	end
 	local radius = pickup.Size * SHATTERED_HEART.EXPLOSION_MULT
-	for _, enemy in ipairs(Isaac.FindInRadius(pickup.Position, radius, EntityPartition.ENEMY)) do
-		if Mod:IsValidEnemyTarget(enemy) then
-			enemy:TakeDamage(damage, DamageFlag.DAMAGE_EXPLOSION | DamageFlag.DAMAGE_IGNORE_ARMOR,
-				EntityRef(pickup), 0)
-		end
-	end
-	Mod.SFXMan:Play(SoundEffect.SOUND_EXPLOSION_WEAK)
-	pickup:GetSprite():SetFrame("Idle", 0)
 	local kColor = pickup:GetSprite():GetTexel(Vector(4, -7), Vector.Zero, 1, 0)
 	local color = Color(kColor.Red, kColor.Green, kColor.Blue, 1)
 	local posRange = radius / 2
+
+	if player and Mod.Character.LEAH_B:LeahBHasBirthright(player) then
+		damage = damage * 2
+	end
+
+	Mod.Foreach.NPCInRadius(pickup.Position, radius, function (npc, index)
+		npc:TakeDamage(damage, DamageFlag.DAMAGE_EXPLOSION | DamageFlag.DAMAGE_IGNORE_ARMOR,
+			EntityRef(pickup), 0)
+	end, nil, nil, {UseEnemySearchParams = true})
 
 	for _ = 1, 5 do
 		local position = Vector(Mod:RandomNum(-posRange, posRange), Mod:RandomNum(-posRange, posRange))
@@ -66,6 +64,9 @@ function SHATTERED_HEART:ExplodeHeart(pickup, player)
 		creep.SpriteScale = Vector(2.5, 2.5)
 		creep:Update()
 	end
+
+	Mod.SFXMan:Play(SoundEffect.SOUND_EXPLOSION_WEAK)
+	pickup:GetSprite():SetFrame("Idle", 0)
 	pickup:BloodExplode()
 	pickup:Remove()
 end
@@ -97,19 +98,17 @@ function SHATTERED_HEART:SharpHeartUpdate(pickup)
 	end
 	local player = pickup.SpawnerEntity and pickup.SpawnerEntity:ToPlayer()
 
-	Mod:ForEachEnemy(function(npc)
-		if npc.Position:DistanceSquared(pickup.Position) <= (npc.Size + pickup.Size) ^ 2 then
-			Mod.SFXMan:Play(SoundEffect.SOUND_MEAT_IMPACTS, 1, 2, false, 0.5)
-			if player and Mod.Character.LEAH_B:LeahBHasBirthright(player) and player:CanPickRedHearts() then
-				player:ForceCollide(pickup, true)
-			else
-				pickup:GetSprite():Play("Collect")
-				pickup:Die()
-			end
-			npc:TakeDamage(SHATTERED_HEART:GetHeartDamage(pickup), DamageFlag.DAMAGE_IGNORE_ARMOR, EntityRef(pickup), 0)
-			return true
+	Mod.Foreach.NPCInRadius(pickup.Position, pickup.Size, function (npc, index)
+		Mod.SFXMan:Play(SoundEffect.SOUND_MEAT_IMPACTS, 1, 2, false, 0.5)
+		if player and Mod.Character.LEAH_B:LeahBHasBirthright(player) and player:CanPickRedHearts() then
+			player:ForceCollide(pickup, true)
+		else
+			pickup:GetSprite():Play("Collect")
+			pickup:Die()
 		end
-	end, true)
+		npc:TakeDamage(SHATTERED_HEART:GetHeartDamage(pickup), DamageFlag.DAMAGE_IGNORE_ARMOR, EntityRef(pickup), 0)
+		return true
+	end, nil, nil, {UseEnemySearchParams = true})
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, SHATTERED_HEART.SharpHeartUpdate, PickupVariant.PICKUP_HEART)

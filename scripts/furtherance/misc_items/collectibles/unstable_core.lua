@@ -23,22 +23,25 @@ function UNSTABLE_CORE:OnUse(itemID, _, player, flags, slot)
 	then
 		return
 	end
-	local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.TEAR_POOF_A, TECH_SWORD_TEAR_POOF_SUBTYPE, player.Position, Vector.Zero, nil)
-	effect.SpriteScale = Vector(2, 2)
-	Mod.SFXMan:Play(SoundEffect.SOUND_LASERRING_WEAK)
 	local source = EntityRef(player)
 	local charges = player:GetActiveCharge(slot)
 	local chargeBuff = max(1, ceil(charges / 2))
+	local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.TEAR_POOF_A, TECH_SWORD_TEAR_POOF_SUBTYPE, player.Position, Vector.Zero, nil)
+	effect.SpriteScale = Vector(2, 2)
+	Mod.SFXMan:Play(SoundEffect.SOUND_LASERRING_WEAK)
+
 	if charges > 12 then
 		chargeBuff = 1
 	elseif charges == 0 then
 		return
 	end
+
 	local carBattery = player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) and 2 or 1
-	Mod:ForEachEnemy(function(npc)
+
+	Mod.Foreach.NPCInRadius(player.Position, UNSTABLE_CORE.RADIUS, function (npc, index)
 		npc:AddBurn(source, UNSTABLE_CORE.DEFAULT_DURATION, 5 * carBattery)
 		npc:SetBurnCountdown(UNSTABLE_CORE.DEFAULT_DURATION * chargeBuff * carBattery)
-	end, true, player.Position, UNSTABLE_CORE.RADIUS)
+	end, nil, nil, {UseEnemySearchParams = true})
 end
 
 Mod:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, CallbackPriority.EARLY, UNSTABLE_CORE.OnUse)

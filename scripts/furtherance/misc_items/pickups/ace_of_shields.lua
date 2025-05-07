@@ -19,13 +19,13 @@ function ACE_OF_SHIELDS:OnUse(_, player)
 		end
 	end)
 
-	Mod:ForEachEnemy(function(npc)
-		if not npc:IsBoss() then
+	Mod.Foreach.NPC(function (npc, index)
+		if not npc:IsBoss() and npc:IsActiveEnemy(false) then
 			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_LIL_BATTERY, BatterySubType.BATTERY_MICRO,
 				npc.Position, Vector.Zero, nil)
 			npc:Remove()
 		end
-	end, false)
+	end, nil, nil, nil, {Inverse = true, UseEnemySearchParams = true})
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_CARD, ACE_OF_SHIELDS.OnUse, ACE_OF_SHIELDS.ID)

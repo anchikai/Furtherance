@@ -185,15 +185,16 @@ function SEPARATE_SIDES:PressurePlateUpdate(gridEnt)
 	then
 		local grid_save = Mod:RoomSave(gridEnt:GetGridIndex())
 		local validPlayerOnPlate = false
-		for _, ent in ipairs(Isaac.FindInRadius(gridEnt.Position, 40, EntityPartition.PLAYER)) do
-			if FLIP:IsEntitySubmerged(ent) and gridEnt.State == 0 and not validPlayerOnPlate then
+
+		Mod.Foreach.PlayerInRadius(gridEnt.Position, 40, function (player, index)
+			if FLIP:IsEntitySubmerged(player) and gridEnt.State == 0 and not validPlayerOnPlate then
 				gridEnt.State = 3
-			elseif not FLIP:IsEntitySubmerged(ent) and gridEnt.State == 3 and not grid_save.PeterBPlateTriggered then
+			elseif not FLIP:IsEntitySubmerged(player) and gridEnt.State == 3 and not grid_save.PeterBPlateTriggered then
 				validPlayerOnPlate = true
 				gridEnt.State = 0
 				grid_save.PeterBPlateTriggered = true
 			end
-		end
+		end)
 	end
 end
 

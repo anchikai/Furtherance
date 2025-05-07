@@ -89,7 +89,7 @@ function FIRSTBORN_SON:TryFindValidTarget(source)
 	local foundNonBoss = true
 
 	--Gather all valid enemies to target. If a non-boss is found, clear out the table and only insert non-bosses
-	Mod:ForEachEnemy(function(npc)
+	Mod.Foreach.NPC(function (npc, index)
 		if npc:IsBoss() and not foundNonBoss then
 			Mod:Insert(allValidTargets, npc)
 		elseif not npc:IsBoss() then
@@ -99,7 +99,7 @@ function FIRSTBORN_SON:TryFindValidTarget(source)
 			end
 			Mod:Insert(allValidTargets, npc)
 		end
-	end, true)
+	end, nil, nil, nil, {UseEnemySearchParams = true})
 
 	--Find the highest HP enemy
 	local highestHP
@@ -184,11 +184,9 @@ function FIRSTBORN_SON:DamageTarget(effect, target, isSplash)
 		end
 	end
 	if not isSplash and mult > 1 then
-		for _, ent in ipairs(Isaac.FindInRadius(target.Position, FIRSTBORN_SON.EXPLOSION_RADIUS, EntityPartition.ENEMY)) do
-			if Mod:IsValidEnemyTarget(ent) then
-				FIRSTBORN_SON:DamageTarget(effect, ent, true)
-			end
-		end
+		Mod.Foreach.NPCInRadius(target.Position, FIRSTBORN_SON.EXPLOSION_RADIUS, function (npc, index)
+			FIRSTBORN_SON:DamageTarget(effect, npc, true)
+		end, nil, nil, {UseEnemySearchParams = true})
 	end
 end
 

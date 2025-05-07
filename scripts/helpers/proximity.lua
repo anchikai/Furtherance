@@ -102,24 +102,3 @@ function Furtherance:GetClosestEntity(pos, range, partition)
 	end
 	return closestEnt, closestDistance
 end
-
----@param func fun(npc: EntityNPC): boolean?
----@param validTarget boolean
----@param pos? Vector
----@param radius? integer
-function Furtherance:ForEachEnemy(func, validTarget, pos, radius)
-	local entities
-	if radius and pos then
-		entities = Isaac.FindInRadius(pos, radius, EntityPartition.ENEMY)
-	else
-		entities = Isaac.GetRoomEntities()
-	end
-	for _, ent in pairs(entities) do
-		local npc = ent:ToNPC()
-		if npc and (validTarget and Furtherance:IsValidEnemyTarget(npc) or npc:IsActiveEnemy(false)) then
-			if func(npc) then
-				return true
-			end
-		end
-	end
-end

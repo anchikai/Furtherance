@@ -66,11 +66,11 @@ function PHARAOH_CAT:OnBastetStatueUpdate(effect)
 
 	Mod.Room():SetGridPath(gridIndex, 3999)
 
-	for _, ent in ipairs(Isaac.FindInRadius(effect.Position, PHARAOH_CAT:GetRadius(), EntityPartition.BULLET)) do
-		if not ent:IsDead() then
-			ent:Die()
+	Mod.Foreach.ProjectileInRadius(effect.Position, PHARAOH_CAT:GetRadius(), function (projectile, index)
+		if not projectile:IsDead() then
+			projectile:Die()
 		end
-	end
+	end, nil, nil, {Inverse = true})
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, PHARAOH_CAT.OnBastetStatueUpdate, PHARAOH_CAT.EFFECT)
