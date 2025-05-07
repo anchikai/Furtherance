@@ -7,6 +7,7 @@ Furtherance.Item.JUNO = JUNO
 JUNO.ID = Isaac.GetItemIdByName("Juno?")
 
 JUNO.ANIMA_SOLA_DURATION = 60
+JUNO.ANIMA_SOLA_COOLDOWN = 120
 
 JUNO.TEAR_MODIFIER = Mod.TearModifier.New({
 	Name = "Juno",
@@ -18,7 +19,11 @@ JUNO.TEAR_MODIFIER = Mod.TearModifier.New({
 	Color = Color(0.7, 0.3, 0, 1, 1, 0.5, 0.2),
 	ShouldAffectBombs = true,
 	Cooldown = {
-		Laser = 6
+		KnifeHit = JUNO.ANIMA_SOLA_COOLDOWN,
+		KnifeSwing = JUNO.ANIMA_SOLA_COOLDOWN,
+		Ludovico = JUNO.ANIMA_SOLA_COOLDOWN,
+		Laser = JUNO.ANIMA_SOLA_COOLDOWN,
+		CSection = JUNO.ANIMA_SOLA_COOLDOWN
 	}
 })
 

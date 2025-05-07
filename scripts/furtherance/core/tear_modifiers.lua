@@ -386,15 +386,17 @@ function TearModifier.New(params)
 		local data = getData(tear)
 		if data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
 			local npc = collider:ToNPC()
-			if TearModifier:IsValidEnemyTarget(npc) then
+			if npc and TearModifier:IsValidEnemyTarget(npc) then
 				-- I know it's ugly but the logic is making my brain melt
 				local skip = false
 				if tear:HasTearFlags(TearFlags.TEAR_LUDOVICO)
-					and self:IsOnCooldown(tear, self.Cooldown.Ludovico) then
+					and self:IsOnCooldown(tear, self.Cooldown.Ludovico)
+				then
 					skip = true
 				end
 				if tear:HasTearFlags(TearFlags.TEAR_FETUS)
-					and self:IsOnCooldown(tear, self.Cooldown.CSection) then
+					and self:IsOnCooldown(tear, self.Cooldown.CSection)
+				then
 					skip = true
 				end
 
