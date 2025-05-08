@@ -371,6 +371,7 @@ end
 ---@param searchParams? AllowEnemySearchParams @Extended list of search parameters catered towards enemies. If given a table, will go through the default list of requirements for a valid enemy target. Use the table's parameters to adjust the specifics of the search
 ---@return V?
 function Foreach.NPC(func, entType, variant, subtype, searchParams)
+	searchParams = searchParams or {}
 	searchParams.NPCOnly = true
 	return startForEachType(func, entType, variant, subtype, searchParams)
 end
@@ -452,6 +453,7 @@ end
 ---@param searchParams? SearchParams
 ---@return V?
 function Foreach.Entity(func, searchParams)
+	searchParams = searchParams or {}
 	searchParams.EntityOnly = true
 	return startForEachType(func, nil, nil, nil, searchParams)
 end
@@ -463,8 +465,30 @@ end
 ---@param searchParams? SearchParams
 ---@return V?
 function Foreach.EntityInRadius(pos, radius, func, searchParams)
+	searchParams = searchParams or {}
 	searchParams.EntityOnly = true
 	return startForEachPartition(func, nil, pos, radius, nil, nil, searchParams)
+end
+
+--Will move DOWN the chain from the provided entity. Provide the parent if you want to loop through the whole line of enemies
+---@param npc Entity
+---@param func fun(npc: Entity)
+function Foreach.Segment(npc, func)
+	local entitiesSearch = {}
+	local curHash = GetPtrHash(npc)
+	entitiesSearch[curHash] = true
+	local currentEnt = npc.Child
+	if currentEnt.Parent
+		and currentEnt.Parent:ToNPC()
+		and currentEnt.Parent.Child
+		and GetPtrHash(currentEnt) == GetPtrHash(currentEnt.Parent.Child)
+		and not entitiesSearch[curHash]
+	then
+		entitiesSearch[curHash] = true
+		func(npc)
+		currentEnt = currentEnt.Child
+		curHash = GetPtrHash(currentEnt)
+	end
 end
 
 return Foreach
