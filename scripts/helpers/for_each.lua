@@ -394,7 +394,7 @@ end
 ---@param searchParams? SearchParams
 ---@return V?
 function Foreach.Effect(func, variant, subtype, searchParams)
-	return startForEachType(func, EntityType.ENTITY_PROJECTILE, variant, subtype, searchParams)
+	return startForEachType(func, EntityType.ENTITY_EFFECT, variant, subtype, searchParams)
 end
 
 ---@generic V
