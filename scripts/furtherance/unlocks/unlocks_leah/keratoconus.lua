@@ -63,26 +63,26 @@ Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, KERATOCONUS.On
 
 ---@param npc EntityNPC
 function KERATOCONUS:SizeChanging(npc)
-	if npc:IsBoss()
-		or not PlayerManager.AnyoneHasCollectible(KERATOCONUS.ID)
-		or npc:HasEntityFlags(EntityFlag.FLAG_SHRINK)
+	if not npc:IsBoss()
+		and not PlayerManager.AnyoneHasCollectible(KERATOCONUS.ID)
+		and not npc:HasEntityFlags(EntityFlag.FLAG_SHRINK)
+		and npc:IsActiveEnemy(false)
 	then
-		return
+		local player = KERATOCONUS:GetClosestKeratoconusPlayer(npc)
+		local curDist = npc.Position:Distance(player.Position)
+		local distMult = Mod:Clamp(
+		(curDist - KERATOCONUS.MIN_SIZE_DISTANCE) / (KERATOCONUS.MAX_SIZE_DISTANCE - KERATOCONUS.MIN_SIZE_DISTANCE), 0, 1)
+		local size = 1 + distMult
+		local speed = 1 + -(distMult * 0.5)
+		local data = Mod:GetData(npc)
+		if not data.KeratoconusOriginalVars then
+			data.KeratoconusOriginalVars = { npc.Size, npc.SizeMulti, npc.Scale, npc:GetSpeedMultiplier() }
+		end
+		npc:SetSize(data.KeratoconusOriginalVars[1] * size, Vector.One, 16)
+		npc.Scale = size
+		if npc:GetSpeedMultiplier() >= 1 and speed == 1 then return end
+		npc:SetSpeedMultiplier(speed)
 	end
-	local player = KERATOCONUS:GetClosestKeratoconusPlayer(npc)
-	local curDist = npc.Position:Distance(player.Position)
-	local distMult = Mod:Clamp(
-	(curDist - KERATOCONUS.MIN_SIZE_DISTANCE) / (KERATOCONUS.MAX_SIZE_DISTANCE - KERATOCONUS.MIN_SIZE_DISTANCE), 0, 1)
-	local size = 1 + distMult
-	local speed = 1 + -(distMult * 0.5)
-	local data = Mod:GetData(npc)
-	if not data.KeratoconusOriginalVars then
-		data.KeratoconusOriginalVars = { npc.Size, npc.SizeMulti, npc.Scale, npc:GetSpeedMultiplier() }
-	end
-	npc:SetSize(data.KeratoconusOriginalVars[1] * size, Vector.One, 16)
-	npc.Scale = size
-	if npc:GetSpeedMultiplier() >= 1 and speed == 1 then return end
-	npc:SetSpeedMultiplier(speed)
 end
 
 Mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, KERATOCONUS.SizeChanging)
