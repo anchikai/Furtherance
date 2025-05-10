@@ -122,17 +122,17 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, POLARIS.OnRemoval, POLARIS.ID)
 
 ---@param player EntityPlayer
----@param flag CacheFlag
-function POLARIS:AddPlayerBuffs(player, flag)
+---@param cacheFlag CacheFlag
+function POLARIS:AddPlayerBuffs(player, cacheFlag)
 	local effects = player:GetEffects()
-	if not effects:HasCollectibleEffect(POLARIS.ID) then return end
+	if not effects:HasNullEffect(POLARIS.NULL_ID) then return end
 	local colorBuff = POLARIS.COLOR_STATS[POLARIS:GetColorBuff(player)]
-	if not colorBuff or not colorBuff.CacheFlags[flag] then return end
+	if not colorBuff or not colorBuff.CacheFlags[cacheFlag] then return end
 
-	if flag == CacheFlag.CACHE_DAMAGE then
-		player.Damage = player.Damage + colorBuff.CacheFlags[flag]
-	elseif flag == CacheFlag.CACHE_SHOTSPEED then
-		player.ShotSpeed = player.ShotSpeed + colorBuff.CacheFlags[flag]
+	if cacheFlag == CacheFlag.CACHE_DAMAGE then
+		player.Damage = player.Damage + colorBuff.CacheFlags[cacheFlag]
+	elseif cacheFlag == CacheFlag.CACHE_SHOTSPEED then
+		player.ShotSpeed = player.ShotSpeed + colorBuff.CacheFlags[cacheFlag]
 	end
 end
 

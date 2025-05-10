@@ -1827,12 +1827,12 @@ EID_Collectibles = {
 		en_us = {
 			Name = "Polaris",
 			Description = {
-				"Grants {{Shotspeed}} Shot speed and/or {{Damage}} Damage and one of the following effects per room depending on the color of the familiar:",
-				"#{{ColorRed}}Red{{CR}}: 31.4% chance. +2 Shot speed, {{Tearsize}} -50% Tear size",
-				"#{{ColorOrange}}Orange{CR}}: 20.8% chance. +1.5 Shot speed, +0.5 Damage",
-				"#{{ColorYellow}}Yellow{CR}}: 28.3% chance. +1 Shot speed, +1 damage, 50% chance for a heart to spawn upon room clear",
-				"#White: 16.4% chance. +0.5 Shot speed, +1.5 Damage, 10% chance for {{Collectible374}} tears. {{Luck}} 50% chance at 9 luck",
-				"#{{ColorBlue}}Blue{CR}}: +2 Damage, {{Tearsize}} +100% Tear size, tears inflict {{Burning}}burning",
+				"Grants stats and one of the following effects per room depending on the color of the familiar:",
+				"#{{ColorRed}}Red{{CR}} = +2 Shot speed, {{Tearsize}} -50% Tear size",
+				"#{{ColorOrange}}Orange{{CR}} = +1.5 Shot speed, +0.5 Damage",
+				"#{{ColorYellow}}Yellow{{CR}} = +1 Shot speed, +1 damage, 50% chance for a heart to spawn upon room clear",
+				"#White = +0.5 Shot speed, +1.5 Damage, 10% chance for {{Collectible374}} tears. {{Luck}} 50% chance at 9 luck",
+				"#{{ColorBlue}}Blue{{CR}} = +2 Damage, {{Tearsize}} +100% Tear size, tears inflict {{Burning}}Burning",
 			}
 		},
 		ru = {
