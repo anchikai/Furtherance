@@ -12,9 +12,9 @@ OWLS_EYE.TEAR_MODIFIER = Mod.TearModifier.New({
 	Name = "Owl's Eye",
 	Items = {OWLS_EYE.ID},
 	MinChance = 0.08,
-	MaxChance = 1,
+	MaxChance = 0.5,
 	MinLuck = 0,
-	MaxLuck = 12,
+	MaxLuck = 15,
 	ShouldAffectBombs = true,
 	Color = OWLS_EYE.COLOR
 })

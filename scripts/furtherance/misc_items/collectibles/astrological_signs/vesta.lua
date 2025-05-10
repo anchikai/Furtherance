@@ -12,7 +12,8 @@ VESTA.TEAR_MODIFIER = Mod.TearModifier.New({
 	MinChance = 0.1,
 	MaxChance = 1,
 	MinLuck = 0,
-	MaxLuck = 10
+	MaxLuck = 10,
+	ShouldAffectBombs = true
 })
 
 ---@param player EntityPlayer
