@@ -1647,7 +1647,7 @@ EID_Collectibles = {
 			Name = "Owl's Eye",
 			Description = {
 				"8% chance to fire a homing and piercing tear that deals double damage",
-				"#{{Luck}} 100% chance at 12 luck"
+				"#{{Luck}} 50% chance at 15 luck"
 			}
 		},
 		ru = {
@@ -1831,7 +1831,7 @@ EID_Collectibles = {
 				"#{{ColorRed}}Red{{CR}} = +2 Shot speed, {{Tearsize}} -50% Tear size",
 				"#{{ColorOrange}}Orange{{CR}} = +1.5 Shot speed, +0.5 Damage",
 				"#{{ColorYellow}}Yellow{{CR}} = +1 Shot speed, +1 damage, 50% chance for a heart to spawn upon room clear",
-				"#White = +0.5 Shot speed, +1.5 Damage, 10% chance for {{Collectible374}} tears. {{Luck}} 50% chance at 9 luck",
+				"#White = +0.5 Shot speed, +1.5 Damage, 10% chance for {{Collectible374}} holy light tears. {{Luck}} 50% chance at 9 luck",
 				"#{{ColorBlue}}Blue{{CR}} = +2 Damage, {{Tearsize}} +100% Tear size, tears inflict {{Burning}}Burning",
 			}
 		},
