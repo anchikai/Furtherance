@@ -46,6 +46,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, GRASS.OverrideDecoration)
 
 ---@param gridEnt GridEntityDecoration
 function GRASS:DetectGrassPlayer(gridEnt)
+	if not PlayerManager.AnyoneHasTrinket(GRASS.ID) then return end
 	Mod.Foreach.PlayerInRadius(gridEnt.Position, 20, function (player, index)
 		if player:HasTrinket(GRASS.ID) then
 			local data = Mod:GetData(player)

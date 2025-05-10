@@ -12,8 +12,14 @@ function REBOUND_WORM:PreTearAndBombCollision(tearorBomb, gridIndex, gridEnt)
 	local player = tearorBomb.SpawnerEntity and tearorBomb.SpawnerEntity:ToPlayer()
 	if gridEnt and player and player:HasTrinket(REBOUND_WORM.ID) then
 		local data = Mod:GetData(tearorBomb)
-		if data.SlickWormBounced then return end
-		local enemy = Mod:GetClosestEnemyInView(tearorBomb.Position, 500, tearorBomb.Velocity:Rotated(180), 90, true,
+		if data.SlickWormBounced then
+			print("bounced")
+			return
+		end
+		local dir = tearorBomb.Velocity:Rotated(180)
+		--Basically take a few steps back before firing in case the tear gets too close into a grid
+		local pos = tearorBomb.Position + dir:Resized(10)
+		local enemy = Mod:GetClosestEnemyInView(pos, 650, tearorBomb.Velocity:Rotated(180), 90, true,
 			true)
 		if enemy then
 			tearorBomb.Velocity = (enemy.Position - tearorBomb.Position):Resized(tearorBomb.Velocity:Length() * 1.5)
@@ -28,43 +34,49 @@ Mod:AddCallback(ModCallbacks.MC_PRE_BOMB_GRID_COLLISION, REBOUND_WORM.PreTearAnd
 
 ---@param laser EntityLaser
 function REBOUND_WORM:LaserUpdate(laser)
-	if laser.SubType ~= LaserSubType.LASER_SUBTYPE_LINEAR then
+	local data = Mod:TryGetData(laser)
+	if data and data.SlickWormLaserParent then
+		if not data.SlickWormLaserParent.Ref then
+			laser:Remove()
+		end
+		return
+	end
+	if (laser.SubType ~= LaserSubType.LASER_SUBTYPE_LINEAR
+		or not laser:IsSampleLaser())
+	then
 		return
 	end
 	local player = laser.SpawnerEntity and laser.SpawnerEntity:ToPlayer()
-	if player and player:HasTrinket(REBOUND_WORM.ID) then
-		local endPoint = laser:GetEndPoint()
-		if Mod.Room():GetGridEntityFromPos(endPoint) then
-			local data = Mod:GetData(laser)
-			if data.IsSlickWormLaser then
-				if laser.Parent and not laser.Parent:Exists() then
-					laser:Remove()
-				end
-				return
-			end
-			local enemy = Mod:GetClosestEnemyInView(endPoint, nil, Vector.FromAngle(laser.AngleDegrees):Rotated(180), 90,
+	if player and player:HasTrinket(REBOUND_WORM.ID) and (not Mod:HasBitFlags(player.TearFlags, TearFlags.TEAR_BOUNCE) or laser.BounceLaser) then
+		local samples = laser:GetSamples()
+		local endPoint = samples:Get(#samples - 1)
+		data = Mod:GetData(laser)
+		local slickLaserRef = data.SlickWormLaser
+		local slickLaserEnt = slickLaserRef and slickLaserRef.Ref and slickLaserRef.Ref:ToLaser()
+		if slickLaserEnt then
+			slickLaserEnt.Position = endPoint
+		end
+		local vecAngle = Vector.FromAngle(laser.AngleDegrees)
+		local referencePos = endPoint - vecAngle:Resized(20)
+		if Mod.Room():GetGridIndex(referencePos) ~= -1 then
+			local enemy = Mod:GetClosestEnemyInView(endPoint, nil, vecAngle:Rotated(180), 90,
 				false, false)
-			if enemy then
-				if not data.SlickWormLaser then
-					local angle = (enemy.Position - endPoint):GetAngleDegrees()
-					local slickLaser = EntityLaser.ShootAngle(laser.Variant, endPoint, angle, laser.Timeout,
-					laser.PositionOffset, player)
-					for name, value in ipairs(getmetatable(laser).__propget) do
-						if not string.find(name, "Angle") then
-							slickLaser[name] = value(laser)
-						end
-					end
-					slickLaser.Parent = laser
-					slickLaser.DisableFollowParent = true
-					Mod:GetData(slickLaser).IsSlickWormLaser = true
-					data.SlickWormLaser = slickLaser
-				end
-				if data.SlickWormLaser:Exists() then
-					local angle = (enemy.Position - data.SlickWormLaser.Position):GetAngleDegrees()
-					data.SlickWormLaser.AngleDegrees = angle
-					data.SlickWormLaser.Position = endPoint
-				end
+			if enemy and not slickLaserEnt then
+				local dir = (enemy.Position - endPoint)
+				local slickLaser = player:FireBrimstone(dir, player, laser:GetDamageMultiplier())
+				slickLaser.Timeout = laser.Timeout
+				slickLaser.DisableFollowParent = true
+				slickLaser.Position = endPoint
+				slickLaser.Parent = laser
+				slickLaser.MaxDistance = laser.MaxDistance
+				Mod:GetData(slickLaser).SlickWormLaserParent = EntityPtr(laser)
+				data.SlickWormLaser = EntityPtr(slickLaser)
+			elseif enemy and slickLaserEnt then
+				local angle = (enemy.Position - slickLaserEnt.Position):GetAngleDegrees()
+				slickLaserEnt.AngleDegrees = Mod:LerpAngleDegrees(slickLaserEnt.AngleDegrees, angle, 0.1)
 			end
+		elseif slickLaserEnt then
+			slickLaserEnt:Remove()
 		end
 	end
 end
