@@ -64,7 +64,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, KERATOCONUS.On
 ---@param npc EntityNPC
 function KERATOCONUS:SizeChanging(npc)
 	if not npc:IsBoss()
-		and not PlayerManager.AnyoneHasCollectible(KERATOCONUS.ID)
+		and PlayerManager.AnyoneHasCollectible(KERATOCONUS.ID)
 		and not npc:HasEntityFlags(EntityFlag.FLAG_SHRINK)
 		and npc:IsActiveEnemy(false)
 	then
