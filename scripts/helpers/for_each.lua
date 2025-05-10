@@ -69,7 +69,7 @@ local function forEach(ent, i, func, searchParams, variant, subtype)
 		if searchParams and searchParams.NPCOnly and not ent:ToNPC() then
 			castEnt = nil
 		end
-		if castEnt and (not searchParams or searchParams.UseEnemySearchParams and isValidEnemyTarget(castEnt, searchParams)) then
+		if castEnt and (not searchParams or not searchParams.UseEnemySearchParams or isValidEnemyTarget(castEnt, searchParams)) then
 			local index = REPENTOGON and castEnt:ToPlayer() and castEnt:GetPlayerIndex() or i
 			local result = func(castEnt, index)
 			if result ~= nil then
