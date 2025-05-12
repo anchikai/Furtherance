@@ -45,7 +45,7 @@ function BI_84:RandomTechItem(player)
 					and Mod.PersistGameData:Unlocked(itemConfig.AchievementID)
 					and itemConfig:IsCollectible()
 				then
-					Mod:Insert(techItemIDs, itemConfig.ID)
+					Mod.Insert(techItemIDs, itemConfig.ID)
 				end
 			end
 			local techItem = techItemIDs[rng:RandomInt(#techItemIDs) + 1]

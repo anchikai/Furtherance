@@ -11,7 +11,7 @@ FIRSTBORN_SON.FAMILIAR = Isaac.GetEntityVariantByName("Firstborn Son")
 
 FIRSTBORN_SON.PURGATORY_DELAY = 60
 FIRSTBORN_SON.COLOR_FLASH = Color(1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1)
-FIRSTBORN_SON.PURGATORY_COLORIZE = {0, 0.5, 0.5, 1}
+FIRSTBORN_SON.PURGATORY_COLORIZE = { 0, 0.5, 0.5, 1 }
 FIRSTBORN_SON.EXPLOSION_RADIUS = 75
 
 --#endregion
@@ -38,7 +38,8 @@ function FIRSTBORN_SON:OnFamiliarUpdate(familiar)
 			familiar.Velocity = Vector.Zero
 			familiar:SetColor(Color(1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1), -1, 1, false, true)
 			familiar:SetColor(FIRSTBORN_SON.COLOR_FLASH, 15, 2, true, true)
-			local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PURGATORY, 1, familiar.Position, Vector.Zero, familiar):ToEffect()
+			local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PURGATORY, 1, familiar.Position,
+				Vector.Zero, familiar):ToEffect()
 			---@cast effect EntityEffect
 			FIRSTBORN_SON:ColorizeEffect(effect)
 			local scale = player:HasCollectible(CollectibleType.COLLECTIBLE_BFFS) and 1.25 or 1
@@ -58,7 +59,7 @@ end
 Mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, FIRSTBORN_SON.OnFamiliarUpdate, FIRSTBORN_SON.FAMILIAR)
 
 Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
-	Mod.Foreach.Familiar(function (familiar, index)
+	Mod.Foreach.Familiar(function(familiar, index)
 		familiar.State = 0
 		familiar.FireCooldown = FIRSTBORN_SON.PURGATORY_DELAY
 		familiar:SetColor(Color.Default, -1, 1, false, true)
@@ -89,17 +90,17 @@ function FIRSTBORN_SON:TryFindValidTarget(source)
 	local foundNonBoss = true
 
 	--Gather all valid enemies to target. If a non-boss is found, clear out the table and only insert non-bosses
-	Mod.Foreach.NPC(function (npc, index)
+	Mod.Foreach.NPC(function(npc, index)
 		if npc:IsBoss() and not foundNonBoss then
-			Mod:Insert(allValidTargets, npc)
+			Mod.Insert(allValidTargets, npc)
 		elseif not npc:IsBoss() then
 			if not foundNonBoss then
 				allValidTargets = {}
 				foundNonBoss = true
 			end
-			Mod:Insert(allValidTargets, npc)
+			Mod.Insert(allValidTargets, npc)
 		end
-	end, nil, nil, nil, {UseEnemySearchParams = true})
+	end, nil, nil, nil, { UseEnemySearchParams = true })
 
 	--Find the highest HP enemy
 	local highestHP
@@ -152,7 +153,7 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, FIRSTBORN_SON.OnEffectUpdate, EffectVariant.PURGATORY)
 
 function FIRSTBORN_SON:OnRoomClear()
-	Mod.Foreach.Familiar(function (familiar, index)
+	Mod.Foreach.Familiar(function(familiar, index)
 		FIRSTBORN_SON:OnFamiliarInit(familiar)
 		if familiar.State == 1 then
 			familiar:SetColor(Color.Default, -1, 1, false, true)
@@ -184,9 +185,9 @@ function FIRSTBORN_SON:DamageTarget(effect, target, isSplash)
 		end
 	end
 	if not isSplash and mult > 1 then
-		Mod.Foreach.NPCInRadius(target.Position, FIRSTBORN_SON.EXPLOSION_RADIUS, function (npc, index)
+		Mod.Foreach.NPCInRadius(target.Position, FIRSTBORN_SON.EXPLOSION_RADIUS, function(npc, index)
 			FIRSTBORN_SON:DamageTarget(effect, npc, true)
-		end, nil, nil, {UseEnemySearchParams = true})
+		end, nil, nil, { UseEnemySearchParams = true })
 	end
 end
 
@@ -232,7 +233,8 @@ function FIRSTBORN_SON:SpawnPurgatoryEffects(explosion)
 			EffectVariant.BLOOD_SPLAT
 		}
 		for _, variant in ipairs(effects) do
-			local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, variant, 0, explosion.Position, Vector.Zero, explosion.SpawnerEntity)
+			local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, variant, 0, explosion.Position, Vector.Zero,
+				explosion.SpawnerEntity)
 			FIRSTBORN_SON:ColorizeEffect(effect)
 			if variant == EffectVariant.POOF01 then
 				effect:GetSprite():Load("gfx/1000.034_fart.anm2")
@@ -276,7 +278,8 @@ Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, FIRSTBORN_SON.OnFamiliarInit, FIR
 function FIRSTBORN_SON:OnFamiliarCache(player)
 	local rng = player:GetCollectibleRNG(FIRSTBORN_SON.ID)
 	rng:Next()
-	local numFamiliars = math.min(1, player:GetCollectibleNum(FIRSTBORN_SON.ID) + player:GetEffects():GetCollectibleEffectNum(FIRSTBORN_SON.ID))
+	local numFamiliars = math.min(1,
+		player:GetCollectibleNum(FIRSTBORN_SON.ID) + player:GetEffects():GetCollectibleEffectNum(FIRSTBORN_SON.ID))
 	player:CheckFamiliar(FIRSTBORN_SON.FAMILIAR, numFamiliars, rng, Mod.ItemConfig:GetCollectible(FIRSTBORN_SON.ID))
 end
 

@@ -72,13 +72,13 @@ function BOX_OF_BELONGINGS:OnFirstPickup(itemID, _, firstTime, _, _, player)
 		local cardList = {}
 		for _, card in ipairs(BOX_OF_BELONGINGS.CARD_DROPS) do
 			if BOX_OF_BELONGINGS:IsCardAvailable(card) then
-				Mod:Insert(cardList, card)
+				Mod.Insert(cardList, card)
 			end
 		end
 		local trinketList = {}
 		for _, trinket in ipairs(BOX_OF_BELONGINGS.TRINKET_DROPS) do
 			if BOX_OF_BELONGINGS:IsTrinketAvailable(trinket) then
-				Mod:Insert(trinketList, trinket)
+				Mod.Insert(trinketList, trinket)
 			end
 		end
 		local rng = player:GetCollectibleRNG(itemID)

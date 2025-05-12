@@ -8,14 +8,14 @@ function Furtherance:FitStringInBox(font, string, stringLengthLimit)
 	for w in string:gmatch("%S+") do
 		local newString = currentString .. w .. " "
 		if font:GetStringWidth(newString) >= stringLengthLimit then
-			Furtherance:Insert(endTable, currentString)
+			Furtherance.Insert(endTable, currentString)
 			currentString = ""
 		end
 
 		currentString = currentString .. w .. " "
 	end
 
-	Furtherance:Insert(endTable, currentString)
+	Furtherance.Insert(endTable, currentString)
 	return endTable
 end
 

@@ -42,25 +42,13 @@ function ALT_KEY:OnUse(_, rng, player)
 		return false
 	end
 	local newStage = stageList[rng:RandomInt(#stageList) + 1]
-	Mod:Insert(newStage, true)
+	Mod.Insert(newStage, true)
 	local player_floor_save = Mod:FloorSave(player)
 	player_floor_save.SkipFloorRecharge = true
-	Mod.Item.ALTERNATE_REALITY:QueueNewStage(newStage[1], newStage[2], true)
+	Mod.Item.ALTERNATE_REALITY:QueueNewStage(newStage[1], newStage[2], false)
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, ALT_KEY.OnUse, ALT_KEY.ID)
-
-function ALT_KEY:SelectNewLevel()
-	local floor_save = Mod:FloorSave()
-	if floor_save.QueueNewStage then
-		local stage, stageType = floor_save.QueueNewStage[1], floor_save.QueueNewStage[2]
-		StageTransition.SetSameStage(floor_save.QueueNewStage[3] or false)
-		floor_save.QueueNewStage = nil
-		return { stage, stageType }
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_PRE_LEVEL_SELECT, ALT_KEY.SelectNewLevel)
 
 ---Runs before POST_NEW_LEVEL when floor save data gets reset :P
 ---@param player EntityPlayer

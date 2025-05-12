@@ -212,7 +212,7 @@ function FLIP_RENDERING:AddOutlineSprite(ent, spr)
 	copyspr.Color.A = 0
 
 	data.GSGSAGS = data.GSGSAGS or {}
-	Mod:Insert(data.GSGSAGS, { copyspr, Vector(0, 0), 0 })
+	Mod.Insert(data.GSGSAGS, { copyspr, Vector(0, 0), 0 })
 end
 
 ---@param ent Entity

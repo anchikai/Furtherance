@@ -20,7 +20,7 @@ function Furtherance:CombineTables(...)
 	local out = {}
 	for _, tab in pairs(tabs) do
 		for _, val in pairs(tab) do
-			Furtherance:Insert(out, val)
+			Furtherance.Insert(out, val)
 		end
 	end
 	return out
@@ -44,7 +44,7 @@ end
 function Furtherance:GetKeys(tab)
 	local out = {}
 	for k in pairs(tab) do
-		Furtherance:Insert(out, k)
+		Furtherance.Insert(out, k)
 	end
 	return out
 end
@@ -56,7 +56,7 @@ end
 function Furtherance:GetValues(tab)
 	local out = {}
 	for _, v in pairs(tab) do
-		Furtherance:Insert(out, v)
+		Furtherance.Insert(out, v)
 	end
 	return out
 end
@@ -65,7 +65,7 @@ end
 ---@param tab table
 ---@param valueOrLocation any
 ---@overload fun(tab: table, location: integer, value: any)
-function Furtherance:Insert(tab, valueOrLocation, value)
+function Furtherance.Insert(tab, valueOrLocation, value)
 	if value ~= nil and type(valueOrLocation) == "number" then
 		tab[valueOrLocation] = value
 	elseif value == nil then
@@ -120,7 +120,7 @@ function Furtherance:PrintTable(node)
 				end
 
 				-- This is necessary for working with HUGE tables otherwise we run out of memory using concat on huge strings
-				Furtherance:Insert(output, output_str)
+				Furtherance.Insert(output, output_str)
 				output_str = ""
 
 				local key
@@ -134,8 +134,8 @@ function Furtherance:PrintTable(node)
 					output_str = output_str .. tab(depth) .. key .. " = " .. tostring(v)
 				elseif type(v) == "table" then
 					output_str = output_str .. tab(depth) .. key .. " = {\n"
-					Furtherance:Insert(stack, node)
-					Furtherance:Insert(stack, v)
+					Furtherance.Insert(stack, node)
+					Furtherance.Insert(stack, v)
 					cache[node] = cur_index + 1
 					break
 				else
@@ -167,7 +167,7 @@ function Furtherance:PrintTable(node)
 	end
 
 	-- This is necessary for working with HUGE tables otherwise we run out of memory using concat on huge strings
-	Furtherance:Insert(output, output_str)
+	Furtherance.Insert(output, output_str)
 	output_str = table.concat(output)
 
 	Furtherance:Log(output_str)
@@ -272,7 +272,7 @@ function Furtherance:FlattenTable(tab, depth, out)
 		if type(v) == "table" and (not depth or depth > 0) then
 			Furtherance:FlattenTable(v, depth and depth - 1, out)
 		else
-			Furtherance:Insert(out, v)
+			Furtherance.Insert(out, v)
 		end
 	end
 	return out
@@ -385,7 +385,7 @@ end
 function Furtherance:GetValuesByKeys(tab, keys)
 	local out = {}
 	for _, v in pairs(keys) do
-		Furtherance:Insert(out, tab[v])
+		Furtherance.Insert(out, tab[v])
 	end
 
 	return out

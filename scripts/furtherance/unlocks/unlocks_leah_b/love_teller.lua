@@ -187,7 +187,7 @@ function LOVE_TELLER:GetMatchMaker(playerType, result)
 		local playerTypes = {}
 		for i = 0, PlayerType.PLAYER_ISAAC_B - 1 do
 			if not avoidTypes[i] and not LOVE_TELLER.ParentPlayerTypes[i] then
-				Mod:Insert(playerTypes, i)
+				Mod.Insert(playerTypes, i)
 			end
 		end
 		local modded = {
@@ -197,7 +197,7 @@ function LOVE_TELLER:GetMatchMaker(playerType, result)
 		}
 		for _, moddedType in ipairs(modded) do
 			if not avoidTypes[moddedType] then
-				Mod:Insert(playerTypes, moddedType)
+				Mod.Insert(playerTypes, moddedType)
 			end
 		end
 		local shithead = playerTypes[Mod:RandomNum(#playerTypes)]

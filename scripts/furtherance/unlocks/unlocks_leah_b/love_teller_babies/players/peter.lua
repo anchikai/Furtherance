@@ -4,11 +4,11 @@ local Mod = Furtherance
 local function preEffectAdd(_, familiar)
 	local validEnemies = {}
 
-	Mod.Foreach.NPC(function (npc, index)
+	Mod.Foreach.NPC(function(npc, index)
 		if not npc:IsBoss() then
-			Mod:Insert(validEnemies, npc)
+			Mod.Insert(validEnemies, npc)
 		end
-	end, nil, nil, nil, {UseEnemySearchParams = true})
+	end, nil, nil, nil, { UseEnemySearchParams = true })
 
 	if #validEnemies == 0 then return end
 

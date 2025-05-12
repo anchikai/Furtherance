@@ -20,7 +20,7 @@ function NIL_NUM:Duplicate(ent)
 				if not historyItem:IsTrinket()
 					and not Mod.ItemConfig:GetCollectible(historyItem:GetItemID()):HasTags(ItemConfig.TAG_QUEST)
 				then
-					Mod:Insert(itemIDs, historyItem:GetItemID())
+					Mod.Insert(itemIDs, historyItem:GetItemID())
 				end
 			end
 			local itemID = itemIDs[rng:RandomInt(#itemIDs) + 1]

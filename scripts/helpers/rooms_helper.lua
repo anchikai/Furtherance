@@ -58,7 +58,7 @@ function Furtherance:GetAllRooms(cond)
 	for i = 0, #rooms - 1 do
 		local room = rooms:Get(i)
 		if not cond or cond(room) then
-			Furtherance:Insert(collectedRooms, room)
+			Furtherance.Insert(collectedRooms, room)
 		end
 	end
 	return collectedRooms
@@ -73,7 +73,7 @@ function Furtherance:GetRandomRoomsOnFloor(count, rng, cond)
 	local randomRooms = {}
 	for _ = 1, count do
 		local randomRoomDesc = Furtherance:GetDifferentRandomValue(randomRooms, roomIndexes, rng)
-		Furtherance:Insert(randomRooms, randomRoomDesc)
+		Furtherance.Insert(randomRooms, randomRoomDesc)
 	end
 	return randomRooms
 end

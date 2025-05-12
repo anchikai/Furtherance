@@ -205,7 +205,7 @@ function Furtherance:GetActiveItemSlots(player, item)
 	local out = {}
 	for _, v in pairs(ActiveSlot) do
 		if player:GetActiveItem(v) == item then
-			Furtherance:Insert(out, v)
+			Furtherance.Insert(out, v)
 		end
 	end
 	return out
@@ -218,7 +218,7 @@ function Furtherance:GetActiveItemCharges(player, itemID)
 	local slots = Furtherance:GetActiveItemSlots(player, itemID)
 	local out = {}
 	for i, slot in ipairs(slots) do
-		Furtherance:Insert(out, { Slot = slot, Charge = player:GetActiveCharge(slot) })
+		Furtherance.Insert(out, { Slot = slot, Charge = player:GetActiveCharge(slot) })
 	end
 	return out
 end
@@ -302,12 +302,12 @@ function Furtherance:GetStatScore(player, cacheFlag)
 	if cacheFlag == CacheFlag.CACHE_SPEED then
 		score = (player.MoveSpeed * 4.5) - 2
 	elseif cacheFlag == CacheFlag.CACHE_FIREDELAY then
-		score = (((30/(player.MaxFireDelay + 1))^0.75) * 2.120391) - 2
-	elseif cacheFlag ==CacheFlag.CACHE_DAMAGE then
-		score = ((player.Damage^0.56)*2.231179) - 2
+		score = (((30 / (player.MaxFireDelay + 1)) ^ 0.75) * 2.120391) - 2
+	elseif cacheFlag == CacheFlag.CACHE_DAMAGE then
+		score = ((player.Damage ^ 0.56) * 2.231179) - 2
 	elseif cacheFlag == CacheFlag.CACHE_RANGE then
 		score = ((player.TearRange - 230) / 60) + 2
-	--Shotspeed and Luck are custom. Default should be 2.5
+		--Shotspeed and Luck are custom. Default should be 2.5
 	elseif cacheFlag == CacheFlag.CACHE_SHOTSPEED then
 		score = (player.ShotSpeed * 6.5) - 4
 	elseif cacheFlag == CacheFlag.CACHE_LUCK then

@@ -51,7 +51,7 @@ function CHIRON:GetOffensiveBooks()
 			and not itemConfig:HasTags(ItemConfig.TAG_QUEST)
 			and Mod.PersistGameData:Unlocked(itemConfig.AchievementID)
 		then
-			Mod:Insert(validBooks)
+			Mod.Insert(validBooks)
 		end
 	end
 	return validBooks

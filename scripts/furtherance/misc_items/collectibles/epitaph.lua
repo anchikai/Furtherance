@@ -53,12 +53,12 @@ function EPITAPH:SavePlayerInventoryOnDeath(player)
 			end
 		end)
 		if firstItem then
-			Mod:Insert(inv.Collectibles, firstItem)
+			Mod.Insert(inv.Collectibles, firstItem)
 			Mod:DebugLog("Added", Mod:TryGetTranslatedString("Items", (Mod.ItemConfig:GetCollectible(firstItem).Name)),
 				"as first collected item")
 		end
 		if lastItem then
-			Mod:Insert(inv.Collectibles, lastItem)
+			Mod.Insert(inv.Collectibles, lastItem)
 			Mod:DebugLog("Added", Mod:TryGetTranslatedString("Items", (Mod.ItemConfig:GetCollectible(lastItem).Name)),
 				"as last collected item")
 		end
@@ -114,7 +114,7 @@ function EPITAPH:OnGameOver(isGameOver)
 			local player_run_save = Mod:RunSave(player)
 			if player_run_save.EpitaphInventory then
 				game_save.EpitaphTombstones = game_save.EpitaphTombstones or {}
-				Mod:Insert(game_save.EpitaphTombstones, player_run_save.EpitaphInventory)
+				Mod.Insert(game_save.EpitaphTombstones, player_run_save.EpitaphInventory)
 				Mod:DebugLog("Added Tombstone to spawn on LevelStage", player_run_save.EpitaphInventory.LevelStage)
 			end
 		end)
@@ -148,7 +148,7 @@ function EPITAPH:PostNewLevel()
 	Furtherance:inverseiforeach(run_save.EpitaphTombstones or {}, function(tombstoneData, index)
 		if stage == tombstoneData.LevelStage then
 			Mod:DebugLog("Reached Epitaph Tombestone floor!")
-			Mod:Insert(tombstones, tombstoneData)
+			Mod.Insert(tombstones, tombstoneData)
 			table.remove(run_save.EpitaphTombstones, index)
 		end
 	end)
@@ -213,9 +213,9 @@ end
 function EPITAPH:UpdateTombstoneOnNewRoom()
 	local hasTombstone = false
 
-	Mod.Foreach.Grid(function (gridEnt, gridIndex)
+	Mod.Foreach.Grid(function(gridEnt, gridIndex)
 		EPITAPH:UpdateSprite(gridEnt, gridEnt:GetSaveState().VarData)
-			hasTombstone = true
+		hasTombstone = true
 	end, GridEntityType.GRID_ROCKB, EPITAPH.TOMBSTONE_GRID_VARIANT)
 
 	if hasTombstone then
@@ -230,7 +230,7 @@ function EPITAPH:SpawnTombstone()
 	local room = Mod.Room()
 	local gridIndex = room:GetRandomTileIndex(Mod.GENERIC_RNG:Next())
 	local gridSpawned = room:SpawnGridEntity(gridIndex, GridEntityType.GRID_ROCKB, EPITAPH.TOMBSTONE_GRID_VARIANT,
-	Mod.GENERIC_RNG:Next())
+		Mod.GENERIC_RNG:Next())
 	if gridSpawned then
 		local gridEnt = room:GetGridEntity(gridIndex)
 		--It reverts to a different random variant upon first spawning
@@ -332,7 +332,7 @@ function EPITAPH:TryMarkReviveLocation(npc)
 	if PlayerManager.AnyoneHasCollectible(EPITAPH.ID) then
 		local rng = PlayerManager.FirstCollectibleOwner(EPITAPH.ID):GetCollectibleRNG(EPITAPH.ID)
 		if rng:RandomFloat() <= EPITAPH.NPC_REVIVE_CHANCE then
-			Mod:Insert(reviveLocations, npc)
+			Mod.Insert(reviveLocations, npc)
 		end
 	end
 end
@@ -425,7 +425,7 @@ function EPITAPH:DistanceBasedJingle(pos)
 			Mod.SFXMan:Play(EPITAPH.TOMBSTONE_JINGLE, 1, 2, true, 1, 0)
 		end
 		local distanceRange = (distance - EPITAPH.JINGLE_MIN_VOLUME_DISTANCE) /
-		((EPITAPH.JINGLE_DISTANCE_THRESHOLD ^ 2) - EPITAPH.JINGLE_MIN_VOLUME_DISTANCE)
+			((EPITAPH.JINGLE_DISTANCE_THRESHOLD ^ 2) - EPITAPH.JINGLE_MIN_VOLUME_DISTANCE)
 		local oppositeDistance = 1 - distanceRange
 		local volume = Mod:Clamp(oppositeDistance, 0, 1)
 		local musicVolume = Mod:Clamp(distanceRange, 0, 1)

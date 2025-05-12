@@ -40,7 +40,7 @@ function JAR_OF_MANNA:OnUse(_, _, player)
 		local playerStats = {}
 		for _, statInfo in ipairs(JAR_OF_MANNA.StatTable) do
 			local score = Furtherance:GetStatScore(player, statInfo.Flag)
-			Furtherance:Insert(playerStats, score)
+			Furtherance.Insert(playerStats, score)
 		end
 		local lowestStats = {}
 		local lowestStat
@@ -109,7 +109,7 @@ function JAR_OF_MANNA:MannaPickup(effect)
 	end
 	if sprite:GetAnimation() == "Collect" then return end
 
-	Mod.Foreach.PlayerInRadius(effect.Position, JAR_OF_MANNA.EFFECT_RADIUS, function (player, index)
+	Mod.Foreach.PlayerInRadius(effect.Position, JAR_OF_MANNA.EFFECT_RADIUS, function(player, index)
 		local slot = JAR_OF_MANNA:GetNeededChargeSlot(player)
 		if slot then
 			local c = player:GetColor()

@@ -15,9 +15,8 @@ function ESC_KEY:UseEsc(_, rng, player, slot, data)
 	if (stage == LevelStage.STAGE8) then
 		player:UseCard(Card.CARD_FOOL)
 	else
-		local randomRoom = level:QueryRoomTypeIndex(RoomType.ROOM_DEFAULT, false, rng)
 		level.LeaveDoor = -1
-		Mod.Game:StartRoomTransition(randomRoom, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT)
+		Mod.Game:MoveToRandomRoom(false, rng:GetSeed(), player)
 	end
 	player:AddCollectible(CollectibleType.COLLECTIBLE_DOGMA)
 	player:RemoveCollectible(CollectibleType.COLLECTIBLE_DOGMA)

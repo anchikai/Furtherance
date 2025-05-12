@@ -11,13 +11,9 @@ BACKSPACE_KEY.NULL_ID = Isaac.GetNullItemIdByName("backspace penalty")
 function BACKSPACE_KEY:UseBackSpace(_, _, player)
 	local level = Mod.Level()
 	local stage = level:GetStage()
-	if stage == LevelStage.STAGE1_1 then
-		if not Mod.Game:IsGreedMode() then
-			Mod.Item.ALTERNATE_REALITY:QueueNewStage(LevelStage.STAGE8, StageType.STAGETYPE_ORIGINAL)
-		else
-			Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
-			return true
-		end
+	if Mod.Game:IsGreedMode() and stage == LevelStage.STAGE1_GREED then
+		Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
+		return true
 	end
 	if stage == LevelStage.STAGE8 then
 		Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
@@ -25,20 +21,30 @@ function BACKSPACE_KEY:UseBackSpace(_, _, player)
 	end
 	local effects = player:GetEffects()
 	effects:AddNullEffect(BACKSPACE_KEY.NULL_ID, false, 2)
+	--Doesn't actually take immediate effect, so gotta add the +2 ourselves
+	local numEffects = effects:GetNullEffectNum(BACKSPACE_KEY.NULL_ID) + 2
 	local inventory = player:GetHistory():GetCollectiblesHistory()
-	for i = 1, effects:GetNullEffectNum(BACKSPACE_KEY.NULL_ID) do
+	local itemsToRemove = {}
+	for i = 1, numEffects do
 		local historyItem = inventory[i]
 		if historyItem and Mod.Item.EPITAPH:IsValidPassive(historyItem) then
-			player:RemoveCollectible(historyItem:GetItemID())
-			player:GetHistory():RemoveItemByIndex(i)
+			Mod.Insert(itemsToRemove, {historyItem:GetItemID(), i})
 		elseif not historyItem then
 			player:Die()
 			return
 		end
 	end
+	for _, itemTable in ipairs(itemsToRemove) do
+		player:RemoveCollectible(itemTable[1])
+		player:GetHistory():RemoveItemByIndex(itemTable[2])
+	end
 	local stage_types = Mod:RunSave().BackspaceStageTypes
-	local stageType = stage_types and stage_types[stage - 1] or StageType.STAGETYPE_ORIGINAL
-	Mod.Item.ALTERNATE_REALITY:QueueNewStage(stage - 1, stageType)
+	if stage == LevelStage.STAGE1_1 then
+		Mod.Item.ALTERNATE_REALITY:QueueNewStage(LevelStage.STAGE8, StageType.STAGETYPE_ORIGINAL)
+	else
+		local stageType = stage_types and stage_types[stage - 1] or StageType.STAGETYPE_ORIGINAL
+		Mod.Item.ALTERNATE_REALITY:QueueNewStage(stage - 1, stageType)
+	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, BACKSPACE_KEY.UseBackSpace, BACKSPACE_KEY.ID)

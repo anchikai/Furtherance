@@ -98,7 +98,7 @@ LOVE_TELLER_BABY.PlayerTypeBabies = {
 				local availableBabies = {}
 				for playerType in ipairs(LOVE_TELLER_BABY.PlayerTypeBabies) do
 					if playerType ~= PlayerType.PLAYER_EDEN then
-						Mod:Insert(availableBabies, playerType)
+						Mod.Insert(availableBabies, playerType)
 					end
 				end
 				data.GlitchBabySubtype = availableBabies[familiar:GetDropRNG():RandomInt(#availableBabies) + 1]
@@ -168,7 +168,8 @@ LOVE_TELLER_BABY.PlayerTypeBabies = {
 			local data = Mod:GetData(familiar)
 			if familiar:GetDropRNG():RandomFloat() <= LOVE_TELLER_BABY.EFFECT_CHANCE and not data.LoveTellerEffectCooldown then
 				data.LoveTellerEffectCooldown = LOVE_TELLER_BABY.EFFECT_COOLDOWN
-				Isaac.Spawn(EntityType.ENTITY_FAMILIAR, FamiliarVariant.BLUE_FLY, Mod:RandomNum(LocustSubtypes.LOCUST_OF_CONQUEST) + 1,
+				Isaac.Spawn(EntityType.ENTITY_FAMILIAR, FamiliarVariant.BLUE_FLY,
+					Mod:RandomNum(LocustSubtypes.LOCUST_OF_CONQUEST) + 1,
 					familiar.Position, Vector.Zero, nil)
 			end
 
@@ -254,7 +255,8 @@ LOVE_TELLER_BABY.PlayerTypeBabies = {
 	}
 }
 
-LOVE_TELLER_BABY.PlayerTypeBabies[PlayerType.PLAYER_THESOUL] = LOVE_TELLER_BABY.PlayerTypeBabies[PlayerType.PLAYER_THEFORGOTTEN]
+LOVE_TELLER_BABY.PlayerTypeBabies[PlayerType.PLAYER_THESOUL] = LOVE_TELLER_BABY.PlayerTypeBabies
+[PlayerType.PLAYER_THEFORGOTTEN]
 
 --#endregion
 
@@ -290,7 +292,8 @@ function LOVE_TELLER_BABY:GrantCollectible(familiar, itemID, isEffect, delayNext
 	then
 		data.LoveTellerEffectCooldown = LOVE_TELLER_BABY.EFFECT_COOLDOWN
 		local item = Mod.ItemConfig:GetCollectible(itemID)
-		local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_ADD_EFFECT, subtype, familiar, itemID, isEffect)
+		local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_ADD_EFFECT, subtype, familiar,
+			itemID, isEffect)
 
 		if not result then
 			if delayNextRoom then
@@ -308,14 +311,16 @@ function LOVE_TELLER_BABY:GrantCollectible(familiar, itemID, isEffect, delayNext
 					player:AddInnateCollectible(itemID)
 				end
 				data.LoveTellerPassiveCountdown = LOVE_TELLER_BABY.PASSIVE_DURATION
-				Isaac.RunCallbackWithParam(Mod.ModCallbacks.POST_LOVE_TELLER_BABY_ADD_EFFECT, subtype, familiar, itemID, isEffect)
+				Isaac.RunCallbackWithParam(Mod.ModCallbacks.POST_LOVE_TELLER_BABY_ADD_EFFECT, subtype, familiar, itemID,
+					isEffect)
 			end
 		end
 	end
 	if (data.LoveTellerPassiveCountdown or 0) > 0 then
 		data.LoveTellerPassiveCountdown = data.LoveTellerPassiveCountdown - 1
 	elseif data.LoveTellerPassiveCountdown then
-		local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_REMOVE_EFFECT, subtype, familiar, itemID, isEffect)
+		local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_REMOVE_EFFECT, subtype, familiar,
+			itemID, isEffect)
 		if not result then
 			if isEffect then
 				player:GetEffects():RemoveCollectibleEffect(itemID)
@@ -328,7 +333,8 @@ function LOVE_TELLER_BABY:GrantCollectible(familiar, itemID, isEffect, delayNext
 			if not player:HasCollectible(itemID, true) then
 				player:RemoveCostume(Mod.ItemConfig:GetCollectible(itemID))
 			end
-			Isaac.RunCallbackWithParam(Mod.ModCallbacks.POST_LOVE_TELLER_BABY_REMOVE_EFFECT, subtype, familiar, itemID, isEffect)
+			Isaac.RunCallbackWithParam(Mod.ModCallbacks.POST_LOVE_TELLER_BABY_REMOVE_EFFECT, subtype, familiar, itemID,
+				isEffect)
 		end
 		data.LoveTellerPassiveCountdown = nil
 	end
@@ -391,7 +397,8 @@ Mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, LOVE_TELLER_BABY.EmergencyRemoveC
 
 ---@param familiar EntityFamiliar
 function LOVE_TELLER_BABY:UpdateBabySkin(familiar, babySubType)
-	local skin = EntityConfig.GetBaby(babySubType or LOVE_TELLER_BABY.PlayerTypeBabies[familiar.SubType].Skin):GetSpritesheetPath()
+	local skin = EntityConfig.GetBaby(babySubType or LOVE_TELLER_BABY.PlayerTypeBabies[familiar.SubType].Skin)
+	:GetSpritesheetPath()
 	familiar:GetSprite():ReplaceSpritesheet(0, skin, true)
 end
 
@@ -426,9 +433,12 @@ function LOVE_TELLER_BABY:RenderDebug(familiar)
 	local data = Mod:GetData(familiar)
 	local x = p.X + 7
 	Isaac.RenderText(familiar.SubType, p.X - 2.5, p.Y - 35, 1, 1, 1, 1)
-	Isaac.RenderScaledText("Effect cooldown: " .. (data.LoveTellerEffectCooldown or "N/A"), x, p.Y - 30, 0.5, 0.5, 1, 1, 1, 1)
-	Isaac.RenderScaledText("Passive countdown: " .. (data.LoveTellerPassiveCountdown or "N/A"), x, p.Y - 25, 0.5, 0.5, 1, 1, 1, 1)
-	Isaac.RenderScaledText("ActiveHold: " .. (tostring(data.LoveTellerActiveWait) or "N/A"), x, p.Y - 20, 0.5, 0.5, 1, 1, 1, 1)
+	Isaac.RenderScaledText("Effect cooldown: " .. (data.LoveTellerEffectCooldown or "N/A"), x, p.Y - 30, 0.5, 0.5, 1, 1,
+		1, 1)
+	Isaac.RenderScaledText("Passive countdown: " .. (data.LoveTellerPassiveCountdown or "N/A"), x, p.Y - 25, 0.5, 0.5, 1,
+		1, 1, 1)
+	Isaac.RenderScaledText("ActiveHold: " .. (tostring(data.LoveTellerActiveWait) or "N/A"), x, p.Y - 20, 0.5, 0.5, 1, 1,
+		1, 1)
 	if familiar.SubType == PlayerType.PLAYER_EDEN then
 		Isaac.RenderScaledText("Glitch Subtype: " .. (data.GlitchBabySubtype or "N/A"), x, p.Y - 15, 0.5, 0.5, 1, 1, 1, 1)
 	end
@@ -480,7 +490,8 @@ function LOVE_TELLER_BABY:OnFamiliarCache(player)
 	local extraBabies = player:GetEffects():GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_BOX_OF_FRIENDS)
 	local subtypes = Mod:RunSave(player).LoveTellerBabies
 	for subtype, count in pairs(subtypes or {}) do
-		local familiars = player:CheckFamiliarEx(LOVE_TELLER_BABY.FAMILIAR, count + extraBabies, Mod.GENERIC_RNG, nil, tonumber(subtype))
+		local familiars = player:CheckFamiliarEx(LOVE_TELLER_BABY.FAMILIAR, count + extraBabies, Mod.GENERIC_RNG, nil,
+			tonumber(subtype))
 		for _, familiar in ipairs(familiars) do
 			LOVE_TELLER_BABY:UpdateBabySkin(familiar)
 		end

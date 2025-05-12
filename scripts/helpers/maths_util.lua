@@ -26,7 +26,7 @@ function Furtherance:GetDifferentRandomValue(selectedNums, allNums, rng)
 		for _, checkInt in pairs(selectedNums) do
 			if int == checkInt then goto continue end
 		end
-		Furtherance:Insert(filteredNums, int)
+		Furtherance.Insert(filteredNums, int)
 		::continue::
 	end
 	return filteredNums[rng:RandomInt(#filteredNums) + 1]
@@ -42,7 +42,7 @@ function Furtherance:GetDifferentRandomKey(selectedNums, allNums, rng)
 
 	for int, _ in pairs(allNums) do
 		if not selectedNums[int] then
-			Furtherance:Insert(filteredNums, int)
+			Furtherance.Insert(filteredNums, int)
 		end
 	end
 	return filteredNums[rng:RandomInt(#filteredNums) + 1]
@@ -146,8 +146,8 @@ end
 ---@param dp? integer
 function Furtherance:Round(num, dp)
 	dp = dp or 2
-	local mult = 10^dp
-	return math.floor(num * mult + 0.5)/mult
+	local mult = 10 ^ dp
+	return math.floor(num * mult + 0.5) / mult
 end
 
 ---Takes two 2d vectors and checks them to see if they are equal

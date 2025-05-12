@@ -31,7 +31,7 @@ function COSMIC_OMNIBUS:UseOmnibus(_, rng, player)
 		if not COSMIC_OMNIBUS.UNDESIRED_ROOM_TYPES[roomDesc.Data.Type]
 			and roomDesc.VisitedCount == (floor_save.CosmicOmnibusPlanetariumVisited and 1 or 0)
 		then
-			Mod:Insert(nonNormalRooms, roomDesc)
+			Mod.Insert(nonNormalRooms, roomDesc)
 		end
 	end
 
@@ -39,15 +39,18 @@ function COSMIC_OMNIBUS:UseOmnibus(_, rng, player)
 		local choice = rng:RandomInt(#nonNormalRooms) + 1
 		local chosenRoom = nonNormalRooms[choice]
 		level.LeaveDoor = -1
-		Mod.Game:StartRoomTransition(chosenRoom.GridIndex, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT, player, -1)
+		Mod.Game:StartRoomTransition(chosenRoom.GridIndex, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT, player,
+			-1)
 	elseif not floor_save.CosmicOmnibusPlanetariumVisited then
 		floor_save.CosmicOmnibusPlanetariumVisited = true
-		local planetarium = RoomConfigHolder.GetRandomRoom(rng:GetSeed(), false, StbType.SPECIAL_ROOMS, RoomType.ROOM_PLANETARIUM, RoomShape.ROOMSHAPE_1x1,
+		local planetarium = RoomConfigHolder.GetRandomRoom(rng:GetSeed(), false, StbType.SPECIAL_ROOMS,
+			RoomType.ROOM_PLANETARIUM, RoomShape.ROOMSHAPE_1x1,
 			-1, -1, 0, 10, 1, -1, Mod:GetRoomMode())
 		rng:Next()
 		Isaac.ExecuteCommand("goto s.planetarium." .. planetarium.Variant)
 		level.LeaveDoor = -1
-		Mod.Game:StartRoomTransition(GridRooms.ROOM_DEBUG_IDX, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT, player)
+		Mod.Game:StartRoomTransition(GridRooms.ROOM_DEBUG_IDX, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT,
+			player)
 	end
 
 	return true
