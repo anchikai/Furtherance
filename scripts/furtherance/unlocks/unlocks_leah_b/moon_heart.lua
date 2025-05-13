@@ -27,6 +27,11 @@ function MOON_HEART:AddMoonHearts(player, amount)
 end
 
 ---@param player EntityPlayer
+function MOON_HEART:CanPickup(player)
+	return CustomHealthAPI.Library.CanPickKey(player, MOON_HEART.KEY)
+end
+
+---@param player EntityPlayer
 ---@return integer
 function MOON_HEART:GetMoonHearts(player)
 	if CustomHealthAPI.Helper.PlayerIsIgnored(player) then
@@ -115,23 +120,27 @@ function MOON_HEART:CollectMoonHeart(pickup, collider)
 	end
 	local player = collider:ToPlayer()
 	if player then
-		if pickup:IsShopItem() then
-			if not Mod:CanPlayerBuyShopItem(player, pickup) then
-				return pickup:IsShopItem()
+		if MOON_HEART:CanPickup(player) then
+			if pickup:IsShopItem() then
+				if not Mod:CanPlayerBuyShopItem(player, pickup) then
+					return pickup:IsShopItem()
+				end
+				Mod:PayPickupPrice(player, pickup)
+				Mod:PickupShopKill(player, pickup, MOON_HEART.PICKUP_SFX)
+			else
+				pickup:GetSprite():Play("Collect", true)
+				Mod.SFXMan:Play(MOON_HEART.PICKUP_SFX, 1, 0, false)
+				pickup:Die()
 			end
-			Mod:PayPickupPrice(player, pickup)
-			Mod:PickupShopKill(player, pickup, MOON_HEART.PICKUP_SFX)
-		else
-			pickup:GetSprite():Play("Collect", true)
-			Mod.SFXMan:Play(MOON_HEART.PICKUP_SFX, 1, 0, false)
-			pickup:Die()
-		end
-		MOON_HEART:AddMoonHearts(player, 2)
+			MOON_HEART:AddMoonHearts(player, 2)
 
-		pickup.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
-		pickup.Friction = 0
-		if pickup.OptionsPickupIndex > 0 then
-			Mod:KillChoice(pickup)
+			pickup.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
+			pickup.Friction = 0
+			if pickup.OptionsPickupIndex > 0 then
+				Mod:KillChoice(pickup)
+			end
+		else
+			return pickup:IsShopItem()
 		end
 	end
 end
