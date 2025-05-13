@@ -18,7 +18,8 @@ function ROCK_HEART:AddRockHearts(player, amount)
 	if player:GetHealthType() == HealthType.RED then
 		CustomHealthAPI.Helper.CheckHealthIsInitializedForPlayer(player)
 		local data = player:GetData().CustomHealthAPISavedata
-		data.Overlays[ROCK_HEART.KEY] = data.Overlays[ROCK_HEART.KEY] + amount
+		data.Overlays[ROCK_HEART.KEY] = Furtherance:Clamp(data.Overlays[ROCK_HEART.KEY] + amount, 0, ROCK_HEART:GetMaxRockIndex(player))
+		ROCK_HEART:UpdateRockHeartMask(player)
 	end
 end
 
@@ -27,10 +28,44 @@ end
 function ROCK_HEART:GetRockHearts(player)
 	if player:GetHealthType() == HealthType.RED then
 		CustomHealthAPI.Helper.CheckHealthIsInitializedForPlayer(player)
-		local data = player:GetData().CustomHealthAPISavedata
-		return data.Overlays[ROCK_HEART.KEY]
+		return CustomHealthAPI.Library.GetHPOfKey(player, ROCK_HEART.KEY)
 	else
 		return 0
+	end
+end
+
+---@param player EntityPlayer
+---@return integer
+function ROCK_HEART:GetMaxRockIndex(player)
+	if player:GetHealthType() == HealthType.RED then
+		return CustomHealthAPI.PersistentData.OverriddenFunctions.GetMaxHearts(player)
+	end
+	return 0
+end
+
+---@param player EntityPlayer
+function ROCK_HEART:UpdateRockHeartMask(player)
+	if player:GetHealthType() == HealthType.RED and not CustomHealthAPI.Helper.PlayerIsIgnored(player) then
+		local rockHearts = ROCK_HEART:GetRockHearts(player)
+		local data = player:GetData().CustomHealthAPISavedata
+		local rockMask = {}
+		local rockIndex = 1
+		while rockIndex <= ROCK_HEART:GetMaxRockIndex(player) and rockHearts > 0 do
+			Furtherance.Insert(rockMask, rockIndex, Furtherance:Clamp(rockHearts, 0, 2))
+			rockIndex = rockIndex + 1
+			rockHearts = rockHearts - 2
+		end
+		data.RockRenderMask = rockMask
+	end
+end
+
+---@param player EntityPlayer
+---@return table?
+function ROCK_HEART:GetRockHeartsMask(player)
+	if player:GetHealthType() == HealthType.RED and not CustomHealthAPI.Helper.PlayerIsIgnored(player) then
+		ROCK_HEART:UpdateRockHeartMask(player)
+		local data = player:GetData().CustomHealthAPISavedata
+		return data.RockRenderMask
 	end
 end
 
@@ -60,7 +95,6 @@ function ROCK_HEART:SpawnRockHeart(entType, variant, subtype, _, _, spawner, see
 		end
 	end
 end
-
 Mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, ROCK_HEART.SpawnRockHeart)
 
 ---@param pickup EntityPickup
@@ -91,7 +125,6 @@ function ROCK_HEART:CollectRockHeart(pickup, collider)
 		end
 	end
 end
-
 Mod:AddPriorityCallback(
 	ModCallbacks.MC_PRE_PICKUP_COLLISION,
 	CallbackPriority.LATE,
@@ -107,7 +140,7 @@ CustomHealthAPI.Library.AddCallback(
 	---@param key string
 	function(player, key)
 		if key == ROCK_HEART.KEY then
-			return player:GetHealthType() == HealthType.RED and math.ceil(ROCK_HEART:GetRockHearts(player) / 2) < math.ceil(player:GetHearts() / 2)
+			return player:GetHealthType() == HealthType.RED and ROCK_HEART:GetMaxRockIndex(player) > 0
 		end
 	end
 )
@@ -121,6 +154,7 @@ CustomHealthAPI.Library.AddCallback(
 	function(player, isSubPlayer)
 		local data = player:GetData().CustomHealthAPISavedata
 		data.Overlays[ROCK_HEART.KEY] = 0
+		data.RockRenderMask = {}
 	end
 )
 
@@ -136,5 +170,53 @@ CustomHealthAPI.Library.AddCallback(
 	---@param otherHp integer
 	---@param damage integer
 	---@return boolean | integer?
-	function(player, flags, key, hp, otherKey, otherHp, damage) end
+	function(player, flags, key, hp, otherKey, otherHp, damage)
+		if player:GetHealthType() == HealthType.RED and 
+		flags & DamageFlag.DAMAGE_FAKE == 0 and flags & DamageFlag.DAMAGE_IV_BAG == 0 then
+			local rockHearts = ROCK_HEART:GetRockHearts(player)
+			if otherKey ~= nil and CustomHealthAPI.Library.GetInfoOfKey(otherKey, "KindContained") == CustomHealthAPI.Enums.HealthKinds.HEART and
+			CustomHealthAPI.Library.GetInfoOfKey(otherKey, "Type") == CustomHealthAPI.Enums.HealthTypes.CONTAINER and otherHp == 0
+			and key ~= nil and CustomHealthAPI.Library.GetInfoOfKey(key, "Type") == CustomHealthAPI.Enums.HealthTypes.RED and
+			CustomHealthAPI.Library.GetInfoOfKey(key, "Kind") == CustomHealthAPI.Enums.HealthKinds.HEART and hp > 0
+			and rockHearts > 0 then
+				local returnDamage = math.max(0, damage - rockHearts)
+				damage = damage - returnDamage
+				--ROCK_HEART:AddRockHearts(player, -returnDamage)
+				--return damage
+			end
+		end
+	end
+)
+
+CustomHealthAPI.Library.AddCallback(
+	"Furtherance",
+	CustomHealthAPI.Enums.Callbacks.POST_RESYNC_PLAYER,
+	0,
+	---@param player EntityPlayer
+	---@param isSubPlayer boolean
+	function(player, isSubPlayer)
+		if player:GetHealthType() == HealthType.RED then
+			ROCK_HEART:UpdateRockHeartMask(player)
+		end
+	end
+)
+
+CustomHealthAPI.Library.AddCallback(
+	"Furtherance",
+	CustomHealthAPI.Enums.Callbacks.PRE_RENDER_HEART,
+	0,
+	---@param player EntityPlayer
+	---@param healthIndex integer
+	---@param health table
+	---@param redHealth table
+	---@param filename string
+	---@param animname string
+	---@param color Color
+	---@param extraOffset Vector
+	function(player, healthIndex, health, redHealth, filename, animname, color, extraOffset)
+		if player:GetHealthType() == HealthType.RED then
+			local mask = ROCK_HEART:GetRockHeartsMask(player)
+			
+		end
+	end
 )
