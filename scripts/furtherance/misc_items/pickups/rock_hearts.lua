@@ -19,7 +19,17 @@ function ROCK_HEART:AddRockHearts(player, amount)
 		CustomHealthAPI.Helper.CheckHealthIsInitializedForPlayer(player)
 		local data = player:GetData().CustomHealthAPISavedata
 		data.Overlays[ROCK_HEART.KEY] =
-			Furtherance:Clamp(data.Overlays[ROCK_HEART.KEY] + amount, 0, ROCK_HEART:GetMaxRockIndex(player) * 2)
+			data.Overlays[ROCK_HEART.KEY] + amount
+		ROCK_HEART:ClampRockHearts(player)
+	end
+end
+
+---@param player EntityPlayer
+function ROCK_HEART:ClampRockHearts(player)
+	if player:GetHealthType() == HealthType.RED then
+		CustomHealthAPI.Helper.CheckHealthIsInitializedForPlayer(player)
+		local data = player:GetData().CustomHealthAPISavedata
+		data.Overlays[ROCK_HEART.KEY] =	Furtherance:Clamp(data.Overlays[ROCK_HEART.KEY], 0, ROCK_HEART:GetMaxRockIndex(player) * 2)
 		ROCK_HEART:UpdateRockHeartMask(player)
 	end
 end
@@ -33,7 +43,7 @@ end
 function ROCK_HEART:GetRockHearts(player)
 	if player:GetHealthType() == HealthType.RED then
 		CustomHealthAPI.Helper.CheckHealthIsInitializedForPlayer(player)
-		return Furtherance:Clamp(CustomHealthAPI.Library.GetHPOfKey(player, ROCK_HEART.KEY), 0, ROCK_HEART:GetMaxRockIndex(player) * 2)
+		return CustomHealthAPI.Library.GetHPOfKey(player, ROCK_HEART.KEY)
 	else
 		return 0
 	end
@@ -138,7 +148,6 @@ end
 ---@return table?
 function ROCK_HEART:GetRockHeartsMask(player)
 	if player:GetHealthType() == HealthType.RED and not CustomHealthAPI.Helper.PlayerIsIgnored(player) then
-		ROCK_HEART:UpdateRockHeartMask(player)
 		local data = player:GetData().CustomHealthAPISavedata
 		return data.RockRenderMask
 	end
@@ -285,6 +294,24 @@ CustomHealthAPI.Library.AddCallback(
 	---@param isSubPlayer boolean
 	function(player, isSubPlayer)
 		if player:GetHealthType() == HealthType.RED then
+			ROCK_HEART:ClampRockHearts(player)
+			ROCK_HEART:UpdateRockHeartMask(player)
+		end
+	end
+)
+
+CustomHealthAPI.Library.AddCallback(
+	"Furtherance",
+	CustomHealthAPI.Enums.Callbacks.POST_ADD_HEALTH,
+	0,
+	---@param player EntityPlayer
+	---@param key string
+	---@param hp integer
+	function(player, key, hp)
+		if player:GetHealthType() == HealthType.RED and 
+		CustomHealthAPI.Library.GetInfoOfKey(key, "KindContained") == CustomHealthAPI.Enums.HealthKinds.HEART
+		and CustomHealthAPI.Library.GetInfoOfKey(key, "Type") == CustomHealthAPI.Enums.HealthTypes.CONTAINER then
+			ROCK_HEART:ClampRockHearts(player)
 			ROCK_HEART:UpdateRockHeartMask(player)
 		end
 	end
