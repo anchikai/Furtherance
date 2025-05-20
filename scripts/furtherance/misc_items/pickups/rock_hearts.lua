@@ -21,6 +21,7 @@ function ROCK_HEART:AddRockHearts(player, amount)
 		data.Overlays[ROCK_HEART.KEY] =
 			data.Overlays[ROCK_HEART.KEY] + amount
 		ROCK_HEART:ClampRockHearts(player)
+		ROCK_HEART:UpdateRockHeartMask(player)
 	end
 end
 
@@ -29,8 +30,8 @@ function ROCK_HEART:ClampRockHearts(player)
 	if player:GetHealthType() == HealthType.RED then
 		CustomHealthAPI.Helper.CheckHealthIsInitializedForPlayer(player)
 		local data = player:GetData().CustomHealthAPISavedata
-		data.Overlays[ROCK_HEART.KEY] =	Furtherance:Clamp(data.Overlays[ROCK_HEART.KEY], 0, ROCK_HEART:GetMaxRockIndex(player) * 2)
-		ROCK_HEART:UpdateRockHeartMask(player)
+		data.Overlays[ROCK_HEART.KEY] =	Furtherance:Clamp(data.Overlays[ROCK_HEART.KEY] or 0, 0, ROCK_HEART:GetMaxRockIndex(player) * 2)
+		--ROCK_HEART:UpdateRockHeartMask(player)
 	end
 end
 
@@ -61,14 +62,10 @@ end
 ---@param player EntityPlayer
 ---@return integer
 function ROCK_HEART:GetRightRockIndex(player)
-	if player:GetHealthType() == HealthType.RED then
+	if player:GetHealthType() == HealthType.RED and ROCK_HEART:GetRockHeartsMask(player) ~= nil then
 		local mask = ROCK_HEART:GetRockHeartsMask(player)
-		for i = ROCK_HEART:GetMaxRockIndex(player), 1, -1 do
-			if mask[i] ~= nil then
-				return i
-			end
-		end
-		return 0
+		local _, size = Furtherance:MaxInTable(Furtherance:GetKeys(mask))
+		return size
 	end
 	return 0
 end
@@ -82,31 +79,36 @@ local function SumFromTable(tab)
 end
 
 ---@param player EntityPlayer
+---@return table, boolean
 function ROCK_HEART:ShiftRockHeartMask(player)
 	local data = player:GetData().CustomHealthAPISavedata
 	local limit = ROCK_HEART:GetMaxRockIndex(player)
 	local size = ROCK_HEART:GetRightRockIndex(player)
-	local rockHearts = ROCK_HEART:GetRockHearts(player)
 	local rockMask = data.RockRenderMask
 	if limit < size then
-		
+		local cutMask = Furtherance:FlattenTable(Furtherance:FilterDict(rockMask, function(v, k) return k >= limit end))
 	end
-	return rockMask
+	return rockMask, false
 end
 
 ---@param player EntityPlayer
 function ROCK_HEART:UpdateRockHeartMask(player)
 	if player:GetHealthType() == HealthType.RED and not CustomHealthAPI.Helper.PlayerIsIgnored(player) then
+		ROCK_HEART:ClampRockHearts(player)
 		local rockHearts = ROCK_HEART:GetRockHearts(player)
 		local data = player:GetData().CustomHealthAPISavedata
 		local rockIndex = ROCK_HEART:GetMaxRockIndex(player)
-		local rockMask = data.RockRenderMask
+		local rockMask = data.RockRenderMask or {}
+		local shifted = false
 		if rockHearts == 0 or rockIndex == 0 then
 			data.RockRenderMask = Furtherance:ClearTable(rockMask)
 			return
 		end
-		rockMask = ROCK_HEART:ShiftRockHeartMask(player)
+		rockMask, shifted = ROCK_HEART:ShiftRockHeartMask(player)
 		local maskHearts = SumFromTable(rockMask)
+		if shifted then
+			data.RockRenderMask = rockMask
+		end
 		if maskHearts ~= rockHearts then
 			local diff = rockHearts - maskHearts
 			if diff > 0 then
@@ -122,7 +124,7 @@ function ROCK_HEART:UpdateRockHeartMask(player)
 						break
 					end
 				end
-			else
+			elseif diff < 0 then
 				diff = -diff
 				for i = rockIndex, 1, -1 do
 					if rockMask[i] ~= nil then
@@ -265,7 +267,6 @@ CustomHealthAPI.Library.AddCallback(
 			and flags & DamageFlag.DAMAGE_IV_BAG == 0
 		then
 			local rockHearts = ROCK_HEART:GetRockHearts(player)
-			print(ROCK_HEART:GetRightRockIndex(player))
 			if
 				otherKey ~= nil
 				and CustomHealthAPI.Library.GetInfoOfKey(otherKey, "KindContained") == CustomHealthAPI.Enums.HealthKinds.HEART
