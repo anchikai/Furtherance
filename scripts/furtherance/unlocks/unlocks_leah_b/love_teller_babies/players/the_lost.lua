@@ -28,7 +28,7 @@ local function onMantleRemove(_, player, itemConfig)
 			local data = Mod:GetData(familiar)
 			if data.LostBabyAddedMantle then
 				data.LostBabyAddedMantle = nil
-				data.LoveTellerPassiveCountdown = nil
+				data.LoveTellerPassiveCountdown = Mod.Slot.LOVE_TELLER_BABY.EFFECT_COOLDOWN
 				return true
 			end
 		end, Mod.Slot.LOVE_TELLER.BABY.FAMILIAR)
