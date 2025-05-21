@@ -157,9 +157,7 @@ function DD:CreateCallback(descTab, appendToEnd)
 							elseif type(ret) == "string" then
 								return ret
 							else
-								return {
-									"Placeholder"
-								}
+								return ""
 							end
 						end
 
@@ -2641,7 +2639,7 @@ EID_Trinkets = {
 				"#{{Fear}} 5% chance to inflict fear when near enemies",
 				function(descObj)
 					return EID_Trinkets[Trinket.LEVIATHANS_TENDRIL.ID]._modifier(descObj,
-						"{{Leviathan}} Additional +5% chance to each effect"
+						"#{{Leviathan}} Additional +5% chance to each effect"
 					)
 				end
 			}
@@ -3409,8 +3407,6 @@ EID_Entities = {
 					end
 				end,
 
-				_AppendToEnd = false,
-
 				en_us = {
 					Name = "{{MoonHeart}} Moon Heart",
 					Description = {
@@ -3463,20 +3459,62 @@ EID_Entities = {
 		},
 	},
 	[EntityType.ENTITY_SLOT] = {
-		--TODO: Will need to return the player's True Love and a description of their effect
 		[Mod.Slot.LOVE_TELLER.ID] = {
 			[0] = {
-				_modifier = function()
-
+				_modifier = function(charList)
+					local renderedPlayerTypes = {}
+					local desc = "#"
+					for _, player in ipairs(EID.coopAllPlayers) do
+						local playerType = player:GetPlayerType()
+						local iconPlayerType = playerType
+						local parentType = Mod.Slot.LOVE_TELLER.ParentPlayerTypes[playerType]
+						if parentType then
+							playerType = parentType
+						end
+						if not renderedPlayerTypes[playerType] then
+							local icon = EID:GetPlayerIcon(iconPlayerType)
+							local lover = Mod.Slot.LOVE_TELLER:GetMatchMaker(playerType, 2)
+							local loverIcon = EID:GetPlayerIcon(lover)
+							desc = desc .. icon .. " {{Heart}}" .. loverIcon .. " - " .. charList[lover] .. "#"
+							renderedPlayerTypes[playerType] = true
+						end
+					end
+					desc = string.sub(desc, 1, -2)
+					return desc
 				end,
 				en_us = {
 					Name = "Love Teller",
 					Description = {
 						"{{Coin}} Costs 5 coins to use",
-						"#Randomly pairs Isaac with another character, disregarding unlocks. Grants a reward depending on the matchup",
+						"#Randomly pairs Isaac with another character. Grants a reward depending on the matchup",
 						"#{{EmptyHeart}} Spawns a fly",
-						"#{{HalfHeart}} Spawns two random {{Heart}} Red Hearts",
-						"#{{Heart}} Spawns a unique familiar related to the selected character"
+						"#{{HalfHeart}} Spawns two heart pickups",
+						"#{{Heart}} Spawns a unique shooter familiar related to the selected character",
+						function(descObj)
+							return EID_Entities[EntityType.ENTITY_SLOT][Mod.Slot.LOVE_TELLER.ID][0]._modifier({
+								[PlayerType.PLAYER_ISAAC] = "Occasionally temporarily grants {{Collectible206}} Guillotine",
+								[PlayerType.PLAYER_MAGDALENE] = "Occasionally activates {{Collectible45}} Yum Heart",
+								[PlayerType.PLAYER_CAIN] = "Occasionally refunds keys used on chests",
+								[PlayerType.PLAYER_JUDAS] = "Occasionally activates {{Collectible34}} Book of Belial",
+								[PlayerType.PLAYER_BLUEBABY] = "Occasionally temporarily grants {{Collectible248}} Hive Mind",
+								[PlayerType.PLAYER_EVE] = "Occasionally temporarily grants the {{Collectible122}} Whore of Babylon effect",
+								[PlayerType.PLAYER_SAMSON] = "Occasionally temporarily grants {{Collectible157}} Blood Lust with +3 hits",
+								[PlayerType.PLAYER_AZAZEL] = "Occasionally temporarily grants the {{Trinket162}} Azazel's Stump effect",
+								[PlayerType.PLAYER_LAZARUS] = "Occasionally temporarily grants the {{Collectible214}} Anemic effect",
+								[PlayerType.PLAYER_EDEN] = "Becomes a random Love Teller baby. After activating its effect, will become another random Love Teller baby",
+								[PlayerType.PLAYER_THELOST] = "Occasionally temporarily grants a {{Collectible313}} mantle shield. Cannot grant another until the shield breaks",
+								[PlayerType.PLAYER_LILITH] = "Occasionally activates {{Collectible357}} Box of Friends",
+								[PlayerType.PLAYER_KEEPER] = "Occasionally temporarily grants {{Collectible450}} Eye of Greed",
+								[PlayerType.PLAYER_APOLLYON] = "Occasionally spawns a random locust",
+								[PlayerType.PLAYER_THEFORGOTTEN] = "Occasionally swaps between bone and soul form, each shooting different tears",
+								[PlayerType.PLAYER_BETHANY] = "Occasionally temporarily grants {{Collectible584}} Book of Virtues",
+								[PlayerType.PLAYER_JACOB] = "Occasionally activates {{Collectible687}} Friend Finder",
+								[PlayerType.PLAYER_ESAU] = "Occasionally temporarily grants a small {{Collectible621}} Red Stew effect",
+								[Mod.PlayerType.LEAH] = "Occasionally activates {{Collectible" .. Item.HEART_RENOVATOR.ID .. "}} Heart Renovator",
+								[Mod.PlayerType.PETER] = "Occasionally activates {{Collectible" .. Item.KEYS_TO_THE_KINGDOM.ID .. "}} Keys to the Kingdom on a single non-boss target",
+								[Mod.PlayerType.MIRIAM] = "Occasionally activates {{Collectible" .. Item.TAMBOURINE.ID .. "}} Tambourine",
+							})
+						end
 					}
 				}
 			}
@@ -3497,7 +3535,7 @@ EID_Entities = {
 	},
 }
 
-for type, variantDescData in pairs(EID_Entities) do
+for id, variantDescData in pairs(EID_Entities) do
 	for variant, subtypeDescData in pairs(variantDescData) do
 		for subtype, entityDescData in pairs(subtypeDescData) do
 			for language, descData in pairs(entityDescData) do
@@ -3512,12 +3550,12 @@ for type, variantDescData in pairs(EID_Entities) do
 				end
 
 				local minimized = DD:MakeMinimizedDescription(description)
+
 				if not containsFunction(minimized) and not entityDescData._AppendToEnd then
-					EID:addEntity(type, variant, subtype, name, table.concat(minimized, ""), language)
+					EID:addEntity(id, variant, subtype, name, table.concat(minimized, ""), language)
 				else
-					EID:addEntity(type, variant, subtype, "", name, language) -- description only contains name/language, the actual description is generated at runtime
-					DD:SetCallback(DD:CreateCallback(minimized, entityDescData._AppendToEnd), type, variant, subtype,
-						language)
+					EID:addEntity(id, variant, subtype, "", name, language) -- description only contains name/language, the actual description is generated at runtime
+					DD:SetCallback(DD:CreateCallback(minimized, entityDescData._AppendToEnd), id, variant, subtype, language)
 				end
 
 				::continue::
