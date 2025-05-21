@@ -28,8 +28,7 @@ LOVE_TELLER_BABY.PlayerTypeBabies = {
 	},
 	[PlayerType.PLAYER_CAIN] = {
 		Skin = BabySubType.BABY_PICKY,
-		OnUpdate = function(familiar)
-			--LOVE_TELLER_BABY:GrantEffect(familiar, itemID)
+		OnUpdate = function()
 		end
 	},
 	[PlayerType.PLAYER_JUDAS] = {
@@ -183,12 +182,14 @@ LOVE_TELLER_BABY.PlayerTypeBabies = {
 	[PlayerType.PLAYER_THEFORGOTTEN] = {
 		Skin = BabySubType.BABY_BONE,
 		OnUpdate = function(familiar)
-			local player = familiar.Player
 			local data = Mod:GetData(familiar)
 			if not data.BoneBabyIsSoul then
 				data.BoneBabyIsSoul = false
 			end
-			local isSoul = player:GetPlayerType() == PlayerType.PLAYER_THESOUL
+			local isSoul = data.BoneBabyIsSoul
+			if familiar:GetDropRNG():RandomFloat() <= LOVE_TELLER_BABY.EFFECT_CHANCE then
+				isSoul = not isSoul
+			end
 			if data.BoneBabyIsSoul ~= isSoul then
 				data.BoneBabyIsSoul = isSoul
 				familiar:SetColor(Color(1, 1, 1, 1, 0.5, 0.75, 1), 15, 1, true, true)
@@ -511,10 +512,10 @@ Mod:AddCallback(ModCallbacks.MC_GET_FOLLOWER_PRIORITY, LOVE_TELLER_BABY.ShooterP
 function LOVE_TELLER_BABY:OnFamiliarUpdate(familiar)
 	local sprite = familiar:GetSprite()
 	local data = Mod:GetData(familiar)
-	local updateFunc = LOVE_TELLER_BABY.PlayerTypeBabies[familiar.SubType]
+	local babyInfo = LOVE_TELLER_BABY.PlayerTypeBabies[familiar.SubType]
 
-	if updateFunc then
-		updateFunc.OnUpdate(familiar)
+	if babyInfo then
+		babyInfo.OnUpdate(familiar)
 	end
 
 	--Handles absolutely everything akin to a generic Brother Bobbby-like familiar
