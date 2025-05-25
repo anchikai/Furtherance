@@ -35,7 +35,7 @@ function CHIRON:UseBookOnLastBossEntry(player)
 		return
 	end
 
-	if player:HasCollectible(CHIRON.ID) and room:IsFirstVisit() == true and room:GetFrameCount() == 1 then
+	if player:HasCollectible(CHIRON.ID) and room:IsFirstVisit() and room:GetFrameCount() == 1 then
 		CHIRON:BossBook(player)
 	end
 end
@@ -51,7 +51,7 @@ function CHIRON:GetOffensiveBooks()
 			and not itemConfig:HasTags(ItemConfig.TAG_QUEST)
 			and Mod.PersistGameData:Unlocked(itemConfig.AchievementID)
 		then
-			Mod.Insert(validBooks)
+			Mod.Insert(validBooks, itemConfig.ID)
 		end
 	end
 	return validBooks
