@@ -89,9 +89,10 @@ local min = math.min
 ---@param allowDead? boolean
 function KEYS_TO_THE_KINGDOM:CanSpare(ent, allowDead)
 	allowDead = allowDead or false
+
 	return ent:ToNPC()
 		and ent:IsActiveEnemy(allowDead)
-		and (allowDead and not ent:IsInvincible() or ent:IsVulnerableEnemy())
+		and not ent:IsInvincible()
 		and not ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
 		and ent:ToNPC().CanShutDoors
 		and not SEL:HasStatusEffect(ent, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
@@ -237,29 +238,28 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 			raptureCountdown = raptureCountdown * 0.5
 		end
 		local source = EntityRef(player)
-		Mod:inverseiforeach(Isaac.GetRoomEntities(), function(ent)
-			local canSpare = KEYS_TO_THE_KINGDOM:CanSpare(ent)
-			local npc = ent:ToNPC()
-			local data = Mod:TryGetData(ent)
-			if canSpare and ent:IsBoss() and npc and (not data or not data.FailedRapture) then
+		Mod.Foreach.NPC(function (npc)
+			local canSpare = KEYS_TO_THE_KINGDOM:CanSpare(npc)
+			local data = Mod:TryGetData(npc)
+			if canSpare and npc:IsBoss() and npc and (not data or not data.FailedRapture) then
 				local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.PRE_START_RAPTURE_BOSS, npc.Type, npc, player, rng, flags, slot)
 				if result then
 					return
 				end
 				local spotlight = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
 					KEYS_TO_THE_KINGDOM.SPOTLIGHT,
-					ent.Position, Vector.Zero, ent):ToEffect()
+					npc.Position, Vector.Zero, npc):ToEffect()
 				---@cast spotlight EntityEffect
-				spotlight.Parent = ent
-				spotlight:FollowParent(ent)
+				spotlight.Parent = npc
+				spotlight:FollowParent(npc)
 				spotlight:GetSprite().Scale = Vector(1.25, 1.25)
-				SEL:AddStatusEffect(ent, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil,
+				SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil,
 					{ Spotlight = spotlight, FailedAttempts = 0, FailedAttemptsCooldown = 0 })
-			elseif canSpare and ent:Exists() then
-				KEYS_TO_THE_KINGDOM:RaptureEnemy(ent)
+			elseif canSpare and npc:Exists() then
+				KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
 				KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, 1, true)
 			end
-		end)
+		end, nil, nil, nil, {Inverse = true})
 	end
 	player:AddCacheFlags(CacheFlag.CACHE_ALL, true)
 	return true
@@ -328,7 +328,7 @@ function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 		if #slots == 0 then return end
 		for _, slotData in ipairs(slots) do
 			if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES then
-				if npc:IsBoss() then
+				if npc:IsBoss() and not (Mod:GetData(npc) and Mod:GetData(npc).Raptured) then
 					local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
 						KEYS_TO_THE_KINGDOM.SOUL_BOSS,
 						npc.Position, RandomVector():Resized(5), npc)
@@ -552,12 +552,13 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	local statusData = SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 	---@cast statusData StatusEffectData
 	if statusData.CustomData.FailRapture then return end
-	Mod.SFXMan:Play(SoundEffect.SOUND_LIGHTBOLT, 2)
-	--for i = 1, 30 do
-	--local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DUST_CLOUD, 0, npc.Position, RandomVector():Resized(2), nil):ToEffect()
-	--effect.Timeout = 30
-	--effect.PositionOffset = Vector(Mod:RandomNum(-npc.Size/2, npc.Size/2), Mod:RandomNum(-npc.Size, 0))
-	--end
+	Mod.SFXMan:Play(SoundEffect.SOUND_ANGEL_WING, 2, 2, false, 0.75)
+	for _ = 1, 15 do
+		local effect = Mod.Spawn.Effect(EffectVariant.DUST_CLOUD, 0, npc.Position, RandomVector():Resized(5))
+		effect.Color = Color(1,1,1,1,0.5, 0.5, 0.5)
+		effect:SetTimeout(30)
+		effect.PositionOffset = Vector(Mod:RandomNum(-npc.Size/2, npc.Size/2), Mod:RandomNum(-npc.Size, 0))
+	end
 	local spotlight = statusData.CustomData.Spotlight
 	spotlight.Timeout = 60
 	KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
@@ -638,24 +639,10 @@ Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.ResetR
 
 --#region Unique Rapture death interactions (basically just Krampus)
 
-local raptureDeathQueue = {}
-
----Apparently POST_NPC_DEATH runs A F T E R POST_ENTITY_REMOVE which is when I remove my custom data. Awesome.
-function KEYS_TO_THE_KINGDOM:RaptureBossDeath(ent)
-	if ent:IsBoss() then
-		local data = Mod:TryGetData(ent)
-		if data and data.Raptured then
-			raptureDeathQueue[GetPtrHash(ent)] = true
-			Mod:DelayOneFrame(function() raptureDeathQueue[GetPtrHash(ent)] = nil end)
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, KEYS_TO_THE_KINGDOM.RaptureBossDeath)
-
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:PostRaptureDeath(npc)
-	if raptureDeathQueue[GetPtrHash(npc)] then
+	local data = Mod:TryGetData(npc)
+	if data and data.Raptured then
 		Isaac.RunCallbackWithParam(Mod.ModCallbacks.POST_RAPTURE_BOSS_DEATH, npc.Type, npc)
 	end
 end
