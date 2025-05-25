@@ -6,16 +6,16 @@ Furtherance.Trinket.WORMWOOD_LEAF = WORMWOOD_LEAF
 
 WORMWOOD_LEAF.ID = Isaac.GetTrinketIdByName("Wormwood Leaf")
 
-WORMWOOD_LEAF.CHANCE = 0.1
+WORMWOOD_LEAF.CHANCE = 1
 
 ---@param pos Vector
 local function rockCrumble(pos)
 	Mod.SFXMan:Play(SoundEffect.SOUND_ROCK_CRUMBLE)
 	for _ = 1, 5 do
-		local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DUST_CLOUD, 0, pos, RandomVector():Resized(3),
-			nil):ToEffect()
+		local effect = Mod.Spawn.Effect(EffectVariant.DUST_CLOUD, 0, pos, RandomVector():Resized(3))
 		---@cast effect EntityEffect
-		effect.Timeout = 30
+		---Setting .Timeout will cause the dust cloud to rapidly increase in size and flashbang you, while :SetTimeout doesn't...for some reason.
+		effect:SetTimeout(30)
 		effect.SpriteOffset = Vector(0, -10)
 	end
 end
