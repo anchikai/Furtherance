@@ -7,11 +7,11 @@ Furtherance.Trinket.HOLY_HEART = HOLY_HEART
 HOLY_HEART.ID = Isaac.GetTrinketIdByName("Holy Heart")
 
 HOLY_HEART.HeartMantleChance = {
-	[HeartSubType.HEART_ETERNAL] = 0.5,
-	[HeartSubType.HEART_SOUL] = 0.1,
-	[HeartSubType.HEART_BLACK] = 0.1,
-	[HeartSubType.HEART_BLENDED] = 0.05,
-	[HeartSubType.HEART_HALF_SOUL] = 0.05,
+	[HeartSubType.HEART_ETERNAL] = 1,
+	[HeartSubType.HEART_SOUL] = 1,
+	[HeartSubType.HEART_BLACK] = 1,
+	[HeartSubType.HEART_BLENDED] = 0.5,
+	[HeartSubType.HEART_HALF_SOUL] = 0.5,
 }
 
 ---@param pickup EntityPickup
