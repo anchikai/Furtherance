@@ -74,7 +74,7 @@ EID.InlineIcons["Player" .. Mod.PlayerType.MIRIAM_B] = EID.InlineIcons["MiriamB"
 local cardFronts = Sprite("gfx/ui/eid_fr_cardfronts.anm2", true)
 for _, card in pairs(Mod.Card) do
 	if card.ID then
-		local name = Mod.ItemConfig:GetCard(card.ID).Name
+		local name = Mod.ItemConfig:GetCard(card.ID).HudAnim
 		local metadata = { 8, 8, 0, 1 }
 		EID:addIcon("Card" .. card.ID, name, 0, metadata[1], metadata[2], metadata[3], metadata[4], cardFronts)
 	end
@@ -1017,7 +1017,7 @@ EID_Collectibles = {
 		en_us = {
 			Name = "Jar of Manna",
 			Description = {
-				"{{Battery}} Must be charged by killing enemiesm spawning a Manna Orb that grants +1 charge",
+				"{{Battery}} Must be charged by Manna Orbs dropped from enemies, then:",
 				"#{{Collectible464}} Grants whatever Isaac needs the most",
 				"#{{Collectible644}} If Isaac is already satisfied in health and pickups, increases Isaac's lowest stat out of Speed, Fire rate, Damage, Range, Shot speed, and Luck"
 			}
@@ -2172,7 +2172,7 @@ EID_Collectibles = {
 		en_us = {
 			Name = "Tech IX",
 			Description = {
-				"↓ +5 Tear delay",
+				"↓ -5 Fire rate",
 				"#{{Collectible395}} Isaac's tears are replaced with small green piercing and spectral technology rings"
 			}
 		},
@@ -2819,7 +2819,7 @@ EID_Cards = {
 		en_us = {
 			Name = "XXIV - Charity",
 			Description = {
-				"{{Collectible" .. Mod.Item.JAR_OF_MANNA.ID .. "}} Triggers 3 free uses of Jar of Manna"
+				"{{Collectible" .. Mod.Item.JAR_OF_MANNA.ID .. "}} Gives Isaac what he needs the most 3 times. If he has what he needs in health and pickups, increases Isaac's lowest stat instead"
 			}
 		},
 		ru = {
