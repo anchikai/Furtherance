@@ -23,4 +23,5 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, MIRIAM.OnPlayerInit, PlayerVariant.PLAYER)
 
+Mod.Include("scripts.furtherance.characters.miriam.whirlpool")
 Mod.Include("scripts.furtherance.characters.miriam.tambourine")
