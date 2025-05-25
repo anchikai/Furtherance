@@ -84,7 +84,7 @@ SEL.Callbacks.AddCallback(SEL.Callbacks.ID.PRE_RENDER_STATUS_EFFECTS, STATUS_EFF
 ---@param ent Entity
 function STATUS_EFFECTS:PreApplyStrength(ent)
 	if not (ent:IsActiveEnemy(false)
-			and ent:IsVulnerableEnemy()
+			and not ent:IsInvincible()
 			and not FLIP:ShouldIgnoreEnemy(ent)
 			and ent:ToNPC()
 			and ent:ToNPC().CanShutDoors

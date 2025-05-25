@@ -53,25 +53,39 @@ local getData = {}
 function Furtherance:GetData(ent)
 	if not ent then return {} end
 	local ptrHash = GetPtrHash(ent)
-	local data = getData[ptrHash]
-	if not data then
-		local newData = {}
+	if not getData[ptrHash] then
+		local newData = {
+			Pointer = EntityRef(ent)
+		}
 		getData[ptrHash] = newData
-		data = newData
 	end
-	return data
+	return getData[ptrHash]
 end
 
 ---@param ent Entity
 ---@return table?
 function Furtherance:TryGetData(ent)
 	local ptrHash = GetPtrHash(ent)
-	local data = getData[ptrHash]
-	return data
+	return getData[ptrHash]
 end
 
 Furtherance:AddPriorityCallback(ModCallbacks.MC_POST_ENTITY_REMOVE, CallbackPriority.LATE, function(_, ent)
+	if not ent:ToNPC() then
+		getData[GetPtrHash(ent)] = nil
+	end
+end)
+
+Furtherance:AddPriorityCallback(ModCallbacks.MC_POST_NPC_DEATH, CallbackPriority.LATE, function(_, ent)
 	getData[GetPtrHash(ent)] = nil
+end)
+
+Furtherance:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, CallbackPriority.LATE, function(_, ent)
+    for ptrHash, entityData in pairs(getData) do
+        local entityPointer = (entityData and entityData.Pointer)
+        if not (entityPointer and entityPointer.Ref) then
+            entityData[ptrHash] = nil
+        end
+    end
 end)
 
 Furtherance.FileLoadError = false

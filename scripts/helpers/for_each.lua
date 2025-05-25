@@ -52,7 +52,7 @@ local function isValidEnemyTarget(ent, searchParams)
 	return ent
 	and ent:ToNPC()
 	and ent:IsActiveEnemy(searchParams and searchParams.Dead or false)
-	and (ent:IsVulnerableEnemy() or searchParams and searchParams.Invincible)
+	and (not ent:IsInvincible() or searchParams and searchParams.Invincible)
 	and (not ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) or searchParams and searchParams.Friendly)
 	and (ent.EntityCollisionClass ~= EntityCollisionClass.ENTCOLL_NONE or searchParams and searchParams.NoCollision)
 	and (ent:ToNPC().CanShutDoors or ent.Type == EntityType.ENTITY_DUMMY or searchParams and searchParams.CantShutDoors)
