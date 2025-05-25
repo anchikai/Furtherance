@@ -6,17 +6,17 @@ Furtherance.Item.ASTRAGALI = ASTRAGALI
 
 ASTRAGALI.ID = Isaac.GetItemIdByName("Astragali")
 
----@type {[PickupVariant]: Achievement}
+---@type {[PickupVariant]: fun(): boolean}
 ASTRAGALI.ChestToAchievement = {
-	[PickupVariant.PICKUP_WOODENCHEST] = Achievement.WOODEN_CHEST,
-	[PickupVariant.PICKUP_MEGACHEST] = Achievement.MEGA_CHEST,
-	[PickupVariant.PICKUP_HAUNTEDCHEST] = Achievement.HAUNTED_CHEST
+	[PickupVariant.PICKUP_WOODENCHEST] = function() return Mod.PersistGameData:Unlocked(Achievement.WOODEN_CHEST) end,
+	[PickupVariant.PICKUP_MEGACHEST] = function() return Mod.PersistGameData:Unlocked(Achievement.MEGA_CHEST) end,
+	[PickupVariant.PICKUP_HAUNTEDCHEST] = function() return Mod.PersistGameData:Unlocked(Achievement.HAUNTED_CHEST) end
 }
 
 ---@param variant PickupVariant
 function ASTRAGALI:IsChestAvailable(variant)
 	local achievement = ASTRAGALI.ChestToAchievement[variant]
-	return achievement and Mod.PersistGameData:Unlocked(achievement) or not achievement and true
+	return not achievement or achievement()
 end
 
 ASTRAGALI.Chests = {
@@ -35,8 +35,6 @@ ASTRAGALI.Chests = {
 
 ASTRAGALI.IsChest = Mod:Set(ASTRAGALI.Chests)
 
---TODO: Achievement cache maybe? And allow a better system for modded checks & unlockable or not but we'll worry about that later
-
 ---@param player EntityPlayer
 ---@param flags UseFlag
 function ASTRAGALI:UseAstragali(_, _, player, flags)
@@ -50,7 +48,7 @@ function ASTRAGALI:UseAstragali(_, _, player, flags)
 	end
 	Mod.Foreach.Pickup(function(pickup, index)
 		if ASTRAGALI.IsChest[pickup.Variant] and pickup.SubType == ChestSubType.CHEST_CLOSED then
-			local choice = rng:RandomInt(#rerollChestList) + 1
+			local choice = rerollChestList[rng:RandomInt(#rerollChestList) + 1]
 			pickup:Morph(EntityType.ENTITY_PICKUP, choice, ChestSubType.CHEST_CLOSED)
 		end
 	end)
