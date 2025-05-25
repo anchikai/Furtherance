@@ -7,7 +7,7 @@ Furtherance.Item.CARDIOMYOPATHY = CARDIOMYOPATHY
 CARDIOMYOPATHY.ID = Isaac.GetItemIdByName("Cardiomyopathy")
 
 CARDIOMYOPATHY.INVULNERABILITY_DURATION = 30
-CARDIOMYOPATHY.DEFAULT_SHIELD_CHANCE = 0.25
+CARDIOMYOPATHY.DEFAULT_SHIELD_CHANCE = 0.33
 CARDIOMYOPATHY.MAX_LUCK = 20
 CARDIOMYOPATHY.MIN_CHANCE = 0.01
 CARDIOMYOPATHY.MAX_CHANCE = 0.20
@@ -22,8 +22,8 @@ function CARDIOMYOPATHY:CollectHeart(pickup, collider)
 		and Mod.Core.HEARTS.RedHearts[pickup.Variant]
 	then
 		local rng = player:GetCollectibleRNG(CARDIOMYOPATHY.ID)
-		if rng:RandomFloat() <= CARDIOMYOPATHY.DEFAULT_SHIELD_CHANCE * Mod.Core.HEARTS.HeartAmount[pickup.Variant] then
-			player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_BOOK_OF_SHADOWS, true, CARDIOMYOPATHY.INVULNERABILITY_DURATION)
+		if rng:RandomFloat() <= CARDIOMYOPATHY.DEFAULT_SHIELD_CHANCE then
+			player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_BOOK_OF_SHADOWS, true, CARDIOMYOPATHY.INVULNERABILITY_DURATION * Mod.Core.HEARTS.HeartAmount[pickup.Variant])
 		end
 		if rng:RandomFloat() <= Mod:Clamp(player.Luck / CARDIOMYOPATHY.MAX_LUCK, CARDIOMYOPATHY.MIN_CHANCE, CARDIOMYOPATHY.MAX_CHANCE) then
 			player:AddMaxHearts(2)
