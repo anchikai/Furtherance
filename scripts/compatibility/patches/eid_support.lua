@@ -2419,8 +2419,7 @@ EID_Trinkets = {
 		en_us = {
 			Name = "Altruism",
 			Description = {
-				"25% chance to refund the price Isaac paid to a beggar",
-				"#{{Demon Beggar}} Inflicts fake damage that doesn't remove any health"
+				"25% chance to heal Isaac for a {{HalfHeart}} Half Red Heart or refund the price Isaac paid to a beggar"
 			}
 		},
 		ru = {
