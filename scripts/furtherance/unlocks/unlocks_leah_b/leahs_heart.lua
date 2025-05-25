@@ -13,8 +13,8 @@ function LEAHS_HEART:OnActiveuse(_, _, player)
 	local player_floor_save = Mod:FloorSave(player)
 	if not player_floor_save.LeahsHeartUsedActive and player:HasCollectible(LEAHS_HEART.ID) then
 		player_floor_save.LeahsHeartUsedActive = true
-		player:GetEffects():AddCollectibleEffect(CollectibleType.COLLECTIBLE_HOLY_MANTLE)
-		player:AddSoulHearts(2)
+		player:UseCard(Card.CARD_HOLY, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
+		player:AddSoulHearts(4)
 		player:AddCacheFlags(CacheFlag.CACHE_DAMAGE, true)
 	end
 end
