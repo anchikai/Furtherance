@@ -12,7 +12,8 @@
 	<costume id="87" anm2path="costume_cold_hearted.anm2" type="passive" skinColor="0" overwriteColor="true" />
 	<costume id="89" anm2path="costume_rue.anm2" type="passive" />
 	<costume id="93" anm2path="costume_molten_gold.anm2" type="passive" hasSkinAlt="true" />
-	<costume id="97" anm2path="costume_severed_ear.anm2" type="passive" />
+	<costume id="97" anm2path="costume_severed_ear.anm2" type="passive" hasSkinAlt="true" />
+	<costume id="98" anm2path="costume_golden_port.anm2" type="passive" />
 
 	<!-- Trinkets -->
 	<costume id="9" anm2path="210_gnawedleaf_statue.anm2" type="trinket" priority="50" />
@@ -35,5 +36,5 @@
 	<costume id="6" anm2path="character_03b_miriam_hair.anm2" type="none" priority="99" />
 	<costume anm2path="character_03b_miriam_Pog.anm2" type="none" priority="99" />
 	<!-- Misc Null Costumes -->
-	<costume anm2path="character_n_double_severed_ear.anm2" type="none" priority="1" />
+	<costume anm2path="n_double_severed_ear.anm2" type="none" priority="1" />
 </costumes>
