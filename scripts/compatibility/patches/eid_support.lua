@@ -2582,7 +2582,7 @@ EID_Trinkets = {
 		en_us = {
 			Name = "Holy Heart",
 			Description = {
-				"Picking up a heart has a chance to grant a {{Collectible313}} Holy Mantle shield depending on the type of heart",
+				"Picking up specific hearts have a chance to grant a {{Collectible313}} Holy Mantle shield depending on the type of heart",
 				"#{{HalfSoulHeart}}: 5% chance",
 				"#{{SoulHeart}}: 10% chance",
 				"#{{BlackHeart}}: 10% chance",
