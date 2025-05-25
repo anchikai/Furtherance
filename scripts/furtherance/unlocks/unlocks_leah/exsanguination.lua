@@ -6,10 +6,8 @@ Furtherance.Item.EXSANGUINATION = EXSANGUINATION
 
 EXSANGUINATION.ID = Isaac.GetItemIdByName("Exsanguination")
 
-EXSANGUINATION.DAMAGE_MULT_UP = 0.1
-EXSANGUINATION.HEART_REMOVAL_CHANCE = 0.05
-
-local sqrt = math.sqrt
+EXSANGUINATION.DAMAGE_MULT_UP = 0.05
+EXSANGUINATION.HEART_REMOVAL_CHANCE = 0.5
 
 ---@param heart EntityPickup
 ---@param collider Entity
