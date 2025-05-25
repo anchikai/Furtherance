@@ -25,7 +25,6 @@ function PHARAOH_CAT:SpawnStatueOnNewRoom()
 		local gridPos = room:GetGridPosition(gridIndex)
 		local freeGridPos = room:FindFreeTilePosition(gridPos, 0)
 
-		room:SetGridPath(gridIndex, 3999)
 		Isaac.Spawn(EntityType.ENTITY_EFFECT, PHARAOH_CAT.EFFECT, 0,
 			freeGridPos, Vector.Zero, nil)
 	end
@@ -34,13 +33,18 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, PHARAOH_CAT.SpawnStatueOnNewRoom)
 
 ---@param ent Entity
-function PHARAOH_CAT:Die(ent)
+function PHARAOH_CAT.Die(ent)
 	Mod.SFXMan:Play(SoundEffect.SOUND_ROCK_CRUMBLE)
-	for _ = 1, 8 do
+	for i = 1, 10 do
 		local dustCloud = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DUST_CLOUD, 0,
-			ent.Position, RandomVector():Resized(Mod:RandomNum(4, 7) - Mod:RandomNum()), nil):ToEffect()
+			ent.Position, RandomVector():Resized(Mod:RandomNum(3, 6) - Mod:RandomNum()), nil):ToEffect()
 		---@cast dustCloud EntityEffect
 		dustCloud:SetTimeout(30)
+		if i % 5 == 0 then
+			dustCloud.Color = Color(1, 1, 1, 1, 0.7, 0.5, 0.15)
+		else
+			dustCloud.Color = Color(0.25, 0.25, 0.25)
+		end
 	end
 	ent:Remove()
 end
@@ -62,9 +66,6 @@ Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, PHARAOH_CAT.OnEffectInit, PHAR
 
 ---@param effect EntityEffect
 function PHARAOH_CAT:OnBastetStatueUpdate(effect)
-	local gridIndex = Mod.Room():GetGridIndex(effect.Position)
-
-	Mod.Room():SetGridPath(gridIndex, 3999)
 
 	Mod.Foreach.ProjectileInRadius(effect.Position, PHARAOH_CAT:GetRadius(), function (projectile, index)
 		if not projectile:IsDead() then
@@ -74,16 +75,3 @@ function PHARAOH_CAT:OnBastetStatueUpdate(effect)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, PHARAOH_CAT.OnBastetStatueUpdate, PHARAOH_CAT.EFFECT)
-
-function PHARAOH_CAT:PreGridCollision(player, index, gridEnt)
-	if not gridEnt then
-		Mod.Foreach.Effect(function(effect)
-			local catIndex = Mod.Room():GetGridIndex(effect.Position)
-			if index == catIndex then
-				return true
-			end
-		end, PHARAOH_CAT.EFFECT)
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_GRID_COLLISION, PHARAOH_CAT.PreGridCollision)
