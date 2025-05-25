@@ -17,7 +17,7 @@ function CADUCEUS_STAFF:CaduceusDamage(ent, _, flags, _, _)
 	if player and player:HasCollectible(CADUCEUS_STAFF.ID) then
 		local rng = player:GetCollectibleRNG(CADUCEUS_STAFF.ID)
 		local effects = player:GetEffects()
-		local multiplier = effects:GetCollectibleEffectNum(CADUCEUS_STAFF.ID) + 1
+		local multiplier = player:GetCollectibleNum(CADUCEUS_STAFF.ID) + effects:GetCollectibleEffectNum(CADUCEUS_STAFF.ID) + 1
 		if rng:RandomFloat() <= CADUCEUS_STAFF.BASE_CHANCE * multiplier then
 			effects:RemoveCollectibleEffect(CADUCEUS_STAFF.ID, -1)
 			Mod.SFXMan:Play(CADUCEUS_STAFF.SFX)

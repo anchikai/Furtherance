@@ -38,5 +38,8 @@ function JUNO:SummonAnimaSola(npc, duration)
 end
 
 function JUNO.TEAR_MODIFIER:PostNpcHit(hitter, npc, isKnifeSwing, isSamsonPunch, isCainBag)
-	JUNO:SummonAnimaSola(npc, JUNO.ANIMA_SOLA_DURATION)
+	local player = Mod:TryGetPlayer(hitter)
+	if player then
+		JUNO:SummonAnimaSola(npc, JUNO.ANIMA_SOLA_DURATION * player:GetCollectibleNum(JUNO.ID))
+	end
 end

@@ -76,3 +76,22 @@ end
 Mod:AddCallback(ModCallbacks.MC_PRE_SFX_PLAY, TECH_IX.LessDeafeningLasers, SoundEffect.SOUND_LASERRING_WEAK)
 Mod:AddCallback(ModCallbacks.MC_PRE_SFX_PLAY, TECH_IX.LessDeafeningLasers, SoundEffect.SOUND_LASERRING)
 Mod:AddCallback(ModCallbacks.MC_PRE_SFX_PLAY, TECH_IX.LessDeafeningLasers, SoundEffect.SOUND_LASERRING_STRONG)
+
+---@param player EntityPlayer
+function TECH_IX:MultiShot(player)
+	local numTechIX = player:GetCollectibleNum(TECH_IX.ID)
+	if numTechIX <= 1 then return end
+	local weapon = player:GetWeapon(1)
+	if weapon then
+		local weaponType = weapon:GetWeaponType()
+		local params = player:GetMultiShotParams()
+		local mult = numTechIX - 1
+		params:SetSpreadAngle(weaponType, params:GetSpreadAngle(weaponType) + 2.167 * mult)
+		params:SetNumTears(params:GetNumTears() + mult)
+		local expectedAmount = params:GetNumTears() / params:GetNumEyesActive()
+		params:SetNumLanesPerEye(expectedAmount)
+		return params
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS, TECH_IX.MultiShot)

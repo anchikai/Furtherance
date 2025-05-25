@@ -14,7 +14,7 @@ function MOLTEN_GOLD:RandomRune(entity)
 	local player = entity:ToPlayer()
 	if player and player:HasCollectible(MOLTEN_GOLD.ID) then
 		local rng = player:GetCollectibleRNG(MOLTEN_GOLD.ID)
-		if rng:RandomFloat() <= 0.25 then
+		if rng:RandomFloat() <= MOLTEN_GOLD.ACTIVATION_CHANCE * player:GetCollectibleNum(MOLTEN_GOLD.ID) then
 			player:UseCard(Mod.Game:GetItemPool():GetCard(rng:GetSeed(), false, true, true), UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
 		end
 	end

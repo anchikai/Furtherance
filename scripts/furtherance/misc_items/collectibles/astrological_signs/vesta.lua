@@ -82,6 +82,6 @@ end
 
 function VESTA.TEAR_MODIFIER:PostNpcHit(hitter, npc)
 	if hitter:ToLaser() and hitter:HasTearFlags(TearFlags.TEAR_QUADSPLIT) then
-		--
+		--Too lazy to reimplement unlike others that are just status effects
 	end
 end

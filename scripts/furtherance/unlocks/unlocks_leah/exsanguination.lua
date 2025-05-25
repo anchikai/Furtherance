@@ -15,19 +15,20 @@ function EXSANGUINATION:PickupHeart(heart, collider)
 	local player = collider:ToPlayer()
 	if not player or not player:HasCollectible(EXSANGUINATION.ID) then return end
 
-	if Mod.Core.HEARTS:CanCollectHeart(player, heart.SubType) then
+	if heart:IsDead() then
 		player:GetEffects():AddCollectibleEffect(EXSANGUINATION.ID)
 		player:AddCacheFlags(CacheFlag.CACHE_DAMAGE)
 		player:EvaluateItems()
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, EXSANGUINATION.PickupHeart, PickupVariant.PICKUP_HEART)
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_COLLISION, EXSANGUINATION.PickupHeart, PickupVariant.PICKUP_HEART)
 
 ---@param player EntityPlayer
 function EXSANGUINATION:DamageUp(player)
 	if player:HasCollectible(EXSANGUINATION.ID) then
-		player.Damage = player.Damage + (player:GetEffects():GetCollectibleEffectNum(EXSANGUINATION.ID) * EXSANGUINATION.DAMAGE_MULT_UP)
+		local num = player:GetEffects():GetCollectibleEffectNum(EXSANGUINATION.ID)
+		player.Damage = player.Damage + (num * EXSANGUINATION.DAMAGE_MULT_UP)
 	end
 end
 

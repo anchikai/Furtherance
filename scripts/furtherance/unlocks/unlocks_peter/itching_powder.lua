@@ -16,7 +16,7 @@ function ITCHING_POWDER:DelayFakeDamage(ent, amount, flags, source, countdown)
 	---@cast player EntityPlayer
 
 	if player:HasCollectible(ITCHING_POWDER.ID) and not Mod:HasBitFlags(flags, DamageFlag.DAMAGE_FAKE) then
-		player:AddCollectibleEffect(ITCHING_POWDER.ID, false)
+		player:GetEffects():AddCollectibleEffect(ITCHING_POWDER.ID, false)
 	end
 end
 
@@ -27,7 +27,7 @@ function ITCHING_POWDER:DealDelayedDamage(player)
 	local effects = player:GetEffects()
 	local effect = effects:GetCollectibleEffect(ITCHING_POWDER.ID)
 	if effect and effect.Count > 0 and effect.Cooldown % 30 == 0 then
-		player:TakeDamage(0, DamageFlag.DAMAGE_FAKE | DamageFlag.DAMAGE_NO_PENALTIES, EntityRef(player), 0)
+		player:TakeDamage(player:GetCollectibleNum(ITCHING_POWDER.ID), DamageFlag.DAMAGE_FAKE | DamageFlag.DAMAGE_NO_PENALTIES, EntityRef(player), 0)
 	end
 end
 
@@ -37,7 +37,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, ITCHING_POWDER.DealDelayedD
 ---@param itemConfigItem ItemConfigItem
 function ITCHING_POWDER:OnEffectRemove(player, itemConfigItem)
 	if itemConfigItem:IsCollectible() and itemConfigItem.ID == ITCHING_POWDER.ID then
-		player:TakeDamage(0, DamageFlag.DAMAGE_FAKE | DamageFlag.DAMAGE_NO_PENALTIES, EntityRef(player), 0)
+		player:TakeDamage(player:GetCollectibleNum(ITCHING_POWDER.ID), DamageFlag.DAMAGE_FAKE | DamageFlag.DAMAGE_NO_PENALTIES, EntityRef(player), 0)
 	end
 end
 

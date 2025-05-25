@@ -17,7 +17,10 @@ APOCALYPSE.StatTable = {
 
 ---@param player EntityPlayer
 ---@param rng RNG
-function APOCALYPSE:UseApocalypse(itemID, rng, player, useFlags, customVar)
+function APOCALYPSE:UseApocalypse(itemID, rng, player, flags, customVar)
+	if Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) then
+		return
+	end
 	local player_run_save = Mod:RunSave(player)
 
 	player_run_save.ApocalypseStatUps = player_run_save.ApocalypseStatUps or {}

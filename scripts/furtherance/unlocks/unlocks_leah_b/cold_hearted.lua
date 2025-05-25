@@ -16,8 +16,7 @@ function COLD_HEARTED:OnPlayerCollision(player, collider)
 			collider:AddSlowing(EntityRef(player), COLD_HEARTED.BOSS_SLOW_DURATION, 0.5, StatusEffectLibrary.StatusColor.SLOW)
 		else
 			collider:AddEntityFlags(EntityFlag.FLAG_ICE)
-			collider.HitPoints = 0
-			collider:TakeDamage(1, 0, EntityRef(player), 0)
+			collider:TakeDamage(math.huge, 0, EntityRef(player), 0)
 			collider.Position = collider.Position + (collider.Position - player.Position):Resized(5)
 		end
 	end

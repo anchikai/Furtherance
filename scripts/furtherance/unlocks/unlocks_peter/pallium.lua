@@ -10,8 +10,10 @@ PALLIUM.ID = Isaac.GetItemIdByName("Pallium")
 function PALLIUM:OnRoomClear(player)
 	if player:HasCollectible(PALLIUM.ID) then
 		local rng = player:GetCollectibleRNG(PALLIUM.ID)
-		local rngMinisaac = rng:RandomInt(3) + 1
-		for _ = 1, rngMinisaac do
+		local numPallium = player:GetCollectibleNum(PALLIUM.ID)
+		local numStart = 1 + numPallium
+		local numToSpawn = (rng:RandomInt(3) + 1) + numPallium
+		for _ = numStart, numToSpawn do
 			local PalliumMinisaac = player:AddMinisaac(player.Position, true)
 			Mod:FloorSave(PalliumMinisaac).PalliumMinisaac = true
 		end

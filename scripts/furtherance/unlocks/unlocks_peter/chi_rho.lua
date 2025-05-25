@@ -37,6 +37,7 @@ function CHI_RHO:OnWeaponFire(dir, amount, owner, weapon)
 
 	if player:HasCollectible(CHI_RHO.ID) then
 		local rng = player:GetCollectibleRNG(CHI_RHO.ID)
+		local timeout = 7 + (3 * (player:GetCollectibleNum(CHI_RHO.ID) - 1))
 		for _ = 1, amount do
 			if rng:RandomFloat() <= CHI_RHO:GetChance(player) then
 				EntityLaser.ShootAngle(LaserVariant.LIGHT_BEAM, owner.Position, dir:GetAngleDegrees(), 7, player:GetLaserOffset(LaserOffset.LASER_BRIMSTONE_OFFSET, dir), owner)

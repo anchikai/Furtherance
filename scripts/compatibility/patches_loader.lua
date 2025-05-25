@@ -44,7 +44,8 @@ end
 
 local patches = {
 	"furtherance",
-	"minimapi"
+	"minimapi",
+	"fiend_folio"
 }
 
 for _, fileName in ipairs(patches) do

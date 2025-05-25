@@ -6,7 +6,7 @@ Furtherance.Item.LEAHS_HEART = LEAHS_HEART
 
 LEAHS_HEART.ID = Isaac.GetItemIdByName("Leah's Heart")
 
-LEAHS_HEART.DAMAGE_MULT = 1.2
+LEAHS_HEART.DAMAGE_MULT_UP = 0.2
 
 ---@param player EntityPlayer
 function LEAHS_HEART:OnActiveuse(_, _, player)
@@ -25,7 +25,7 @@ Mod:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, CallbackPriority.EARLY, LEAHS_
 function LEAHS_HEART:HeartDamage(player)
 	local player_floor_save = Mod:FloorSave(player)
 	if player:HasCollectible(LEAHS_HEART.ID) and not player_floor_save.LeahsHeartUsedActive then
-		player.Damage = player.Damage * LEAHS_HEART.DAMAGE_MULT
+		player.Damage = player.Damage + (player.Damage * LEAHS_HEART.DAMAGE_MULT * player:GetCollectibleNum(LEAHS_HEART.ID))
 	end
 end
 

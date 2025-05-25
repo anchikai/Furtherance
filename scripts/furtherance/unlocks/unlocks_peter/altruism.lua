@@ -10,16 +10,17 @@ ALTRUISM.BEGGAR_TRIGGER_ALTRUISM_CHANCE = 0.25
 ALTRUISM.BEGGAR_HEAL_CHANCE = 0.5
 
 ---@param ent Entity
+---@param amount integer
 ---@param flags DamageFlag
 ---@param source EntityRef
-function ALTRUISM:TryPreventDevilBeggarDamage(ent, _, flags, source, frames)
+function ALTRUISM:TryPreventDevilBeggarDamage(ent, amount, flags, source, frames)
 	if Mod:HasBitFlags(flags, DamageFlag.DAMAGE_RED_HEARTS)
 		and source.Entity
 		and source.Entity:ToSlot()
 		and Mod:GetData(ent).AltruismPreventDamage
 	then
 		Mod:GetData(ent).AltruismPreventDamage = false
-		ent:TakeDamage(0, flags | DamageFlag.DAMAGE_FAKE, source, frames)
+		ent:TakeDamage(amount, flags | DamageFlag.DAMAGE_FAKE, source, frames)
 		return false
 	end
 end

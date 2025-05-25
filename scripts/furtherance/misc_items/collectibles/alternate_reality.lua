@@ -61,12 +61,13 @@ function ALTERNATE_REALITY:GetAvailableStages(stage)
 	local stageStart, stageEnd
 	if stage == nil then
 		stageStart = LevelStage.STAGE1_1
-		stageEnd = LevelStage.STAGE6
+		stageEnd = LevelStage.STAGE7
 	else
 		stageStart = stage
 		stageEnd = stage
 	end
-	for levelStage, stageCheck in pairs(availableStages) do
+	for levelStage = stageStart, stageEnd do
+		local stageCheck = availableStages[i]
 		for stageType, achievement in pairs(stageCheck) do
 			if type(achievement) == "number" and Mod.PersistGameData:Unlocked(achievement) or achievement == true then
 				Mod.Insert(stageList, { levelStage, stageType })
@@ -104,7 +105,7 @@ function ALTERNATE_REALITY:OnUse(_, rng, player)
 	local stageList = ALTERNATE_REALITY:GetAvailableStages()
 	local randomStage = stageList[rng:RandomInt(#stageList) + 1]
 	Mod:FloorSave().AlternateRealityNewStage = true
-	print("Will queue for", randomStage[1], randomStage[2])
+	Mod:DebugLog("New floor queue:", randomStage[1], randomStage[2])
 	ALTERNATE_REALITY:QueueNewStage(randomStage[1], randomStage[2], false)
 	return { Discharge = true, Remove = true, ShowAnim = false }
 end

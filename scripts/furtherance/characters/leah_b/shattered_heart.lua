@@ -31,9 +31,11 @@ end
 
 ---@param pickup EntityPickup
 ---@param player? EntityPlayer
-function SHATTERED_HEART:ExplodeHeart(pickup, player)
+---@param radiusMult? number
+function SHATTERED_HEART:ExplodeHeart(pickup, player, radiusMult)
+	radiusMult = radiusMult or 1
 	local damage = SHATTERED_HEART:GetHeartDamage(pickup)
-	local radius = pickup.Size * SHATTERED_HEART.EXPLOSION_MULT
+	local radius = pickup.Size * SHATTERED_HEART.EXPLOSION_MULT * radiusMult
 	local kColor = pickup:GetSprite():GetTexel(Vector(4, -7), Vector.Zero, 1, 0)
 	local color = Color(kColor.Red, kColor.Green, kColor.Blue, 1)
 	local posRange = radius / 2
@@ -71,14 +73,19 @@ function SHATTERED_HEART:ExplodeHeart(pickup, player)
 	pickup:Remove()
 end
 
-function SHATTERED_HEART:OnUse(_, _, player)
+---@param flags UseFlag
+---@param player EntityPlayer
+function SHATTERED_HEART:OnUse(_, flags, player)
+	if Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) then
+		return
+	end
 	Mod.Foreach.Pickup(function (pickup, index)
 		local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.SHATTERED_HEART_EXPLODE, pickup.SubType,
 			pickup:ToPickup())
 		if result then
 			return
 		end
-		SHATTERED_HEART:ExplodeHeart(pickup, player)
+		SHATTERED_HEART:ExplodeHeart(pickup, player, player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) and 1.5 or 1)
 	end, PickupVariant.PICKUP_HEART)
 	return true
 end

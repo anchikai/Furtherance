@@ -10,13 +10,19 @@ RUE.ID = Isaac.GetItemIdByName("Rue")
 function RUE:RueOnHit(ent)
 	local player = ent:ToPlayer()
 	if not player or not player:HasCollectible(RUE.ID) then return end
+	local ignoredEnemies = {}
 
-	local nearestEnemy = Mod:GetClosestEnemy(player.Position)
-	local delta = RandomVector()
-	if nearestEnemy then
-		delta = (nearestEnemy.Position - player.Position):Normalized()
+	for _ = 1, player:GetCollectibleNum(RUE.ID) do
+		local nearestEnemy = Mod:GetClosestEnemy(player.Position, nil, function (npc)
+			return Mod:IsValidEnemyTarget(npc) and ignoredEnemies[GetPtrHash(npc)] == nil
+		end)
+		local delta = RandomVector()
+		if nearestEnemy then
+			delta = (nearestEnemy.Position - player.Position):Normalized()
+			ignoredEnemies[GetPtrHash(nearestEnemy)] = true
+		end
+		player:FireBrimstone(delta, player, 1)
 	end
-	player:FireBrimstone(delta, player, 1)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, RUE.RueOnHit, EntityType.ENTITY_PLAYER)

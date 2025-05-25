@@ -23,15 +23,19 @@ LEAHS_LOCK.TEAR_MODIFIER = Mod.TearModifier.New({
 
 local modifier = LEAHS_LOCK.TEAR_MODIFIER
 
+---@param player EntityPlayer
 function LEAHS_LOCK:ApplyFearOrCharm(object, player)
 	local totalChance = modifier:GetChance(player)
 	local roll = modifier.LastRoll
+	local applyCharm = roll < (totalChance / 2)
+	local applyFear = roll < (totalChance / 2)
 
-	if roll < (totalChance / 2) then
+	if applyCharm then
 		object:AddTearFlags(TearFlags.TEAR_CHARM)
 		modifier.Color = LEAHS_LOCK.CHARM_COLOR
 		modifier.LaserColor = LEAHS_LOCK.CHARM_LASER_COLOR
-	else
+	end
+	if player:GetTrinketMultiplier(LEAHS_LOCK.ID) > 1 and applyFear or not applyCharm then
 		object:AddTearFlags(TearFlags.TEAR_FEAR)
 		modifier.Color = LEAHS_LOCK.FEAR_COLOR
 		modifier.LaserColor = LEAHS_LOCK.FEAR_LASER_COLOR
