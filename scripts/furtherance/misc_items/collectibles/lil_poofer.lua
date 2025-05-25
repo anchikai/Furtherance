@@ -87,20 +87,19 @@ function LIL_POOFER:Explode(familiar)
 	end)
 
 	--These are all effects that the original Poofer spawns
-	Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF02, 3, familiar.Position, Vector.Zero, nil)
-	Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF02, 4, familiar.Position, Vector.Zero, nil)
-	local explosion = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BOMB_EXPLOSION, 0, familiar.Position,
-		Vector.Zero, nil)
+	Mod.Spawn.Poof02(3, familiar.Position)
+	Mod.Spawn.Poof02(4, familiar.Position)
+	local explosion = Mod.Spawn.Effect(EffectVariant.BOMB_EXPLOSION, 0, familiar.Position)
 	explosion.Color = Color(1, 0, 0, 1)
-	local poof02 = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF02, 5, familiar.Position, Vector.Zero, nil)
+	local poof02 = Mod.Spawn.Poof02(5, familiar.Position)
 	poof02.Color.A = 0.4
 
 	--Dust clouds
 	for _ = 1, 8 do
-		local dustCloud = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DUST_CLOUD, 0,
-			familiar.Position, RandomVector():Resized(Mod:RandomNum(1, 8) - Mod:RandomNum()), nil)
+		local vel = RandomVector():Resized(Mod:RandomNum(1, 8) - Mod:RandomNum())
+		local dustCloud = Mod.Spawn.Effect(EffectVariant.DUST_CLOUD, 0, familiar.Position, vel)
 		dustCloud.Color = Color(0.619608, 0.0431373, 0.0588235)
-		dustCloud:ToEffect().Timeout = 30
+		dustCloud:SetTimeout(30)
 	end
 
 	--Creep in the middle
@@ -112,8 +111,7 @@ function LIL_POOFER:Explode(familiar)
 	for _ = 1, 5 do
 		local position = Vector(Mod:RandomNum(-radius, radius), Mod:RandomNum(-radius, radius))
 		position = position + familiar.Position
-		Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BLOOD_EXPLOSION, 0, position,
-			Vector.Zero, familiar)
+		Mod.Spawn.Effect(EffectVariant.BLOOD_EXPLOSION, 0, position, nil, familiar)
 	end
 
 	--Spawn 6-directional radial of blood creep
@@ -125,8 +123,7 @@ function LIL_POOFER:Explode(familiar)
 		for j = 1, 6 do
 			local rotation = (360 / 6) * j
 			local pos = familiar.Position + Vector(40 * i, 0):Rotated(rotation + randomOffset)
-			local creapSpread = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_RED, 0,
-				pos, Vector.Zero, familiar)
+			local creapSpread = Mod.Spawn.Effect(EffectVariant.PLAYER_CREEP_RED, 0, pos, nil, familiar)
 			creapSpread.SpriteScale = spritescale
 			creapSpread:Update()
 		end

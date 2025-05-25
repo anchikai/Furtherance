@@ -40,7 +40,7 @@ function PHARAOH_CAT:Die(ent)
 		local dustCloud = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DUST_CLOUD, 0,
 			ent.Position, RandomVector():Resized(Mod:RandomNum(4, 7) - Mod:RandomNum()), nil):ToEffect()
 		---@cast dustCloud EntityEffect
-		dustCloud.Timeout = 30
+		dustCloud:SetTimeout(30)
 	end
 	ent:Remove()
 end
