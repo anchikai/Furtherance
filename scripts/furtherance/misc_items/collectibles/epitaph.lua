@@ -19,6 +19,13 @@ EPITAPH.PLAY_JINGLE = false
 
 local reviveLocations = {}
 
+function Furtherance:QueueTombstone()
+	local save = Isaac.IsInGame() and Mod:RunSave() or Mod:GameSave()
+	save.EpitaphTombstones = {
+		{LevelStage = LevelStage.STAGE1_1, Collectibles = {1, 2}}
+	}
+end
+
 --#region Track items on death
 
 ---No active items, no trinkets, no starting items
@@ -158,7 +165,7 @@ function EPITAPH:PostNewLevel()
 	for i, roomDesc in ipairs(rooms) do
 		floor_save.EpitaphTombstoneToSpawn = floor_save.EpitaphTombstoneToSpawn or {}
 		floor_save.EpitaphTombstoneToSpawn[tostring(roomDesc.ListIndex)] = tombstones[i]
-		Mod:DebugLog("Epitaph Tombestone to spawn at ListIndex", roomDesc.ListIndex)
+		Mod:DebugLog("Epitaph Tombestone to spawn in the following room:", "\nList Index:", roomDesc.ListIndex, "\nRoom Type:", roomDesc.Data.Type, "\nGridIndex:", roomDesc.GridIndex)
 	end
 end
 
@@ -175,7 +182,8 @@ function EPITAPH:PostNewRoom()
 		if gridEnt then
 			local grid_save = Mod:RoomSave(gridEnt:GetGridIndex())
 			grid_save.TombstoneCollectibles = queued_tombestone.Collectibles
-			Mod:DebugLog("Tombestone spawned successfully")
+			print(queued_tombestone.Collectibles)
+			Mod:DebugLog("Tombstone spawned successfully at grid index", gridEnt:GetGridIndex())
 		else
 			Mod:DebugLog("Epitaph Tombstone failed to spawn!")
 		end
@@ -198,7 +206,7 @@ end
 ---@param varData integer
 function EPITAPH:UpdateSprite(gridEnt, varData)
 	local sprite = gridEnt:GetSprite()
-	sprite:Load("gfx/grid/grid_epitaph_tombstone.anm2")
+	sprite:Load("gfx/grid/grid_epitaph_tombstone.anm2", true)
 	local anim = "Normal"
 	if varData > 0 and varData <= 2 then
 		anim = "Damaged" .. varData
@@ -218,8 +226,10 @@ function EPITAPH:UpdateTombstoneOnNewRoom()
 		hasTombstone = true
 	end, GridEntityType.GRID_ROCKB, EPITAPH.TOMBSTONE_GRID_VARIANT)
 
-	if hasTombstone then
+	if hasTombstone and not Mod.Room():IsFirstVisit() then
 		EPITAPH.PLAY_JINGLE = Mod.GENERIC_RNG:RandomFloat() <= EPITAPH.JINGLE_CHANCE
+	else
+		EPITAPH.PLAY_JINGLE = false
 	end
 end
 
