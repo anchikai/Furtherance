@@ -103,10 +103,10 @@ function POLYDIPSIA:OnWeaponEntityFire(weaponEnt)
 			---@cast weaponEnt EntityTear
 			weaponEnt.Scale = weaponEnt.Scale * 1.4
 			weaponEnt:AddTearFlags(TearFlags.TEAR_KNOCKBACK)
-			local knockbackMult = Mod.Character.MIRIAM:MiriamHasBirthright(player) and 10 or 5
+			local knockbackMult = Mod.Character.MIRIAM:MiriamHasBirthright(player) and 2 or 1.5
 			weaponEnt:SetKnockbackMultiplier(weaponEnt.KnockbackMultiplier * knockbackMult)
 		end
-		local massMult = Mod.Character.MIRIAM:MiriamHasBirthright(player) and 3 or 1.5
+		local massMult = Mod.Character.MIRIAM:MiriamHasBirthright(player) and 2 or 1.5
 		weaponEnt.Mass = weaponEnt.Mass * massMult
 	end
 end

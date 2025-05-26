@@ -60,7 +60,7 @@ function WHIRLPOOL:WhirlpoolOnFire(dir, amount, owner, weapon)
 		threshold = threshold - floor(threshold / 3)
 	end
 
-	if (previousNum % WHIRLPOOL.THRESHOLD) + amount >= WHIRLPOOL.THRESHOLD then
+	if (previousNum % threshold) + amount >= threshold then
 		Mod:GetData(player).MiriamQueueWhirlpoolShot = true
 		if weapon:GetWeaponType() ~= WeaponType.WEAPON_ROCKETS then
 			Mod:DelayOneFrame(function() Mod:GetData(player).MiriamQueueWhirlpoolShot = nil end)
