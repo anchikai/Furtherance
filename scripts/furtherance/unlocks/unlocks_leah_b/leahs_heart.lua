@@ -25,7 +25,7 @@ Mod:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, CallbackPriority.EARLY, LEAHS_
 function LEAHS_HEART:HeartDamage(player)
 	local player_floor_save = Mod:FloorSave(player)
 	if player:HasCollectible(LEAHS_HEART.ID) and not player_floor_save.LeahsHeartUsedActive then
-		player.Damage = player.Damage + (player.Damage * LEAHS_HEART.DAMAGE_MULT * player:GetCollectibleNum(LEAHS_HEART.ID))
+		player.Damage = player.Damage + (player.Damage * LEAHS_HEART.DAMAGE_MULT_UP * player:GetCollectibleNum(LEAHS_HEART.ID))
 	end
 end
 

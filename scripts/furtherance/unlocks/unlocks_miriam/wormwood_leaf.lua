@@ -6,7 +6,7 @@ Furtherance.Trinket.WORMWOOD_LEAF = WORMWOOD_LEAF
 
 WORMWOOD_LEAF.ID = Isaac.GetTrinketIdByName("Wormwood Leaf")
 
-WORMWOOD_LEAF.CHANCE = 1
+WORMWOOD_LEAF.CHANCE = 0.1
 
 ---@param pos Vector
 local function rockCrumble(pos)

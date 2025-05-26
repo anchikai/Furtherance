@@ -51,6 +51,11 @@ local availableStages = {
 	}
 }
 
+availableStages[LevelStage.STAGE1_2] = availableStages[LevelStage.STAGE1_1]
+availableStages[LevelStage.STAGE2_2] = availableStages[LevelStage.STAGE2_1]
+availableStages[LevelStage.STAGE3_2] = availableStages[LevelStage.STAGE3_1]
+availableStages[LevelStage.STAGE4_2] = availableStages[LevelStage.STAGE4_1]
+
 ---Returns a table in order from Stage 1 (Basement I) to Stage 6 (Sheol/Cathedral) of all available stages and stage variants
 ---
 ---This goes by achievements, not specifically if the stage will be encountered in a run.
@@ -67,13 +72,10 @@ function ALTERNATE_REALITY:GetAvailableStages(stage)
 		stageEnd = stage
 	end
 	for levelStage = stageStart, stageEnd do
-		local stageCheck = availableStages[i]
+		local stageCheck = availableStages[levelStage]
 		for stageType, achievement in pairs(stageCheck) do
 			if type(achievement) == "number" and Mod.PersistGameData:Unlocked(achievement) or achievement == true then
 				Mod.Insert(stageList, { levelStage, stageType })
-				if levelStage <= LevelStage.STAGE4_2 then
-					Mod.Insert(stageList, { levelStage + 1, stageType })
-				end
 			end
 		end
 	end
