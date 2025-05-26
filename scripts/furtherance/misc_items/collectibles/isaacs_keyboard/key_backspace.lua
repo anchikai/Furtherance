@@ -5,10 +5,12 @@ local BACKSPACE_KEY = {}
 Furtherance.Item.KEY_BACKSPACE = BACKSPACE_KEY
 
 BACKSPACE_KEY.ID = Isaac.GetItemIdByName("Backspace Key")
-BACKSPACE_KEY.NULL_ID = Isaac.GetNullItemIdByName("backspace penalty")
+
+local backspaceKey = Sprite("gfx/ui/ui_backspace_key.anm2")
+backspaceKey:SetFrame("Idle", 2)
 
 ---@param player EntityPlayer
-function BACKSPACE_KEY:UseBackSpace(_, _, player)
+function BACKSPACE_KEY:UseBackspace(_, _, player, _, slot)
 	local level = Mod.Level()
 	local stage = level:GetStage()
 	if Mod.Game:IsGreedMode() and stage == LevelStage.STAGE1_GREED then
@@ -19,19 +21,14 @@ function BACKSPACE_KEY:UseBackSpace(_, _, player)
 		Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
 		return true
 	end
-	local effects = player:GetEffects()
-	effects:AddNullEffect(BACKSPACE_KEY.NULL_ID, false, 2)
-	--Doesn't actually take immediate effect, so gotta add the +2 ourselves
-	local numEffects = effects:GetNullEffectNum(BACKSPACE_KEY.NULL_ID) + 2
+	local itemDesc = player:GetActiveItemDesc(slot)
+	itemDesc.VarData = itemDesc.VarData + 1
 	local inventory = player:GetHistory():GetCollectiblesHistory()
 	local itemsToRemove = {}
-	for i = 1, numEffects do
+	for i = 1, 2 do
 		local historyItem = inventory[i]
 		if historyItem and Mod.Item.EPITAPH:IsValidPassive(historyItem) then
 			Mod.Insert(itemsToRemove, {historyItem:GetItemID(), i})
-		elseif not historyItem then
-			player:Die()
-			return
 		end
 	end
 	for _, itemTable in ipairs(itemsToRemove) do
@@ -42,12 +39,13 @@ function BACKSPACE_KEY:UseBackSpace(_, _, player)
 	if stage == LevelStage.STAGE1_1 then
 		Mod.Item.ALTERNATE_REALITY:QueueNewStage(LevelStage.STAGE8, StageType.STAGETYPE_ORIGINAL)
 	else
-		local stageType = stage_types and stage_types[stage - 1] or StageType.STAGETYPE_ORIGINAL
+		local stageType = stage_types and stage_types[tostring(stage - 1)] or StageType.STAGETYPE_ORIGINAL
 		Mod.Item.ALTERNATE_REALITY:QueueNewStage(stage - 1, stageType)
 	end
+	return {Discharge = true, Remove = itemDesc.VarData >= 3, ShowAnim = false}
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_ITEM, BACKSPACE_KEY.UseBackSpace, BACKSPACE_KEY.ID)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, BACKSPACE_KEY.UseBackspace, BACKSPACE_KEY.ID)
 
 function BACKSPACE_KEY:RememberStageType()
 	local run_save = Mod:RunSave()
@@ -57,3 +55,14 @@ function BACKSPACE_KEY:RememberStageType()
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, BACKSPACE_KEY.RememberStageType)
+
+HudHelper.RegisterHUDElement({
+	ItemID = BACKSPACE_KEY.ID,
+	OnRender = function (player, playerHUDIndex, hudLayout, position, alpha, scale, itemID, slot)
+		if not slot then return end
+		---@cast slot ActiveSlot
+		local numUses = player:GetActiveItemDesc(slot).VarData
+		backspaceKey:SetFrame("Idle", 2 - numUses)
+		backspaceKey:Render(position)
+	end
+}, HudHelper.HUDType.ACTIVE_ID)

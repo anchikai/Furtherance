@@ -393,7 +393,7 @@ EID_Collectibles = {
 			Name = "Beginner's Luck",
 			Description = {
 				"↑ {{Luck}} +10 Luck",
-				"#For every new unexplored room you enter, {{Luck}} -1 Luck until the it cancels out the luck granted by this item",
+				"#For every new unexplored room Isaac enters, {{Luck}} -1 Luck until the it cancels out the luck granted by this item",
 				"#Luck is granted back on the next floor"
 			}
 		},
@@ -766,7 +766,7 @@ EID_Collectibles = {
 		en_us = {
 			Name = "Crab Legs",
 			Description = {
-				"Walking in a perpendicular direction to the direction you're shooting grants {{Speed}} +0.3 Speed"
+				"Walking in a perpendicular direction to the direction Isaac is shooting grants {{Speed}} +0.5 Speed"
 			}
 		},
 		ru = {
@@ -827,8 +827,8 @@ EID_Collectibles = {
 			Name = "Epitaph",
 			Description = {
 				"{{Collectible545}} 10% chance for dead enemies to revive upon room clear as a bone orbital or a skeletal companion",
-				"#Dying with this item will create a tombstone in a random room on the same floor you died on for the next run",
-				"#{{Collectible}} Bombing the tombstone 3 times spawns {{Coin}} 3-5 coins, {{Key}} 2-3 keys, and the first and last passive items in you had in your inventory the previous run"
+				"#Dying with this item will create a tombstone in a random room on the same floor Isaac died on for the next run",
+				"#{{Collectible}} Bombing the tombstone 3 times spawns {{Coin}} 3-5 coins, {{Key}} 2-3 keys, and the first and last passive items Isaac had in his inventory the previous run"
 			}
 		},
 		ru = {
@@ -1152,9 +1152,9 @@ EID_Collectibles = {
 		en_us = {
 			Name = "Backspace Key",
 			Description = {
-				"!!! Removes 2 of your earliest passive items and sends you to the previous floor. If Isaac does not have enough passive items to sacrifice, he dies",
-				"#The floor is newly generated but remains the same floor variant as when last you visited it",
-				"#Subsequent uses adds 2 to the amount of passives to be removed"
+				"Removes 2 of Isaac's earliest passive items and brings him to the previous floor.",
+				"#The floor is newly generated but remains the same floor variant as when it was last visited",
+				"#!!! Can only be used up to 3 times before disappearing"
 			}
 		},
 		ru = {
@@ -1281,7 +1281,7 @@ EID_Collectibles = {
 		en_us = {
 			Name = "F4 Key",
 			Description = {
-				"Teleports you to another random special room that has not been explored yet depending on what consumables you have the least of",
+				"Teleports Isaac to a random special room that has not been explored yet depending on what consumables he has the least of",
 				"#Coins: {{ArcadeRoom}}",
 				"#Bombs: {{SuperSecretRoom}}, {{IsaacsRoom}}, {{SecretRoom}}",
 				"#Keys: {{Shop}}, {{TreasureRoom}}, {{DiceRoom}}, {{Library}}, {{ChestRoom}}, {{Planetarium}}",
@@ -1851,7 +1851,7 @@ EID_Collectibles = {
 			Name = "Polarity Shift",
 			Description = {
 				"Changes Spiritual Wound to Chain Lightning",
-				"#Can only be activated while you have {{Heart}} Red Hearts",
+				"#Can only be activated while Isaac has {{Heart}} Red Hearts",
 				"#While active:",
 				"#{{Blank}} Life steal is disabled, instead rapidly draining {{Heart}} Red Hearts.",
 				"#{{Blank}} Less delay between damaging enemies"
@@ -3577,7 +3577,7 @@ EID_Characters = {
 		en_us = {
 			Name = "Peter",
 			Description = {
-				"{{Battery}} {{SoulHeart}} Soul/Black Hearts will instead charge {{Collectible" .. Mod.Item.KEYS_TO_THE_KINGDOM.ID .. "}} Keys to the Kingdom instead of your health if still needs charges"
+				"{{Battery}} {{SoulHeart}} Soul/Black Hearts will instead charge {{Collectible" .. Mod.Item.KEYS_TO_THE_KINGDOM.ID .. "}} Keys to the Kingdom instead of Peter's health if it still needs charges"
 			}
 		}
 	},
@@ -3597,7 +3597,7 @@ EID_Characters = {
 				"{{EmptyHeart}} Maximum of 24 heart containers",
 				"#{{BrokenHeart}} Health above one heart will be slowly be replaced with Broken Hearts, 1 every 20 seconds",
 				"#{{Heart}} Damaging enemies may have them drop a special Scared Heart. It disappears after 10 seconds and be collected by enemies, damaging them",
-				"#↑ All stats up for every Half Red Heart you have",
+				"#↑ All stats up for every Half Red Heart Leah has",
 				"#{{SoulHeart}} Soul/Black Hearts are replaced with Red Hearts"
 			}
 		}
