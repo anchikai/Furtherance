@@ -67,8 +67,9 @@ Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
 	end
 end)
 
----@param roomDesc RoomDescriptor
-function ALMAGEST_SCRAP:PreEnterPlanetarium(_, roomDesc)
+function ALMAGEST_SCRAP:PreEnterPlanetarium(newIndex)
+	local level = Mod.Level()
+	local roomDesc = level:GetRoomByIdx(newIndex)
 	if ALMAGEST_SCRAP:ShouldUpdateTreasureRoom()
 		and roomDesc.VisitedCount == 0
 		and roomDesc.Data.Type == RoomType.ROOM_TREASURE
@@ -82,7 +83,7 @@ function ALMAGEST_SCRAP:PreEnterPlanetarium(_, roomDesc)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_NEW_ROOM, ALMAGEST_SCRAP.PreEnterPlanetarium)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_CHANGE_ROOM, CallbackPriority.LATE, ALMAGEST_SCRAP.PreEnterPlanetarium)
 
 --#endregion
 
@@ -95,7 +96,7 @@ function ALMAGEST_SCRAP:OnPriceInit(pickup)
 end
 
 ---@param pickup EntityPickup
-function ALMAGEST_SCRAP:TurnToAlmagestShopItem(pickup)
+function ALMAGEST_SCRAP.TurnToAlmagestShopItem(pickup)
 	local pickup_save = Mod:PickupSave(pickup)
 	local quality = Mod.ItemConfig:GetCollectible(pickup.SubType).Quality
 	local price = ALMAGEST_SCRAP.PickupPrice.ONE_BROKEN_HEART

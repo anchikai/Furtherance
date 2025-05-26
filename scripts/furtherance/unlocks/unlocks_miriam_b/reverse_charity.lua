@@ -17,7 +17,7 @@ end
 Mod:AddCallback(ModCallbacks.MC_USE_CARD, REVERSE_CHARITY.OnUse, REVERSE_CHARITY.ID)
 
 ---@param pickup EntityPickup
-function REVERSE_CHARITY:MakeBalancedShopItem(pickup)
+function REVERSE_CHARITY.MakeBalancedShopItem(pickup)
 	pickup:MakeShopItem(-1)
 	if pickup.Variant ~= PickupVariant.PICKUP_COLLECTIBLE then
 		if pickup.Variant == PickupVariant.PICKUP_COIN then
@@ -44,7 +44,7 @@ end
 ---@param pickup EntityPickup
 function REVERSE_CHARITY:OnPickupInit(pickup)
 	if makeShopItem then
-		REVERSE_CHARITY:MakeBalancedShopItem(pickup)
+		REVERSE_CHARITY.MakeBalancedShopItem(pickup)
 	end
 end
 
