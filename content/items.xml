@@ -35,7 +35,7 @@
 	<passive id="23" name="Owl's Eye" description="The master guides you" gfx="owls_eye.png" achievement="Owl's Eye" cache="tearflag damage" tags="offensive summonable" quality="3" craftquality="3" /> <!-- Concept by Freg! -->
 	<passive id="30" name="Pharaoh Cat" description="Bastet's protection" gfx="pharaoh_cat.png" cache="firedelay" quality="3" craftquality="4" tags="offensive summonable" /> <!-- Concept by Freg! (reworked by me :troll: (and going to be reworked again by Benny...eventually)) -->
 	<passive id="38" name="Heart Embedded Coin" description="A symbol of love" gfx="heart_embedded_coin.png" achievement="Heart Embedded Coin" quality="2" craftquality="2" tags="nolostbr summonable" />
-	<passive id="39" name="Spiritual Wound" description="Drain their lives" gfx="spiritual_wound.png" achievement="Spiritual Wound" cache="damage tearflag tearcolor" shopprice="30" devilprice="2" quality="4" craftquality="4" tags="devil offensive summonable" hidden="true" />
+	<passive id="39" name="???" description="Placeholder" gfx="spiritual_wound.png" achievement="Spiritual Wound" cache="" hidden="true" />
 	<passive id="40" name="Caduceus Staff" description="HP up + you feel great!" gfx="caduceus_staff.png" achievement="Caduceus Staff" soulhearts="4" quality="4" craftquality="4" tags="angel nolostbr" />
 	<passive id="41" name="Polydipsia" description="Tears down?!" gfx="polydipsia.png" achievement="Polydipsia" cache="range firedelay" quality="3" craftquality="3" tags="offensive summonable" />
 	<passive id="42" name="Kareth" description="Divine punishment" gfx="kareth.png" achievement="Kareth" quality="3" craftquality="3" tags="offensive nocantrip" />

@@ -1,11 +1,10 @@
 local Mod = Furtherance
+local MIRIAM_B = Mod.Character.MIRIAM_B
 local POLARITY_SHIFT = Mod.Item.POLARITY_SHIFT
 
 local SPIRITUAL_WOUND = {}
 
 Furtherance.Item.SPIRITUAL_WOUND = SPIRITUAL_WOUND
-
-SPIRITUAL_WOUND.ID = Isaac.GetItemIdByName("Spiritual Wound")
 
 SPIRITUAL_WOUND.SFX_START = Isaac.GetSoundIdByName("Spiritual Wound Start")
 SPIRITUAL_WOUND.SFX_DEATH_FIELD_START = Isaac.GetSoundIdByName("Death Field Start")
@@ -29,7 +28,7 @@ local INNATE_COLLECTIBLES = {
 function SPIRITUAL_WOUND:GetAttackInitSound(player)
 	if POLARITY_SHIFT:IsChainLightningActive(player) then
 		return SPIRITUAL_WOUND.SFX_CHAIN_LIGHTNING_START
-	elseif Mod.Character.MIRIAM_B:MiriamBHasBirthright(player) then
+	elseif MIRIAM_B:MiriamBHasBirthright(player) then
 		return SPIRITUAL_WOUND.SFX_DEATH_FIELD_START
 	else
 		return SPIRITUAL_WOUND.SFX_START
@@ -48,19 +47,19 @@ end
 ---@param player EntityPlayer
 ---@param cacheFlag CacheFlag
 function SPIRITUAL_WOUND:SpiritualWoundCache(player, cacheFlag)
-	if not player:HasCollectible(SPIRITUAL_WOUND.ID) then return end
+	if not MIRIAM_B:IsMiriamB(player) then return end
 	if cacheFlag == CacheFlag.CACHE_TEARFLAG then
 		player.TearFlags = player.TearFlags | TearFlags.TEAR_HOMING
 	elseif cacheFlag == CacheFlag.CACHE_TEARCOLOR then
 		local color = SPIRITUAL_WOUND.SPIRITUAL_WOUND_COLOR
 		if player:HasCollectible(Mod.Item.POLARITY_SHIFT.ID_2) then
 			color = SPIRITUAL_WOUND.CHAIN_LIGHTNING_COLOR
-		elseif Mod.Character.MIRIAM_B:MiriamBHasBirthright(player) then
+		elseif MIRIAM_B:MiriamBHasBirthright(player) then
 			color = SPIRITUAL_WOUND.DEATH_FIELD_COLOR
 		end
 		player.LaserColor = color
-	elseif cacheFlag == CacheFlag.CACHE_DAMAGE then
-		player.Damage = player.Damage - 0.3
+	elseif cacheFlag == CacheFlag.CACHE_FIREDELAY then
+		player.MaxFireDelay = 0
 	end
 end
 
@@ -95,8 +94,7 @@ end
 function SPIRITUAL_WOUND:HandleFiringSFX(player)
 	local weapon = player:GetWeapon(1)
 	local data = Mod:GetData(player)
-	if weapon and player:GetFireDirection() ~= Direction.NO_DIRECTION and player:HasCollectible(SPIRITUAL_WOUND.ID) then
-		weapon:SetCharge(weapon:GetCharge() + 2)
+	if weapon and player:GetFireDirection() ~= Direction.NO_DIRECTION and MIRIAM_B:IsMiriamB(player) then
 		if not data.FiringSpiritualWound then
 			data.FiringSpiritualWound = true
 			SPIRITUAL_WOUND.IS_FIRING = true
@@ -115,7 +113,29 @@ function SPIRITUAL_WOUND:HandleFiringSFX(player)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SPIRITUAL_WOUND.HandleFiringSFX)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SPIRITUAL_WOUND.HandleFiringSFX, Mod.PlayerType.MIRIAM_B)
+
+---@param player EntityPlayer
+function SPIRITUAL_WOUND:RemoveInnateItems(player)
+	local data = Mod:GetData(player)
+	if data.IsMiriamB and not MIRIAM_B:IsMiriamB(player) then
+		local INNATE_MAP = Mod:Set(INNATE_COLLECTIBLES)
+		local spoofList = player:GetSpoofedCollectiblesList()
+
+		for _, spoof in pairs(spoofList) do
+			local itemID = spoof.CollectibleID
+			if INNATE_MAP[itemID] and spoof.AppendedCount > 0 then
+				player:AddInnateCollectible(itemID, -1)
+				local itemConfigItem = Mod.ItemConfig:GetCollectible(itemID)
+				if not player:HasCollectible(itemID, true, true) then
+					player:RemoveCostume(itemConfigItem)
+				end
+			end
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SPIRITUAL_WOUND.RemoveInnateItems)
 
 ---@param ent Entity
 ---@param amount number
@@ -124,7 +144,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SPIRITUAL_WOUND.HandleFirin
 function SPIRITUAL_WOUND:LaserDamage(ent, amount, flags, source)
 	local player = Mod:TryGetPlayer(source.Entity, true)
 	if player
-		and player:HasCollectible(SPIRITUAL_WOUND.ID)
+		and MIRIAM_B:IsMiriamB(player)
 		and Mod:HasBitFlags(flags, DamageFlag.DAMAGE_LASER)
 		and ent:ToNPC()
 	then
@@ -133,7 +153,7 @@ function SPIRITUAL_WOUND:LaserDamage(ent, amount, flags, source)
 		local countdown = 3
 		local damageMultBonus = 1
 		if hasBirthright or isChainLightning then
-			countdown = 2
+			countdown = 1
 			if hasBirthright and isChainLightning and ent:HasEntityFlags(EntityFlag.FLAG_FEAR) then
 				damageMultBonus = 1.5
 			end
@@ -157,35 +177,9 @@ Mod:AddCallback(ModCallbacks.MC_PRE_SFX_PLAY, SPIRITUAL_WOUND.StopSFX, SoundEffe
 Mod:AddCallback(ModCallbacks.MC_PRE_SFX_PLAY, SPIRITUAL_WOUND.StopSFX, SoundEffect.SOUND_REDLIGHTNING_ZAP_BURST)
 
 ---@param player EntityPlayer
-function SPIRITUAL_WOUND:OnCollectibleAdd(itemID, charge, firstTime, slot, varData, player)
-	SPIRITUAL_WOUND:TryAddInnateItems(player)
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, SPIRITUAL_WOUND.OnCollectibleAdd, SPIRITUAL_WOUND.ID)
-
----@param player EntityPlayer
-function SPIRITUAL_WOUND:OnCollectibleRemove(player)
-	local INNATE_MAP = Mod:Set(INNATE_COLLECTIBLES)
-	local spoofList = player:GetSpoofedCollectiblesList()
-
-	for _, spoof in ipairs(spoofList) do
-		local itemID = spoof.CollectibleID
-		if INNATE_MAP[itemID] and spoof.AppendedCount > 0 then
-			player:AddInnateCollectible(itemID, -1)
-			local itemConfigItem = Mod.ItemConfig:GetCollectible(itemID)
-			if not player:HasCollectible(itemID, true, true) then
-				player:RemoveCostume(itemConfigItem)
-			end
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, SPIRITUAL_WOUND.OnCollectibleRemove, SPIRITUAL_WOUND
-.ID)
-
----@param player EntityPlayer
 function SPIRITUAL_WOUND:TryAddInnateItems(player)
-	if player:HasCollectible(SPIRITUAL_WOUND.ID) then
+	if MIRIAM_B:IsMiriamB(player) then
+		Mod:GetData(player).IsMiriamB = true
 		for _, itemID in ipairs(INNATE_COLLECTIBLES) do
 			if not player:HasCollectible(itemID, false, true) then
 				player:AddInnateCollectible(itemID)

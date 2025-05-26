@@ -6,9 +6,9 @@ local MIRIAM_B = {}
 
 Furtherance.Character.MIRIAM_B = MIRIAM_B
 
-MIRIAM_B.HEALTH_DRAIN_RATE = 30 * 5
-MIRIAM_B.BASE_HEAL_DAMAGE_THRESHOLD = 12
-MIRIAM_B.ADD_SCALING_DAMAGE_THRESHOLD = 4
+MIRIAM_B.HEALTH_DRAIN_RATE = 30 * 3
+MIRIAM_B.BASE_HEAL_DAMAGE_THRESHOLD = 20
+MIRIAM_B.ADD_SCALING_DAMAGE_THRESHOLD = 5
 
 MIRIAM_B.FEAR_BASE_RADIUS = 62.5
 MIRIAM_B.FEAR_BASE_SCALE = 0.75
@@ -35,9 +35,6 @@ end
 ---@param player EntityPlayer
 function MIRIAM_B:OnPlayerInit(player)
 	if MIRIAM_B:IsMiriamB(player) then
-		if not player:HasCollectible(Mod.Item.SPIRITUAL_WOUND.ID) then
-			player:AddInnateCollectible(Mod.Item.SPIRITUAL_WOUND.ID)
-		end
 		local deathAura = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.HALO, 3, player.Position, Vector.Zero, player):ToEffect()
 		---@cast deathAura EntityEffect
 		deathAura.RenderZOffset = -1000
@@ -196,7 +193,7 @@ function MIRIAM_B:ReplaceHearts(entType, variant, subtype, pos, spawner, seed)
 	if entType == EntityType.ENTITY_PICKUP
 		and variant == PickupVariant.PICKUP_HEART
 		and PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.MIRIAM_B)
-		and Mod.Core.HEARTS.RedHearts[subtype]
+		and Mod.Core.HEARTS.SoulHearts[subtype]
 	then
 		local hasNoMiriamB = Mod.Foreach.Player(function (player, index)
 			if not MIRIAM_B:IsMiriamB(player) then
@@ -204,7 +201,7 @@ function MIRIAM_B:ReplaceHearts(entType, variant, subtype, pos, spawner, seed)
 			end
 		end)
 		if hasNoMiriamB then return end
-		return {entType, variant, Mod.Character.MIRIAM_B.SPECIAL_HEART_TO_RED_HEART[subtype] or HeartSubType.HEART_FULL, seed}
+		return {entType, variant, Mod.Character.LEAH_B.SPECIAL_HEART_TO_RED_HEART[subtype] or HeartSubType.HEART_FULL, seed}
 	end
 end
 

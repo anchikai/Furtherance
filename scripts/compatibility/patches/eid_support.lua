@@ -46,7 +46,6 @@ if EID.SingleUseCollectibles then
 end
 
 if EID.ItemReminderBlacklist then
-	EID.ItemReminderBlacklist["5.100."..Item.SPIRITUAL_WOUND.ID] = true
 end
 
 --#region Icons
@@ -2087,26 +2086,6 @@ EID_Collectibles = {
 			}
 		}
 	},
-	[Item.SPIRITUAL_WOUND.ID] = {
-		en_us = {
-			Name = "Spiritual Wound",
-			Description = {
-				"Funny aaa star wars"
-			}
-		},
-		ru = {
-			Name = "PlaceholderName",
-			Description = {
-				"PlaceholderDesc"
-			}
-		},
-		spa = {
-			Name = "PlaceholderName",
-			Description = {
-				"PlaceholderDesc"
-			}
-		}
-	},
 	[Item.SUNSCREEN.ID] = {
 		en_us = {
 			Name = "Sunscreen",
@@ -3620,7 +3599,7 @@ EID_Characters = {
 			Description = {
 				"{{BoneHeart}} Heart containers converted to Bone Hearts",
 				"#{{SoulHeart}} Can't use Soul Hearts as health",
-				"#{{Collectible" .. Mod.Item.SPIRITUAL_WOUND.ID .. "}} Spiritual Wound: Rapidly fire a wide arc of short homing lasers. Has a small delay to how often it damages an enemy",
+				"#Spiritual Wound: Rapidly fire a wide arc of short homing lasers. Has a small delay to how often it damages an enemy",
 				"#{{Fear}} Fear aura that increases in size with {{Heart}} Red Hearts",
 				"#{{HealingRed}} Heal a Half Red Heart after dealing enough damage",
 			}
