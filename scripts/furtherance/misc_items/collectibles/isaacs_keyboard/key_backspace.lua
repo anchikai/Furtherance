@@ -32,8 +32,8 @@ function BACKSPACE_KEY:UseBackspace(_, _, player, _, slot)
 		end
 	end
 	for _, itemTable in ipairs(itemsToRemove) do
+		player:GetHistory():RemoveHistoryItemByIndex(itemTable[2])
 		player:RemoveCollectible(itemTable[1])
-		player:GetHistory():RemoveItemByIndex(itemTable[2])
 	end
 	local stage_types = Mod:RunSave().BackspaceStageTypes
 	if stage == LevelStage.STAGE1_1 then

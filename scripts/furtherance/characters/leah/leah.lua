@@ -14,6 +14,11 @@ function LEAH:IsLeah(player)
 	return player:GetPlayerType() == Mod.PlayerType.LEAH
 end
 
+---@param player EntityPlayer
+function LEAH:LeahHasBirthright(player)
+	return LEAH:IsLeah(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
+end
+
 ---@param npc EntityNPC
 function LEAH:ScaredHeartOnDeath(npc)
 	local player = PlayerManager.FirstPlayerByType(Mod.PlayerType.LEAH)
@@ -49,3 +54,41 @@ function LEAH:TearsUp(player)
 end
 
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, LEAH.TearsUp, CacheFlag.CACHE_FIREDELAY)
+
+---@param ent Entity
+---@param damage number
+---@param flags DamageFlag
+---@param source EntityRef
+function LEAH:BirthrightDamageKillCredit(ent, damage, flags, source)
+	local player = Mod:TryGetPlayer(source)
+	if player
+		and LEAH:LeahHasBirthright(player)
+	then
+		Mod:GetData(ent).LeahBirthrightKill = EntityPtr(player)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, LEAH.BirthrightDamageKillCredit)
+
+---@param npc EntityNPC
+function LEAH:BirthrightDamageOnKill(npc)
+	local data = Mod:GetData(npc)
+
+	if data
+		and data.LeahBirthrightKill
+	then
+		---@type Entity
+		local ref = data.LeahBirthrightKill.Ref
+		if ref then
+			local player = ref:ToPlayer()
+			local run_save = Mod:RunSave(player)
+			run_save.LeahBirthrightKills = (run_save.LeahBirthrightKills or 0) + 1
+			if run_save.LeahBirthrightKills % 20 == 0 then
+				run_save.HeartRenovatorDamage = run_save.HeartRenovatorDamage + 0.5
+				player:AddCacheFlags(CacheFlag.CACHE_DAMAGE, true)
+			end
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, LEAH.BirthrightDamageOnKill)
