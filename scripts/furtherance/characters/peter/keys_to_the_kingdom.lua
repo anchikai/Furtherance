@@ -67,11 +67,11 @@ KEYS_TO_THE_KINGDOM.SPARE_TIMER = {
 }
 
 KEYS_TO_THE_KINGDOM.StatTable = {
-	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.5,                       TempBuff = 0.1 },
-	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = -0.5 * 5,                  TempBuff = -0.1 * 5 }, -- MaxFireDelay buffs should be negative!
+	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.25,                       TempBuff = 0.1 },
+	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = -0.25 * 5,                  TempBuff = -0.1 * 5 }, -- MaxFireDelay buffs should be negative!
 	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.5 * Mod.RANGE_BASE_MULT, TempBuff = 0.1 * Mod.RANGE_BASE_MULT },
 	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.125,                     TempBuff = 0.025 },
-	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.5,                       TempBuff = 0.1 },
+	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.25,                       TempBuff = 0.1 },
 	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5,                       TempBuff = 0.1 }
 }
 
@@ -165,22 +165,14 @@ function KEYS_TO_THE_KINGDOM:RaptureEnemy(ent)
 	local subtype = ent:IsBoss() and KEYS_TO_THE_KINGDOM.SPARED_SOUL_BOSS or KEYS_TO_THE_KINGDOM.SPARED_SOUL
 	Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT, subtype,
 		parent.Position, Vector.Zero, nil)
-	local currentEnt = parent
-	local ptrHash = GetPtrHash(currentEnt)
-	local loopedEntities = {
-		[ptrHash] = true
-	}
+	local currentEnt = parent.Child
+	local loopedEntities = {}
 
-	if currentEnt.Child then
-		currentEnt = currentEnt.Child
-		ptrHash = GetPtrHash(currentEnt)
-		--Clear up segmented enemies
-		while not loopedEntities[ptrHash] and SEL.Utils.IsInParentChildChain(currentEnt) do
-			local child = currentEnt.Child
-			currentEnt:Remove()
-			currentEnt = child
-			ptrHash = GetPtrHash(currentEnt)
-		end
+	--Clear up segmented enemies
+	while currentEnt and not loopedEntities[GetPtrHash(currentEnt)] and SEL.Utils.IsInParentChildChain(currentEnt) do
+		local child = currentEnt.Child
+		currentEnt:Remove()
+		currentEnt = child
 	end
 	if ent:IsBoss() then
 		Mod:GetData(ent).Raptured = true
@@ -239,6 +231,7 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 		end
 		local source = EntityRef(player)
 		Mod.Foreach.NPC(function (npc)
+			npc = SEL.Utils.GetLastParent(npc)
 			local canSpare = KEYS_TO_THE_KINGDOM:CanSpare(npc)
 			local data = Mod:TryGetData(npc)
 			if canSpare and npc:IsBoss() and npc and (not data or not data.FailedRapture) then
@@ -531,6 +524,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBossUpdate(npc)
 	if customData.FailedAttemptsCooldown > 0 then
 		customData.FailedAttemptsCooldown = customData.FailedAttemptsCooldown - 1
 	end
+
 	local whiteColor = 0.45 - (countdown / 2000)
 	spotlight:GetSprite().Scale = Vector(0.25 + (countdown / KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN), 1.25)
 	spotlight:SetColor(Color(1, 1, 1, 1, whiteColor, whiteColor, whiteColor), 1, 2, true, false)
@@ -679,7 +673,8 @@ function KEYS_TO_THE_KINGDOM:SpareAngels(npc, player)
 	local data = Mod:GetData(npc)
 	if not data.KTTKSparedAngel then
 		Mod:GetData(npc).KTTKSparedAngel = true
-		npc:GetSprite():Play("Appear")
+		npc:GetSprite().PlaybackSpeed = 0
+		npc:GetSprite():Play("Appear", true)
 		npc:GetSprite():SetLastFrame()
 		npc.Friction = 0
 		npc.Velocity = Vector.Zero
@@ -699,7 +694,7 @@ function KEYS_TO_THE_KINGDOM:ReverseAppear(npc)
 		local sprite = npc:GetSprite()
 		local previousFrame = sprite:GetFrame() - 2
 		sprite:SetFrame(previousFrame)
-		if previousFrame == 0 then
+		if previousFrame <= 0 then
 			local angelKey = npc.Type == EntityType.ENTITY_URIEL and CollectibleType.COLLECTIBLE_KEY_PIECE_1 or
 			CollectibleType.COLLECTIBLE_KEY_PIECE_2
 			local otherKey = npc.Type == EntityType.ENTITY_URIEL and CollectibleType.COLLECTIBLE_KEY_PIECE_2 or
@@ -717,6 +712,7 @@ function KEYS_TO_THE_KINGDOM:ReverseAppear(npc)
 			Mod.SFXMan:Play(SoundEffect.SOUND_HOLY)
 			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, itemID,
 				Mod.Room():FindFreePickupSpawnPosition(npc.Position), Vector.Zero, npc)
+			Mod:GetData(npc).Raptured = true
 			KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
 		end
 		return true
