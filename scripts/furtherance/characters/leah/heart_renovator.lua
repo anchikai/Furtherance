@@ -93,7 +93,7 @@ function HEART_RENOVATOR:DamageUp(player)
 		if Mod.Character.LEAH:IsLeah(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 			addAmount = addAmount * 2
 		end
-		player.Damage = player.Damage + player_run_save.HeartRenovatorDamage * HEART_RENOVATOR.DAMAGE_MULT
+		player.Damage = player.Damage + addAmount
 	end
 end
 
