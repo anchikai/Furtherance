@@ -13,6 +13,7 @@ KEYS_TO_THE_KINGDOM.EFFECT = Isaac.GetEntityVariantByName("Keys to the Kingdom E
 
 --SubTypes of the Effect
 KEYS_TO_THE_KINGDOM.SOUL = 1
+KEYS_TO_THE_KINGDOM.SOUL_MINIBOSS = 2
 KEYS_TO_THE_KINGDOM.SOUL_BOSS = 3
 KEYS_TO_THE_KINGDOM.SPARED_SOUL = 100
 KEYS_TO_THE_KINGDOM.SPARED_SOUL_BOSS = 101
@@ -46,7 +47,8 @@ KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS = Mod:Set({
 	EffectVariant.BLOOD_GUSH,
 	EffectVariant.BLOOD_PARTICLE,
 	EffectVariant.BLOOD_SPLAT,
-	EffectVariant.DUST_CLOUD
+	EffectVariant.DUST_CLOUD,
+	EffectVariant.FART
 })
 KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS = {
 	SoundEffect.SOUND_ROCKET_BLAST_DEATH,
@@ -55,8 +57,18 @@ KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS = {
 	SoundEffect.SOUND_DEATH_BURST_SMALL,
 	SoundEffect.SOUND_MEAT_JUMPS
 }
+KEYS_TO_THE_KINGDOM.MINIBOSS = Mod:Set({
+	EntityType.ENTITY_SLOTH,
+	EntityType.ENTITY_LUST,
+	EntityType.ENTITY_WRATH,
+	EntityType.ENTITY_GLUTTONY,
+	EntityType.ENTITY_GREED,
+	EntityType.ENTITY_ENVY,
+	EntityType.ENTITY_PRIDE,
+})
 
 --30fps * 30 = 30 seconds
+KEYS_TO_THE_KINGDOM.MINIBOSS_RAPTURE_COUNTDOWN = 30 * 20
 KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN = 30 * 30
 KEYS_TO_THE_KINGDOM.BOSS_FORGIVE_ATTEMPTS = 3
 KEYS_TO_THE_KINGDOM.BOSS_FORGIVE_COOLDOWN = 60
@@ -120,7 +132,9 @@ function KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, ent)
 		return 0
 	end
 	local raptureCountdown = KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN
-	if KEYS_TO_THE_KINGDOM.SPARE_TIMER[ent.Type] then
+	if KEYS_TO_THE_KINGDOM.MINIBOSS[ent.Type] then
+		raptureCountdown = KEYS_TO_THE_KINGDOM.MINIBOSS_RAPTURE_COUNTDOWN
+	elseif KEYS_TO_THE_KINGDOM.SPARE_TIMER[ent.Type] then
 		raptureCountdown = KEYS_TO_THE_KINGDOM.SPARE_TIMER[ent.Type]
 	end
 	if PETER:IsPeter(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
@@ -136,6 +150,7 @@ function KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
 	npc:AddEntityFlags(EntityFlag.FLAG_NO_BLOOD_SPLASH)
 	npc:ClearEntityFlags(EntityFlag.FLAG_EXTRA_GORE)
 	npc:Die()
+	npc:ToNPC().State = NpcState.STATE_DEATH
 	Mod:DelayOneFrame(function()
 		npc:GetSprite():SetLastFrame()
 		Mod:DelayOneFrame(function()
@@ -148,6 +163,9 @@ function KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
 			for _, soundID in ipairs(KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS) do
 				Mod.SFXMan:Stop(soundID)
 			end
+			Mod.Foreach.ProjectileInRadius(npc.Position, 40, function (projectile, index)
+				projectile:Remove()
+			end, nil, nil, { Inverse = true })
 		end)
 	end)
 	npc.Visible = false
@@ -159,8 +177,6 @@ end
 ---@param ent Entity
 function KEYS_TO_THE_KINGDOM:RaptureEnemy(ent)
 	local parent = SEL.Utils.GetLastParent(ent)
-	local glow = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.GROUND_GLOW, 0, parent.Position, Vector.Zero, nil)
-	glow:GetSprite().PlaybackSpeed = 0.1
 	local subtype = ent:IsBoss() and KEYS_TO_THE_KINGDOM.SPARED_SOUL_BOSS or KEYS_TO_THE_KINGDOM.SPARED_SOUL
 	Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT, subtype,
 		parent.Position, Vector.Zero, nil)
@@ -201,6 +217,7 @@ function KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, numStats, isTemp)
 		player_save[varName] = player_save[varName] or {}
 		player_save[varName][key] = (player_save[varName][key] or 0) + 1
 	end
+	player:AddCacheFlags(CacheFlag.CACHE_ALL, true)
 end
 
 --#endregion
@@ -238,22 +255,20 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 				if result then
 					return
 				end
-				SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil,
-					{ FailedAttempts = 0, FailedAttemptsCooldown = 0 })
-				if SEL:HasStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE) then
-					local spotlight = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
-						KEYS_TO_THE_KINGDOM.SPOTLIGHT,
-						npc.Position, Vector.Zero, npc):ToEffect()
-					---@cast spotlight EntityEffect
+				local dataTable = { FailedAttempts = 0, FailedAttemptsCooldown = 0 }
+				local addedStatus = SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil, dataTable)
+				if addedStatus then
+					local spotlight = Mod.Spawn.Effect(KEYS_TO_THE_KINGDOM.EFFECT, KEYS_TO_THE_KINGDOM.SPOTLIGHT, npc.Position, nil, npc)
 					spotlight.Parent = npc
 					spotlight:FollowParent(npc)
 					spotlight:GetSprite().Scale = Vector(1.25, 1.25)
-					Mod:GetData(spotlight).RaptureSpotlight = true
-					SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE).CustomData.Spotlight = EntityPtr(spotlight)
+					dataTable.Spotlight = EntityPtr(spotlight)
 				end
 			elseif canSpare and npc:Exists() then
 				KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
-				KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, 1, true)
+				if not npc.SpawnerType then
+					KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, 1, true)
+				end
 			end
 		end, nil, nil, nil, {Inverse = true})
 	end
@@ -317,6 +332,29 @@ Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_NEW_LEVEL, KEYS_TO_THE_KINGDOM.OnNew
 --#region Dropping soul charges on death
 
 ---@param npc EntityNPC
+---@param player EntityPlayer
+function KEYS_TO_THE_KINGDOM:SpawnBossSoulCharge(npc, player)
+	local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
+		KEYS_TO_THE_KINGDOM.SOUL_BOSS,
+		npc.Position, RandomVector():Resized(5), npc)
+	effect.Target = player
+end
+
+---@param npc EntityNPC
+---@param player EntityPlayer
+function KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(npc, player)
+	local rng = player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID)
+	local chance = rng:RandomFloat()
+	local maxChance = (npc.MaxHitPoints * 2.5) / 100
+	if chance <= maxChance then
+		local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
+			KEYS_TO_THE_KINGDOM.SOUL,
+			npc.Position, RandomVector():Resized(5), npc)
+		effect.Target = player
+	end
+end
+
+---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 	if not PlayerManager.AnyoneHasCollectible(KEYS_TO_THE_KINGDOM.ID) or not KEYS_TO_THE_KINGDOM:CanSpare(npc, true) then return end
 	Mod.Foreach.Player(function(player)
@@ -325,20 +363,9 @@ function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 		for _, slotData in ipairs(slots) do
 			if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES then
 				if npc:IsBoss() and not (Mod:GetData(npc) and Mod:GetData(npc).Raptured) then
-					local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
-						KEYS_TO_THE_KINGDOM.SOUL_BOSS,
-						npc.Position, RandomVector():Resized(5), npc)
-					effect.Target = player
+					KEYS_TO_THE_KINGDOM:SpawnBossSoulCharge(npc, player)
 				else
-					local rng = player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID)
-					local chance = rng:RandomFloat()
-					local maxChance = (npc.MaxHitPoints * 2.5) / 100
-					if chance <= maxChance then
-						local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
-							KEYS_TO_THE_KINGDOM.SOUL,
-							npc.Position, RandomVector():Resized(5), npc)
-						effect.Target = player
-					end
+					KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(npc, player)
 				end
 				break
 			end
@@ -365,11 +392,9 @@ function KEYS_TO_THE_KINGDOM:SoulUpdate(effect)
 	effect.Velocity = (effect.Velocity + (((player.Position - effect.Position):Normalized() * 20) - effect.Velocity) * 0.4)
 
 	if effect.Position:DistanceSquared(player.Position) > KEYS_TO_THE_KINGDOM.COLLECTION_DISTANCE then return end
-
-	effect:Remove()
-
 	local slots = Mod:GetActiveItemCharges(player, KEYS_TO_THE_KINGDOM.ID)
 	if #slots == 0 then return end
+
 	for _, slotData in ipairs(slots) do
 		if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES then
 			player:AddActiveCharge(effect.SubType, slotData.Slot, true, false, true)
@@ -378,6 +403,8 @@ function KEYS_TO_THE_KINGDOM:SoulUpdate(effect)
 			break
 		end
 	end
+
+	effect:Remove()
 end
 
 ---@param effect EntityEffect
@@ -440,8 +467,8 @@ end
 
 ---@param effect EntityEffect
 function KEYS_TO_THE_KINGDOM:OnEffectUpdate(effect)
-	if effect.SubType == KEYS_TO_THE_KINGDOM.SOUL
-		or effect.SubType == KEYS_TO_THE_KINGDOM.SOUL_BOSS
+	if effect.SubType >= KEYS_TO_THE_KINGDOM.SOUL
+		and effect.SubType <= KEYS_TO_THE_KINGDOM.SOUL_BOSS
 	then
 		KEYS_TO_THE_KINGDOM:SoulUpdate(effect)
 	elseif effect.SubType == KEYS_TO_THE_KINGDOM.SPARED_SOUL
@@ -472,7 +499,9 @@ function KEYS_TO_THE_KINGDOM:SoulInit(effect)
 	local anim = "Move"
 	local animType = ""
 	effect.SpriteScale = Vector(1.1, 1.1)
-	if effect.SubType == KEYS_TO_THE_KINGDOM.SOUL_BOSS then
+	if effect.SubType == KEYS_TO_THE_KINGDOM.SOUL_MINIBOSS
+		or effect.SubType == KEYS_TO_THE_KINGDOM.SOUL_BOSS
+	then
 		animType = "Boss"
 		spriteTrail.Color = Color(1, 0.08, 0.15, 1)
 	end
@@ -485,7 +514,7 @@ function KEYS_TO_THE_KINGDOM:SparedSoulInit(effect)
 	sprite:SetRenderFlags(AnimRenderFlags.ENABLE_NULL_LAYER_LIGHTING)
 	local anim = "Spared"
 	local animType = ""
-	if effect.SubType == KEYS_TO_THE_KINGDOM.SOUL_BOSS then
+	if effect.SubType == KEYS_TO_THE_KINGDOM.SPARED_SOUL_BOSS then
 		animType = "Boss"
 	end
 	sprite:Play(anim .. animType)
@@ -498,8 +527,8 @@ end
 
 ---@param effect EntityEffect
 function KEYS_TO_THE_KINGDOM:OnEffectInit(effect)
-	if effect.SubType == KEYS_TO_THE_KINGDOM.SOUL
-		or effect.SubType == KEYS_TO_THE_KINGDOM.SOUL_BOSS
+	if effect.SubType >= KEYS_TO_THE_KINGDOM.SOUL
+		and effect.SubType <= KEYS_TO_THE_KINGDOM.SOUL_BOSS
 	then
 		KEYS_TO_THE_KINGDOM:SoulInit(effect)
 	elseif effect.SubType == KEYS_TO_THE_KINGDOM.SPARED_SOUL
@@ -525,17 +554,20 @@ function KEYS_TO_THE_KINGDOM:RaptureBossUpdate(npc)
 	---@cast statusData StatusEffectData
 	local customData = statusData.CustomData
 	local countdown = statusData.Countdown
-	local ref = customData.Spotlight
-	---@type EntityEffect
-	local spotlight = ref and ref.Entity
-	if not spotlight then return end
+	---@type EntityPtr
+	local ptr = customData.Spotlight
+	local spotlight = ptr and ptr.Ref
+
+	if spotlight then
+		local whiteColor = 0.45 - (countdown / 2000)
+		spotlight:GetSprite().Scale = Vector(0.25 + (countdown / KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN), 1.25)
+		spotlight:SetColor(Color(1, 1, 1, 1, whiteColor, whiteColor, whiteColor), 1, 2, true, false)
+	end
+
 	if customData.FailedAttemptsCooldown > 0 then
 		customData.FailedAttemptsCooldown = customData.FailedAttemptsCooldown - 1
 	end
 
-	local whiteColor = 0.45 - (countdown / 2000)
-	spotlight:GetSprite().Scale = Vector(0.25 + (countdown / KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN), 1.25)
-	spotlight:SetColor(Color(1, 1, 1, 1, whiteColor, whiteColor, whiteColor), 1, 2, true, false)
 	if countdown <= 30 then
 		if countdown == 30 then
 			Mod.SFXMan:Play(SoundEffect.SOUND_LIGHTBOLT_CHARGE)
@@ -554,6 +586,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	local statusData = SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 	---@cast statusData StatusEffectData
 	if statusData.CustomData.FailRapture then return end
+
 	Mod.SFXMan:Play(SoundEffect.SOUND_ANGEL_WING, 2, 2, false, 0.75)
 	for _ = 1, 15 do
 		local effect = Mod.Spawn.Effect(EffectVariant.DUST_CLOUD, 0, npc.Position, RandomVector():Resized(5))
@@ -561,17 +594,25 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 		effect:SetTimeout(30)
 		effect.PositionOffset = Vector(Mod:RandomNum(-npc.Size/2, npc.Size/2), Mod:RandomNum(-npc.Size, 0))
 	end
-	local spotlight = statusData.CustomData.Spotlight
-	spotlight.Timeout = 60
+
 	KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
+
+	---@type EntityPtr
+	local ptr = statusData.CustomData.Spotlight
+	local spotlight = ptr and ptr.Ref
+	if spotlight then
+		spotlight:ToEffect().Timeout = 60
+	end
+
+	if npc.SpawnerType then return end
+
 	Mod.Foreach.Player(function(player)
 		if player:HasCollectible(KEYS_TO_THE_KINGDOM.ID) then
-			local numStats = 2
+			local numStats = KEYS_TO_THE_KINGDOM.MINIBOSS[npc.Type] and 1 or 2
 			if PETER:IsPeter(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
-				numStats = 3
+				numStats = numStats + 1
 			end
 			KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), numStats, false)
-			player:AddCacheFlags(CacheFlag.CACHE_ALL, true)
 		end
 	end)
 end
@@ -668,8 +709,7 @@ function KEYS_TO_THE_KINGDOM:PostKrampusRapture(npc)
 	end, PickupVariant.PICKUP_COLLECTIBLE)
 end
 
-Mod:AddCallback(Mod.ModCallbacks.POST_RAPTURE_BOSS_DEATH, KEYS_TO_THE_KINGDOM.PostKrampusRapture,
-	EntityType.ENTITY_FALLEN)
+Mod:AddCallback(Mod.ModCallbacks.POST_RAPTURE_BOSS_DEATH, KEYS_TO_THE_KINGDOM.PostKrampusRapture, EntityType.ENTITY_FALLEN)
 
 --#endregion
 
@@ -678,6 +718,7 @@ Mod:AddCallback(Mod.ModCallbacks.POST_RAPTURE_BOSS_DEATH, KEYS_TO_THE_KINGDOM.Po
 ---@param npc EntityNPC
 ---@param player EntityPlayer
 function KEYS_TO_THE_KINGDOM:SpareAngels(npc, player)
+	if npc.Variant == 1 then return true end
 	local data = Mod:GetData(npc)
 	if not data.KTTKSparedAngel then
 		Mod:GetData(npc).KTTKSparedAngel = true
@@ -692,7 +733,7 @@ Mod:AddCallback(Mod.ModCallbacks.PRE_START_RAPTURE_BOSS, KEYS_TO_THE_KINGDOM.Spa
 function KEYS_TO_THE_KINGDOM:ReverseAppear(npc)
 	local data = Mod:TryGetData(npc)
 
-	if data and data.KTTKSparedAngel then
+	if data and data.KTTKSparedAngel and not npc:IsDead() then
 		local sprite = npc:GetSprite()
 		if not sprite:IsPlaying("Appear") then
 			sprite.PlaybackSpeed = 0
@@ -706,24 +747,9 @@ function KEYS_TO_THE_KINGDOM:ReverseAppear(npc)
 		local previousFrame = sprite:GetFrame() - 1
 		sprite:SetFrame(previousFrame)
 		if previousFrame <= 0 then
-			local angelKey = npc.Type == EntityType.ENTITY_URIEL and CollectibleType.COLLECTIBLE_KEY_PIECE_1 or
-			CollectibleType.COLLECTIBLE_KEY_PIECE_2
-			local otherKey = npc.Type == EntityType.ENTITY_URIEL and CollectibleType.COLLECTIBLE_KEY_PIECE_2 or
-			CollectibleType.COLLECTIBLE_KEY_PIECE_1
-			local itemID
-			if not PlayerManager.AnyoneHasCollectible(angelKey) then
-				itemID = angelKey
-			elseif not PlayerManager.AnyoneHasCollectible(otherKey) then
-				itemID = otherKey
-			else
-				itemID = Mod.Game:GetItemPool():GetCollectible(ItemPoolType.POOL_ANGEL, true,
-					PlayerManager.FirstCollectibleOwner(KEYS_TO_THE_KINGDOM.ID):GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID)
-					:Next(), nil)
-			end
 			Mod.SFXMan:Play(SoundEffect.SOUND_HOLY)
-			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, itemID,
-				Mod.Room():FindFreePickupSpawnPosition(npc.Position), Vector.Zero, npc)
 			Mod:GetData(npc).Raptured = true
+			sprite.PlaybackSpeed = 1
 			KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
 		end
 		return true
@@ -734,6 +760,26 @@ Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_UPDATE, CallbackPriority.IMPORTA
 	EntityType.ENTITY_GABRIEL)
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_UPDATE, CallbackPriority.IMPORTANT, KEYS_TO_THE_KINGDOM.ReverseAppear,
 	EntityType.ENTITY_URIEL)
+
+---@param npc EntityNPC
+function KEYS_TO_THE_KINGDOM:PostAngelSpare(npc)
+	local data = Mod:TryGetData(npc)
+	if data
+		and data.KTTKSparedAngel
+		and PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_KEY_PIECE_1)
+		and PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_KEY_PIECE_2)
+		and not PlayerManager.AnyoneHasTrinket(TrinketType.TRINKET_FILIGREE_FEATHERS)
+	then
+		local angelItem = Mod.Game:GetItemPool():GetCollectible(ItemPoolType.POOL_ANGEL, true,
+			PlayerManager.FirstCollectibleOwner(KEYS_TO_THE_KINGDOM.ID):GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID)
+			:Next(), nil)
+		local pos = Mod.Room():FindFreePickupSpawnPosition(npc.Position)
+		Mod.Spawn.Pickup(PickupVariant.PICKUP_COLLECTIBLE, angelItem, pos, nil, npc, npc:GetDropRNG():GetSeed())
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, KEYS_TO_THE_KINGDOM.PostAngelSpare, EntityType.ENTITY_GABRIEL)
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, KEYS_TO_THE_KINGDOM.PostAngelSpare, EntityType.ENTITY_URIEL)
 
 --#endregion
 
