@@ -209,3 +209,25 @@ Furtherance.CompletionMarkToAchievement.MIRIAM_B = {
 Furtherance.PlayerTypeToCompletionTable[Mod.PlayerType.MIRIAM_B] = Mod.CompletionMarkToAchievement.MIRIAM_B
 
 --#endregion
+
+local function manageAchievements(shouldUnlock)
+	local startAch = Mod.Item.SECRET_DIARY.ACHIEVEMENT
+	local endAch = Isaac.GetAchievementIdByName("Furtherance 100%")
+
+	for i = startAch, endAch do
+		if shouldUnlock then
+			Mod.PersistGameData:TryUnlock(i, true)
+		else
+			Isaac.ExecuteCommand("lockachievement " .. i)
+		end
+	end
+end
+
+Mod.ConsoleCommandHelper:Create("unlock-all", "Unlocks all achievements", {}, function ()
+	manageAchievements(true)
+end)
+
+Mod.ConsoleCommandHelper:Create("lock-all", "Locks all achievements", {}, function ()
+	manageAchievements(false)
+end)
+

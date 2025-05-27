@@ -137,6 +137,7 @@ local helpers = {
 	"table_functions",
 	"saving_system",
 	"bitmask_helper",
+	"console_command_helper",
 	"maths_util",
 	"misc_util",
 	"players_util",
@@ -176,6 +177,7 @@ Furtherance.Spawn = include("scripts.helpers.spawn")
 Furtherance.Foreach = include("scripts.helpers.for_each")
 
 Mod.LoopInclude(helpers, "scripts.helpers")
+Mod.ConsoleCommandHelper:AddParentDescription("debug", "Debug commands for specific interactions")
 Dump = include("scripts.helpers.everything_function")
 InputHelper = include("scripts.helpers.vendor.inputhelper")
 Mod.LoopInclude(tools, "scripts.tools")
@@ -216,7 +218,6 @@ Mod.LoopInclude(challenges, "scripts.furtherance.challenges")
 
 Mod.Include("scripts.furtherance.unlocks.unlock_loader")
 Mod.Include("scripts.furtherance.misc_items.misc_items_loader")
-Mod.Include("scripts.furtherance.commands")
 
 -- shader crash fix by AgentCucco
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, function()

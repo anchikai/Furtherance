@@ -70,6 +70,7 @@ KEYS_TO_THE_KINGDOM.MINIBOSS = Mod:Set({
 --30fps * 30 = 30 seconds
 KEYS_TO_THE_KINGDOM.MINIBOSS_RAPTURE_COUNTDOWN = 30 * 20
 KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN = 30 * 30
+KEYS_TO_THE_KINGDOM.DEBUG_SPARE = false
 KEYS_TO_THE_KINGDOM.BOSS_FORGIVE_ATTEMPTS = 3
 KEYS_TO_THE_KINGDOM.BOSS_FORGIVE_COOLDOWN = 60
 KEYS_TO_THE_KINGDOM.MAX_CHARGES = Mod.ItemConfig:GetCollectible(KEYS_TO_THE_KINGDOM.ID).MaxCharges
@@ -131,6 +132,9 @@ function KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, ent)
 	if not ent:IsBoss() then
 		return 0
 	end
+	if KEYS_TO_THE_KINGDOM.DEBUG_SPARE then
+		return 30 * 3
+	end
 	local raptureCountdown = KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN
 	if KEYS_TO_THE_KINGDOM.MINIBOSS[ent.Type] then
 		raptureCountdown = KEYS_TO_THE_KINGDOM.MINIBOSS_RAPTURE_COUNTDOWN
@@ -151,24 +155,21 @@ function KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
 	npc:ClearEntityFlags(EntityFlag.FLAG_EXTRA_GORE)
 	npc:Die()
 	npc:ToNPC().State = NpcState.STATE_DEATH
-	Mod:DelayOneFrame(function()
-		npc:GetSprite():SetLastFrame()
-		Mod:DelayOneFrame(function()
-			Mod.Foreach.EffectInRadius(npc.Position, npc.Size + 25,
-				function(effect, index)
-					if KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[effect.Variant] then
-						effect:Remove()
-					end
-				end, nil, nil, { Inverse = true })
-			for _, soundID in ipairs(KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS) do
-				Mod.SFXMan:Stop(soundID)
+	npc:Update()
+	npc:GetSprite():SetLastFrame()
+	npc:Update()
+	Mod.Foreach.EffectInRadius(npc.Position, npc.Size + 25,
+		function(effect, index)
+			if KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[effect.Variant] then
+				effect:Remove()
 			end
-			Mod.Foreach.ProjectileInRadius(npc.Position, 40, function (projectile, index)
-				projectile:Remove()
-			end, nil, nil, { Inverse = true })
-		end)
-	end)
-	npc.Visible = false
+		end, nil, nil, { Inverse = true })
+	for _, soundID in ipairs(KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS) do
+		Mod.SFXMan:Stop(soundID)
+	end
+	Mod.Foreach.ProjectileInRadius(npc.Position, 40, function (projectile, index)
+		projectile:Remove()
+	end, nil, nil, { Inverse = true })
 end
 
 ---Raptures the enemy, spawning a spared soul and grants stats to the player who raptured it corresponding to whether or not it's a boss
@@ -241,10 +242,6 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 		player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_HOLY_MANTLE, true)
 		return true
 	else
-		local raptureCountdown = KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN
-		if PETER:IsPeter(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
-			raptureCountdown = raptureCountdown * 0.5
-		end
 		local source = EntityRef(player)
 		Mod.Foreach.NPC(function (npc)
 			npc = SEL.Utils.GetLastParent(npc)
@@ -255,7 +252,8 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 				if result then
 					return
 				end
-				local dataTable = { FailedAttempts = 0, FailedAttemptsCooldown = 0 }
+				local raptureCountdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, npc)
+				local dataTable = { FailedAttempts = 0, FailedAttemptsCooldown = 0, MaxCountdown = raptureCountdown }
 				local addedStatus = SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil, dataTable)
 				if addedStatus then
 					local spotlight = Mod.Spawn.Effect(KEYS_TO_THE_KINGDOM.EFFECT, KEYS_TO_THE_KINGDOM.SPOTLIGHT, npc.Position, nil, npc)
@@ -560,7 +558,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBossUpdate(npc)
 
 	if spotlight then
 		local whiteColor = 0.45 - (countdown / 2000)
-		spotlight:GetSprite().Scale = Vector(0.25 + (countdown / KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN), 1.25)
+		spotlight:GetSprite().Scale = Vector(0.25 + (countdown / customData.MaxCountdown), 1.25)
 		spotlight:SetColor(Color(1, 1, 1, 1, whiteColor, whiteColor, whiteColor), 1, 2, true, false)
 	end
 
@@ -588,14 +586,15 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	if statusData.CustomData.FailRapture then return end
 
 	Mod.SFXMan:Play(SoundEffect.SOUND_ANGEL_WING, 2, 2, false, 0.75)
+
+	KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
+
 	for _ = 1, 15 do
 		local effect = Mod.Spawn.Effect(EffectVariant.DUST_CLOUD, 0, npc.Position, RandomVector():Resized(5))
 		effect.Color = Color(1,1,1,1,0.5, 0.5, 0.5)
 		effect:SetTimeout(30)
 		effect.PositionOffset = Vector(Mod:RandomNum(-npc.Size/2, npc.Size/2), Mod:RandomNum(-npc.Size, 0))
 	end
-
-	KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
 
 	---@type EntityPtr
 	local ptr = statusData.CustomData.Spotlight
@@ -631,6 +630,7 @@ function KEYS_TO_THE_KINGDOM:SkillIssue(player, npc, statusData)
 		customData.FailedAttemptsCooldown = KEYS_TO_THE_KINGDOM.BOSS_FORGIVE_COOLDOWN
 		local maxCountdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, npc)
 		statusData.Countdown = min(maxCountdown, statusData.Countdown + (maxCountdown / 3))
+		statusData.CustomData.MaxCountdown = maxCountdown
 		Mod.SFXMan:Play(SoundEffect.SOUND_THUMBS_DOWN)
 	else
 		customData.FailRapture = true
@@ -806,5 +806,16 @@ function KEYS_TO_THE_KINGDOM:DenyHisOfferings(player)
 		return true
 	end
 end
+
+--#endregion
+
+--#region Commands!
+
+Mod.ConsoleCommandHelper:Create("fastspare", "Enemies spared with Keys to the Kingdom are spared in 3 seconds.",
+	{Mod.ConsoleCommandHelper:MakeArgument("toggle", "Enemies spared with Keys to the Kingdom are spared in 3 seconds.", Mod.ConsoleCommandHelper.ArgumentTypes.Boolean, false)},
+function (arguments)
+	KEYS_TO_THE_KINGDOM.DEBUG_SPARE = arguments[1]
+end)
+Mod.ConsoleCommandHelper:SetParent("fastspare", "debug")
 
 --#endregion

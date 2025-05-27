@@ -19,13 +19,6 @@ EPITAPH.PLAY_JINGLE = false
 
 local reviveLocations = {}
 
-function Furtherance:QueueTombstone()
-	local save = Isaac.IsInGame() and Mod:RunSave() or Mod:GameSave()
-	save.EpitaphTombstones = {
-		{LevelStage = LevelStage.STAGE1_1, Collectibles = {1, 2}}
-	}
-end
-
 --#region Track items on death
 
 ---No active items, no trinkets, no starting items
@@ -182,7 +175,6 @@ function EPITAPH:PostNewRoom()
 		if gridEnt then
 			local grid_save = Mod:RoomSave(gridEnt:GetGridIndex())
 			grid_save.TombstoneCollectibles = queued_tombestone.Collectibles
-			print(queued_tombestone.Collectibles)
 			Mod:DebugLog("Tombstone spawned successfully at grid index", gridEnt:GetGridIndex())
 		else
 			Mod:DebugLog("Epitaph Tombstone failed to spawn!")
@@ -452,5 +444,36 @@ function EPITAPH:StopJingle()
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, EPITAPH.StopJingle)
+
+--#endregion
+
+--#region Commands
+
+Mod.ConsoleCommandHelper:Create("epitaphtombstone-queue", "Queues an Epitaph tombstone to spawn on the first floor when next entered.", {}, function ()
+	local save = Isaac.IsInGame() and Mod:RunSave() or Mod:GameSave()
+	save.EpitaphTombstones = {
+		{LevelStage = LevelStage.STAGE1_1, Collectibles = {1, 2}}
+	}
+end)
+Mod.ConsoleCommandHelper:SetParent("epitaphtombstone-queue", "debug")
+Mod.ConsoleCommandHelper:Create("epitaphtombstone-spawn", "Spawns an Epitaph tombstone in the room.",
+	{
+		Mod.ConsoleCommandHelper:MakeArgument("item1", "E", Mod.ConsoleCommandHelper.ArgumentTypes.Number, true),
+		Mod.ConsoleCommandHelper:MakeArgument("item2", "A", Mod.ConsoleCommandHelper.ArgumentTypes.Number, true),
+	},
+function(arguments)
+	local gridEnt = EPITAPH:SpawnTombstone()
+	if gridEnt then
+		if arguments[1] and arguments[2] then
+			local grid_save = Mod:RoomSave(gridEnt:GetGridIndex())
+			local items = {arguments[1] and arguments[2]}
+			grid_save.TombstoneCollectibles = items
+		end
+		return "[Furtherance] Tombstone spawned successfully at grid index " .. gridEnt:GetGridIndex()
+	else
+		return "[Furtherance] Epitaph Tombstone failed to spawn!"
+	end
+end)
+Mod.ConsoleCommandHelper:SetParent("epitaphtombstone-spawn", "debug")
 
 --#endregion
