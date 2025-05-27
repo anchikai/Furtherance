@@ -80,6 +80,7 @@ function BLOOD_CYST:OnDeath(familiar)
 		tear.FallingSpeed = Mod:RandomNum(-18, -13) - Mod:RandomNum()
 		tear.FallingAcceleration = 1 + Mod:RandomNum()
 		tear.CollisionDamage = tear.CollisionDamage * familiar:GetMultiplier()
+		tear.Scale = tear.Scale + Mod:RandomNum() - 0.5
 		tear:ResetSpriteScale(true)
 	end
 	Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BLOOD_EXPLOSION, 0, familiar.Position, Vector.Zero, familiar)
