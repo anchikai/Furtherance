@@ -60,7 +60,7 @@ Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_UPDATE, CallbackPriority.IMPORTA
 function BLOOD_CYST:KillFamiliar(npc)
 	if npc.Variant == BLOOD_CYST.FAMILIAR then
 		local familiar = npc.SpawnerEntity and npc.SpawnerEntity:ToFamiliar()
-		if familiar and familiar == BLOOD_CYST.FAMILIAR then
+		if familiar and familiar.Variant == BLOOD_CYST.FAMILIAR then
 			npc:Remove()
 			BLOOD_CYST:OnDeath(familiar)
 		end
@@ -94,6 +94,7 @@ function BLOOD_CYST:FamiliarCache(player)
 	rng:Next()
 	local familiars = player:CheckFamiliarEx(BLOOD_CYST.FAMILIAR, numFamiliars, rng, Mod.ItemConfig:GetCollectible(BLOOD_CYST.ID))
 	for _, familiar in ipairs(familiars) do
+		familiar:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
 		BLOOD_CYST:UpdateCystState(familiar)
 	end
 end

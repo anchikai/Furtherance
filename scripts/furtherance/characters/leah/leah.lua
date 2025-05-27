@@ -81,6 +81,7 @@ function LEAH:BirthrightDamageOnKill(npc)
 		local ref = data.LeahBirthrightKill.Ref
 		if ref then
 			local player = ref:ToPlayer()
+			---@cast player EntityPlayer
 			local run_save = Mod:RunSave(player)
 			run_save.LeahBirthrightKills = (run_save.LeahBirthrightKills or 0) + 1
 			if run_save.LeahBirthrightKills % 20 == 0 then

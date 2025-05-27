@@ -190,22 +190,21 @@ end
 ---@param spawner Entity
 ---@param seed integer
 function MIRIAM_B:ReplaceHearts(entType, variant, subtype, pos, spawner, seed)
-	if entType == EntityType.ENTITY_PICKUP
-		and variant == PickupVariant.PICKUP_HEART
+	if variant == PickupVariant.PICKUP_HEART
 		and PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.MIRIAM_B)
 		and Mod.Core.HEARTS.SoulHearts[subtype]
 	then
-		local hasNoMiriamB = Mod.Foreach.Player(function (player, index)
-			if not MIRIAM_B:IsMiriamB(player) then
+		local anyoneNotMiriamB = Mod.Foreach.Player(function (player, index)
+			if not MIRIAM_B(player) and not Mod.Character.LEAH_B:IsLeahB(player) then
 				return true
 			end
 		end)
-		if hasNoMiriamB then return end
+		if anyoneNotMiriamB then return end
 		return {entType, variant, Mod.Character.LEAH_B.SPECIAL_HEART_TO_RED_HEART[subtype] or HeartSubType.HEART_FULL, seed}
 	end
 end
 
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, CallbackPriority.IMPORTANT, MIRIAM_B.ReplaceHearts)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, CallbackPriority.IMPORTANT, MIRIAM_B.ReplaceHearts, EntityType.ENTITY_PICKUP)
 
 ---@param pickup EntityPickup
 ---@param collider Entity

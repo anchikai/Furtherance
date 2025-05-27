@@ -237,13 +237,13 @@ end
 
 function TearModifier:IsValidEnemyTarget(ent)
 	return ent
-	and ent:ToNPC()
-	and ent:IsActiveEnemy(false)
-	and ent:IsVulnerableEnemy()
-	and not ent:IsDead()
-	and not ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
-	and ent.EntityCollisionClass ~= EntityCollisionClass.ENTCOLL_NONE
-	and (ent:ToNPC().CanShutDoors or ent.Type == EntityType.ENTITY_DUMMY)
+		and ent:ToNPC()
+		and ent:IsActiveEnemy(false)
+		and ent:IsVulnerableEnemy()
+		and not ent:IsDead()
+		and not ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
+		and ent.EntityCollisionClass ~= EntityCollisionClass.ENTCOLL_NONE
+		and (ent:ToNPC().CanShutDoors or ent.Type == EntityType.ENTITY_DUMMY)
 end
 
 ---@class TearModifierParams
@@ -427,7 +427,6 @@ function TearModifier.New(params)
 			if self.Color then
 				sprite.Color = self.Color
 			end
-
 		end
 	end
 	Mod:AddCallback(ModCallbacks.MC_POST_FIRE_KNIFE, fireKnife)

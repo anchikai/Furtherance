@@ -75,7 +75,7 @@ end
 
 ---@param flags UseFlag
 ---@param player EntityPlayer
-function SHATTERED_HEART:OnUse(_, flags, player)
+function SHATTERED_HEART:OnUse(_, _, player, flags)
 	if Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) then
 		return
 	end

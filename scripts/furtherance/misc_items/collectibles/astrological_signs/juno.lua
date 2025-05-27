@@ -30,10 +30,8 @@ JUNO.TEAR_MODIFIER = Mod.TearModifier.New({
 ---@param npc Entity
 ---@param duration integer
 function JUNO:SummonAnimaSola(npc, duration)
-	local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.ANIMA_CHAIN, 0, npc.Position, Vector.Zero, nil)
-	:ToEffect()
-	---@cast effect EntityEffect
-	effect.Target = npc
+	local effect = Mod.Spawn.Effect(EffectVariant.ANIMA_CHAIN, 0, npc.Position)
+	effect.Target = StatusEffectLibrary.Utils.GetLastParent(npc)
 	effect.Timeout = duration
 end
 

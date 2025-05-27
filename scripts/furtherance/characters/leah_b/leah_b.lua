@@ -13,7 +13,7 @@ Mod.Include("scripts.furtherance.characters.leah_b.shattered_heart")
 
 LEAH_B.HEART_DECAY_TIMER = 600
 LEAH_B.HEART_LIMIT = 48
----There's some sort of cap on broken hearts, not allowing you to add more depending on the heart cap as it goes into higher numbers.
+---There's some sort of "invisible" cap on broken hearts, not allowing you to add more depending on the heart cap as it goes into higher numbers.
 ---
 ---We're allowed to add 23 broken hearts at a limit of 66. Tainted Leah manages removing hearts that exceed the expected 24
 LEAH_B.TECHNICAL_HEART_LIMIT = 66
@@ -21,22 +21,12 @@ LEAH_B.TECHNICAL_HEART_LIMIT = 66
 LEAH_B.SPECIAL_HEART_TO_RED_HEART = {
 	[HeartSubType.HEART_HALF_SOUL] = HeartSubType.HEART_HALF
 }
-LEAH_B.HEART_WHITELIST = Mod:Set({
-	HeartSubType.HEART_GOLDEN,
-	HeartSubType.HEART_ROTTEN,
-	HeartSubType.HEART_BONE
-})
-LEAH_B.RED_HEART_DECREASE = Mod:Set({
-	AddHealthType.MAX,
-	AddHealthType.BROKEN,
-	AddHealthType.RED,
-	AddHealthType.ROTTEN
-})
-LEAH_B.HEART_CONTAINER_INCREASE = Mod:Set({
+LEAH_B.HEART_ADD_CHECK = Mod:Set({
 	AddHealthType.MAX,
 	AddHealthType.SOUL,
 	AddHealthType.BLACK,
-	AddHealthType.BONE
+	AddHealthType.BONE,
+	AddHealthType.BROKEN
 })
 
 LEAH_B.BIRTHRIGHT_HEART_UPGRADE_CHANCE = 0.2
@@ -88,12 +78,29 @@ end
 
 --#region Heart limit
 
+---Broken hearts, because of the weird heart limit, may or may not replace a container in the process of being added
+---@param player EntityPlayer
+function LEAH_B:ReplaceHeartsIfAboveCap(player)
+	local maxHearts = LEAH_B:GetMaxHeartAmount(player)
+	if maxHearts > LEAH_B.HEART_LIMIT then
+		local brokenHearts = player:GetBrokenHearts() * 2
+		local maxHeartsNoBroken = maxHearts - brokenHearts
+		local numToRemove = -(brokenHearts - (LEAH_B.HEART_LIMIT - maxHeartsNoBroken))
+
+		if player:GetMaxHearts() > 0 then
+			player:AddMaxHearts(numToRemove)
+		elseif player:GetSoulHearts() > 0 then
+			player:AddSoulHearts(numToRemove)
+		end
+	end
+end
+
 ---@param player EntityPlayer
 ---@param amount integer
 ---@param addHealthType AddHealthType
 function LEAH_B:StopHeartsBeyondCap(player, amount, addHealthType)
 	if LEAH_B:IsLeahB(player)
-		and LEAH_B.HEART_CONTAINER_INCREASE[addHealthType]
+		and LEAH_B.HEART_ADD_CHECK[addHealthType]
 	then
 		local currentHearts = LEAH_B:GetMaxHeartAmount(player)
 		local heartWorth = addHealthType == AddHealthType.BONE and amount * 2 or amount
@@ -102,7 +109,13 @@ function LEAH_B:StopHeartsBeyondCap(player, amount, addHealthType)
 			if addHealthType == AddHealthType.BONE then
 				remainingToCap = (LEAH_B.HEART_LIMIT / 2) - ceil(currentHearts / 2)
 			end
-			return remainingToCap
+			if addHealthType ~= AddHealthType.BROKEN then
+				return remainingToCap
+			else
+				Mod:DelayOneFrame(function ()
+					LEAH_B:ReplaceHeartsIfAboveCap(player)
+				end)
+			end
 		end
 	end
 end
@@ -115,11 +128,17 @@ function LEAH_B:RemoveBoneHeartsAboveCap(player)
 	local maxHearts = LEAH_B:GetMaxHeartAmount(player)
 	local boneHearts = player:GetBoneHearts() * 2
 	local maxHeartsNoBone = maxHearts - boneHearts
+
 	if maxHeartsNoBone + boneHearts > LEAH_B.HEART_LIMIT then
 		player:AddBoneHearts(-ceil((boneHearts - (LEAH_B.HEART_LIMIT - maxHeartsNoBone)) / 2))
 	end
+end
+
+---@param player EntityPlayer
+function LEAH_B:UpdateRedHealthStats(player)
 	local redHearts = player:GetHearts() + player:GetRottenHearts()
 	local data = Mod:GetData(player)
+
 	data.LeahBTrackRed = data.LeahBTrackRed or redHearts
 	if data.LeahBTrackRed ~= redHearts then
 		data.LeahBTrackRed = redHearts
@@ -127,7 +146,13 @@ function LEAH_B:RemoveBoneHeartsAboveCap(player)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, LEAH_B.RemoveBoneHeartsAboveCap, Mod.PlayerType.LEAH_B)
+---@param player EntityPlayer
+function LEAH_B:OnPeffectUpdate(player)
+	LEAH_B:RemoveBoneHeartsAboveCap(player)
+	LEAH_B:UpdateRedHealthStats(player)
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, LEAH_B.OnPeffectUpdate, Mod.PlayerType.LEAH_B)
 
 --#endregion
 
@@ -175,7 +200,9 @@ function LEAH_B:HeartDecay(player)
 		player:AddBrokenHearts(-1)
 		player:AddMaxHearts(2)
 	end
-	if player:GetBrokenHearts() < (LEAH_B.HEART_LIMIT / 2) - 1 then
+	local numBrokens = player:GetBrokenHearts()
+	--23
+	if numBrokens < (LEAH_B.HEART_LIMIT / 2) - 1 then
 		data.LeahBHeartDecayCountdown = data.LeahBHeartDecayCountdown or LEAH_B.HEART_DECAY_TIMER
 		data.LeahBHeartDecayCountdown = data.LeahBHeartDecayCountdown - 1
 		if data.LeahBHeartDecayCountdown == 0 then
@@ -241,11 +268,11 @@ function LEAH_B:Render()
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_RENDER, LEAH_B.Render)
+--Mod:AddCallback(ModCallbacks.MC_POST_RENDER, LEAH_B.Render)
 
 --#endregion
 
---#region Replace special hearts
+--#region Replace Soul hearts
 
 ---@param entType EntityType
 ---@param variant PickupVariant
@@ -255,8 +282,14 @@ Mod:AddCallback(ModCallbacks.MC_POST_RENDER, LEAH_B.Render)
 function LEAH_B:ReplaceHearts(entType, variant, subtype, pos, spawner, seed)
 	if variant == PickupVariant.PICKUP_HEART
 		and PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.LEAH_B)
-		and not Mod.Core.HEARTS.RedHearts[subtype]
+		and Mod.Core.HEARTS.SoulHearts[subtype]
 	then
+		local anyoneNotLeahB = Mod.Foreach.Player(function (player, index)
+			if not LEAH_B:IsLeahB(player) and not Mod.Character.MIRIAM_B:IsMiriamB(player) then
+				return true
+			end
+		end)
+		if anyoneNotLeahB then return end
 		local heartSubtype = LEAH_B.SPECIAL_HEART_TO_RED_HEART[subtype] or HeartSubType.HEART_FULL
 		if LEAH_B:LeahBHasBirthright() and RNG(seed):RandomFloat() <= LEAH_B.BIRTHRIGHT_HEART_UPGRADE_CHANCE then
 			local floor_save = Mod:FloorSave()

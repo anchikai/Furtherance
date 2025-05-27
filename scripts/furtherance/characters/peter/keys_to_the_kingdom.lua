@@ -101,12 +101,11 @@ end
 
 ---@param ent EntityNPC | EntityPlayer
 function KEYS_TO_THE_KINGDOM:OnStatusEffectAdd(ent)
-	if not (ent:IsActiveEnemy(false) and ent:IsVulnerableEnemy() and ent:IsBoss()) then
+	if not ent:IsActiveEnemy(false) or ent:IsInvincible() or ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) then
 		return true
 	end
-	local statusConfig = SEL:GetStatusEffectData(ent, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
-	if statusConfig then
-		--Don't both reapplying it so the timer won't get reset
+	if SEL:HasStatusEffect(ent, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE) then
+		--Don't reapply it so the timer won't get reset
 		return true
 	end
 end
@@ -239,15 +238,19 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 				if result then
 					return
 				end
-				local spotlight = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
-					KEYS_TO_THE_KINGDOM.SPOTLIGHT,
-					npc.Position, Vector.Zero, npc):ToEffect()
-				---@cast spotlight EntityEffect
-				spotlight.Parent = npc
-				spotlight:FollowParent(npc)
-				spotlight:GetSprite().Scale = Vector(1.25, 1.25)
 				SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil,
-					{ Spotlight = spotlight, FailedAttempts = 0, FailedAttemptsCooldown = 0 })
+					{ FailedAttempts = 0, FailedAttemptsCooldown = 0 })
+				if SEL:HasStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE) then
+					local spotlight = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
+						KEYS_TO_THE_KINGDOM.SPOTLIGHT,
+						npc.Position, Vector.Zero, npc):ToEffect()
+					---@cast spotlight EntityEffect
+					spotlight.Parent = npc
+					spotlight:FollowParent(npc)
+					spotlight:GetSprite().Scale = Vector(1.25, 1.25)
+					Mod:GetData(spotlight).RaptureSpotlight = true
+					SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE).CustomData.Spotlight = EntityPtr(spotlight)
+				end
 			elseif canSpare and npc:Exists() then
 				KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
 				KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, 1, true)
@@ -419,7 +422,10 @@ end
 ---@param effect EntityEffect
 function KEYS_TO_THE_KINGDOM:SpotlightUpdate(effect)
 	local sprite = effect:GetSprite()
-	if not effect.Parent and not sprite:IsPlaying("LightDisappear") and effect.Timeout <= 0 then
+	if ((effect.Parent and not SEL:HasStatusEffect(effect.Parent, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE))
+		or (not effect.Parent and effect.Timeout <= 0))
+		and not sprite:IsPlaying("LightDisappear")
+	then
 		sprite:Play("LightDisappear")
 	end
 	if effect.Timeout > 0 then
@@ -519,8 +525,10 @@ function KEYS_TO_THE_KINGDOM:RaptureBossUpdate(npc)
 	---@cast statusData StatusEffectData
 	local customData = statusData.CustomData
 	local countdown = statusData.Countdown
+	local ref = customData.Spotlight
 	---@type EntityEffect
-	local spotlight = customData.Spotlight
+	local spotlight = ref and ref.Entity
+	if not spotlight then return end
 	if customData.FailedAttemptsCooldown > 0 then
 		customData.FailedAttemptsCooldown = customData.FailedAttemptsCooldown - 1
 	end
@@ -673,12 +681,6 @@ function KEYS_TO_THE_KINGDOM:SpareAngels(npc, player)
 	local data = Mod:GetData(npc)
 	if not data.KTTKSparedAngel then
 		Mod:GetData(npc).KTTKSparedAngel = true
-		npc:GetSprite().PlaybackSpeed = 0
-		npc:GetSprite():Play("Appear", true)
-		npc:GetSprite():SetLastFrame()
-		npc.Friction = 0
-		npc.Velocity = Vector.Zero
-		Mod.SFXMan:Play(SoundEffect.SOUND_THUMBSUP)
 	end
 	return true
 end
@@ -689,10 +691,19 @@ Mod:AddCallback(Mod.ModCallbacks.PRE_START_RAPTURE_BOSS, KEYS_TO_THE_KINGDOM.Spa
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:ReverseAppear(npc)
 	local data = Mod:TryGetData(npc)
+
 	if data and data.KTTKSparedAngel then
-		npc.Velocity = Vector.Zero
 		local sprite = npc:GetSprite()
-		local previousFrame = sprite:GetFrame() - 2
+		if not sprite:IsPlaying("Appear") then
+			sprite.PlaybackSpeed = 0
+			sprite:Play("Appear", true)
+			sprite:SetLastFrame()
+			npc.Friction = 0
+			npc.Velocity = Vector.Zero
+			Mod.SFXMan:Play(SoundEffect.SOUND_THUMBSUP)
+		end
+		npc.Velocity = Vector.Zero
+		local previousFrame = sprite:GetFrame() - 1
 		sprite:SetFrame(previousFrame)
 		if previousFrame <= 0 then
 			local angelKey = npc.Type == EntityType.ENTITY_URIEL and CollectibleType.COLLECTIBLE_KEY_PIECE_1 or
