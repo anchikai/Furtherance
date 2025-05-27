@@ -9,13 +9,13 @@ WINE_BOTTLE.ID = Isaac.GetItemIdByName("Wine Bottle")
 WINE_BOTTLE.SFX = Isaac.GetSoundIdByName("Cork")
 WINE_BOTTLE.THRESHOLD = 15
 
-local corkAnimations = {
+--[[ local corkAnimations = {
 	[Direction.NO_DIRECTION] = "Down",
 	[Direction.LEFT] = "Side",
 	[Direction.UP] = "Up",
 	[Direction.RIGHT] = "Side",
 	[Direction.DOWN] = "Down",
-}
+} ]]
 
 ---@param dir Vector
 ---@param amount integer
@@ -45,10 +45,8 @@ function WINE_BOTTLE:CorkTear(dir, amount, owner, weapon)
 			sizeAnim = "6"
 		end
 
-		sprite:Play("Tear" .. corkAnimations[fireDir] .. sizeAnim)
-		if fireDir == Direction.LEFT then
-			cork.FlipX = true
-		end
+		sprite:Play("TearSide" .. sizeAnim)
+
 		Mod.SFXMan:Stop(SoundEffect.SOUND_TEARS_FIRE)
 		Mod.SFXMan:Play(WINE_BOTTLE.SFX, 2)
 		local tearHitParams = player:GetTearHitParams(weapon:GetWeaponType(), 1.25, 1, player)
