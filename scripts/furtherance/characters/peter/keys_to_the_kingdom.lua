@@ -264,13 +264,12 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 				end
 			elseif canSpare and npc:Exists() then
 				KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
-				if not npc.SpawnerType then
+				if npc.SpawnerType == EntityType.ENTITY_NULL then
 					KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, 1, true)
 				end
 			end
 		end, nil, nil, nil, {Inverse = true})
 	end
-	player:AddCacheFlags(CacheFlag.CACHE_ALL, true)
 	return true
 end
 
@@ -603,7 +602,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 		spotlight:ToEffect().Timeout = 60
 	end
 
-	if npc.SpawnerType then return end
+	if npc.SpawnerType == EntityType.ENTITY_NULL then return end
 
 	Mod.Foreach.Player(function(player)
 		if player:HasCollectible(KEYS_TO_THE_KINGDOM.ID) then

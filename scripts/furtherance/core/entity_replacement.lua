@@ -36,7 +36,7 @@ local function entityReplacement(entType, variant, subtype, seed)
 			--Variant can match, or if replacing a pickup with a pickup, PickupVariant.PICKUP_NULL can be nearly any variant
 			and (replacement_info.OldVariant[variant] or entType == EntityType.ENTITY_PICKUP and replacement_info.NewType == EntityType.ENTITY_PICKUP and variant == PickupVariant.PICKUP_NULL)
 			--If no SubType specified, can only replace spawns that are "0" instead of set spawns
-			and (not replacement_info.OldSubtype and subtype == NullPickupSubType.ANY or replacement_info.OldSubtype[subtype])
+			and (not replacement_info.OldSubtype and subtype == NullPickupSubType.ANY or not replacement_info.OldSubtype and replacement_info.OldSubtype[subtype])
 			--No achievement, or achieveable
 			and (not replacement_info.Achievement or Mod.PersistGameData:Unlocked(replacement_info.Achievement))
 		then
