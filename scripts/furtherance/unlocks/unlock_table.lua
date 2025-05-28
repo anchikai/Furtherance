@@ -210,9 +210,41 @@ Furtherance.PlayerTypeToCompletionTable[Mod.PlayerType.MIRIAM_B] = Mod.Completio
 
 --#endregion
 
+--#region 100% achievemnt
+
+Furtherance.ACHIEVEMENT_COMPLETION = achievement("You've gone Further than Furtherance")
+
+--#endregion
+
+--#region Entity replacements
+
+Mod:RegisterReplacement({
+	OldType = Mod:Set({ EntityType.ENTITY_SLOT }),
+	OldVariant = Mod:Set({ SlotVariant.SLOT_MACHINE, SlotVariant.FORTUNE_TELLING_MACHINE, SlotVariant.CRANE_GAME }),
+	NewType = EntityType.ENTITY_SLOT,
+	NewVariant = Mod.Slot.LOVE_TELLER.ID,
+	ReplacementChance = Mod.Slot.LOVE_TELLER.REPLACE_CHANCE,
+	Achievement = Mod.Slot.LOVE_TELLER.ACHIEVEMENT,
+})
+
+Mod:RegisterReplacement({
+	OldType = Mod:Set({ EntityType.ENTITY_PICKUP }),
+	OldVariant = Mod:Set({ PickupVariant.PICKUP_HEART }),
+	OldSubtype = Mod:Set({ HeartSubType.HEART_ETERNAL }),
+	NewType = EntityType.ENTITY_PICKUP,
+	NewVariant = PickupVariant.PICKUP_HEART,
+	NewSubtype = Mod.Pickup.MOON_HEART.ID,
+	ReplacementChance = Mod.Pickup.MOON_HEART.REPLACE_CHANCE,
+	Achievement = Mod.Pickup.MOON_HEART.ACHIEVEMENT
+})
+
+--#endregion
+
+--#region Achievement commands
+
 local function manageAchievements(shouldUnlock)
 	local startAch = Mod.Item.SECRET_DIARY.ACHIEVEMENT
-	local endAch = Isaac.GetAchievementIdByName("Furtherance 100%")
+	local endAch = Furtherance.ACHIEVEMENT_COMPLETION
 
 	for i = startAch, endAch do
 		if shouldUnlock then
@@ -223,11 +255,13 @@ local function manageAchievements(shouldUnlock)
 	end
 end
 
-Mod.ConsoleCommandHelper:Create("unlock-all", "Unlocks all achievements", {}, function ()
+Mod.ConsoleCommandHelper:Create("unlock-all", "Unlocks all achievements", {}, function()
 	manageAchievements(true)
 end)
 
-Mod.ConsoleCommandHelper:Create("lock-all", "Locks all achievements", {}, function ()
+Mod.ConsoleCommandHelper:Create("lock-all", "Locks all achievements", {}, function()
 	manageAchievements(false)
 end)
+Mod.ConsoleCommandHelper:SetParent("lock-all", "debug")
 
+--#endregion

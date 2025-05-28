@@ -9,25 +9,15 @@ UNLUCKY_PENNY.NULL_ID = Isaac.GetNullItemIdByName("unlucky penny")
 
 UNLUCKY_PENNY.REPLACE_CHANCE = 0.25
 
----@param entType EntityType
----@param variant PickupVariant
----@param subtype integer
----@param spawner Entity
----@param seed integer
-function UNLUCKY_PENNY:SpawnChargedBomb(entType, variant, subtype, _, _, spawner, seed)
-	if entType == EntityType.ENTITY_PICKUP
-		and variant == PickupVariant.PICKUP_COIN
-		and subtype == CoinSubType.COIN_LUCKYPENNY
-		and not spawner
-	then
-		local rng = RNG(seed)
-		if rng:RandomFloat() <= UNLUCKY_PENNY.REPLACE_CHANCE then
-			return { entType, variant, UNLUCKY_PENNY.ID, seed }
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, UNLUCKY_PENNY.SpawnChargedBomb)
+Mod:RegisterReplacement({
+	OldType = Mod:Set({ EntityType.ENTITY_PICKUP }),
+	OldVariant = Mod:Set({ PickupVariant.PICKUP_COIN }),
+	OldSubtype = Mod:Set({ CoinSubType.COIN_LUCKYPENNY }),
+	NewType = EntityType.ENTITY_PICKUP,
+	NewVariant = PickupVariant.PICKUP_COIN,
+	NewSubtype = UNLUCKY_PENNY.ID,
+	ReplacementChance = UNLUCKY_PENNY.REPLACE_CHANCE
+})
 
 ---@param pickup EntityPickup
 ---@param collider Entity

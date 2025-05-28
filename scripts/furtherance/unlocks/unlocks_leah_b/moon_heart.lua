@@ -73,26 +73,6 @@ CustomHealthAPI.Library.RegisterSoulHealth(MOON_HEART.KEY, {
 	},
 })
 
----@param entType EntityType
----@param variant PickupVariant
----@param subtype integer
----@param spawner Entity
----@param seed integer
-function MOON_HEART:SpawnMoonHeart(entType, variant, subtype, _, _, spawner, seed)
-	if
-		entType == EntityType.ENTITY_PICKUP
-		and variant == PickupVariant.PICKUP_HEART
-		and subtype == HeartSubType.HEART_ETERNAL
-	then
-		local rng = RNG(seed)
-		if rng:RandomFloat() <= MOON_HEART.REPLACE_CHANCE then
-			return { entType, variant, MOON_HEART.ID, seed }
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, MOON_HEART.SpawnMoonHeart)
-
 ---@param player EntityPlayer
 function MOON_HEART:AddExtraLuna(player)
 	if MOON_HEART:GetMoonHearts(player) == 0 then return end

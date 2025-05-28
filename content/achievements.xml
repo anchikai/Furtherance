@@ -59,7 +59,7 @@
 	<achievement name="Pallium" gfx="achievement_pallium.png" />
 	<achievement name="Severed Ear" gfx="achievement_severedear.png" />
 	<achievement name="Chi Rho" gfx="achievement_chirho.png" />
-	<achievement name="Book of Leviticus" gfx="achievement_bookofleviticus" />
+	<achievement name="Book of Leviticus" gfx="achievement_bookofleviticus.png" />
 	<achievement name="Altruism" gfx="achievement_altruism.png" />
 	<achievement name="Astragali" gfx="achievement_astragali.png" />
 	<achievement name="Alabaster Scrap" gfx="achievement_alabasterscrap.png" />
@@ -108,5 +108,5 @@
 	<achievement name="Jar of Manna" gfx="achievement_jarofmanna.png" />
 	<achievement name="Essence of Drought" gfx="achievement_essenceofdrought.png" />
 
-	<achievement name="Furtherance 100%" gfx="achievement_essenceofdrought.png" />
+	<achievement name="You've gone Further than Furtherance" gfx="achievement_furtherance_complete.png" />
 </achievements>

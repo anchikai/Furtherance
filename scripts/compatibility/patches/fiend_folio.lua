@@ -8,6 +8,11 @@ local function fiendFolioPatch()
 		{ID = Mod.Trinket.ABYSSAL_PENNY.ID, Unlocked = function() return Mod.PersistGameData:Unlocked(Mod.Trinket.ABYSSAL_PENNY.ACHIEVEMENT) end},
 		{ID = Mod.Trinket.GLITCHED_PENNY.ID, Unlocked = function() return true end}
 	})
+
+	Mod:AppendTable(FiendFolio.ReferenceItems.Passives, {
+		{ ID = Mod.Item.LITTLE_RAINCOAT.ID,      Reference = "Little Nightmares" }
+	})
+
 	ff:AddStackableItems({
 		Item.BINDS_OF_DEVOTION.ID,
 		Item.RUE.ID,

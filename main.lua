@@ -163,7 +163,8 @@ local tools = {
 local core = {
 	"customhealthapi.core",
 	"hearts",
-	"custom_callbacks"
+	"custom_callbacks",
+	"entity_replacement"
 }
 
 local config = {

@@ -117,3 +117,4 @@ Mod.LoopInclude(miriam_b, prefix .. "miriam_b")
 
 Mod.Include("scripts.furtherance.unlocks.unlock_table")
 Mod.Include("scripts.furtherance.unlocks.unlock_tracker_marks")
+Mod.Include("scripts.furtherance.unlocks.unlock_tracker_misc")
