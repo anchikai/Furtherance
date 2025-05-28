@@ -238,6 +238,16 @@ Mod:RegisterReplacement({
 	Achievement = Mod.Pickup.MOON_HEART.ACHIEVEMENT
 })
 
+Mod:RegisterReplacement({
+	OldType = Mod:Set({ EntityType.ENTITY_PICKUP }),
+	OldVariant = Mod:Set({ PickupVariant.PICKUP_GRAB_BAG }),
+	NewType = EntityType.ENTITY_PICKUP,
+	NewVariant = PickupVariant.PICKUP_GRAB_BAG,
+	NewSubtype = Mod.Pickup.GOLDEN_SACK.ID,
+	ReplacementChance = Mod.Pickup.GOLDEN_SACK.REPLACE_CHANCE,
+	Achievement = Mod.Pickup.GOLDEN_SACK.ACHIEVEMENT
+})
+
 --#endregion
 
 --#region Achievement commands

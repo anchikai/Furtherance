@@ -1,5 +1,6 @@
 local Mod = Furtherance
 
+---@type EntityReplacement[]
 Furtherance.EntityReplacements = {}
 
 ---@class EntityReplacement
