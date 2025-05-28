@@ -12,6 +12,14 @@ SPIRITUAL_WOUND.SFX_LOOP = Isaac.GetSoundIdByName("Spiritual Wound Loop")
 SPIRITUAL_WOUND.SFX_CHAIN_LIGHTNING_START = Isaac.GetSoundIdByName("Chain Lightning Start")
 SPIRITUAL_WOUND.SFX_CHAIN_LIGHTNING_LOOP = Isaac.GetSoundIdByName("Chain Lightning Loop")
 
+SPIRITUAL_WOUND.ATTACK_SFX = {
+	SPIRITUAL_WOUND.SFX_START,
+	SPIRITUAL_WOUND.SFX_DEATH_FIELD_START,
+	SPIRITUAL_WOUND.SFX_LOOP,
+	SPIRITUAL_WOUND.SFX_CHAIN_LIGHTNING_START,
+	SPIRITUAL_WOUND.SFX_CHAIN_LIGHTNING_LOOP,
+}
+
 SPIRITUAL_WOUND.SPIRITUAL_WOUND_COLOR = Color(1, 1, 1, 1, 0, 0, 0, 5, 2, 1, 1)
 SPIRITUAL_WOUND.CHAIN_LIGHTNING_COLOR = Color(1, 1, 1, 1, 0.1, 0.1, 0.1, 3.8, 4.9, 6, 1)
 SPIRITUAL_WOUND.DEATH_FIELD_COLOR = Color(1, 1, 1, 1, 0, 0, 0, 2.5, 0, 2.5, 1)
@@ -71,22 +79,21 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, SPIRITUAL_WOUND.SpiritualWoundCa
 ---to determine whether or not to stop the looping sound
 ---@param player EntityPlayer
 function SPIRITUAL_WOUND:TryStopAttackSFX(player)
-	local loopSFX = SPIRITUAL_WOUND:GetAttackLoopSound(player)
-	local stopLoop = true
-	local someoneStillFiring = false
+	local shouldSFXPlay = {}
+	local someoneStillFiring
 	Mod.Foreach.Player(function(_player)
-		if Mod:GetData(_player).FiringSpiritualWound
-			and GetPtrHash(player) ~= GetPtrHash(_player)
-			and loopSFX == SPIRITUAL_WOUND:GetAttackLoopSound(_player)
-		then
-			stopLoop = false
+		if Mod:GetData(player).FiringSpiritualWound then
 			someoneStillFiring = true
+			shouldSFXPlay[SPIRITUAL_WOUND:GetAttackInitSound(player)] = true
+			shouldSFXPlay[SPIRITUAL_WOUND:GetAttackLoopSound(player)] = true
 		end
 	end)
-	Mod.SFXMan:Stop(SPIRITUAL_WOUND:GetAttackInitSound(player))
-	if stopLoop then
-		Mod.SFXMan:Stop(loopSFX)
+	for _, sfx in ipairs(SPIRITUAL_WOUND.ATTACK_SFX) do
+		if not shouldSFXPlay[sfx] then
+			Mod.SFXMan:Stop(sfx)
+		end
 	end
+
 	return someoneStillFiring
 end
 

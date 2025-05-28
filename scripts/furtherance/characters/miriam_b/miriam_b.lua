@@ -76,8 +76,8 @@ end
 function MIRIAM_B:HealthDrain(player)
 	if not Mod.Item.POLARITY_SHIFT:IsChainLightningActive(player) then return end
 	if player:GetHearts() == 0 then
-		Mod.Item.SPIRITUAL_WOUND:TryStopAttackSFX(player)
 		player:UseActiveItem(Mod.Item.POLARITY_SHIFT.ID_2, UseFlag.USE_NOANIM, ActiveSlot.SLOT_POCKET)
+		Mod.Item.SPIRITUAL_WOUND:TryStopAttackSFX(player)
 		return
 	end
 	local drainRate = MIRIAM_B.HEALTH_DRAIN_RATE
