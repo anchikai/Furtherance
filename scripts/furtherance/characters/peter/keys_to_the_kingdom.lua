@@ -602,7 +602,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 		spotlight:ToEffect().Timeout = 60
 	end
 
-	if npc.SpawnerType == EntityType.ENTITY_NULL then return end
+	if npc.SpawnerType ~= EntityType.ENTITY_NULL then return end
 
 	Mod.Foreach.Player(function(player)
 		if player:HasCollectible(KEYS_TO_THE_KINGDOM.ID) then
