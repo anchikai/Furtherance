@@ -39,3 +39,19 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, PETER.DistributeSoulHeartsToPocket, AddHealthType.SOUL)
 Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, PETER.DistributeSoulHeartsToPocket, AddHealthType.BLACK)
+
+--#region Book of Virtues-like effect
+
+function PETER:ForceNewAngel()
+	local level = Mod.Level()
+	if PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.PETER)
+		and level:GetAbsoluteStage() >= LevelStage.STAGE1_2
+		and Mod.Game:GetStateFlag(GameStateFlag.STATE_DEVILROOM_SPAWNED)
+	then
+		--Literally any angel room chance forces the 50/50, and if no angel room encountered, 100%
+		--Which will essentially act just like Book of Virtues' effect minus the bonus chance
+		level:AddAngelRoomChance(0.0000001)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, PETER.ForceNewAngel)
