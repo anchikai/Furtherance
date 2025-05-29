@@ -662,8 +662,6 @@ end
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR, CallbackPriority.LATE, KEYS_TO_THE_KINGDOM.GrantStatsOnBossClear)
 
 ---@param player EntityPlayer
----@param npc EntityNPC
----@param statusData StatusEffectData
 function KEYS_TO_THE_KINGDOM:SkillIssue(player)
 	if raptureHitCooldown > 0 then return end
 	raptureHits = raptureHits + 1
