@@ -14,6 +14,7 @@
 	<costume id="93" anm2path="costume_molten_gold.anm2" type="passive" hasSkinAlt="true" />
 	<costume id="97" anm2path="costume_severed_ear.anm2" type="passive" hasSkinAlt="true" />
 	<costume id="98" anm2path="costume_golden_port.anm2" type="passive" />
+	<costume id="99" anm2path="costume_itching_powder.anm2" type="passive" />
 
 	<!-- Trinkets -->
 	<costume id="9" anm2path="210_gnawedleaf_statue.anm2" type="trinket" priority="50" />
