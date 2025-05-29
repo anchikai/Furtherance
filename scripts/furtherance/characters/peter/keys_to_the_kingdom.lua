@@ -104,6 +104,13 @@ local min = math.min
 
 --#region Helpers
 
+---@return EntityEffect?
+local function tryGetSpotlight(statusData)
+	local ptr = statusData.CustomData.Spotlight
+	local spotlight = ptr and ptr.Ref
+	return spotlight
+end
+
 ---@param ent Entity
 ---@param allowDead? boolean
 function KEYS_TO_THE_KINGDOM:CanSpare(ent, allowDead)
@@ -274,13 +281,13 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 			npc = SEL.Utils.GetLastParent(npc)
 			local canSpare = KEYS_TO_THE_KINGDOM:CanSpare(npc)
 			local data = Mod:TryGetData(npc)
-			if canSpare and npc:IsBoss() and npc and (not data or not data.FailedRapture) then
+			if canSpare and npc:IsBoss() and npc then
 				local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.PRE_START_RAPTURE_BOSS, npc.Type, npc, player, rng, flags, slot)
 				if result then
 					return
 				end
 				local raptureCountdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, npc)
-				local dataTable = { FailedAttempts = 0, FailedAttemptsCooldown = 0, MaxCountdown = raptureCountdown }
+				local dataTable = { MaxCountdown = raptureCountdown }
 				local addedStatus = SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil, dataTable)
 				if addedStatus then
 					local spotlight = Mod.Spawn.Effect(KEYS_TO_THE_KINGDOM.EFFECT, KEYS_TO_THE_KINGDOM.SPOTLIGHT, npc.Position, nil, npc)
@@ -578,9 +585,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBossUpdate(npc)
 	---@cast statusData StatusEffectData
 	local customData = statusData.CustomData
 	local countdown = statusData.Countdown
-	---@type EntityPtr
-	local ptr = customData.Spotlight
-	local spotlight = ptr and ptr.Ref
+	local spotlight = tryGetSpotlight(statusData)
 
 	if spotlight then
 		local whiteColor = 0.45 - (countdown / 2000)
@@ -609,7 +614,7 @@ SEL.Callbacks.AddCallback(SEL.Callbacks.ID.ENTITY_STATUS_EFFECT_UPDATE, KEYS_TO_
 function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	local statusData = SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 	---@cast statusData StatusEffectData
-	if statusData.CustomData.FailRapture then return end
+	if statusData.CustomData.FailedRapture then return end
 
 	Mod.SFXMan:Play(SoundEffect.SOUND_ANGEL_WING, 2, 2, false, 0.75)
 
@@ -623,9 +628,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 		effect.PositionOffset = Vector(Mod:RandomNum(-npc.Size / 2, npc.Size / 2), Mod:RandomNum(-npc.Size, 0))
 	end
 
-	---@type EntityPtr
-	local ptr = statusData.CustomData.Spotlight
-	local spotlight = ptr and ptr.Ref
+	local spotlight = tryGetSpotlight(statusData)
 	if spotlight then
 		spotlight:ToEffect().Timeout = 60
 	end
@@ -665,6 +668,7 @@ Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR, CallbackP
 function KEYS_TO_THE_KINGDOM:SkillIssue(player)
 	if raptureHitCooldown > 0 then return end
 	raptureHits = raptureHits + 1
+	Mod:DebugLog("Rapture Hits:", raptureHits)
 	if raptureHits < KEYS_TO_THE_KINGDOM.BOSS_FORGIVE_ATTEMPTS then
 		raptureHitCooldown = KEYS_TO_THE_KINGDOM.BOSS_FORGIVE_COOLDOWN
 		Mod.Foreach.NPC(function (npc, index)
@@ -673,6 +677,10 @@ function KEYS_TO_THE_KINGDOM:SkillIssue(player)
 				local maxCountdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, npc)
 				statusData.Countdown = min(maxCountdown, statusData.Countdown + (maxCountdown / 3))
 				statusData.CustomData.MaxCountdown = maxCountdown
+				local spotlight = tryGetSpotlight(statusData)
+				if spotlight then
+					spotlight:SetColor(Color(1, 0, 0, 1, 1, 0, 0), 30, 1, true, false)
+				end
 			end
 		end)
 		Mod.SFXMan:Play(SoundEffect.SOUND_THUMBS_DOWN)
@@ -680,14 +688,25 @@ function KEYS_TO_THE_KINGDOM:SkillIssue(player)
 		Mod.Foreach.NPC(function (npc, index)
 			local statusData = SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 			if statusData then
+				statusData.CustomData.FailedRapture = true
 				SEL:RemoveStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
-				statusData.CustomData.Spotlight:GetSprite():Play("LightDisappear")
+				local spotlight = tryGetSpotlight(statusData)
+				if spotlight then
+					spotlight:GetSprite():Play("LightDisappear")
+					spotlight:SetColor(Color(1, 0, 0, 1, 1, 0, 0), 60, 1, false, false)
+				end
 			end
 		end)
 		Mod.SFXMan:Play(SoundEffect.SOUND_THUMBSDOWN_AMPLIFIED)
 		raptureHits = 0
 	end
 end
+
+function KEYS_TO_THE_KINGDOM:ResetRaptureHits()
+	raptureHits = 0
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, KEYS_TO_THE_KINGDOM.ResetRaptureHits)
 
 ---@param ent Entity
 ---@param source EntityRef
@@ -717,7 +736,7 @@ function KEYS_TO_THE_KINGDOM:ResetRaptureStatusOnDamage(ent, _, _, source, _)
 	if player and source.Entity then
 		local npc = source.Entity:ToNPC() or source.Entity.SpawnerEntity and source.Entity.SpawnerEntity:ToNPC()
 		local statusData = npc and SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
-		if statusData and npc then
+		if statusData then
 			KEYS_TO_THE_KINGDOM:SkillIssue(player)
 		end
 	end
