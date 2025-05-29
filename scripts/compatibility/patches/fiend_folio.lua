@@ -35,6 +35,19 @@ local function fiendFolioPatch()
 		Item.JUNO.ID,
 		Item.TECH_IX.ID
 	})
+
+	Mod:AddToDictionary(Mod.Item.KEYS_TO_THE_KINGDOM.ENTITY_BLACKLIST, Mod:Set({
+		Mod:GetTypeVarSubFromName("Whispers Controller", true)
+	}))
+
+	Mod:AppendTable(Mod.Item.KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS, {
+		ff.Sounds.CacaDeath
+	})
+
+	Mod:AddToDictionary(Mod.Item.KEYS_TO_THE_KINGDOM.MINIBOSS, Mod:Set({
+		Mod:GetTypeVarSubFromName("Gravedigger", true),
+		Mod:GetTypeVarSubFromName("Psion", true)
+	}))
 end
 
-loader:RegisterPatch(FiendFolio, fiendFolioPatch)
+loader:RegisterPatch("FiendFolio", fiendFolioPatch)

@@ -47,6 +47,32 @@ function Furtherance:GetTypeVarSubFromEntityConfig(entityConfig)
 	return typeVarSub
 end
 
+---@param ent Entity
+---@param asString? nil
+---@return EntityType, integer, integer
+---@overload fun(self: ModReference, ent: Entity, asString: boolean): string
+function Furtherance:GetTypeVarSubFromEnt(ent, asString)
+	local entType, var, sub = ent.Type, ent.Variant, ent.SubType
+	if asString then
+		return tostring(entType) .. "." .. tostring(var) .. "." .. tostring(sub)
+	else
+		return entType, var, sub
+	end
+end
+
+---@param name string
+---@param asString? nil
+---@return EntityType, integer, integer
+---@overload fun(self: ModReference, name: string, asString: boolean): string
+function Furtherance:GetTypeVarSubFromName(name, asString)
+	local entType, var, sub = Isaac.GetEntityTypeByName(name), Isaac.GetEntityVariantByName(name), Isaac.GetEntitySubTypeByName(name)
+	if asString then
+		return tostring(entType) .. "." .. tostring(var) .. "." .. tostring(sub)
+	else
+		return entType, var, sub
+	end
+end
+
 ---@param category string
 ---@param key string
 function Furtherance:TryGetTranslatedString(category, key)
