@@ -16,6 +16,10 @@ function ABYSSAL_PENNY:CollectCoin(pickup, collider)
 		if value > 99 then
 			value = 5
 		end
+		local BASE_DMG = 40
+		local smallerMultiplier = (player:GetTrinketMultiplier(ABYSSAL_PENNY.ID) - 1) * 0.5
+		local trinketMult = BASE_DMG * smallerMultiplier
+		water.CollisionDamage = BASE_DMG + trinketMult
 		water.Scale = 1.5 + (value * 0.1)
 		water.Size = water.Size * 1.5 + (value * 0.1)
 		water.Timeout = 90 + (30 * value)

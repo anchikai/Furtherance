@@ -101,6 +101,26 @@ function EID:addIcon(shortcut, animationName, animationFrame, width, height, lef
 ---@param extraTable? table
 function EID:addCondition(ID, ownedID, text, replaceText, language, extraTable) end
 
+---@class EID_GoldenTrinketData
+---@field t number[]? @The numbers inside the text that should be multiplied
+---@field mult number? @Max multiplier applied. assumed to be 3.
+---@field mults number[]? @Custom multipliers. A Missing Page's damage goes from 80 to 120 to 160; so its multipliers are 1.5 and 2, instead of 2 and 3
+---@field append boolean? @If true, text is added to the description
+---@field findReplace boolean? @If true, the text is replaced
+---@field fullReplace boolean? @If true, description is fully replaced
+---@field goldenOnly boolean? @If true, the description is modified only when the trinket is golden
+
+---@see EID_GoldenTrinketData
+---Add a fully custom data table to the table of Golden Trinket effects.
+---Check GoldenTrinketCallback in [eid_modifiers.lua](eid_modifiers.lua) to see the specifics of how it works.
+---You may also want to add text entries into `EID.descriptions[languageCode].goldenTrinketEffects`
+---<br><hr><br>
+---@param id TrinketType
+---@param dataTable EID_GoldenTrinketData
+function EID:addGoldenTrinketTable(id, dataTable)
+	EID.GoldenTrinketData[id] = dataTable
+end
+
 ---@type string
 MOD_PATH = nil
 

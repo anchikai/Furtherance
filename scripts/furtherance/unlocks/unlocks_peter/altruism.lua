@@ -99,7 +99,10 @@ function ALTRUISM:PreBeggarCollision(slot, collider)
 		return
 	end
 	local rng = player:GetTrinketRNG(ALTRUISM.ID)
-	if rng:RandomFloat() > ALTRUISM.BEGGAR_TRIGGER_ALTRUISM_CHANCE then Mod:DebugLog("Failed Altruism chance") return end
+	local smallerMultiplier = (player:GetTrinketMultiplier(ALTRUISM.ID) - 1) * 0.5
+	local trinketMult = ALTRUISM.BEGGAR_TRIGGER_ALTRUISM_CHANCE * smallerMultiplier
+
+	if rng:RandomFloat() > ALTRUISM.BEGGAR_TRIGGER_ALTRUISM_CHANCE + trinketMult then Mod:DebugLog("Failed Altruism chance") return end
 
 	if rng:RandomFloat() <= ALTRUISM.BEGGAR_HEAL_CHANCE then
 		Mod:DebugLog("Altruism heal")

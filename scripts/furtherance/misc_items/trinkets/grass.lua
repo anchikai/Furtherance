@@ -79,7 +79,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_NEW_ROOM_TEMP_EFFECTS, GRASS.OnNewRo
 function GRASS:SpeedUp(player)
 	local effects = player:GetEffects()
 	if effects:HasTrinketEffect(GRASS.ID) then
-		player.MoveSpeed = player.MoveSpeed + (GRASS.SPEED_UP_PER_GRASS * effects:GetTrinketEffectNum(GRASS.ID))
+		player.MoveSpeed = player.MoveSpeed + (GRASS.SPEED_UP_PER_GRASS * effects:GetTrinketEffectNum(GRASS.ID) * player:GetTrinketMultiplier(GRASS.ID))
 	end
 end
 

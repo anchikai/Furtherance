@@ -13,7 +13,9 @@ function ESCAPE_PLAN:Escape(ent)
 	local player = ent:ToPlayer()
 	if player and player:HasTrinket(ESCAPE_PLAN.ID) then
 		local rng = player:GetTrinketRNG(ESCAPE_PLAN.ID)
-		if rng:RandomFloat() <= ESCAPE_PLAN.PROC_CHANCE then
+		local trinketMult = player:GetTrinketMultiplier(ESCAPE_PLAN.ID)
+
+		if rng:RandomFloat() <= ESCAPE_PLAN.PROC_CHANCE * trinketMult then
 			local level = Mod.Level()
 			level.LeaveDoor = -1
 			Mod.Game:StartRoomTransition(level:GetStartingRoomIndex(), Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT, player)

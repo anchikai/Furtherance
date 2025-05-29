@@ -7,13 +7,14 @@ Furtherance.Trinket.CRINGE = CRINGE
 CRINGE.ID = Isaac.GetTrinketIdByName("Cringe")
 
 CRINGE.BRUH = Isaac.GetSoundIdByName("Bruh")
-CRINGE.FREEZE_DURATION = 30
+CRINGE.FREEZE_DURATION = 00
 
-function CRINGE:CringeDMG(entity)
-	local player = entity:ToPlayer()
+---@param ent Entity
+function CRINGE:CringeDMG(ent)
+	local player = ent:ToPlayer()
 	if player and player:HasTrinket(CRINGE.ID) then
 		Mod.Foreach.NPC(function (npc, index)
-			npc:AddFreeze(EntityRef(player), CRINGE.FREEZE_DURATION)
+			npc:AddFreeze(EntityRef(player), CRINGE.FREEZE_DURATION * player:GetTrinketMultiplier(CRINGE.ID))
 		end, nil, nil, nil, {UseEnemySearchParams = true})
 	end
 end

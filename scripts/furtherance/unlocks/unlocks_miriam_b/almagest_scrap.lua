@@ -118,7 +118,12 @@ function ALMAGEST_SCRAP:UpdateFirstVisitPlanetarium()
 	if ALMAGEST_SCRAP:ShouldUpdateTreasureRoom() then
 		updateTreasureDoors("gfx/grid/door_00x_planetariumdoor.anm2")
 	end
-	if Mod:RoomSave().AlmagestPlanetarium and Mod.Room():IsFirstVisit() then
+	local hasGoldenScrap = Mod.Foreach.Player(function (player, index)
+		if player:HasGoldenTrinket(ALMAGEST_SCRAP.ID) then
+			return true
+		end
+	end)
+	if not hasGoldenScrap and Mod:RoomSave().AlmagestPlanetarium and Mod.Room():IsFirstVisit() then
 		Mod.Foreach.Pickup(ALMAGEST_SCRAP.TurnToAlmagestShopItem, PickupVariant.PICKUP_COLLECTIBLE)
 	end
 end

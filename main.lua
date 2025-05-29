@@ -94,6 +94,7 @@ Furtherance.InvalidPathError = false
 ---Mimics include() but with a pcall safety wrapper and appropriate error codes if any are found
 ---
 ---VSCode users: Go to Settings > Lua > Runtime:Special and link Furtherance.Include to require, just like you would regular include!
+---@return unknown
 function Furtherance.Include(path)
 	Isaac.DebugString("[Furtherance] Loading " .. path)
 	local wasLoaded, result = pcall(include, path)
@@ -252,7 +253,7 @@ end
 
 --!End of file
 
-Mod.Include("scripts.compatibility.patches.eid_support")
+Mod.Include("scripts.compatibility.patches.eid.eid_support")
 Mod.Include("scripts.compatibility.patches_loader")
 
 if Mod.FileLoadError then

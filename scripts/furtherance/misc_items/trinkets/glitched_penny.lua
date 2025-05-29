@@ -13,9 +13,10 @@ GLITCHED_PENNY.PROC_CHANCE = 0.25
 function GLITCHED_PENNY:GlitchedPennyProc(coin, collider)
 	local player = collider:ToPlayer()
 	if player == nil or not player:HasTrinket(GLITCHED_PENNY.ID) then return end
-
 	local rng = player:GetTrinketRNG(GLITCHED_PENNY.ID)
-	if rng:RandomFloat() <= GLITCHED_PENNY.PROC_CHANCE and coin.SubType ~= CoinSubType.COIN_STICKYNICKEL then
+	local trinketMult = player:GetTrinketMultiplier(GLITCHED_PENNY.ID)
+
+	if rng:RandomFloat() <= GLITCHED_PENNY.PROC_CHANCE * trinketMult and coin.SubType ~= CoinSubType.COIN_STICKYNICKEL then
 		local ID
 		local itemPool = Mod.Game:GetItemPool()
 		repeat
