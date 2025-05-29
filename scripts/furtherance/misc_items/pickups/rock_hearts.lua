@@ -164,7 +164,7 @@ CustomHealthAPI.Library.RegisterHealthOverlay(ROCK_HEART.KEY, {
 	},
 })
 
----@param entType EntityType
+--[[ ---@param entType EntityType
 ---@param variant PickupVariant
 ---@param subtype integer
 ---@param spawner Entity
@@ -181,7 +181,7 @@ function ROCK_HEART:SpawnRockHeart(entType, variant, subtype, _, _, spawner, see
 		end
 	end
 end
-Mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, ROCK_HEART.SpawnRockHeart)
+Mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, ROCK_HEART.SpawnRockHeart) ]]
 
 ---@param pickup EntityPickup
 ---@param collider Entity
