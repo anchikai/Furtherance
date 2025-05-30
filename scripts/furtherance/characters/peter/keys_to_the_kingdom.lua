@@ -635,7 +635,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 
 	Mod.Foreach.Player(function(player)
 		if player:HasCollectible(KEYS_TO_THE_KINGDOM.ID) then
-			local numStats = KEYS_TO_THE_KINGDOM.MINIBOSS[npc.Type] and 1 or 2
+			local numStats = 1
 			if PETER:IsPeter(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 				numStats = numStats + 1
 			end
@@ -643,6 +643,11 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 			if not data.BossClearRaptureStats then
 				data.BossClearRaptureStats = numStats
 			else
+				data.BossClearRaptureStats = data.BossClearRaptureStats + 1
+			end
+			--So that even if it targeted a miniboss for stats first, as its a flat +1 afterwards, you'll still get the additional point from an actual boss
+			if not data.BossClearRaptureHasBoss and npc:IsBoss() and not KEYS_TO_THE_KINGDOM.MINIBOSS[Mod:GetTypeVarSubFromEnt(npc, true)] then
+				data.BossClearRaptureHasBoss = true
 				data.BossClearRaptureStats = data.BossClearRaptureStats + 1
 			end
 		end
@@ -658,6 +663,7 @@ function KEYS_TO_THE_KINGDOM:GrantStatsOnBossClear(player)
 	if data.BossClearRaptureStats then
 		KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), data.BossClearRaptureStats, false)
 		data.BossClearRaptureStats = nil
+		data.BossClearRaptureHasBoss = nil
 		player:AnimateHappy()
 	end
 end
