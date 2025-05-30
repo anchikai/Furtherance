@@ -45,7 +45,7 @@ end
 
 function MUDDLED_CROSS:TryRoomFlip()
 	local successful = MUDDLED_CROSS.SPECIAL_ROOM_FLIP:TryFlipSpecialRoom()
-	print(successful)
+
 	if successful then
 		MUDDLED_CROSS.TARGET_FLIP = 1
 		Mod.SFXMan:Play(MUDDLED_CROSS.SFX_ROOM_FLIP)

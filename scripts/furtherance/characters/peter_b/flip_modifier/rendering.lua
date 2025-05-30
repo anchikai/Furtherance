@@ -11,23 +11,11 @@ local FLIP_RENDERING = {}
 ---@param parent? Entity @Set to use this Entity for checking whether or not to be reflected, and to put the result onto `ent`
 function FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, parent)
 	local data = Mod:GetData(ent)
-	if data.PeterFlippedIgnoredRenderFlag then return end
 	local flagCheckEnt = parent or ent
 	local enemy = FLIP:TryGetEnemy(flagCheckEnt)
 	local player = Mod:TryGetPlayer(flagCheckEnt)
 
-	if enemy and (not FLIP:ShouldIgnoreEnemy(enemy) or FLIP:ValidEnemyToFlip(ent)) then
-		local isFlippedEnemy = FLIP:IsFlippedEnemy(enemy)
-		local flag = FLIP:GetIgnoredWaterClipFlag(not isFlippedEnemy)
-		if flag then
-			--[[ local flags = flagCheckEnt:GetWaterClipFlags()
-			if Mod:HasBitFlags(flags, WaterClipFlag.ENABLE_RENDER_BELOW_WATER) then
-				flag = flag | WaterClipFlag.ENABLE_RENDER_BELOW_WATER
-			end ]]
-			data.PeterFlippedIgnoredRenderFlag = flag
-			--ent:SetWaterClipFlags(flag)
-		end
-	elseif player then
+	if player then
 		if PETER_B:IsPeterB(player) then
 			local flag = FLIP:GetIgnoredWaterClipFlag()
 			data.PeterFlippedIgnoredRenderFlag = flag
@@ -35,6 +23,17 @@ function FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, parent)
 		else
 			--local flag = Mod.Room():IsMirrorWorld() and DISABLE_ABOVE_WATER or WaterClipFlag.DISABLE_RENDER_REFLECTION
 			local flag = Mod.Room():IsMirrorWorld() and RenderMode.RENDER_WATER_ABOVE or RenderMode.RENDER_WATER_REFLECT
+			data.PeterFlippedIgnoredRenderFlag = flag
+			--ent:SetWaterClipFlags(flag)
+		end
+	elseif enemy and (not FLIP:ShouldIgnoreEnemy(enemy) or FLIP:ValidEnemyToFlip(ent)) then
+		local isFlippedEnemy = FLIP:IsFlippedEnemy(enemy)
+		local flag = FLIP:GetIgnoredWaterClipFlag(not isFlippedEnemy)
+		if flag then
+			--[[ local flags = flagCheckEnt:GetWaterClipFlags()
+			if Mod:HasBitFlags(flags, WaterClipFlag.ENABLE_RENDER_BELOW_WATER) then
+				flag = flag | WaterClipFlag.ENABLE_RENDER_BELOW_WATER
+			end ]]
 			data.PeterFlippedIgnoredRenderFlag = flag
 			--ent:SetWaterClipFlags(flag)
 		end
@@ -49,8 +48,7 @@ function FLIP_RENDERING:FlipIfRelatedEntity(ent)
 	if parentData
 		and parentData.PeterFlippedIgnoredRenderFlag
 	then
-		local entData = Mod:GetData(ent)
-		entData.PeterFlippedIgnoredRenderFlag = parentData.PeterFlippedIgnoredRenderFlag
+		FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, ent.SpawnerEntity)
 	end
 end
 
