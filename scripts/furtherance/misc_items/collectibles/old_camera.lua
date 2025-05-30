@@ -68,7 +68,7 @@ function OLD_CAMERA:OnUse(itemID, rng, player, flags, slot)
 	return true
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_ITEM, OLD_CAMERA.OnUse)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, OLD_CAMERA.OnUse, OLD_CAMERA.ID)
 
 ---@param card Card
 ---@param player EntityPlayer
