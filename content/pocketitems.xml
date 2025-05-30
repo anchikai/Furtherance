@@ -7,7 +7,6 @@
 	<card type="rune" pickup="104" description="Heartache" hud="Soul of Leah" name="Soul of Leah" achievement="Soul of Leah" mimiccharge="6" />
 	<card type="rune" pickup="105" description="Your world, born again" hud="Soul of Peter" name="Soul of Peter" achievement="Soul of Peter" mimiccharge="6" />
 	<card type="rune" pickup="106" description="Drown" hud="Soul of Miriam" name="Soul of Miriam" achievement="Soul of Miriam" mimiccharge="12" />
-	<!-- Placeholder mimic charges for Essences! -->
 	<card type="rune" pickup="111" description="Deep affection" hud="Essence of Love" name="Essence of Love" achievement="Essence of Love" mimiccharge="3" />
 	<card type="rune" pickup="112" description="Regret" hud="Essence of Hate" name="Essence of Hate" achievement="Essence of Hate" mimiccharge="6" />
 	<card type="rune" pickup="113" description="Between birth and death" hud="Essence of Life" name="Essence of Life" achievement="Essence of Life" mimiccharge="2" />
@@ -20,6 +19,10 @@
 	<card type="tarot_reverse" pickup="14" description="Give up your spirit" hud="ReverseFaith" name="XXV - Faith?" achievement="Reverse Faith" mimiccharge="2" />
 	<card type="tarot" pickup="1" description="To each according to his needs" hud="Charity" name="XXIV - Charity" mimiccharge="2" />
 	<card type="tarot_reverse" pickup="14" description="Everything comes at a price" hud="ReverseCharity" name="XXIV - Charity?" achievement="Reverse Charity" mimiccharge="2" />
+
+	<card type="object" pickup="119" description="Packaged ghost barrage" hud="Spooky Photo" name="Spooky Photo" />
+	<card type="object" pickup="120" description="Packaged ghost barrage" hud="Haunted Photo" name="Haunted Photo" />
+	<card type="object" pickup="121" description="Packaged ghost barrage" hud="Possessed Photo" name="Possessed Photo" />
 
 	<pilleffect name="Heartache Up" class="3-" mimiccharge="4" />
 	<pilleffect name="Heartache Down" class="3+" mimiccharge="6" />

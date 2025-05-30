@@ -45,6 +45,9 @@
 	<entity anm2path="pickup_chargedbomb.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Charged Bomb" numGridCollisionPoints="24" shadowSize="14" stageHP="0" variant="40" subtype="118">
 		<preload-snd id="201"/>
 	</entity>
+	<entity anm2path="pickup_ghost_photo_1.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Spooky Photo" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="119" />
+	<entity anm2path="pickup_ghost_photo_2.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Haunted Photo" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="120" />
+	<entity anm2path="pickup_ghost_photo_3.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Possessed Photo" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="121" />
 
 	<!-- Slots/Beggars -->
 	<entity anm2path="slot_love_teller.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="6" name="Love Teller" numGridCollisionPoints="24" shadowSize="33" stageHP="0" variant="4826" collisionRadiusXMulti="1.5" collisionRadiusYMulti="0.75">

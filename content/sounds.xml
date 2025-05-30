@@ -62,4 +62,7 @@
 	<sound name="Tombstone Jingle">
 		<sample weight="1" path="tombstone_jingle.wav" />
 	</sound>
+	<sound name="Camera Flash">
+		<sample weight="1" path="camera_flash.wav" />
+	</sound>
 </sounds>
