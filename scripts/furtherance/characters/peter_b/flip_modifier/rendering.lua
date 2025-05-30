@@ -10,10 +10,11 @@ local FLIP_RENDERING = {}
 ---@param ent Entity
 ---@param parent? Entity @Set to use this Entity for checking whether or not to be reflected, and to put the result onto `ent`
 function FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, parent)
+	local data = Mod:GetData(ent)
+	if data.PeterFlippedIgnoredRenderFlag then return end
 	local flagCheckEnt = parent or ent
 	local enemy = FLIP:TryGetEnemy(flagCheckEnt)
 	local player = Mod:TryGetPlayer(flagCheckEnt)
-	local data = Mod:GetData(ent)
 
 	if enemy and (not FLIP:ShouldIgnoreEnemy(enemy) or FLIP:ValidEnemyToFlip(ent)) then
 		local isFlippedEnemy = FLIP:IsFlippedEnemy(enemy)
@@ -44,10 +45,12 @@ end
 
 ---@param ent Entity
 function FLIP_RENDERING:FlipIfRelatedEntity(ent)
-	if ent.SpawnerEntity and FLIP:IsFlippedEnemy(ent.SpawnerEntity)
-		and FLIP:ValidEnemyToFlip(ent)
+	local parentData = ent.SpawnerEntity and Mod:TryGetData(ent.SpawnerEntity)
+	if parentData
+		and parentData.PeterFlippedIgnoredRenderFlag
 	then
-		FLIP:FlipEnemy(ent)
+		local entData = Mod:GetData(ent)
+		entData.PeterFlippedIgnoredRenderFlag = parentData.PeterFlippedIgnoredRenderFlag
 	end
 end
 
@@ -64,15 +67,7 @@ end
 
 Mod:AddCallback(Mod.ModCallbacks.PETER_B_ENEMY_ROOM_FLIP, FLIP_RENDERING.UpdateReflections)
 Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, FLIP_RENDERING.UpdateReflections)
-
-function FLIP_RENDERING:UpdateShouldUsePeter()
-	FLIP.PETER_EFFECTS_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
-	if FLIP.PETER_EFFECTS_ACTIVE then
-		FLIP_RENDERING:UpdateReflections()
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, FLIP_RENDERING.UpdateShouldUsePeter)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, FLIP_RENDERING.UpdateReflections)
 
 ---@param ent Entity
 function FLIP_RENDERING:Reflection(ent)
