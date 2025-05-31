@@ -372,13 +372,13 @@ local function InitFunctions()
 				end
 			end
 		end,
-		[StatusEffectLibrary.Callbacks.ID.POST_ADD_ENTITY_STATUS_EFFECT] = function(callbacks, entity, statusEffect)
+		[StatusEffectLibrary.Callbacks.ID.POST_ADD_ENTITY_STATUS_EFFECT] = function(callbacks, entity, statusEffect, statusEffectData)
 			for i = 1, #callbacks do
 				local limits = callbacks[i].Args
 				local shouldFire = not limits[1] or StatusEffectLibrary.Utils.HasBitFlags(statusEffect, limits[1])
 
 				if shouldFire then
-					callbacks[i].Function(StatusEffectLibrary, entity, statusEffect)
+					callbacks[i].Function(StatusEffectLibrary, entity, statusEffect, statusEffectData)
 				end
 			end
 		end,
@@ -668,7 +668,8 @@ local function InitFunctions()
 		end
 
 		StatusEffectLibrary.Callbacks.FireCallback(StatusEffectLibrary.Callbacks.ID.POST_ADD_ENTITY_STATUS_EFFECT,
-		ent, statusFlag, statusEffectData)
+			ent, statusFlag, statusEffectData
+		)
 		StatusEffectLibrary.Utils.DebugLog(identifier, "End of AddStatusEffect for", ent.Type, ent.Variant)
 		return true
 	end

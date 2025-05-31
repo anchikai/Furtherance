@@ -115,29 +115,35 @@ end
 ---@param allowDead? boolean
 function KEYS_TO_THE_KINGDOM:CanSpare(ent, allowDead)
 	allowDead = allowDead or false
-
 	return ent:ToNPC()
 		and ent:IsActiveEnemy(allowDead)
 		and not ent:IsInvincible()
 		and not ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
-		and ent:ToNPC().CanShutDoors
 		and not SEL:HasStatusEffect(ent, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
-		and not (Mod:TryGetData(ent) and Mod:GetData(ent).Raptured)
 		and not KEYS_TO_THE_KINGDOM.ENTITY_BLACKLIST[Mod:GetTypeVarSubFromEnt(ent, true)]
+		and ent:ToNPC().CanShutDoors
+		and not (Mod:TryGetData(ent) and Mod:GetData(ent).Raptured)
 end
 
 ---@param ent EntityNPC | EntityPlayer
-function KEYS_TO_THE_KINGDOM:OnStatusEffectAdd(ent)
-	if not ent:IsActiveEnemy(false) or ent:IsInvincible() or ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) then
-		return true
-	end
-	if SEL:HasStatusEffect(ent, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE) then
-		--Don't reapply it so the timer won't get reset
+function KEYS_TO_THE_KINGDOM:OnPreStatusEffectAdd(ent)
+	if not KEYS_TO_THE_KINGDOM:CanSpare(ent) then
 		return true
 	end
 end
 
 SEL.Callbacks.AddCallback(SEL.Callbacks.ID.PRE_ADD_ENTITY_STATUS_EFFECT,
+	KEYS_TO_THE_KINGDOM.OnPreStatusEffectAdd, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
+
+function KEYS_TO_THE_KINGDOM:OnStatusEffectAdd(ent, _, statusEffectData)
+	local spotlight = Mod.Spawn.Effect(KEYS_TO_THE_KINGDOM.EFFECT, KEYS_TO_THE_KINGDOM.SPOTLIGHT, ent.Position, nil, ent)
+	spotlight.Parent = ent
+	spotlight:FollowParent(ent)
+	spotlight:GetSprite().Scale = Vector(1.25, 1.25)
+	statusEffectData.CustomData.Spotlight = EntityPtr(spotlight)
+end
+
+SEL.Callbacks.AddCallback(SEL.Callbacks.ID.POST_ADD_ENTITY_STATUS_EFFECT,
 	KEYS_TO_THE_KINGDOM.OnStatusEffectAdd, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 
 ---@param player EntityPlayer
@@ -263,6 +269,7 @@ end
 ---@param player EntityPlayer
 function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 	local room = Mod.Room()
+	local failedToRapture = true
 
 	if KEYS_TO_THE_KINGDOM:DenyHisOfferings(player) then
 		return true
@@ -286,22 +293,21 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 					return
 				end
 				local raptureCountdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, npc)
-				local dataTable = { MaxCountdown = raptureCountdown }
-				local addedStatus = SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil, dataTable)
+				local addedStatus = SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil, { MaxCountdown = raptureCountdown })
 				if addedStatus then
-					local spotlight = Mod.Spawn.Effect(KEYS_TO_THE_KINGDOM.EFFECT, KEYS_TO_THE_KINGDOM.SPOTLIGHT, npc.Position, nil, npc)
-					spotlight.Parent = npc
-					spotlight:FollowParent(npc)
-					spotlight:GetSprite().Scale = Vector(1.25, 1.25)
-					dataTable.Spotlight = EntityPtr(spotlight)
+					failedToRapture = false
 				end
 			elseif canSpare and npc:Exists() then
+				failedToRapture = false
 				KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
 				if npc.SpawnerType == EntityType.ENTITY_NULL then
 					KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, 1, true)
 				end
 			end
 		end, nil, nil, nil, { Inverse = true })
+	end
+	if failedToRapture then
+		Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
 	end
 	return true
 end
