@@ -91,4 +91,7 @@ for lang, desc in pairs(descriptions) do
 	end
 end
 
+EID:addTarotClothBuffsCondition(Mod.Card.HOPE.ID, nil, 20)
+EID:addTarotClothBuffsCondition(Mod.Card.CHARITY.ID, nil, 3)
+
 return descData

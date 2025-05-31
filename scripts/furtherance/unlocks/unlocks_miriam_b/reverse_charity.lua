@@ -16,6 +16,7 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_USE_CARD, REVERSE_CHARITY.OnUse, REVERSE_CHARITY.ID)
 
+---TODO: For some reason this isn't doing anything
 ---@param pickup EntityPickup
 function REVERSE_CHARITY.MakeBalancedShopItem(pickup)
 	pickup:MakeShopItem(-1)

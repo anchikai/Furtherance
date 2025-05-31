@@ -11,9 +11,8 @@ return function(modifiers)
 		[Mod.Card.CHARITY.ID] = {
 			Name = "XXIV - Charity",
 			Description = {
-				"{{Collectible" ..
-				Mod.Item.JAR_OF_MANNA.ID ..
-				"}} Gives Isaac what he needs the most 3 times. If he has what he needs in health and pickups, increases Isaac's lowest stat instead"
+				"{{Collectible464}} Gives Isaac what he needs the most 3 times",
+				"#If he has what he needs in health and pickups, increases Isaac's lowest stat instead"
 			}
 		},
 		[Mod.Card.FAITH.ID] = {

@@ -118,7 +118,15 @@ function EID:addCondition(ID, ownedID, text, replaceText, language, extraTable) 
 ---@param id TrinketType
 ---@param dataTable EID_GoldenTrinketData
 function EID:addGoldenTrinketTable(id, dataTable)
-	EID.GoldenTrinketData[id] = dataTable
+end
+
+-- Shortcut function for adding Repentance Tarot Cloth conditions
+---@param ID Card
+---@param text? string
+---@param numberToDouble? number
+---@param newNumber? number | string
+---@param language? string
+function EID:addTarotClothBuffsCondition(ID, text, numberToDouble, newNumber, language)
 end
 
 ---@type string
