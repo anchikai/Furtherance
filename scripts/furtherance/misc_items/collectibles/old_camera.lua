@@ -70,6 +70,16 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, OLD_CAMERA.OnUse, OLD_CAMERA.ID)
 
+---@param player EntityPlayer
+---@param strength integer
+function OLD_CAMERA:GetGhostAmount(player, strength)
+	local power = strength*2
+	if player:HasCollectible(CollectibleType.COLLECTIBLE_TAROT_CLOTH) then
+		power = math.floor(Mod:Round(power * 1.5, 0))
+	end
+	return power
+end
+
 ---@param card Card
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
@@ -77,15 +87,12 @@ function OLD_CAMERA:OnPhotoUse(card, player, useFlags)
 	local power
 	for i, _card in ipairs(OLD_CAMERA.PHOTO_IDs) do
 		if card == _card then
-			power = i*2
+			power = OLD_CAMERA:GetGhostAmount(player, i)
+			break
 		end
 	end
 
 	if not power then return end
-
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_TAROT_CLOTH) then
-		power = math.floor(Mod:Round(power * 1.5, 0))
-	end
 
 	for _ = 1, power do
 		local ghost = Mod.Spawn.Effect(EffectVariant.PURGATORY, 1, player.Position, Vector.Zero, player, player:GetCardRNG(card):Next())
