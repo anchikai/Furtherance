@@ -885,10 +885,12 @@ end
 --#region Commands!
 
 Mod.ConsoleCommandHelper:Create("fastspare", "Enemies spared with Keys to the Kingdom are spared in 3 seconds.",
-	{Mod.ConsoleCommandHelper:MakeArgument("toggle", "Enemies spared with Keys to the Kingdom are spared in 3 seconds.", Mod.ConsoleCommandHelper.ArgumentTypes.Boolean, false)},
-function (arguments)
-	KEYS_TO_THE_KINGDOM.DEBUG_SPARE = arguments[1]
-end)
+	{},
+	function (arguments)
+		KEYS_TO_THE_KINGDOM.DEBUG_SPARE = not KEYS_TO_THE_KINGDOM.DEBUG_SPARE
+		return "[Furtherance] fastspare is now set to " .. tostring(KEYS_TO_THE_KINGDOM.DEBUG_SPARE)
+	end
+)
 Mod.ConsoleCommandHelper:SetParent("fastspare", "debug")
 
 --#endregion
