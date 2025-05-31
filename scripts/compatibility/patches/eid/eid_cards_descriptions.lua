@@ -70,13 +70,9 @@ local modifiers = {
 		_metadata = { 6, true }
 	},
 	[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]] = {
-		_modifier = function(descObj, desc, strength)
-			local player = FR_EID:ClosestPlayerTo(descObj.Entity)
-			local power = Mod.Item.OLD_CAMERA:GetGhostAmount(player, strength)
-			if player:HasCollectible(CollectibleType.COLLECTIBLE_TAROT_CLOTH) then
-				desc = desc:format("{{ColorShinyPurple}}%s{{CR}}")
-			end
-			return{ desc:format(power)}
+		_modifier = function(strength, desc)
+			local power = Mod.Item.OLD_CAMERA:GetGhostAmount(strength)
+			return{ desc:format(power) }
 		end
 	}
 }

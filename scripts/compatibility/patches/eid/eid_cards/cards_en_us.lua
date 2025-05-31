@@ -143,25 +143,25 @@ return function(modifiers)
 		[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]] = {
 			Name = "Spooky Photo",
 			Description = function(descObj)
-				return modifiers[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]]._modifier(descObj,
-					"{{Collectible634}} Spawns %s Purgatory ghosts to immediately target enemies",
-					1)
+				return modifiers[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]]._modifier(1,
+					"{{Collectible634}} Spawns %s Purgatory ghosts to immediately target enemies"
+				)
 			end
 		},
 		[Mod.Item.OLD_CAMERA.PHOTO_IDs[2]] = {
 			Name = "Haunted Photo",
 			Description = function(descObj)
-				return modifiers[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]]._modifier(descObj,
-					"{{Collectible634}} Spawns %s Purgatory ghosts to immediately target enemies",
-					2)
+				return modifiers[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]]._modifier(2,
+					"{{Collectible634}} Spawns %s Purgatory ghosts to immediately target enemies"
+				)
 			end
 		},
 		[Mod.Item.OLD_CAMERA.PHOTO_IDs[3]] = {
 			Name = "Possessed Photo",
 			Description = function(descObj)
-				return modifiers[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]]._modifier(descObj,
-				"{{Collectible634}} Spawns %s Purgatory ghosts to immediately target enemies",
-					3)
+				return modifiers[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]]._modifier(3,
+				"{{Collectible634}} Spawns %s Purgatory ghosts to immediately target enemies"
+				)
 			end
 		}
 	}
