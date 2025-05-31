@@ -104,6 +104,7 @@
 		<Item Name="Golden Port" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Book of Books" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Epitaph" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Old Camera" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
     </Pool>
 	<Pool Name="library">
 		<Item Name="Book of Swiftness" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -285,6 +286,7 @@
 		<Item Name="Golden Port" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Book of Books" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Epitaph" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Old Camera" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="craneGame">
 		<Item Name="Polydipsia" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -298,6 +300,7 @@
 		<Item Name="Wine Bottle" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Sunscreen" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Plug N' Play" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Old Camera" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="ultraSecret">
 		<Item Name="Heart Renovator" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>

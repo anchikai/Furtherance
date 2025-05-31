@@ -41,13 +41,30 @@ local function fiendFolioPatch()
 	}))
 
 	Mod:AppendTable(Mod.Item.KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS, {
-		ff.Sounds.CacaDeath
+		ff.Sounds.CacaDeath,
+		ff.Sounds.WarpZoneHurt,
+		ff.Sounds.WarpZoneDeath,
+		ff.Sounds.GriddleDeath,
+		ff.Sounds.BuckDeath1,
+		ff.Sounds.BuckDeath2,
+		ff.Sounds.BuckDeath3,
+		ff.Sounds.DuskDeath,
+		ff.Sounds.BusterGhostDeath,
+		ff.Sounds.MadommeDeath
 	})
 
 	Mod:AddToDictionary(Mod.Item.KEYS_TO_THE_KINGDOM.MINIBOSS, Mod:Set({
-		Mod:GetTypeVarSubFromName("Gravedigger", true),
-		Mod:GetTypeVarSubFromName("Psion", true)
+		ff.FF.Gravedigger.ID .. "." .. ff.FF.Gravedigger.Var .. Isaac.GetEntitySubTypeByName("Gravedigger"),
+		ff.FF.Psion.ID .. "." .. ff.FF.Psion.Var .. Isaac.GetEntitySubTypeByName("Psion"),
 	}))
+
+	local function killWhisperController(_, npc)
+		if npc.Variant == ff.FF.Whispers.Var and npc.SpawnerEntity and not npc.SpawnerEntity:IsDead() then
+			Mod.Item.KEYS_TO_THE_KINGDOM:RemoveBoss(npc.SpawnerEntity)
+		end
+	end
+
+	Mod:AddCallback(Mod.ModCallbacks.POST_RAPTURE_BOSS_DEATH, killWhisperController, ff.FF.Whispers.ID)
 end
 
 loader:RegisterPatch("FiendFolio", fiendFolioPatch)

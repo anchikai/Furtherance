@@ -178,6 +178,7 @@ local function cease(npc)
 			projectile:Remove()
 		end
 	end, nil, nil, { Inverse = true })
+	Mod.SFXMan:StopLoopingSounds()
 end
 
 ---Cannot remove a boss outright as it can cause unintended effects, such as the room continuing to play the boss fight music
@@ -203,7 +204,6 @@ function KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
 		end)
 	end)
 	npc.Visible = false
-	Mod.SFXMan:StopLoopingSounds()
 end
 
 ---Raptures the enemy, spawning a spared soul and grants stats to the player who raptured it corresponding to whether or not it's a boss
@@ -280,7 +280,6 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 		Mod.Foreach.NPC(function(npc)
 			npc = SEL.Utils.GetLastParent(npc)
 			local canSpare = KEYS_TO_THE_KINGDOM:CanSpare(npc)
-			local data = Mod:TryGetData(npc)
 			if canSpare and npc:IsBoss() and npc then
 				local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.PRE_START_RAPTURE_BOSS, npc.Type, npc, player, rng, flags, slot)
 				if result then
@@ -591,6 +590,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBossUpdate(npc)
 		local whiteColor = 0.45 - (countdown / 2000)
 		spotlight:GetSprite().Scale = Vector(0.25 + (countdown / customData.MaxCountdown), 1.25)
 		spotlight:SetColor(Color(1, 1, 1, 1, whiteColor, whiteColor, whiteColor), 1, 2, true, false)
+		spotlight.Visible = npc.Visible
 	end
 
 	if raptureHitCooldown > 0 then
