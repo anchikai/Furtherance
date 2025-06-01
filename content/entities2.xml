@@ -24,6 +24,9 @@
 	<entity anm2path="familiar_love_teller_baby.anm2" boss="0" champion="0" collisionDamage="0" collisionMass="5" collisionRadius="7" friction="1" id="3" name="Love Teller Baby" numGridCollisionPoints="40" shadowSize="10" stageHP="0" variant="1607">
         <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0"/>
     </entity>
+	<entity anm2path="slot_escort_beggar.anm2" baseHP="6" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="3" name="Escort Beggar (Familiar)" 	numGridCollisionPoints="24" shadowSize="15" stageHP="0" variant="1608" customtags="familiarcantakedamage familiarblockprojectiles familiarignorebffs">
+        <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0"/>
+    </entity>
 
 	<!-- Pickups -->
 	<entity anm2path="pickup_soulofleah.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Soul of Leah" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="104" />
@@ -52,7 +55,7 @@
 	<!-- Slots/Beggars -->
 	<entity anm2path="slot_love_teller.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="6" name="Love Teller" numGridCollisionPoints="24" shadowSize="33" stageHP="0" variant="4826" collisionRadiusXMulti="1.5" collisionRadiusYMulti="0.75">
     </entity>
-	<entity anm2path="slot_escort_beggar.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="6" name="Escort Beggar" numGridCollisionPoints="24" shadowSize="15" stageHP="0" variant="4">
+	<entity anm2path="slot_escort_beggar.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="6" name="Escort Beggar (Slot)" numGridCollisionPoints="24" shadowSize="15" stageHP="0" variant="4">
         <gibs amount="6" blood="1" bone="1" eye="1" gut="1" large="0"/>
     </entity>
 

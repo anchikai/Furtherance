@@ -659,34 +659,49 @@ EID_Entities = {
 						"#{{Heart}} Spawns a unique shooter familiar related to the selected character",
 						function(descObj)
 							return EID_Entities[EntityType.ENTITY_SLOT][Mod.Slot.LOVE_TELLER.ID][0]._modifier({
-								[PlayerType.PLAYER_ISAAC] = "Occasionally temporarily grants {{Collectible206}} Guillotine",
+								[PlayerType.PLAYER_ISAAC] =
+								"Occasionally temporarily grants {{Collectible206}} Guillotine",
 								[PlayerType.PLAYER_MAGDALENE] = "Occasionally activates {{Collectible45}} Yum Heart",
 								[PlayerType.PLAYER_CAIN] = "Occasionally refunds keys used on chests",
 								[PlayerType.PLAYER_JUDAS] = "Occasionally activates {{Collectible34}} Book of Belial",
-								[PlayerType.PLAYER_BLUEBABY] = "Occasionally temporarily grants {{Collectible248}} Hive Mind",
-								[PlayerType.PLAYER_EVE] = "Occasionally temporarily grants the {{Collectible122}} Whore of Babylon effect",
-								[PlayerType.PLAYER_SAMSON] = "Occasionally temporarily grants {{Collectible157}} Blood Lust with +3 hits",
-								[PlayerType.PLAYER_AZAZEL] = "Occasionally temporarily grants the {{Trinket162}} Azazel's Stump effect",
-								[PlayerType.PLAYER_LAZARUS] = "Occasionally temporarily grants the {{Collectible214}} Anemic effect",
-								[PlayerType.PLAYER_EDEN] = "Becomes a random Love Teller baby. After activating its effect, will become another random Love Teller baby",
-								[PlayerType.PLAYER_THELOST] = "Occasionally temporarily grants a {{Collectible313}} mantle shield. Cannot grant another until the shield breaks",
+								[PlayerType.PLAYER_BLUEBABY] =
+								"Occasionally temporarily grants {{Collectible248}} Hive Mind",
+								[PlayerType.PLAYER_EVE] =
+								"Occasionally temporarily grants the {{Collectible122}} Whore of Babylon effect",
+								[PlayerType.PLAYER_SAMSON] =
+								"Occasionally temporarily grants {{Collectible157}} Blood Lust with +3 hits",
+								[PlayerType.PLAYER_AZAZEL] =
+								"Occasionally temporarily grants the {{Trinket162}} Azazel's Stump effect",
+								[PlayerType.PLAYER_LAZARUS] =
+								"Occasionally temporarily grants the {{Collectible214}} Anemic effect",
+								[PlayerType.PLAYER_EDEN] =
+								"Becomes a random Love Teller baby. After activating its effect, will become another random Love Teller baby",
+								[PlayerType.PLAYER_THELOST] =
+								"Occasionally temporarily grants a {{Collectible313}} mantle shield. Cannot grant another until the shield breaks",
 								[PlayerType.PLAYER_LILITH] = "Occasionally activates {{Collectible357}} Box of Friends",
-								[PlayerType.PLAYER_KEEPER] = "Occasionally temporarily grants {{Collectible450}} Eye of Greed",
+								[PlayerType.PLAYER_KEEPER] =
+								"Occasionally temporarily grants {{Collectible450}} Eye of Greed",
 								[PlayerType.PLAYER_APOLLYON] = "Occasionally spawns a random locust",
-								[PlayerType.PLAYER_THEFORGOTTEN] = "Occasionally swaps between bone and soul form, each shooting different tears",
-								[PlayerType.PLAYER_BETHANY] = "Occasionally temporarily grants {{Collectible584}} Book of Virtues",
+								[PlayerType.PLAYER_THEFORGOTTEN] =
+								"Occasionally swaps between bone and soul form, each shooting different tears",
+								[PlayerType.PLAYER_BETHANY] =
+								"Occasionally temporarily grants {{Collectible584}} Book of Virtues",
 								[PlayerType.PLAYER_JACOB] = "Occasionally activates {{Collectible687}} Friend Finder",
-								[PlayerType.PLAYER_ESAU] = "Occasionally temporarily grants a small {{Collectible621}} Red Stew effect",
-								[Mod.PlayerType.LEAH] = "Occasionally activates {{Collectible" .. Item.HEART_RENOVATOR.ID .. "}} Heart Renovator",
-								[Mod.PlayerType.PETER] = "Occasionally activates {{Collectible" .. Item.KEYS_TO_THE_KINGDOM.ID .. "}} Keys to the Kingdom on a single non-boss target",
-								[Mod.PlayerType.MIRIAM] = "Occasionally activates {{Collectible" .. Item.TAMBOURINE.ID .. "}} Tambourine",
+								[PlayerType.PLAYER_ESAU] =
+								"Occasionally temporarily grants a small {{Collectible621}} Red Stew effect",
+								[Mod.PlayerType.LEAH] = "Occasionally activates {{Collectible" ..
+								Item.HEART_RENOVATOR.ID .. "}} Heart Renovator",
+								[Mod.PlayerType.PETER] = "Occasionally activates {{Collectible" ..
+								Item.KEYS_TO_THE_KINGDOM.ID .. "}} Keys to the Kingdom on a single non-boss target",
+								[Mod.PlayerType.MIRIAM] = "Occasionally activates {{Collectible" ..
+								Item.TAMBOURINE.ID .. "}} Tambourine",
 							})
 						end
 					}
 				}
 			}
 		},
-		[Mod.Slot.ESCORT_BEGGAR.ID] = {
+		[Mod.Slot.ESCORT_BEGGAR.SLOT] = {
 			[0] = {
 				_modifier = function()
 
@@ -722,7 +737,8 @@ for id, variantDescData in pairs(EID_Entities) do
 					EID:addEntity(id, variant, subtype, name, table.concat(minimized, ""), language)
 				else
 					EID:addEntity(id, variant, subtype, "", name, language) -- description only contains name/language, the actual description is generated at runtime
-					DD:SetCallback(DD:CreateCallback(minimized, entityDescData._AppendToEnd), id, variant, subtype, language)
+					DD:SetCallback(DD:CreateCallback(minimized, entityDescData._AppendToEnd), id, variant, subtype,
+						language)
 				end
 
 				::continue::
@@ -745,7 +761,9 @@ EID_Characters = {
 		en_us = {
 			Name = "Peter",
 			Description = {
-				"{{Battery}} {{SoulHeart}} Soul/Black Hearts will instead charge {{Collectible" .. Mod.Item.KEYS_TO_THE_KINGDOM.ID .. "}} Keys to the Kingdom instead of Peter's health if it still needs charges"
+				"{{Battery}} {{SoulHeart}} Soul/Black Hearts will instead charge {{Collectible" ..
+				Mod.Item.KEYS_TO_THE_KINGDOM.ID ..
+				"}} Keys to the Kingdom instead of Peter's health if it still needs charges"
 			}
 		}
 	},
@@ -777,7 +795,9 @@ EID_Characters = {
 				"Permanent water rooms",
 				"#Peter and non-boss enemies exist separately between the water",
 				"#Walking below an enemy will submerge them. They gain {{StrengthStatus}} Strength and take 25% less damage",
-				"#{{Collectible" .. Mod.Item.MUDDLED_CROSS.ID .. "}} On use: Enemies and players swap sides for X * 5 seconds, where X is 1 + number of submerged enemies",
+				"#{{Collectible" ..
+				Mod.Item.MUDDLED_CROSS.ID ..
+				"}} On use: Enemies and players swap sides for X * 5 seconds, where X is 1 + number of submerged enemies",
 				"#While room is flipped: Cannot recharge Muddled Cross, cannot interact with enemies. {{Weakness}} Weakness instead of Strength"
 			}
 		}

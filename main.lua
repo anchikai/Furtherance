@@ -267,7 +267,6 @@ end
 Furtherance.Include = nil
 Furtherance.LoopInclude = nil
 
-
 --[[
 -- Floor Generation
 --include("lua/rooms/NoahsArk.lua")

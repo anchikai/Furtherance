@@ -11,12 +11,9 @@ WORMWOOD_LEAF.CHANCE = 0.1
 ---@param pos Vector
 local function rockCrumble(pos)
 	Mod.SFXMan:Play(SoundEffect.SOUND_ROCK_CRUMBLE)
-	for _ = 1, 5 do
-		local effect = Mod.Spawn.Effect(EffectVariant.DUST_CLOUD, 0, pos, RandomVector():Resized(3))
-		---@cast effect EntityEffect
-		---Setting .Timeout will cause the dust cloud to rapidly increase in size and flashbang you, while :SetTimeout doesn't...for some reason.
-		effect:SetTimeout(30)
-		effect.SpriteOffset = Vector(0, -10)
+	local dustClouds = Mod.Spawn.DustClouds(pos)
+	for _, dustCloud in ipairs(dustClouds) do
+		dustCloud.SpriteOffset = Vector(0, -10)
 	end
 end
 

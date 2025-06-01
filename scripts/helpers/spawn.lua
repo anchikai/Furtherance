@@ -239,6 +239,36 @@ function Spawn.BloodSplat(lvl, position, colorize, persistent)
 	return Epiphany.BLOOD_SPLAT:SpawnBlood(lvl, position, colorize, persistent)
 end
 
+local rng = RNG()
+
+---@param lower? integer
+---@param upper? integer
+local function randomNum(lower, upper)
+	if upper then
+		return rng:RandomInt((upper - lower) + 1) + lower
+	elseif lower then
+		return rng:RandomInt(lower) + 1
+	else
+		return rng:RandomFloat()
+	end
+end
+
+---@param position Vector
+---@param amount? integer
+---@param velocity? Vector
+---@param spawner? Entity
+---@param seed? integer
+function Spawn.DustClouds(position, amount, velocity, spawner, seed)
+	local clouds = {}
+	for _ = 1, amount or 5 do
+		local cloud = spawnEffect(EffectVariant.DUST_CLOUD, 0, position, velocity or RandomVector():Resized(randomNum(0, 4) + randomNum()), spawner, seed)
+		cloud:SetTimeout(randomNum(15, 25))
+		cloud.Color.A = math.max(0.3, randomNum())
+		clouds[#clouds + 1] = cloud
+	end
+	return clouds
+end
+
 --#endregion
 
 return Spawn

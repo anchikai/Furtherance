@@ -70,9 +70,9 @@ local modifiers = {
 		_metadata = { 6, true }
 	},
 	[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]] = {
-		_modifier = function(strength, desc)
-			local power = Mod.Item.OLD_CAMERA:GetGhostAmount(strength)
-			return{ desc:format(power) }
+		_modifier = function(itemID, desc)
+			local power = Mod.Item.OLD_CAMERA.GHOST_AMOUNT[itemID]
+			return { desc:format(power) }
 		end
 	}
 }

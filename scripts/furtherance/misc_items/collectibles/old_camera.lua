@@ -13,7 +13,12 @@ OLD_CAMERA.PHOTO_IDs = {
 }
 OLD_CAMERA.CAMERA_FLASH = Isaac.GetSoundIdByName("Camera Flash")
 
-OLD_CAMERA.HIT_POINT_THRESHOLD = 20
+OLD_CAMERA.HIT_POINT_THRESHOLD = 40
+OLD_CAMERA.GHOST_AMOUNT = {
+	[OLD_CAMERA.PHOTO_IDs[1]] = 2,
+	[OLD_CAMERA.PHOTO_IDs[2]] = 4,
+	[OLD_CAMERA.PHOTO_IDs[3]] = 6,
+}
 
 local WHITE_SQUARE = Sprite("gfx/hud_whitesquare.anm2", true)
 WHITE_SQUARE:Play("Idle", true)
@@ -70,24 +75,11 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, OLD_CAMERA.OnUse, OLD_CAMERA.ID)
 
----@param strength integer
-function OLD_CAMERA:GetGhostAmount(strength)
-	local power = strength*2
-	return power
-end
-
 ---@param card Card
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
 function OLD_CAMERA:OnPhotoUse(card, player, useFlags)
-	local power
-	for i, _card in ipairs(OLD_CAMERA.PHOTO_IDs) do
-		if card == _card then
-			power = OLD_CAMERA:GetGhostAmount(i)
-			break
-		end
-	end
-
+	local power = OLD_CAMERA.GHOST_AMOUNT[card]
 	if not power then return end
 
 	for _ = 1, power do

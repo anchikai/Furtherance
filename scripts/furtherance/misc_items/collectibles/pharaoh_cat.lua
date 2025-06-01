@@ -35,12 +35,9 @@ Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, PHARAOH_CAT.SpawnStatueOnNewRoom)
 ---@param ent Entity
 function PHARAOH_CAT.Die(ent)
 	Mod.SFXMan:Play(SoundEffect.SOUND_ROCK_CRUMBLE)
-	for i = 1, 10 do
-		local dustCloud = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DUST_CLOUD, 0,
-			ent.Position, RandomVector():Resized(Mod:RandomNum(3, 6) - Mod:RandomNum()), nil):ToEffect()
-		---@cast dustCloud EntityEffect
-		dustCloud:SetTimeout(30)
-		if i % 5 == 0 then
+	local dustClouds = Mod.Spawn.DustClouds(ent.Position)
+	for i, dustCloud in ipairs(dustClouds) do
+		if i % 3 == 0 then
 			dustCloud.Color = Color(1, 1, 1, 1, 0.7, 0.5, 0.15)
 		else
 			dustCloud.Color = Color(0.25, 0.25, 0.25)

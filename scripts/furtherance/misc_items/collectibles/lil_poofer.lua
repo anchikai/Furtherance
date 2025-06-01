@@ -95,11 +95,9 @@ function LIL_POOFER:Explode(familiar)
 	poof02.Color.A = 0.4
 
 	--Dust clouds
-	for _ = 1, 8 do
-		local vel = RandomVector():Resized(Mod:RandomNum(1, 8) - Mod:RandomNum())
-		local dustCloud = Mod.Spawn.Effect(EffectVariant.DUST_CLOUD, 0, familiar.Position, vel)
+	local dustClouds = Mod.Spawn.DustClouds(familiar.Position, 8)
+	for _, dustCloud in ipairs(dustClouds) do
 		dustCloud.Color = Color(0.619608, 0.0431373, 0.0588235)
-		dustCloud:SetTimeout(30)
 	end
 
 	--Creep in the middle
