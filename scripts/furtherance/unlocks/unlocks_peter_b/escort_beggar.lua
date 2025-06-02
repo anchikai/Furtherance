@@ -105,6 +105,7 @@ function ESCORT_BEGGAR:OnSlotInit(slot)
 	end
 
 	if #Isaac.FindByType(EntityType.ENTITY_SLOT, ESCORT_BEGGAR.SLOT) > 0
+		or #Isaac.FindByType(EntityType.ENTITY_FAMILIAR, ESCORT_BEGGAR.FAMILIAR) > 0
 		or Mod.Game:IsGreedMode()
 	then
 		slot:Remove()
@@ -411,7 +412,7 @@ function ESCORT_BEGGAR:RenderExpectedBeggars()
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_RENDER, ESCORT_BEGGAR.RenderExpectedBeggars)
+--Mod:AddCallback(ModCallbacks.MC_POST_RENDER, ESCORT_BEGGAR.RenderExpectedBeggars)
 
 ---@param newLevel boolean
 function ESCORT_BEGGAR:AbandonBeggars(_, newLevel)
@@ -684,7 +685,7 @@ function ESCORT_BEGGAR:RenderRoom(familiar, offset)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_FAMILIAR_RENDER, ESCORT_BEGGAR.RenderRoom, ESCORT_BEGGAR.FAMILIAR)
+--Mod:AddCallback(ModCallbacks.MC_POST_FAMILIAR_RENDER, ESCORT_BEGGAR.RenderRoom, ESCORT_BEGGAR.FAMILIAR)
 
 function ESCORT_BEGGAR:EnterDestinationRoom()
 	local floor_save = Mod:FloorSave()

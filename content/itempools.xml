@@ -348,6 +348,8 @@
 		<Item Id="21" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Blue Map -->
 		<Item Id="246" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<!-- X-Ray Vision -->
+		<Item Id="76" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Book of Secrets -->
 		<Item Id="287" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- The Ladder -->
@@ -372,6 +374,8 @@
 		<Item Id="580" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Undefined -->
 		<Item Id="324" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<!-- Lil Portal -->
+		<Item Id="681" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Cosmic Omnibus" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 </ItemPools>

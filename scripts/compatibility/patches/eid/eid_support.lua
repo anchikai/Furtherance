@@ -97,6 +97,7 @@ local eid_icons = Sprite("gfx/ui/eid_fr_icons.anm2", true)
 
 EID:addIcon("StrengthStatus", "Strength", 0, 10, 9, 1, 1, eid_icons)
 EID:addIcon("MoonHeart", "Moon Heart", 0, 10, 9, 1, 1, eid_icons)
+EID:addIcon("ItemPoolEscortBeggar", "ItemPoolEscortBeggar", 0, 11, 11, 0, 0, eid_icons)
 
 --#endregion
 
@@ -703,13 +704,13 @@ EID_Entities = {
 		},
 		[Mod.Slot.ESCORT_BEGGAR.SLOT] = {
 			[0] = {
-				_modifier = function()
-
-				end,
 				en_us = {
 					Name = "Escort Beggar",
 					Description = {
-						"PlaceholderDesc"
+						"Can be picked up and carried to the requested special room on the floor for a reward from their {{ItemPoolEscortBeggar}} Item Pool",
+						"#{{Throwable}} Throw against enemies to knock them back for 5 damage",
+						"#!!! Can take damage and will die after 3 hits",
+						"#!!! Will be abducted if left in a previous room for too long"
 					}
 				}
 			}

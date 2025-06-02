@@ -1,5 +1,5 @@
 <AnimatedActor>
-	<Info CreatedBy="Unknown" CreatedOn="6/2/2025 1:43:17 PM" Version="31" Fps="30"/>
+	<Info CreatedBy="Unknown" CreatedOn="6/2/2025 4:08:50 PM" Version="32" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="items\slots\slot_005_escort_beggar.png" Id="0"/>
