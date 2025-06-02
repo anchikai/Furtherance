@@ -34,6 +34,7 @@ local BEGGAR_POSITION_OFFSET = Vector(0, 8)
 ESCORT_BEGGAR.THROW_OFFSET = Vector(0, -32)
 
 ESCORT_BEGGAR.SLOW_DOWN = -0.5
+ESCORT_BEGGAR.ABANDONED_COUNTDOWN = 30 * 5
 
 --#endregion
 
@@ -96,24 +97,29 @@ end
 ---@param slot EntitySlot
 function ESCORT_BEGGAR:OnSlotInit(slot)
 	local room_save = Mod:RoomSave(slot)
-	if not room_save.EscortRoom then
-		local escortRoom = ESCORT_BEGGAR:FindFarthestSpecialRoom()
-		if escortRoom then
-			room_save.EscortRoom = escortRoom
-		end
-	else
-		local hand = Mod.Spawn.Effect(EffectVariant.BIG_HORN_HAND, 0, slot.Position, Vector.Zero, slot)
-		hand:GetSprite():Play("SmallHoleOpen")
-		hand.Target = slot
-		slot.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
+
+	slot.PositionOffset = Vector(0, 5)
+
+	if slot.SpawnerType == EntityType.ENTITY_FAMILIAR and slot.SpawnerVariant == ESCORT_BEGGAR.FAMILIAR then
+		return
 	end
-	if not room_save.EscortRoom
-		or #Isaac.FindByType(EntityType.ENTITY_SLOT, ESCORT_BEGGAR.SLOT) > 0
+
+	if #Isaac.FindByType(EntityType.ENTITY_SLOT, ESCORT_BEGGAR.SLOT) > 0
 		or Mod.Game:IsGreedMode()
 	then
 		slot:Remove()
 		Mod.Spawn.Slot(SlotVariant.BEGGAR, slot.Position, slot.SpawnerEntity, slot.InitSeed)
 		return
+	end
+	if not room_save.EscortRoom then
+		local escortRoom = ESCORT_BEGGAR:FindFarthestSpecialRoom()
+		if escortRoom then
+			room_save.EscortRoom = escortRoom
+		else
+			slot:Remove()
+			Mod.Spawn.Slot(SlotVariant.BEGGAR, slot.Position, slot.SpawnerEntity, slot.InitSeed)
+			return
+		end
 	end
 
 	local data = Mod:GetData(slot)
@@ -127,33 +133,9 @@ function ESCORT_BEGGAR:OnSlotInit(slot)
 	local sprite = Sprite(slot:GetSprite():GetFilename(), true)
 	sprite:SetFrame("Signs", roomFrame)
 	data.RoomSign = sprite
-	slot.PositionOffset = Vector(0, 5)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_SLOT_INIT, ESCORT_BEGGAR.OnSlotInit, ESCORT_BEGGAR.SLOT)
-
----@param effect EntityEffect
-function ESCORT_BEGGAR:BigHornHand(effect)
-	if effect.SpawnerType == EntityType.ENTITY_SLOT
-		and effect.SpawnerVariant == ESCORT_BEGGAR.SLOT
-	then
-		local sprite = effect:GetSprite()
-		if sprite:IsFinished("SmallHoleOpen") then
-			sprite:Play("HandGrab")
-		elseif sprite:IsEventTriggered("Slam") and effect.SpawnerEntity then
-			ESCORT_BEGGAR:DeathParticles(effect.SpawnerEntity.Position)
-			effect.SpawnerEntity:Remove()
-			Mod.SFXMan:Play(SoundEffect.SOUND_ISAACDIES, 1, 2, false, 1.5)
-		elseif sprite:IsFinished("HandGrab") then
-			sprite:Play("SmallHoleClose")
-		elseif sprite:IsFinished("SmallHoleClose") then
-			effect:Remove()
-		end
-		return true
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_PRE_EFFECT_UPDATE, ESCORT_BEGGAR.BigHornHand, EffectVariant.BIG_HORN_HAND)
 
 ---@param slot EntitySlot
 function ESCORT_BEGGAR:OnSlotUpdate(slot)
@@ -161,16 +143,24 @@ function ESCORT_BEGGAR:OnSlotUpdate(slot)
 
 	if sprite:IsEventTriggered("Happy") then
 		Mod.SFXMan:Play(SoundEffect.SOUND_THUMBSUP)
-	end
-	if sprite:IsEventTriggered("SpawnFamiliar") then
+	elseif sprite:IsEventTriggered("SpawnFamiliar") then
 		local floor_save = Mod:FloorSave()
 		floor_save.EscortBeggars = (floor_save.EscortBeggars or 0) + 1
 		ESCORT_BEGGAR:GetFirstAlivePlayer():AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
-	end
-	if slot:GetState() == Mod.SlotState.BOMBED and not slot:IsDead() then
+	elseif slot:GetState() == Mod.SlotState.BOMBED and not slot:IsDead() then
 		ESCORT_BEGGAR:DeathParticles(slot.Position)
 		Mod.Level():SetStateFlag(LevelStateFlag.STATE_BUM_KILLED, true)
 		slot:Remove()
+	elseif slot:GetState() == Mod.SlotState.REWARD then
+		if sprite:IsEventTriggered("Prize") then
+			Mod.SFXMan:Play(SoundEffect.SOUND_SLOTSPAWN)
+			local itemID = Mod.Game:GetItemPool():GetCollectible(ESCORT_BEGGAR.ITEM_POOL, true, slot.InitSeed)
+			local pos = Mod.Room():FindFreePickupSpawnPosition(slot.Position, 40, true, false)
+			Mod.Spawn.Pickup(PickupVariant.PICKUP_COLLECTIBLE, itemID, pos, nil, slot, slot.InitSeed)
+		elseif sprite:IsFinished("Prize") then
+			sprite:Play("Teleport")
+			slot:SetState(Mod.SlotState.PAYOUT)
+		end
 	end
 end
 
@@ -217,9 +207,9 @@ Mod:AddCallback(ModCallbacks.MC_POST_SLOT_COLLISION, ESCORT_BEGGAR.OnSlotCollisi
 --#region Spawning beggar
 
 function ESCORT_BEGGAR:GetFirstAlivePlayer()
-	return Mod.Foreach.Player(function(_player, index)
-		if not _player:IsCoopGhost() and not _player:IsDead() then
-			return _player
+	return Mod.Foreach.Player(function(player, index)
+		if not player:IsCoopGhost() and not player:IsDead() and player.Variant == PlayerVariant.PLAYER then
+			return player
 		end
 	end)
 end
@@ -237,6 +227,7 @@ function ESCORT_BEGGAR:OnFamiliarCache(player)
 			familiar.Position = slot.Position
 			familiar:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
 			familiar.Visible = true
+			Mod:FloorSave(familiar).EscortRoom = Mod:RoomSave(slot).EscortRoom
 			slot:Remove()
 		end
 		familiar:GetSprite():Play(ESCORT_BEGGAR.ANIM_RAISE_HANDS)
@@ -251,7 +242,7 @@ function ESCORT_BEGGAR:OnFamiliarInit(familiar)
 	familiar.SpriteOffset = Vector(0, -1.5)
 	local initAnim = ESCORT_BEGGAR.ANIM_RAISE_HANDS
 	local room_save = Mod:RoomSave()
-	if room_save.AbandonedEscorts then
+	if room_save.AbandonedFamiliarEscorts then
 		initAnim = "IdleSit"
 	end
 	familiar:GetSprite():Play(initAnim)
@@ -410,12 +401,12 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, ESCORT_BEGGAR.SlowWhileHolding, 
 
 --#endregion
 
---#region Drop beggar on room transition
+--#region Leaving beggars in rooms
 
 function ESCORT_BEGGAR:RenderExpectedBeggars()
 	local floor_save = Mod.SaveManager.TryGetFloorSave()
-	if floor_save and floor_save.EscortBeggars then
-		Isaac.RenderText("Num Escorts: " .. tostring(floor_save.EscortBeggars), 50, 50, 1, 1, 1, 1)
+	if floor_save and (floor_save.EscortBeggars or floor_save.TotalAbandonedEscorts) then
+		Isaac.RenderText("Num Escorts: " .. tostring(floor_save.EscortBeggars or 0), 50, 50, 1, 1, 1, 1)
 		Isaac.RenderText("Num Abandoned Escorts: " .. tostring(floor_save.TotalAbandonedEscorts or 0), 50, 70, 1, 1, 1, 1)
 	end
 end
@@ -423,28 +414,40 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_RENDER, ESCORT_BEGGAR.RenderExpectedBeggars)
 
 ---@param newLevel boolean
-function ESCORT_BEGGAR:CheckHoldOnRoomExit(_, newLevel)
+function ESCORT_BEGGAR:AbandonBeggars(_, newLevel)
 	if newLevel then return end
 	local floor_save = Mod:FloorSave()
 	local noBitches = (floor_save.EscortBeggars or 0) == 0
 	local room_save = Mod:RoomSave()
 	local room = Mod.Room()
+	local abandonedBeggars = false
 
 	Mod.Foreach.Familiar(function (familiar, index)
 		if not ESCORT_BEGGAR:IsHeldByPlayer(familiar) or newLevel then
 			if noBitches then return true end
 
-			room_save.AbandonedEscorts = room_save.AbandonedEscorts or {Num = 0, Positions = {}}
-			room_save.AbandonedEscorts.Num = room_save.AbandonedEscorts.Num + 1
+			room_save.AbandonedFamiliarEscorts = room_save.AbandonedFamiliarEscorts or {}
 			local position = familiar.Position
-			if not room:CheckLine(familiar.Player.Position, position, LineCheckMode.ENTITY, 3000) then
+			local playerPos = Mod.Room():FindFreeTilePosition(familiar.Player.Position, 40)
+			if not room:CheckLine(playerPos, position, LineCheckMode.ENTITY, 3000, true) then
 				position = room:FindFreeTilePosition(familiar.Player.Position, 80)
 			end
-			Mod.Insert(room_save.AbandonedEscorts.Positions, {X = position.X, Y = position.Y})
-			floor_save.TotalAbandonedEscorts = (floor_save.TotalAbandonedEscorts or 0) + room_save.AbandonedEscorts.Num
+			Mod.Insert(room_save.AbandonedFamiliarEscorts, {Position = {X = position.X, Y = position.Y}, EscortRoom = Mod:FloorSave(familiar).EscortRoom})
+			floor_save.TotalAbandonedEscorts = (floor_save.TotalAbandonedEscorts or 0) + 1
 			floor_save.EscortBeggars = floor_save.EscortBeggars - 1
+			abandonedBeggars = true
 		end
 	end, ESCORT_BEGGAR.FAMILIAR)
+
+	local numSlotBeggars = #Isaac.FindByType(EntityType.ENTITY_SLOT, ESCORT_BEGGAR.SLOT)
+	if numSlotBeggars > 0 then
+		floor_save.TotalAbandonedEscorts = (floor_save.TotalAbandonedEscorts or 0) + numSlotBeggars
+		abandonedBeggars = true
+	end
+
+	if abandonedBeggars then
+		room_save.AbandonedEscortCountdown = ESCORT_BEGGAR.ABANDONED_COUNTDOWN
+	end
 
 	if noBitches and not newLevel then return end
 
@@ -454,7 +457,23 @@ function ESCORT_BEGGAR:CheckHoldOnRoomExit(_, newLevel)
 	Mod.Game:Render()
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_ROOM_EXIT, ESCORT_BEGGAR.CheckHoldOnRoomExit)
+Mod:AddCallback(ModCallbacks.MC_PRE_ROOM_EXIT, ESCORT_BEGGAR.AbandonBeggars)
+
+function ESCORT_BEGGAR:AbandonedEscortCountdown()
+	local floor_save = Mod.SaveManager.TryGetFloorSave()
+	if floor_save and (floor_save.TotalAbandonedEscorts or 0) > 0 then
+		local all_room_saves = Mod.SaveManager.GetEntireSave().game.room
+		for listIndex, full_room_save in pairs(all_room_saves) do
+			local room_save = full_room_save["GLOBAL"]
+			if (room_save.AbandonedEscortCountdown or 0) > 0 then
+				room_save.AbandonedEscortCountdown = room_save.AbandonedEscortCountdown - 1
+				print(room_save.AbandonedEscortCountdown)
+			end
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, ESCORT_BEGGAR.AbandonedEscortCountdown)
 
 function ESCORT_BEGGAR:ResetOnNewFloor()
 	local floor_save = Mod:FloorSave()
@@ -467,23 +486,75 @@ end
 
 Mod:AddCallback(Mod.SaveManager.SaveCallbacks.PRE_FLOOR_DATA_RESET, ESCORT_BEGGAR.ResetOnNewFloor)
 
+function ESCORT_BEGGAR:SpawnBigHornHand(ent, fakeOut)
+	local hand = Mod.Spawn.Effect(EffectVariant.BIG_HORN_HAND, 0, ent.Position, Vector.Zero, ent)
+	local sprite = hand:GetSprite()
+	if fakeOut then
+		sprite:Play("SmallHoleClose")
+	else
+		sprite:Play("SmallHoleOpen")
+		ent.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
+		hand.Target = ent
+	end
+end
+
+---@param effect EntityEffect
+function ESCORT_BEGGAR:BigHornHand(effect)
+	if (effect.SpawnerType == EntityType.ENTITY_SLOT
+		and effect.SpawnerVariant == ESCORT_BEGGAR.SLOT)
+	or (effect.SpawnerType == EntityType.ENTITY_FAMILIAR
+		and effect.SpawnerVariant == ESCORT_BEGGAR.FAMILIAR)
+	then
+		local sprite = effect:GetSprite()
+		if sprite:IsFinished("SmallHoleOpen") then
+			sprite:Play("HandGrab")
+		elseif sprite:IsEventTriggered("Slam") and effect.SpawnerEntity then
+			ESCORT_BEGGAR:DeathParticles(effect.SpawnerEntity.Position)
+			effect.SpawnerEntity:Remove()
+			Mod.SFXMan:Play(SoundEffect.SOUND_ISAACDIES, 1, 2, false, 1.5)
+		elseif sprite:IsFinished("HandGrab") then
+			sprite:Play("SmallHoleClose")
+		elseif sprite:IsFinished("SmallHoleClose") then
+			effect:Remove()
+		end
+		return true
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_EFFECT_UPDATE, ESCORT_BEGGAR.BigHornHand, EffectVariant.BIG_HORN_HAND)
+
 function ESCORT_BEGGAR:RespawnBeggarOnEntry()
 	local room_save = Mod:RoomSave()
-	if room_save.AbandonedEscorts then
+	local floor_save = Mod:FloorSave()
+	local shouldKill = (room_save.AbandonedEscortCountdown or 1) == 0
+
+	if room_save.AbandonedFamiliarEscorts then
 		local player = ESCORT_BEGGAR:GetFirstAlivePlayer()
-		for _ = 1, room_save.AbandonedEscorts.Num do
-			local saved_pos = room_save.AbandonedEscorts.Positions
-			local spawnPos = Vector(saved_pos[1].X, saved_pos[1].Y)
+		for _, abandoned_beggar in ipairs(room_save.AbandonedFamiliarEscorts) do
+			local spawnPos = Vector(abandoned_beggar.Position.X, abandoned_beggar.Position.Y)
 			local familiar = Isaac.Spawn(EntityType.ENTITY_FAMILIAR, ESCORT_BEGGAR.FAMILIAR, 0, spawnPos, Vector.Zero, player)
-			table.remove(saved_pos, 1)
+			Mod:FloorSave(familiar).EscortRoom = (abandoned_beggar.EscortRoom)
 			familiar:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
 			familiar.Visible = true
-			Mod:GetData(familiar).ReactOnApproach = true
+			ESCORT_BEGGAR:SpawnBigHornHand(familiar, not shouldKill)
+			if not shouldKill then
+				Mod:GetData(familiar).ReactOnApproach = true
+			end
 		end
-		local floor_save = Mod:FloorSave()
-		floor_save.EscortBeggars = (floor_save.EscortBeggars or 0) + room_save.AbandonedEscorts.Num
-		floor_save.TotalAbandonedEscorts = floor_save.TotalAbandonedEscorts - room_save.AbandonedEscorts.Num
-		room_save.AbandonedEscorts = nil
+		if not shouldKill then
+			floor_save.EscortBeggars = (floor_save.EscortBeggars or 0) + #room_save.AbandonedFamiliarEscorts
+		end
+		floor_save.TotalAbandonedEscorts = floor_save.TotalAbandonedEscorts - #room_save.AbandonedFamiliarEscorts
+		room_save.AbandonedFamiliarEscorts = nil
+	end
+
+	Mod.Foreach.Slot(function (slot, index)
+		ESCORT_BEGGAR:SpawnBigHornHand(slot, not shouldKill)
+		floor_save.TotalAbandonedEscorts = floor_save.TotalAbandonedEscorts - 1
+	end, ESCORT_BEGGAR.SLOT)
+
+	if not shouldKill then
+		room_save.AbandonedEscortCountdown = nil
 	end
 end
 
@@ -568,7 +639,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, ESCORT_BEGGAR.OnFamiliarDeath,
 function ESCORT_BEGGAR:DeathParticles(pos)
 	Mod.Spawn.DustClouds(pos)
 	for _ = 1, 4 do
-		local rock = Mod.Spawn.Effect(EffectVariant.ROCK_PARTICLE, 0, pos, RandomVector():Resized(Mod:RandomNum(0, 4) + Mod:RandomNum()))
+		local rock = Mod.Spawn.Effect(EffectVariant.ROCK_PARTICLE, 0, pos, RandomVector():Resized(Mod:RandomNum(1, 5) + Mod:RandomNum()))
 		local sprite = rock:GetSprite()
 		Mod:DelayOneFrame(function()
 			sprite:ReplaceSpritesheet(0, "gfx/grid/escort_beggar_rubble.png", true)
@@ -601,6 +672,44 @@ Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, ESCORT_BEGGAR.OnDeathAnim, E
 
 --#endregion
 
+--#region Deliver beggar to room
+
+---!Placeholder. Could use a thought bubble and display the icon, but that needs a sprite.
+---@param familiar EntityFamiliar
+function ESCORT_BEGGAR:RenderRoom(familiar, offset)
+	local familiar_floor_save = Mod:FloorSave(familiar)
+	if familiar_floor_save.EscortRoom and familiar:GetSprite():IsPlaying("IdleSit") then
+		local renderPos = Mod:GetEntityRenderPosition(familiar, offset)
+		Isaac.RenderText(tostring(familiar_floor_save.EscortRoom), renderPos.X, renderPos.Y - 30, 1, 1, 1, 1)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_FAMILIAR_RENDER, ESCORT_BEGGAR.RenderRoom, ESCORT_BEGGAR.FAMILIAR)
+
+function ESCORT_BEGGAR:EnterDestinationRoom()
+	local floor_save = Mod:FloorSave()
+	if floor_save.EscortBeggars == 0 then return end
+	local room = Mod.Room()
+	local player = ESCORT_BEGGAR:GetFirstAlivePlayer()
+
+	Mod.Foreach.Familiar(function (familiar, index)
+		local familiar_floor_save = Mod:FloorSave(familiar)
+		if room:GetType() == (familiar_floor_save.EscortRoom or 0) then
+			floor_save.EscortBeggars = floor_save.EscortBeggars - 1
+			local slot = Mod.Spawn.Slot(ESCORT_BEGGAR.SLOT, room:FindFreePickupSpawnPosition(familiar.Position, 40, true), familiar, familiar.InitSeed)
+			slot:SetState(Mod.SlotState.REWARD)
+			slot:GetSprite():Play("Prize")
+			familiar:Remove()
+		end
+	end, ESCORT_BEGGAR.FAMILIAR)
+
+	player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, ESCORT_BEGGAR.EnterDestinationRoom)
+
+--#endregion
+
 --#region Basic familiar callbacks
 
 ---@param familiar EntityFamiliar
@@ -622,7 +731,6 @@ function ESCORT_BEGGAR:OnFamiliarUpdate(familiar)
 	ESCORT_BEGGAR:ThrowUpdate(familiar)
 	ESCORT_BEGGAR:HappyToSeeYou(familiar)
 end
-
 
 Mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, ESCORT_BEGGAR.OnFamiliarUpdate, ESCORT_BEGGAR.FAMILIAR)
 

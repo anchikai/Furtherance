@@ -251,6 +251,11 @@ function Furtherance:RunIDCheck()
 	end
 end
 
+Mod:AddCallback(ModCallbacks.MC_POST_SLOT_RENDER, function(_, slot, offset)
+	local renderPos = Mod:GetEntityRenderPosition(slot, offset)
+	Isaac.RenderText(slot:GetState(), renderPos.X, renderPos.Y, 1, 1, 1, 1)
+end)
+
 --!End of file
 
 Mod.Include("scripts.compatibility.patches.eid.eid_support")

@@ -339,6 +339,7 @@ end
 
 local inverseTearTable = Furtherance:Invert(bloodTearTable)
 
+---@param tear EntityTear
 function Furtherance:IsBloodTear(tear)
 	return inverseTearTable[tear.Variant] ~= nil
 end
@@ -349,6 +350,7 @@ function Furtherance:ShouldUpdateLudo(tear, player)
 	return math.floor(tear.FrameCount / player.MaxFireDelay) ~= math.floor((tear.FrameCount - 1) / player.MaxFireDelay)
 end
 
+---@param ent Entity
 function Furtherance:IsDeadEnemy(ent)
 	return ent:IsActiveEnemy(true) or ent:ToNPC() and ent:ToNPC().CanShutDoors
 end
@@ -356,4 +358,15 @@ end
 ---@return string
 function Furtherance:GetHealthPath()
 	return not CustomHealthAPI and "gfx/ui/ui_hearts.anm2" or "gfx/ui/CustomHealthAPI/hearts.anm2"
+end
+
+---@param ent Entity
+---@param offset Vector
+function Furtherance:GetEntityRenderPosition(ent, offset)
+	local renderMode = Furtherance.Room():GetRenderMode()
+	if renderMode == RenderMode.RENDER_WATER_REFLECT then
+		return Isaac.WorldToRenderPosition(ent.Position + ent.PositionOffset) + offset
+	else
+		return Isaac.WorldToScreen(ent.Position + ent.PositionOffset)
+	end
 end
