@@ -4,7 +4,7 @@ local POLARITY_SHIFT = Mod.Item.POLARITY_SHIFT
 
 local SPIRITUAL_WOUND = {}
 
-Furtherance.Item.SPIRITUAL_WOUND = SPIRITUAL_WOUND
+Furtherance.Character.MIRIAM_B.SPIRITUAL_WOUND = SPIRITUAL_WOUND
 
 SPIRITUAL_WOUND.SFX_START = Isaac.GetSoundIdByName("Spiritual Wound Start")
 SPIRITUAL_WOUND.SFX_DEATH_FIELD_START = Isaac.GetSoundIdByName("Death Field Start")
@@ -26,7 +26,7 @@ SPIRITUAL_WOUND.DEATH_FIELD_COLOR = Color(1, 1, 1, 1, 0, 0, 0, 2.5, 0, 2.5, 1)
 
 SPIRITUAL_WOUND.IS_FIRING = false
 
-local INNATE_COLLECTIBLES = {
+SPIRITUAL_WOUND.INNATE_COLLECTIBLES = {
 	CollectibleType.COLLECTIBLE_MONSTROS_LUNG,
 	CollectibleType.COLLECTIBLE_TECHNOLOGY,
 	CollectibleType.COLLECTIBLE_SOY_MILK
@@ -126,7 +126,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SPIRITUAL_WOUND.HandleFirin
 function SPIRITUAL_WOUND:RemoveInnateItems(player)
 	local data = Mod:GetData(player)
 	if data.IsMiriamB and not MIRIAM_B:IsMiriamB(player) then
-		local INNATE_MAP = Mod:Set(INNATE_COLLECTIBLES)
+		local INNATE_MAP = Mod:Set(SPIRITUAL_WOUND.INNATE_COLLECTIBLES)
 		local spoofList = player:GetSpoofedCollectiblesList()
 
 		for _, spoof in pairs(spoofList) do
@@ -187,7 +187,7 @@ Mod:AddCallback(ModCallbacks.MC_PRE_SFX_PLAY, SPIRITUAL_WOUND.StopSFX, SoundEffe
 function SPIRITUAL_WOUND:TryAddInnateItems(player)
 	if MIRIAM_B:IsMiriamB(player) then
 		Mod:GetData(player).IsMiriamB = true
-		for _, itemID in ipairs(INNATE_COLLECTIBLES) do
+		for _, itemID in ipairs(SPIRITUAL_WOUND.INNATE_COLLECTIBLES) do
 			if not player:HasCollectible(itemID, false, true) then
 				player:AddInnateCollectible(itemID)
 				local itemConfigItem = Mod.ItemConfig:GetCollectible(itemID)

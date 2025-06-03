@@ -534,6 +534,16 @@ return function(modifiers)
 		[Item.POLARITY_SHIFT.ID_1] = {
 			Name = "Polarity Shift",
 			Description = {
+				"{{Battery}} Charges with damage dealt",
+				"#{{Timer}} Receive for 10 seconds:",
+				"#{{ArrowDown}} {{Tears}} -Stat 1 down",
+				"#{{ArrowDown}} {{Damage}} -Stat 2 down",
+				"#Restricts Isaac's attack to a flurry of lightning strikes"
+			}
+		},
+		[Item.POLARITY_SHIFT.ID_2] = {
+			Name = "Polarity Shift",
+			Description = {
 				"Changes Spiritual Wound to Chain Lightning",
 				"#Can only be activated while Isaac has {{Heart}} Red Hearts",
 				"#While active:",

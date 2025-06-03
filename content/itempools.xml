@@ -64,6 +64,7 @@
 		<Item Name="Exsanguination" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Severed Ear" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Epitaph" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Polarity Shift" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="angel">
 		<Item Name="Keys to the Kingdom" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -243,6 +244,7 @@
 		<Item Name="Exsanguination" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Severed Ear" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Epitaph" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Polarity Shift" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="greedAngel">
 		<Item Name="Keys to the Kingdom" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>

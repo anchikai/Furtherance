@@ -54,26 +54,26 @@
 	<!-- <passive id="69" name="Peter's Bloody Fracture" description="" gfx="peters_bloody_fracture.png" quality="3" craftquality="3" /> -->
 	<!-- <passive id="70" name="Miriam's Headband" description="" gfx="miriams_headband.png" quality="3" craftquality="3" /> -->
 	<!-- <passive id="71" name="Miriam's Putrid Veil" description="" gfx="miriams_putrid_veil.png" quality="3" craftquality="3" /> -->
-	<passive id="74" name="Keratoconus" description="Soft gazing eyes" gfx="keratoconus.png" achievement="Keratoconus" cache="shotspeed range" quality="2" craftquality="2" tags="offensive summonable" />
-	<passive id="76" name="Cardiomyopathy" description="My chest hurts" gfx="cardiomyopathy.png" quality="2" craftquality="2" tags="nolostbr summonable" />
-	<passive id="77" name="Sunscreen" description="Beat the heat!" gfx="sunscreen.png" quality="0" craftquality="0" tags="summonable" />
-	<passive id="81" name="Rotten Apple" description="Random worm + Damage up" gfx="rotten_apple.png" cache="damage" quality="1" craftquality="1" tags="offensive" />
-	<passive id="82" name="Beginner's Luck" description="Fading fortune" gfx="beginners_luck.png" cache="luck" quality="2" craftquality="2" persistent="true" tags="offensive nogreed" />
-	<passive id="83" name="Box of Belongings" description="All that is evil of this world" gfx="box_of_belongings.png" quality="1" craftquality="1" tags="offensive" />
-	<passive id="84" name="Chi Rho" description="Faithful intervention" gfx="chi_rho.png" achievement="Chi Rho" quality="3" craftquality="3" tag="offensive summonable" />
-	<passive id="85" name="Leah's Heart" description="Her heart beats" gfx="leahs_heart.png" achievement="Leah's Heart" cache="damage" shopprice="30" devilprice="2" quality="3" craftquality="3" tags="summonable" />
-	<passive id="86" name="Pallium" description="Authority" gfx="pallium.png" achievement="Pallium" quality="4" craftquality="4" tags="angel offensive summonable" />
-	<passive id="87" name="Cold Hearted" description="Icy touch" gfx="cold_hearted.png" achievement="Cold Hearted" quality="3" craftquality="3" tags="nolostbr" />
-	<passive id="88" name="Coffee Break" description="HP + speed up" gfx="coffee_break.png" cache="speed" maxhearts="2" hearts="4" soulhearts="2" quality="2" craftquality="2" tags="nolostbr" />
-	<passive id="89" name="Rue" description="Love's undoing" gfx="rue.png" achievement="Rue" quality="3" craftquality="3" tags="nolostbr summonable" />
-	<passive id="90" name="Exsanguination" description="Rarer hearts" gfx="exsanguination.png" achievement="Exsanguination" cache="damage" quality="2" craftquality="2" tags="offensive summonable" />
-	<passive id="93" name="Molten Gold" description="It's more valuable this way..." gfx="molten_gold.png" achievement="Molten Gold" quality="2" craftquality="2" tags="nolostbr summonable" />
-	<passive id="94" name="Trepanation" description="Blood mortar" gfx="trepanation.png" quality="3" craftquality="3" tags="offensive summonable" />
-	<passive id="96" name="Liberation" description="Let go your earthly tether" gfx="liberation.png" achievement="Liberation" cache="flying" quality="1" craftquality="1" tags="offensive summonable" />
-	<passive id="97" name="Severed Ear" description="Battle trophy" gfx="severed_ear.png" achievement="Severed Ear" cache="damage firedelay range shotspeed" quality="2" craftquality="2" tags="offensive summonable" />
-	<passive id="98" name="Golden Port" description="Money charge" gfx="golden_port.png" achievement="Golden Port" quality="3" craftquality="3" tags="offensive summonable nocantrip" />
-	<passive id="99" name="Itching Powder" description="Double damage?" gfx="itching_powder.png" achievement="Itching Powder" quality="1" craftquality="1" cooldown="30" persistent="true" tags="nolostbr summonable" />
-	<passive id="100" name="Epitaph" description="Down for the count" gfx="epitaph.png" quality="2" craftquality="2" tags="lazarusshared offensive nochallenge noeden" /> <!-- Concept by DLNT! -->
+	<passive id="75" name="Keratoconus" description="Soft gazing eyes" gfx="keratoconus.png" achievement="Keratoconus" cache="shotspeed range" quality="2" craftquality="2" tags="offensive summonable" />
+	<passive id="77" name="Cardiomyopathy" description="My chest hurts" gfx="cardiomyopathy.png" quality="2" craftquality="2" tags="nolostbr summonable" />
+	<passive id="78" name="Sunscreen" description="Beat the heat!" gfx="sunscreen.png" quality="0" craftquality="0" tags="summonable" />
+	<passive id="82" name="Rotten Apple" description="Random worm + Damage up" gfx="rotten_apple.png" cache="damage" quality="1" craftquality="1" tags="offensive" />
+	<passive id="83" name="Beginner's Luck" description="Fading fortune" gfx="beginners_luck.png" cache="luck" quality="2" craftquality="2" persistent="true" tags="offensive nogreed" />
+	<passive id="84" name="Box of Belongings" description="All that is evil of this world" gfx="box_of_belongings.png" quality="1" craftquality="1" tags="offensive" />
+	<passive id="85" name="Chi Rho" description="Faithful intervention" gfx="chi_rho.png" achievement="Chi Rho" quality="3" craftquality="3" tag="offensive summonable" />
+	<passive id="86" name="Leah's Heart" description="Her heart beats" gfx="leahs_heart.png" achievement="Leah's Heart" cache="damage" shopprice="30" devilprice="2" quality="3" craftquality="3" tags="summonable" />
+	<passive id="87" name="Pallium" description="Authority" gfx="pallium.png" achievement="Pallium" quality="4" craftquality="4" tags="angel offensive summonable" />
+	<passive id="88" name="Cold Hearted" description="Icy touch" gfx="cold_hearted.png" achievement="Cold Hearted" quality="3" craftquality="3" tags="nolostbr" />
+	<passive id="89" name="Coffee Break" description="HP + speed up" gfx="coffee_break.png" cache="speed" maxhearts="2" hearts="4" soulhearts="2" quality="2" craftquality="2" tags="nolostbr" />
+	<passive id="90" name="Rue" description="Love's undoing" gfx="rue.png" achievement="Rue" quality="3" craftquality="3" tags="nolostbr summonable" />
+	<passive id="91" name="Exsanguination" description="Rarer hearts" gfx="exsanguination.png" achievement="Exsanguination" cache="damage" quality="2" craftquality="2" tags="offensive summonable" />
+	<passive id="94" name="Molten Gold" description="It's more valuable this way..." gfx="molten_gold.png" achievement="Molten Gold" quality="2" craftquality="2" tags="nolostbr summonable" />
+	<passive id="95" name="Trepanation" description="Blood mortar" gfx="trepanation.png" quality="3" craftquality="3" tags="offensive summonable" />
+	<passive id="97" name="Liberation" description="Let go your earthly tether" gfx="liberation.png" achievement="Liberation" cache="flying" quality="1" craftquality="1" tags="offensive summonable" />
+	<passive id="98" name="Severed Ear" description="Battle trophy" gfx="severed_ear.png" achievement="Severed Ear" cache="damage firedelay range shotspeed" quality="2" craftquality="2" tags="offensive summonable" />
+	<passive id="99" name="Golden Port" description="Money charge" gfx="golden_port.png" achievement="Golden Port" quality="3" craftquality="3" tags="offensive summonable nocantrip" />
+	<passive id="100" name="Itching Powder" description="Double damage?" gfx="itching_powder.png" achievement="Itching Powder" quality="1" craftquality="1" cooldown="30" persistent="true" tags="nolostbr summonable" />
+	<passive id="101" name="Epitaph" description="Down for the count" gfx="epitaph.png" quality="2" craftquality="2" tags="lazarusshared offensive nochallenge noeden" /> <!-- Concept by DLNT! -->
 
 	<!-- Active Items -->
 	<active id="21" name="Book of Swiftness" description="Temporary speed up" gfx="book_of_swiftness.png" maxcharges="3" cache="speed" quality="2" craftquality="2" tags="book offensive" />
@@ -92,15 +92,15 @@
 	<active id="57" name="Alternate Reality" description="All" gfx="alternate_reality.png" quality="0" craftquality="0" tags="nochallenge offensive nogreed" />
 	<active id="61" name="Cosmic Omnibus" description="Soar above the heavens" gfx="cosmic_omnibus.png" maxcharges="6" quality="3" craftquality="3" tags="book offensive" />
 	<active id="65" name="D9" description="Reroll your journey" gfx="d9.png" maxcharges="4" quality="1" craftquality="1" tags="offensive" />
-	<active id="72" name="Polarity Shift" description="Reverberating force" gfx="polarity_shift.png" cache="tearflag tearcolor" hidden="true" maxcharges="0" quality="0" craftquality="0" customtag="nometronome" />
-	<active id="72" name=" Polarity Shift" description="Reverberating force" gfx="polarity_shift_alt.png" cache="tearflag tearcolor" hidden="true" maxcharges="0" quality="0" craftquality="0" customtag="nometronome" />
-	<active id="73" name="Book of Books" description="Endless books!" gfx="book_of_books.png" maxcharges="6" quality="4" craftquality="4" tags="book offensive" /> <!-- Concept by retro100! -->
-	<active id="75" name="Servitude" description="7 years of labour" gfx="servitude.png" maxcharges="8" quality="2" craftquality="2" chargetype="special" tags="nocantrip" customtag="nometronome" />
-	<active id="78" name="Secret Diary" description="No one can know" gfx="secret_diary.png" achievement="Secret Diary" maxcharges="6" quality="2" craftquality="3" tags="book nocantrip" />
-	<active id="79" name="D16" description="Rerolls hearts" gfx="d16.png" achievement="D16" maxcharges="4" quality="1" craftquality="1" tags="offensive" />
-	<active id="91" name="Prayer Journal" description="Scripture" gfx="prayer_journal.png" achievement="Prayer Journal" maxcharges="4" quality="2" craftquality="2" tags="book nolostbr" />
-	<active id="92" name="Book of Leviticus" description="Set in stone" gfx="book_of_leviticus.png" achievement="Book of Leviticus" maxcharges="3" quality="2" craftquality="2" tags="book offensive" />
-	<active id="95" name="Astragali" description="Reroll your biddings" gfx="astragali.png" achievement="Astragali" maxcharges="4" quality="1" craftquality="1" />
+	<active id="72" name="Polarity Shift" description="Reverberating force" gfx="polarity_shift.png" cache="tearflag tearcolor" maxcharges="5000" initcharge="0" persistent="true" countdown="300" chargetype="special" quality="1" craftquality="1" customtag="nometronome" />
+	<active id="73" name=" Polarity Shift" description="Reverberating force" gfx="polarity_shift.png" cache="tearflag tearcolor" hidden="true" maxcharges="0" quality="0" craftquality="0" customtag="nometronome" />
+	<active id="74" name="Book of Books" description="Endless books!" gfx="book_of_books.png" maxcharges="6" quality="4" craftquality="4" tags="book offensive" /> <!-- Concept by retro100! -->
+	<active id="76" name="Servitude" description="7 years of labour" gfx="servitude.png" maxcharges="8" quality="2" craftquality="2" chargetype="special" tags="nocantrip" customtag="nometronome" />
+	<active id="79" name="Secret Diary" description="No one can know" gfx="secret_diary.png" achievement="Secret Diary" maxcharges="6" quality="2" craftquality="3" tags="book nocantrip" />
+	<active id="80" name="D16" description="Rerolls hearts" gfx="d16.png" achievement="D16" maxcharges="4" quality="1" craftquality="1" tags="offensive" />
+	<active id="92" name="Prayer Journal" description="Scripture" gfx="prayer_journal.png" achievement="Prayer Journal" maxcharges="4" quality="2" craftquality="2" tags="book nolostbr" />
+	<active id="93" name="Book of Leviticus" description="Set in stone" gfx="book_of_leviticus.png" achievement="Book of Leviticus" maxcharges="3" quality="2" craftquality="2" tags="book offensive" />
+	<active id="96" name="Astragali" description="Reroll your biddings" gfx="astragali.png" achievement="Astragali" maxcharges="4" quality="1" craftquality="1" />
 
 	<!-- Trinkets -->
 	<trinket id="0" name="Holy Heart" description="Protective hearts" gfx="holy_heart.png" achievement="Holy Heart"/> <!-- Concept by HoneyVee! -->
@@ -131,7 +131,7 @@
 	<!-- <familiar id="60" name="Brainstorm" description="Problem solving" gfx="brainstorm.png" quality="2" craftquality="2" /> -->
 	<familiar id="63" name="Blood Cyst" description="It's about to pop" gfx="blood_cyst.png" quality="2" craftquality="2" persistent="true" tags="offensive summonable" />
 	<familiar id="64" name="Polaris" description="May the star shine bright" gfx="polaris.png" cache="damage shotspeed" quality="4" craftquality="4" tags="uniquefamiliar offensive summonable monstermanual" />
-	<familiar id="80" name="Iron" description="Hot to the touch" gfx="iron.png" quality="3" craftquality="3" tags="offensive summonable monstermanual" />
+	<familiar id="81" name="Iron" description="Hot to the touch" gfx="iron.png" quality="3" craftquality="3" tags="offensive summonable monstermanual" />
 	<!-- Null Items -->
 	<null name="hope" />
 	<null name="polaris color" cache="damage shotspeed tearflag" persistent="true" />

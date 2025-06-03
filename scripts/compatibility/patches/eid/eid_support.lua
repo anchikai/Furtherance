@@ -328,8 +328,6 @@ end
 
 local EID_Collectibles = Mod.Include("scripts.compatibility.patches.eid.eid_items_descriptions")
 
-EID_Collectibles[Item.POLARITY_SHIFT.ID_2] = EID_Collectibles[Item.POLARITY_SHIFT.ID_1]
-
 for id, collectibleDescData in pairs(EID_Collectibles) do
 	for language, descData in pairs(collectibleDescData) do
 		if language:match('^_') then goto continue end -- skip helper private fields

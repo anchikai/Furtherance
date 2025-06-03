@@ -8,6 +8,7 @@
 	<costume id="43" anm2path="costume_pillar_of_fire.anm2" type="passive" hasOverlay="true" skinColor="1" overwriteColor="true" />
 	<costume id="47" anm2path="costume_quarantine.anm2" type="passive" />
 	<costume id="62" anm2path="costume_little_raincoat.anm2" type="passive" />
+	<costume id="72" anm2path="costume_polarity_shift.anm2" type="active" />
 	<costume id="74" anm2path="costume_keratoconus.anm2" type="passive" hasSkinAlt="true" />
 	<costume id="87" anm2path="costume_cold_hearted.anm2" type="passive" skinColor="0" overwriteColor="true" />
 	<costume id="89" anm2path="costume_rue.anm2" type="passive" />
