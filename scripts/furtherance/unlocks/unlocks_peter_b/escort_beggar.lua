@@ -492,16 +492,12 @@ end
 
 Mod:AddCallback(Mod.SaveManager.SaveCallbacks.PRE_FLOOR_DATA_RESET, ESCORT_BEGGAR.ResetOnNewFloor)
 
-function ESCORT_BEGGAR:SpawnBigHornHand(ent, fakeOut)
+function ESCORT_BEGGAR:SpawnBigHornHand(ent)
 	local hand = Mod.Spawn.Effect(EffectVariant.BIG_HORN_HAND, 0, ent.Position, Vector.Zero, ent)
 	local sprite = hand:GetSprite()
-	if fakeOut then
-		sprite:Play("SmallHoleClose")
-	else
-		sprite:Play("SmallHoleOpen")
-		ent.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
-		hand.Target = ent
-	end
+	sprite:Play("SmallHoleOpen")
+	ent.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
+	hand.Target = ent
 end
 
 ---@param effect EntityEffect
@@ -543,7 +539,7 @@ function ESCORT_BEGGAR:RespawnBeggarOnEntry()
 			Mod:FloorSave(familiar).EscortRoom = (abandoned_beggar.EscortRoom)
 			familiar:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
 			familiar.Visible = true
-			ESCORT_BEGGAR:SpawnBigHornHand(familiar, not shouldKill)
+			ESCORT_BEGGAR:SpawnBigHornHand(familiar)
 			if not shouldKill then
 				familiar:GetSprite():Play("StartSleep")
 			end
@@ -556,7 +552,7 @@ function ESCORT_BEGGAR:RespawnBeggarOnEntry()
 	end
 
 	Mod.Foreach.Slot(function(slot, index)
-		ESCORT_BEGGAR:SpawnBigHornHand(slot, not shouldKill)
+		ESCORT_BEGGAR:SpawnBigHornHand(slot)
 		floor_save.TotalAbandonedEscorts = floor_save.TotalAbandonedEscorts - 1
 	end, ESCORT_BEGGAR.SLOT)
 
