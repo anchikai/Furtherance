@@ -45,7 +45,7 @@ Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, PETER.DistributeSoulHeart
 function PETER:ForceNewAngel()
 	local level = Mod.Level()
 	if PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.PETER)
-		and level:GetAbsoluteStage() >= LevelStage.STAGE1_2
+		and (level:GetAbsoluteStage() >= LevelStage.STAGE1_2 or Mod:HasBitFlags(Mod.Level():GetCurses(), LevelCurse.CURSE_OF_LABYRINTH))
 		and Mod.Game:GetStateFlag(GameStateFlag.STATE_DEVILROOM_SPAWNED)
 	then
 		--Literally any angel room chance forces the 50/50, and if no angel room encountered, 100%
