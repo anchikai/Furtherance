@@ -360,6 +360,11 @@ function Furtherance:GetHealthPath()
 	return not CustomHealthAPI and "gfx/ui/ui_hearts.anm2" or "gfx/ui/CustomHealthAPI/hearts.anm2"
 end
 
+---@return string
+function Furtherance:GetMinimapPath()
+	return not MinimapAPI and "gfx/ui/minimap_icons.anm2" or "gfx/ui/minimapapi_icons.anm2"
+end
+
 ---@param ent Entity
 ---@param offset Vector
 function Furtherance:GetEntityRenderPosition(ent, offset)
