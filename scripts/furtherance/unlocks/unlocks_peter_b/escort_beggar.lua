@@ -10,6 +10,8 @@ ESCORT_BEGGAR.SLOT = Isaac.GetEntityVariantByName("Escort Beggar (Slot)")
 ESCORT_BEGGAR.FAMILIAR = Isaac.GetEntityVariantByName("Escort Beggar (Familiar)")
 ESCORT_BEGGAR.ITEM_POOL = Isaac.GetPoolIdByName("escortBeggar")
 
+ESCORT_BEGGAR.REPLACE_CHANCE = 0.05
+
 --You can blame Warhamm for these
 ESCORT_BEGGAR.ANIM_RAISE_HANDS = "GdezheVashiRuchkiNuGdezheVashiRuchki"
 ESCORT_BEGGAR.ANIM_HANDS_LOOP =
@@ -56,6 +58,9 @@ ESCORT_BEGGAR.ABANDONED_COUNTDOWN = 30 * 5
 
 function ESCORT_BEGGAR:FindFarthestSpecialRoom()
 	local roomDesc = Mod.Level():GetCurrentRoomDesc()
+	if roomDesc.GridIndex < 0 then
+		return
+	end
 	local roomQueue = { roomDesc }
 	local checkedRooms = { [roomDesc.GridIndex] = 0 }
 	local farthestRoom
@@ -118,12 +123,16 @@ function ESCORT_BEGGAR:OnSlotInit(slot)
 		return
 	end
 
+	--Don't spawn one if there's already one present
 	if #Isaac.FindByType(EntityType.ENTITY_SLOT, ESCORT_BEGGAR.SLOT) > 0
-		or #Isaac.FindByType(EntityType.ENTITY_FAMILIAR, ESCORT_BEGGAR.FAMILIAR) > 0
+		or #Isaac.FindByType(EntityType.ENTITY_FAMILIAR, ESCORT_BEGGAR.FAMILIAR) == #Mod:FilterList(PlayerManager.GetPlayers(),
+			function(player)
+				return player.Variant == PlayerVariant.PLAYER
+			end)
 		or Mod.Game:IsGreedMode()
 	then
 		slot:Remove()
-		Mod.Spawn.Slot(SlotVariant.BEGGAR, slot.Position, slot.SpawnerEntity, slot.InitSeed)
+		Mod.Spawn.Slot(SlotVariant.BEGGAR, slot.Position, slot.SpawnerEntity)
 		return
 	end
 	if not room_save.EscortRoom then
@@ -132,7 +141,7 @@ function ESCORT_BEGGAR:OnSlotInit(slot)
 			room_save.EscortRoom = escortRoom
 		else
 			slot:Remove()
-			Mod.Spawn.Slot(SlotVariant.BEGGAR, slot.Position, slot.SpawnerEntity, slot.InitSeed)
+			Mod.Spawn.Slot(SlotVariant.BEGGAR, slot.Position, slot.SpawnerEntity)
 			return
 		end
 	end

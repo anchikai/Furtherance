@@ -228,6 +228,15 @@ Mod:RegisterReplacement({
 })
 
 Mod:RegisterReplacement({
+	OldType = Mod:Set({ EntityType.ENTITY_SLOT }),
+	OldVariant = Mod:Set({ SlotVariant.BEGGAR, SlotVariant.DEVIL_BEGGAR, SlotVariant.KEY_MASTER }),
+	NewType = EntityType.ENTITY_SLOT,
+	NewVariant = Mod.Slot.ESCORT_BEGGAR.ID,
+	ReplacementChance = Mod.Slot.ESCORT_BEGGAR.REPLACE_CHANCE,
+	Achievement = Mod.Slot.ESCORT_BEGGAR.ACHIEVEMENT,
+})
+
+Mod:RegisterReplacement({
 	OldType = Mod:Set({ EntityType.ENTITY_PICKUP }),
 	OldVariant = Mod:Set({ PickupVariant.PICKUP_HEART }),
 	OldSubtype = Mod:Set({ HeartSubType.HEART_ETERNAL }),
