@@ -222,6 +222,15 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, MIRIAM_B.NoSoulHeartCollision)
 
+---@param effect EntityEffect
+function MIRIAM_B:StopFearAuraReflection(effect)
+	if effect.SubType == 3 and Mod.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT then
+		return false
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_EFFECT_RENDER, MIRIAM_B.StopFearAuraReflection, EffectVariant.HALO)
+
 --#endregion
 
 Mod.Include("scripts.furtherance.characters.miriam_b.polarity_shift")
