@@ -675,6 +675,11 @@ function KEYS_TO_THE_KINGDOM:GrantStatsOnBossClear(player)
 end
 
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR, CallbackPriority.LATE, KEYS_TO_THE_KINGDOM.GrantStatsOnBossClear)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, CallbackPriority.EARLY, function()
+	Mod.Foreach.Player(function (player, index)
+		KEYS_TO_THE_KINGDOM:GrantStatsOnBossClear(player)
+	end)
+end)
 
 ---@param player EntityPlayer
 function KEYS_TO_THE_KINGDOM:SkillIssue(player)
