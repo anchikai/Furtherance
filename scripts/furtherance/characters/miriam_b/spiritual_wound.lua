@@ -33,6 +33,11 @@ SPIRITUAL_WOUND.INNATE_COLLECTIBLES = {
 }
 
 ---@param player EntityPlayer
+function SPIRITUAL_WOUND:ShouldUseSpiritualWound(player)
+	return MIRIAM_B:IsMiriamB(player) or player:GetEffects():HasCollectibleEffect(Mod.Item.POLARITY_SHIFT.ID_1)
+end
+
+---@param player EntityPlayer
 function SPIRITUAL_WOUND:GetAttackInitSound(player)
 	if POLARITY_SHIFT:IsChainLightningActive(player) then
 		return SPIRITUAL_WOUND.SFX_CHAIN_LIGHTNING_START
@@ -55,12 +60,13 @@ end
 ---@param player EntityPlayer
 ---@param cacheFlag CacheFlag
 function SPIRITUAL_WOUND:SpiritualWoundCache(player, cacheFlag)
-	if not MIRIAM_B:IsMiriamB(player) then return end
+	if not SPIRITUAL_WOUND:ShouldUseSpiritualWound(player) then return end
+
 	if cacheFlag == CacheFlag.CACHE_TEARFLAG then
 		player.TearFlags = player.TearFlags | TearFlags.TEAR_HOMING
 	elseif cacheFlag == CacheFlag.CACHE_TEARCOLOR then
 		local color = SPIRITUAL_WOUND.SPIRITUAL_WOUND_COLOR
-		if player:HasCollectible(Mod.Item.POLARITY_SHIFT.ID_2) then
+		if POLARITY_SHIFT:IsChainLightningActive(player) then
 			color = SPIRITUAL_WOUND.CHAIN_LIGHTNING_COLOR
 		elseif MIRIAM_B:MiriamBHasBirthright(player) then
 			color = SPIRITUAL_WOUND.DEATH_FIELD_COLOR
@@ -101,7 +107,10 @@ end
 function SPIRITUAL_WOUND:HandleFiringSFX(player)
 	local weapon = player:GetWeapon(1)
 	local data = Mod:GetData(player)
-	if weapon and player:GetFireDirection() ~= Direction.NO_DIRECTION and MIRIAM_B:IsMiriamB(player) then
+	if weapon
+		and player:GetFireDirection() ~= Direction.NO_DIRECTION
+		and SPIRITUAL_WOUND:ShouldUseSpiritualWound(player)
+	then
 		if not data.FiringSpiritualWound then
 			data.FiringSpiritualWound = true
 			SPIRITUAL_WOUND.IS_FIRING = true
@@ -120,7 +129,7 @@ function SPIRITUAL_WOUND:HandleFiringSFX(player)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SPIRITUAL_WOUND.HandleFiringSFX, Mod.PlayerType.MIRIAM_B)
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SPIRITUAL_WOUND.HandleFiringSFX)
 
 ---@param player EntityPlayer
 function SPIRITUAL_WOUND:RemoveInnateItems(player)
@@ -151,7 +160,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SPIRITUAL_WOUND.RemoveInnat
 function SPIRITUAL_WOUND:LaserDamage(ent, amount, flags, source)
 	local player = Mod:TryGetPlayer(source.Entity, true)
 	if player
-		and MIRIAM_B:IsMiriamB(player)
+		and SPIRITUAL_WOUND:ShouldUseSpiritualWound(player)
 		and Mod:HasBitFlags(flags, DamageFlag.DAMAGE_LASER)
 		and ent:ToNPC()
 	then
@@ -185,8 +194,10 @@ Mod:AddCallback(ModCallbacks.MC_PRE_SFX_PLAY, SPIRITUAL_WOUND.StopSFX, SoundEffe
 
 ---@param player EntityPlayer
 function SPIRITUAL_WOUND:TryAddInnateItems(player)
-	if MIRIAM_B:IsMiriamB(player) then
-		Mod:GetData(player).IsMiriamB = true
+	if SPIRITUAL_WOUND:ShouldUseSpiritualWound(player) then
+		if MIRIAM_B:IsMiriamB(player) then
+			Mod:GetData(player).IsMiriamB = true
+		end
 		for _, itemID in ipairs(SPIRITUAL_WOUND.INNATE_COLLECTIBLES) do
 			if not player:HasCollectible(itemID, false, true) then
 				player:AddInnateCollectible(itemID)

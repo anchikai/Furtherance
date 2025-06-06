@@ -8,9 +8,12 @@ POLARITY_SHIFT.ID_1 = Isaac.GetItemIdByName("Polarity Shift")
 POLARITY_SHIFT.ID_2 = Isaac.GetItemIdByName(" Polarity Shift")
 POLARITY_SHIFT.SFX = Isaac.GetSoundIdByName("Polarity Shift Use")
 
+POLARITY_SHIFT.DAMAGE_THRESHOLD = 120
+POLARITY_SHIFT.DAMAGE_THRESHOLD_FLOOR = 40
 POLARITY_SHIFT.MAX_CHARGES = Mod.ItemConfig:GetCollectible(POLARITY_SHIFT.ID_1).MaxCharges
 
 local min = math.min
+local floor = math.floor
 
 ---@param player EntityPlayer
 function POLARITY_SHIFT:IsChainLightningActive(player)
@@ -18,7 +21,7 @@ function POLARITY_SHIFT:IsChainLightningActive(player)
 end
 
 ---@param player EntityPlayer
-function POLARITY_SHIFT:PolarityShfitNormal(_, _, player, _, _)
+function POLARITY_SHIFT:PolarityShfitNormal(itemID, _, player, _, _)
 	for _, itemID in ipairs(Mod.Character.MIRIAM_B.SPIRITUAL_WOUND.INNATE_COLLECTIBLES) do
 		if not player:HasCollectible(itemID, false, true) then
 			player:AddInnateCollectible(itemID)
@@ -29,9 +32,24 @@ function POLARITY_SHIFT:PolarityShfitNormal(_, _, player, _, _)
 		end
 	end
 	Mod.SFXMan:Play(POLARITY_SHIFT.SFX)
+	Mod:DelayOneFrame(function()
+		player:AddCacheFlags(Mod.ItemConfig:GetCollectible(itemID).CacheFlags, true)
+	end)
+	return true
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, POLARITY_SHIFT.PolarityShfitNormal, POLARITY_SHIFT.ID_1)
+
+---@param player EntityPlayer
+function POLARITY_SHIFT:TryAddInnateItems(player)
+	--TemporaryEffects don't register as active on continue
+	if player.FrameCount == 1 then
+		Mod.Character.MIRIAM_B.SPIRITUAL_WOUND:TryAddInnateItems(player)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, POLARITY_SHIFT.TryAddInnateItems)
+
 
 ---@param player EntityPlayer
 ---@param itemConfig ItemConfigItem
@@ -55,12 +73,21 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED, POLARITY_SHIFT.RemoveInnateItems)
 
+---@param damage number
+function POLARITY_SHIFT:GetChargeFromDamage(damage)
+	local maxCharges = POLARITY_SHIFT.MAX_CHARGES
+	local damageThreshold = POLARITY_SHIFT.DAMAGE_THRESHOLD
+		+ ((Mod.Level():GetAbsoluteStage() - 1) * POLARITY_SHIFT.DAMAGE_THRESHOLD_FLOOR)
+	return damage * (maxCharges / damageThreshold)
+end
+
 ---@param ent Entity
 ---@param amount number
 ---@param flags DamageFlag
 ---@param source EntityRef
 ---@param countdown integer
 function POLARITY_SHIFT:ChargeWithDamage(ent, amount, flags, source, countdown)
+	if not ent:CanShutDoors() then return end
 	local player = Mod:TryGetPlayer(source)
 	if player then
 		local slots = Mod:GetActiveItemCharges(player, POLARITY_SHIFT.ID_1)
@@ -72,7 +99,8 @@ function POLARITY_SHIFT:ChargeWithDamage(ent, amount, flags, source, countdown)
 		for _, slotData in ipairs(slots) do
 			if slotData.Charge < maxCharges then
 				local damageDealt = min(ent.HitPoints, amount)
-				player:SetActiveCharge(min(maxCharges, slotData.Charge + damageDealt), slotData.Slot)
+				local chargeGained = POLARITY_SHIFT:GetChargeFromDamage(damageDealt)
+				player:SetActiveCharge(floor(min(maxCharges, slotData.Charge + chargeGained)), slotData.Slot)
 				return
 			end
 		end
@@ -109,4 +137,4 @@ HudHelper.RegisterHUDElement({
 	OnRender = function (player, playerHUDIndex, hudLayout, position, alpha, scale)
 		HudHelper.RenderHUDItem("gfx/items/polarity_shift_alt.png", position, scale, alpha)
 	end
-})
+}, HudHelper.HUDType.ACTIVE_ID)
