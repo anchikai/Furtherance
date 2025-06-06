@@ -640,6 +640,10 @@ function ESCORT_BEGGAR:OnFamiliarDeath(ent)
 		sprite:Load(ent:GetSprite():GetFilename(), true)
 		sprite:Play("Death")
 		Mod.SFXMan:Play(SoundEffect.SOUND_ISAACDIES, 1, 2, false, 1.5)
+		local floor_save = Mod:FloorSave()
+		if (floor_save.EscortBeggars or 0) > 0 then
+			floor_save.EscortBeggars = floor_save.EscortBeggars - 1
+		end
 	end
 end
 
