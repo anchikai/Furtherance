@@ -33,7 +33,17 @@ local function fiendFolioPatch()
 		Item.OPHIUCHUS.ID,
 		Item.CHIRON.ID,
 		Item.JUNO.ID,
-		Item.TECH_IX.ID
+		Item.TECH_IX.ID,
+		Item.UNSTABLE_CORE.ID,
+		Item.TECHNOLOGY_MINUS_1.ID,
+		Item.BRUNCH.ID,
+		Item.CRAB_LEGS.ID,
+		Item.LIL_POOFER.ID,
+		Item.QUARANTINE.ID,
+		Item.BUTTERFLY.ID,
+		Item.ROTTEN_APPLE.ID,
+		Item.BEGINNERS_LUCK.ID,
+		Item.COFFEE_BREAK.ID
 	})
 
 	Mod:AddToDictionary(Mod.Item.KEYS_TO_THE_KINGDOM.ENTITY_BLACKLIST, Mod:Set({

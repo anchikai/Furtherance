@@ -16,9 +16,10 @@ function QUARANTINE:OnNewRoom(player)
 		player:GetEffects():AddCollectibleEffect(QUARANTINE.ID)
 		local source = EntityRef(player)
 		Mod.Foreach.NPC(function (npc, index)
-			npc:AddFear(source, QUARANTINE.FEAR_DURATION)
+			local duration = QUARANTINE.FEAR_DURATION + (QUARANTINE.FEAR_DURATION * (player:GetCollectibleNum(QUARANTINE.ID) - 1) * 0.5)
+			npc:AddFear(source, duration)
 			--Normal max of 5 seconds. Force new duration
-			npc:SetFearCountdown(QUARANTINE.FEAR_DURATION)
+			npc:SetFearCountdown(duration)
 		end, nil, nil, nil, {UseEnemySearchParams = true})
 	end
 end
