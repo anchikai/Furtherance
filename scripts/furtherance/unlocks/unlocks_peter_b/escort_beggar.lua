@@ -175,7 +175,7 @@ function ESCORT_BEGGAR:OnSlotUpdate(slot)
 		ESCORT_BEGGAR:DeathParticles(slot.Position)
 		Mod.Level():SetStateFlag(LevelStateFlag.STATE_BUM_KILLED, true)
 		slot:Remove()
-	elseif slot:GetState() == Mod.SlotState.REWARD then
+	elseif slot:GetState() == Mod.SlotState.PAYOUT then
 		if sprite:IsEventTriggered("Prize") then
 			Mod.SFXMan:Play(SoundEffect.SOUND_SLOTSPAWN)
 			local itemID = Mod.Game:GetItemPool():GetCollectible(ESCORT_BEGGAR.ITEM_POOL, true, slot.InitSeed)
@@ -183,7 +183,6 @@ function ESCORT_BEGGAR:OnSlotUpdate(slot)
 			Mod.Spawn.Pickup(PickupVariant.PICKUP_COLLECTIBLE, itemID, pos, nil, slot, slot.InitSeed)
 		elseif sprite:IsFinished("Prize") then
 			sprite:Play("Teleport")
-			slot:SetState(Mod.SlotState.PAYOUT)
 		end
 	end
 end
@@ -634,12 +633,14 @@ Mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_RENDER, ESCORT_BEGGAR.DamageFlash, 
 
 ---@param ent Entity
 function ESCORT_BEGGAR:OnFamiliarDeath(ent)
-	local deathAnim = Mod.Spawn.Poof01(0, ent.Position, ent, ent.InitSeed)
-	local sprite = deathAnim:GetSprite()
-	sprite.Offset = ent.SpriteOffset
-	sprite:Load(ent:GetSprite():GetFilename(), true)
-	sprite:Play("Death")
-	Mod.SFXMan:Play(SoundEffect.SOUND_ISAACDIES, 1, 2, false, 1.5)
+	if ent.Variant == ESCORT_BEGGAR.FAMILIAR then
+		local deathAnim = Mod.Spawn.Poof01(0, ent.Position, ent, ent.InitSeed)
+		local sprite = deathAnim:GetSprite()
+		sprite.Offset = ent.SpriteOffset
+		sprite:Load(ent:GetSprite():GetFilename(), true)
+		sprite:Play("Death")
+		Mod.SFXMan:Play(SoundEffect.SOUND_ISAACDIES, 1, 2, false, 1.5)
+	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, ESCORT_BEGGAR.OnFamiliarDeath, EntityType.ENTITY_FAMILIAR)
@@ -722,7 +723,7 @@ function ESCORT_BEGGAR:EnterDestinationRoom()
 			floor_save.EscortBeggars = floor_save.EscortBeggars - 1
 			local slot = Mod.Spawn.Slot(ESCORT_BEGGAR.SLOT, room:FindFreePickupSpawnPosition(familiar.Position, 40, true),
 				familiar, familiar.InitSeed)
-			slot:SetState(Mod.SlotState.REWARD)
+			slot:SetState(Mod.SlotState.PAYOUT)
 			slot:GetSprite():Play("Prize")
 			familiar:Remove()
 		end
