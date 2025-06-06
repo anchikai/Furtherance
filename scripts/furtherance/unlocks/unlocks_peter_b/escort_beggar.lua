@@ -518,9 +518,9 @@ function ESCORT_BEGGAR:BigHornHand(effect)
 		local sprite = effect:GetSprite()
 		if sprite:IsFinished("SmallHoleOpen") then
 			sprite:Play("HandGrab")
-		elseif sprite:IsEventTriggered("Slam") and effect.SpawnerEntity then
-			ESCORT_BEGGAR:DeathParticles(effect.SpawnerEntity.Position)
-			effect.SpawnerEntity:Remove()
+		elseif sprite:IsEventTriggered("Slam") and effect.Target then
+			ESCORT_BEGGAR:DeathParticles(effect.Target.Position)
+			effect.Target:Remove()
 			Mod.SFXMan:Play(SoundEffect.SOUND_ISAACDIES, 1, 2, false, 1.5)
 		elseif sprite:IsFinished("HandGrab") then
 			sprite:Play("SmallHoleClose")
