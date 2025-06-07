@@ -29,11 +29,13 @@ end
 if EID.HealthUpData then
 	EID.HealthUpData["5.100." .. tostring(Item.BRUNCH.ID)] = 2
 	EID.HealthUpData["5.100." .. tostring(Item.LITTLE_RAINCOAT.ID)] = 1
+	EID.HealthUpData["5.100." .. tostring(Item.CRAB_LEGS.ID)] = 1
 	EID.HealthUpData["5.100." .. tostring(Item.COFFEE_BREAK.ID)] = 1
 end
 
 if EID.HealingItemData then
 	EID.HealingItemData["5.100." .. tostring(Item.BRUNCH.ID)] = true
+	EID.HealingItemData["5.100." .. tostring(Item.CRAB_LEGS.ID)] = true
 	EID.HealingItemData["5.100." .. tostring(Item.COFFEE_BREAK.ID)] = true
 end
 

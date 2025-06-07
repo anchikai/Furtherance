@@ -225,6 +225,13 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_SLOT_COLLISION, ESCORT_BEGGAR.OnSlotCollision, ESCORT_BEGGAR.SLOT)
 
+--TODO: Temporary? Not sure what to make them drop. Maybe some locusts/flies.
+function ESCORT_BEGGAR:NoDrops()
+	return false
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_SLOT_CREATE_EXPLOSION_DROPS, ESCORT_BEGGAR.NoDrops, ESCORT_BEGGAR.SLOT)
+
 --#endregion
 
 --#region Spawning beggar

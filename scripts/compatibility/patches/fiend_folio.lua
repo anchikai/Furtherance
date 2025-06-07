@@ -75,6 +75,41 @@ local function fiendFolioPatch()
 	end
 
 	Mod:AddCallback(Mod.ModCallbacks.POST_RAPTURE_BOSS_DEATH, killWhisperController, ff.FF.Whispers.ID)
+
+	--#region Heart Renovator double-tap drop prevention
+
+	local revertBlacklist = {}
+
+	local function onGainRenovator(_, _, _, _, _, player)
+		local playerType = player:GetPlayerType()
+		if not ff.doubleTapCTRLBlacklist[playerType] then
+			ff.doubleTapCTRLBlacklist[playerType] = true
+			revertBlacklist[playerType] = true
+		end
+	end
+
+	Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, onGainRenovator, Mod.Item.HEART_RENOVATOR.ID)
+
+	local function onLoseRenovator(_, player)
+		local playerType = player:GetPlayerType()
+		if not player:HasCollectible(Mod.Item.HEART_RENOVATOR.ID)
+			and revertBlacklist[playerType]
+		then
+			ff.doubleTapCTRLBlacklist[playerType] = false
+			revertBlacklist[playerType] = false
+		end
+	end
+
+	Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, onLoseRenovator, Mod.Item.HEART_RENOVATOR.ID)
+
+	local function onPlayerInit(_, player)
+		if player:HasCollectible(Mod.Item.HEART_RENOVATOR.ID) then
+			onGainRenovator(_, _, _, _, _, player)
+		end
+	end
+	Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, onPlayerInit)
+
+	--#endregion
 end
 
 loader:RegisterPatch("FiendFolio", fiendFolioPatch)

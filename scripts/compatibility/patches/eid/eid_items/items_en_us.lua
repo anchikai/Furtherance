@@ -452,7 +452,8 @@ return function(modifiers)
 		[Item.OPHIUCHUS.ID] = {
 			Name = "Ophiuchus?",
 			Description = {
-				"↑ {{Tears}} -0.4 Tear Delay",
+				"+1 {{SoulHeart}} Soul Heart",
+				"#↑ {{Tears}} -0.4 Tear Delay",
 				"#↑ {{Damage}} +0.3 Damage",
 				"#Spectral tears",
 				"#Isaac's tears move in waves"
