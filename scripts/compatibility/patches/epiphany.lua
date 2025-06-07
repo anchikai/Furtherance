@@ -26,8 +26,8 @@ local function epiphanyPatch()
 	})
 
 	local ESCORT_MIDAS = Isaac.GetEntityVariantByName("Midas Cursed escort Beggar")
-	GOLDEN_BEGGAR.NormalToGold[Mod.Slot.ESCORT_BEGGAR.ID] = ESCORT_MIDAS
-	Mod:AddToDictionary(GOLDEN_BEGGAR.GoldenBeggarInfo, {
+	GOLDEN_BEGGAR.NormalToGold[Mod.Slot.ESCORT_BEGGAR.SLOT] = ESCORT_MIDAS
+	Mod:AddToDictionary(GOLDEN_BEGGAR.GoldBeggarInfo, {
 		[ESCORT_MIDAS] = {
 			{
 				ItemPool = Mod.Slot.ESCORT_BEGGAR.ITEM_POOL,
@@ -63,8 +63,8 @@ local function epiphanyPatch()
 
 	api:AddHeartsToHeartGroup("Soul", {V = Mod.Pickup.MOON_HEART.ID})
 
-	api:AddSlotsToSlotGroup("Beggars", {V = Mod.Slot.ESCORT_BEGGAR.ID})
-	api:AddSlotsToSlotGroup("SpecialBeggars", {V = Mod.Slot.ESCORT_BEGGAR.ID})
+	api:AddSlotsToSlotGroup("Beggars", {V = Mod.Slot.ESCORT_BEGGAR.SLOT})
+	api:AddSlotsToSlotGroup("SpecialBeggars", {V = Mod.Slot.ESCORT_BEGGAR.SLOT})
 	api:AddSlotsToSlotGroup("Slots", {V = Mod.Slot.LOVE_TELLER.ID})
 
 	api:AddItemsToEdenBlackList(
@@ -86,9 +86,6 @@ local function epiphanyPatch()
 			Item.BOOK_OF_SWIFTNESS.ID,
 			Item.SECRET_DIARY.ID
 		},
-		compost_bagged = {
-			Item.ROTTEN_APPLE.ID
-		},
 		cursed_bagged = {
 			Item.MUDDLED_CROSS.ID
 		},
@@ -101,6 +98,9 @@ local function epiphanyPatch()
 		},
 		fear_bagged = {
 			Item.QUARANTINE.ID
+		},
+		fertilizer_bagged = {
+			Item.ROTTEN_APPLE.ID
 		},
 		fire_bagged = {
 			Item.UNSTABLE_CORE.ID,
