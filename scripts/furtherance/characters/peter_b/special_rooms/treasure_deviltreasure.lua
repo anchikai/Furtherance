@@ -1,4 +1,5 @@
 local Mod = Furtherance
+local MUDDLED_CROSS = Mod.Item.MUDDLED_CROSS
 
 local function treasureRoomFlip()
 	local level = Mod.Level()
@@ -23,7 +24,7 @@ local function provideFlippedBackdrop()
 		local backdropSprite = "gfx/backdrop/" .. XMLData.GetEntryById(XMLNode.BACKDROP, backdropType)
 		return backdropSprite
 	else
-		return Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_DEVIL]
+		return MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_DEVIL]
 	end
 end
 
@@ -41,7 +42,7 @@ local function updateCollectibles()
 		end
 	end, PickupVariant.PICKUP_COLLECTIBLE)
 
-	if not PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.PETER_B) then return end
+	if not MUDDLED_CROSS:CanUseUpgradedRoomFlip() then return end
 
 	Mod:DelayOneFrame(function()
 		local room = Mod.Room()

@@ -78,12 +78,13 @@ function HEART_RENOVATOR:AddToHeartCounter(pickup, collider)
 	if player_run_save.HeartRenovatorCounter >= maxCount then return end
 
 	local amount = HEART_RENOVATOR:CannotPickRedHeartsOrWillOverflow(pickup, player)
+
 	if amount then
 		player_run_save.HeartRenovatorCounter = Mod:Clamp(player_run_save.HeartRenovatorCounter + amount, 0, HEART_RENOVATOR:GetMaxHeartCounter(player))
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, HEART_RENOVATOR.AddToHeartCounter, PickupVariant.PICKUP_HEART)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, CallbackPriority.EARLY, HEART_RENOVATOR.AddToHeartCounter, PickupVariant.PICKUP_HEART)
 
 ---@param player EntityPlayer
 function HEART_RENOVATOR:DamageUp(player)

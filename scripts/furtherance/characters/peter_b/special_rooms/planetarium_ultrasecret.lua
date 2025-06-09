@@ -1,4 +1,5 @@
 local Mod = Furtherance
+local MUDDLED_CROSS = Mod.Item.MUDDLED_CROSS
 
 local function planetariumFlip()
 	local roomConfigRoom
@@ -31,19 +32,19 @@ end
 Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, ultraSecretFlip, RoomType.ROOM_ULTRASECRET)
 
 local function planetariumBackdrop()
-	return Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_PLANETARIUM]
+	return MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_PLANETARIUM]
 end
 
 Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, planetariumBackdrop, RoomType.ROOM_ULTRASECRET)
 
 local function ultraSecretBackdrop()
-	return Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_ULTRASECRET]
+	return MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_ULTRASECRET]
 end
 
 Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, ultraSecretBackdrop, RoomType.ROOM_PLANETARIUM)
 
 local function postUltraSecretRoomFlip()
-	if PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.PETER_B) then return end
+	if MUDDLED_CROSS:CanUseUpgradedRoomFlip() then return end
 	Mod.Foreach.Pickup(Mod.Trinket.ALMAGEST_SCRAP.TurnToAlmagestShopItem, PickupVariant.PICKUP_COLLECTIBLE)
 end
 

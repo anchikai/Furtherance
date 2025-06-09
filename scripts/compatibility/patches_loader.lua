@@ -48,7 +48,9 @@ local patches = {
 	"fiend_folio",
 	"epiphany",
 	"future",
-	"pogforgooditems"
+	"pogforgooditems",
+	"repentanceplus",
+	"stageapi"
 }
 
 for _, fileName in ipairs(patches) do

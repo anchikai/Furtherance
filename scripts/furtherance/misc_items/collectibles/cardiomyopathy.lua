@@ -16,6 +16,7 @@ CARDIOMYOPATHY.MAX_CHANCE = 0.20
 ---@param collider Entity
 function CARDIOMYOPATHY:CollectHeart(pickup, collider)
 	local player = collider:ToPlayer()
+
 	if player
 		and player:HasCollectible(CARDIOMYOPATHY.ID)
 		and player:CanPickRedHearts()

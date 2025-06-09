@@ -1,4 +1,5 @@
 local Mod = Furtherance
+local MUDDLED_CROSS = Mod.Item.MUDDLED_CROSS
 
 local function devilRoomFlip()
 	return RoomConfigHolder.GetRandomRoom(Mod.GENERIC_RNG:Next(), true, StbType.SPECIAL_ROOMS, RoomType.ROOM_ANGEL, Furtherance.Room():GetRoomShape(), -1, -1, 1, 10, 1, 0)
@@ -13,13 +14,13 @@ end
 Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, angelRoomFlip, RoomType.ROOM_ANGEL)
 
 local function devilRoomBackdrop()
-	return Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_DEVIL]
+	return MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_DEVIL]
 end
 
 Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, devilRoomBackdrop, RoomType.ROOM_ANGEL)
 
 local function angelRoomBackdrop()
-	return Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_ANGEL]
+	return MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_ANGEL]
 end
 
 Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, angelRoomBackdrop, RoomType.ROOM_DEVIL)
@@ -35,7 +36,7 @@ local function birthrightAngelSteamSale(_, count, player, itemID, onlyTrue)
 		and Mod.Character.PETER_B:IsPeterB(player)
 		and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
 	then
-		if Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP:IsFlippedRoom()
+		if MUDDLED_CROSS.SPECIAL_ROOM_FLIP:IsFlippedRoom()
 			and Mod.Room():GetType() == RoomType.ROOM_ANGEL
 		then
 			return count + 1
@@ -47,9 +48,9 @@ Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM, birthri
 
 ---@param pickup EntityPickup
 local function birthrightYourSoulPrice(_, pickup)
-	if not Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP:IsFlippedRoom() then return end
+	if not MUDDLED_CROSS.SPECIAL_ROOM_FLIP:IsFlippedRoom() then return end
 	if Mod.Room():GetType() == RoomType.ROOM_DEVIL
-		and PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.PETER_B)
+		and MUDDLED_CROSS:CanUseUpgradedRoomFlip()
 	then
 		local room_save = Mod:RoomSave()
 		local data = Mod:GetData(pickup)
@@ -75,7 +76,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, birthrightYourSoulPrice, Pic
 
 ---@param pickup EntityPickup
 local function birthrightOnShopPurchase(_, pickup, collider)
-	if not Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP:IsFlippedRoom() then return end
+	if not MUDDLED_CROSS.SPECIAL_ROOM_FLIP:IsFlippedRoom() then return end
 	local player = collider:ToPlayer()
 	if not player then return end
 	if Mod:GetData(pickup).PeterBBirthrightFreePickup then

@@ -38,7 +38,7 @@ function UNSTABLE_CORE:OnUse(itemID, _, player, flags, slot)
 		return
 	end
 
-	local carBattery = player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) and 2 or 1
+	local carBattery = Mod:ActiveUsesCarBattery(player, slot) and 2 or 1
 	local radius = UNSTABLE_CORE.RADIUS * itemMult
 
 	Mod.Foreach.NPCInRadius(player.Position, radius, function (npc, index)

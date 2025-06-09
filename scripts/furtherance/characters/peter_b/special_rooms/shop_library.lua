@@ -1,4 +1,5 @@
 local Mod = Furtherance
+local MUDDLED_CROSS = Mod.Item.MUDDLED_CROSS
 
 -- HUUUUUUUUUUGE credit to Guantol for creating this logic in C++, which was converted to Lua
 
@@ -41,7 +42,7 @@ local function getShopSubtype(rng)
 
 	if PlayerManager.AnyoneIsPlayerType(PlayerType.PLAYER_KEEPER_B)
 		--Little directly inserted extra
-		or PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.PETER_B)
+		or MUDDLED_CROSS:CanUseUpgradedRoomFlip()
 	then
 		shopSubType = shopSubType + SHOP_KEEPER_OFFSET
 	end
@@ -71,13 +72,13 @@ end
 Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, libraryRoomFlip, RoomType.ROOM_LIBRARY)
 
 local function libraryRoomBackdrop()
-	return Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_LIBRARY]
+	return MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_LIBRARY]
 end
 
 Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, libraryRoomBackdrop, RoomType.ROOM_SHOP)
 
 local function shopRoomBackdrop()
-	return Mod.Item.MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_SHOP]
+	return MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_SHOP]
 end
 
 Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, shopRoomBackdrop, RoomType.ROOM_LIBRARY)
@@ -112,7 +113,7 @@ end
 Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, shopRoomFlip, RoomType.ROOM_SHOP)
 
 local function libraryShop()
-	if PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.PETER_B) then return end
+	if MUDDLED_CROSS:CanUseUpgradedRoomFlip() then return end
 
 	Mod.Foreach.Pickup(function (pickup, index)
 		pickup:MakeShopItem(-1)

@@ -185,7 +185,13 @@ Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, FLIP_RENDERING.MarkEnemyEffectOn
 local wtr = 20 / 13
 local vd = Vector(0, 40)
 
-function FLIP_RENDERING:AddOutlineSprite(ent, spr)
+---@param ent Entity
+---@param spr Sprite
+---@param trackMode integer
+---|0 Regular + Overlay
+---|1 Regular only
+---|2 Overlay only
+function FLIP_RENDERING:AddOutlineSprite(ent, spr, trackMode, spriteToTrack)
 	local data = Mod:GetData(ent)
 	local copyspr = Sprite(spr:GetFilename(), true)
 	copyspr:SetFrame(spr:GetAnimation(), spr:GetFrame())
@@ -205,32 +211,57 @@ function FLIP_RENDERING:AddOutlineSprite(ent, spr)
 	copyspr.Color.A = 0
 
 	data.GSGSAGS = data.GSGSAGS or {}
-	Mod.Insert(data.GSGSAGS, { copyspr, Vector(0, 0), 0 })
+	Mod.Insert(data.GSGSAGS, { copyspr, trackMode, 0, spriteToTrack })
 end
 
 ---@param ent Entity
 function FLIP_RENDERING:EntityUpdate(ent)
 	if ent:ToNPC() and ent.FrameCount < 10 or ent.FrameCount < 1 then return end
 	local data = Mod:GetData(ent)
+	local gridCol = Mod.Room():GetGridCollisionAtPos(ent.Position + vd)
+	local underSolid = gridCol == GridCollisionClass.COLLISION_SOLID
+		or gridCol == GridCollisionClass.COLLISION_OBJECT
+		or gridCol == GridCollisionClass.COLLISION_WALL
+
 	if not data.GSGSAGS
 		and FLIP:IsEntitySubmerged(ent)
+		and underSolid
 	then
-		FLIP_RENDERING:AddOutlineSprite(ent, ent:GetSprite())
 		local player = ent:ToPlayer()
 		if player then
+			local body = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_BODY)
 			local head = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_HEAD)
 			local hair = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_HEAD0)
-			if head then
-				FLIP_RENDERING:AddOutlineSprite(ent, head)
+
+			if not head and not body then
+				FLIP_RENDERING:AddOutlineSprite(ent, ent:GetSprite(), 0)
 			end
 			if hair then
-				FLIP_RENDERING:AddOutlineSprite(ent, hair)
+				FLIP_RENDERING:AddOutlineSprite(ent, hair, 1, hair)
 			end
+			if head then
+				FLIP_RENDERING:AddOutlineSprite(ent, head, 1, head)
+				if not body then
+					FLIP_RENDERING:AddOutlineSprite(ent, ent:GetSprite(), 1)
+				end
+			end
+			if body then
+				if not head then
+					FLIP_RENDERING:AddOutlineSprite(ent, ent:GetSprite(), 2)
+				end
+				FLIP_RENDERING:AddOutlineSprite(ent, body, 1, body)
+			end
+		else
+			FLIP_RENDERING:AddOutlineSprite(ent, ent:GetSprite(), 0)
 		end
 	elseif data.GSGSAGS then
+		if not FLIP:IsEntitySubmerged(ent) then
+			data.GSGSAGS = nil
+			return
+		end
 		for _, GSGSAGS in ipairs(data.GSGSAGS) do
 			local cspr = GSGSAGS[1]
-			local spr = ent:GetSprite()
+			local spr = GSGSAGS[4] or ent:GetSprite()
 
 			cspr.Rotation = spr.Rotation
 			cspr.Offset = -(spr.Offset + ent.PositionOffset / wtr)
@@ -238,16 +269,25 @@ function FLIP_RENDERING:EntityUpdate(ent)
 			cspr.FlipX = not spr.FlipX
 			cspr.FlipY = spr.FlipY
 
-			cspr:SetOverlayFrame(spr:GetOverlayAnimation(), spr:GetOverlayFrame())
-			cspr:SetFrame(spr:GetAnimation(), spr:GetFrame())
-			local gridCol = Mod.Room():GetGridCollisionAtPos(ent.Position + vd)
-			if gridCol == GridCollisionClass.COLLISION_SOLID or gridCol == GridCollisionClass.COLLISION_OBJECT
-				or gridCol == GridCollisionClass.COLLISION_WALL then
+			if GSGSAGS[2] == 0 then
+				cspr:SetOverlayFrame(spr:GetOverlayAnimation(), spr:GetOverlayFrame())
+				cspr:SetFrame(spr:GetAnimation(), spr:GetFrame())
+			elseif GSGSAGS[2] == 1 then
+				cspr:SetFrame(spr:GetAnimation(), spr:GetFrame())
+			elseif GSGSAGS[2] == 2 then
+				cspr:SetFrame(spr:GetOverlayAnimation(), spr:GetOverlayFrame())
+			end
+
+			if underSolid then
 				GSGSAGS[3] = GSGSAGS[3] * 0.8 + 0.2
 			else
 				GSGSAGS[3] = GSGSAGS[3] * 0.8
 			end
 			cspr.Color.A = GSGSAGS[3]
+			if cspr.Color.A <= 0.01 then
+				data.GSGSAGS = nil
+				break
+			end
 		end
 	end
 end
@@ -287,11 +327,21 @@ Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_RENDER, FLIP_RENDERING.EntityRen
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_RENDER, FLIP_RENDERING.EntityRender)
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_RENDER, FLIP_RENDERING.EntityRender)
 
+local didTheTHing = false
+local hadShidded = false
+
 local render = Sprite().Render
 Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function()
 	for i = 1, #renderlist do
+		hadShidded = true
 		local sr = renderlist[i]
 		render(sr[1], sr[2])
+		if not didTheTHing then
+			print(sr[1]:GetFilename(), sr[1]:GetAnimation())
+		end
+	end
+	if hadShidded then
+		didTheTHing = true
 	end
 	renderlist = {}
 end)

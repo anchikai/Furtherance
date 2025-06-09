@@ -135,3 +135,10 @@ end
 function Furtherance:GetCollectibleName(id)
 	return Mod:TryGetTranslatedString("Items", Isaac.GetItemConfig():GetCollectible(id).Name)
 end
+
+---@param player EntityPlayer
+---@param slot ActiveSlot
+function Furtherance:ActiveUsesCarBattery(player, slot)
+	return player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY)
+		or Epiphany and Epiphany.API:HasGoldenItem(player:GetActiveItem(slot), player, slot)
+end

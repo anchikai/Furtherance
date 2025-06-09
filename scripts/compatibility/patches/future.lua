@@ -26,7 +26,6 @@ local function futurePatch()
 		"you need to be up here to get in",
 		"seriously, i'm not coming down there",
 		"...",
-		"that hole in your head reaching into your ears too?",
 		"whatever, i'll wait",
 	}
 	TheFuture.ModdedCharacterDialogue["Miriam"] = {

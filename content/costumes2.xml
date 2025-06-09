@@ -22,21 +22,21 @@
 
 	<!-- Leah -->
 	<costume id="1" anm2path="character_01_leah_hair.anm2" type="none" priority="99" />
-	<costume anm2path="character_01_leah_Pog.anm2" type="none" priority="99" />
+	<costume anm2path="character_01_leah_pog.anm2" type="none" priority="99" />
 	<!-- Tainted Leah -->
 	<costume id="2" anm2path="character_01b_leah_hair.anm2" type="none" priority="99" />
-	<costume anm2path="character_01b_leah_Pog.anm2" type="none" priority="99" />
+	<costume anm2path="character_01b_leah_pog.anm2" type="none" priority="99" />
 	<!-- Peter -->
 	<costume id="3" anm2path="character_02_peter_drip.anm2" type="none" priority="99" />
 	<!-- Tainted Peter -->
 	<costume id="4" anm2path="character_02b_peter_drip.anm2" type="none" priority="99" />
-	<costume anm2path="character_02b_peter_Pog.anm2" type="none" priority="99" />
+	<costume anm2path="character_02b_peter_pog.anm2" type="none" priority="99" />
 	<!-- Miriam -->
 	<costume id="5" anm2path="character_03_miriam_hair.anm2" type="none" priority="99" />
-	<costume anm2path="character_03_miriam_Pog.anm2" type="none" priority="99" />
+	<costume anm2path="character_03_miriam_pog.anm2" type="none" priority="99" />
 	<!-- Tainted Miriam -->
 	<costume id="6" anm2path="character_03b_miriam_hair.anm2" type="none" priority="99" />
-	<costume anm2path="character_03b_miriam_Pog.anm2" type="none" priority="99" />
+	<costume anm2path="character_03b_miriam_pog.anm2" type="none" priority="99" />
 	<!-- Misc Null Costumes -->
 	<costume anm2path="n_double_severed_ear.anm2" type="none" priority="1" />
 </costumes>

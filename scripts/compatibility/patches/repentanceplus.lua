@@ -23,4 +23,4 @@ local function repentancePlusMODPatch()
 	}))
 end
 
-loader:RegisterPatch("RepentancePlus", repentancePlusMODPatch)
+loader:RegisterPatch("RepentancePlusMod", repentancePlusMODPatch)

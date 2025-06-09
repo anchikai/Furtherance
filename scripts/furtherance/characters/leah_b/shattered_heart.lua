@@ -75,7 +75,7 @@ end
 
 ---@param flags UseFlag
 ---@param player EntityPlayer
-function SHATTERED_HEART:OnUse(_, _, player, flags)
+function SHATTERED_HEART:OnUse(_, _, player, flags, slot)
 	if Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) then
 		return
 	end
@@ -85,7 +85,7 @@ function SHATTERED_HEART:OnUse(_, _, player, flags)
 		if result then
 			return
 		end
-		SHATTERED_HEART:ExplodeHeart(pickup, player, player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) and 1.5 or 1)
+		SHATTERED_HEART:ExplodeHeart(pickup, player, Mod:ActiveUsesCarBattery(player, slot) and 1.5 or 1)
 	end, PickupVariant.PICKUP_HEART)
 	return true
 end

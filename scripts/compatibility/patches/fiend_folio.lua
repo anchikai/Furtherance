@@ -4,9 +4,9 @@ local loader = Mod.PatchesLoader
 
 local function fiendFolioPatch()
 	local ff = FiendFolio
-	Mod:AppendTable(ff.PennyRollSpawns, {
-		{ID = Mod.Trinket.ABYSSAL_PENNY.ID, Unlocked = function() return Mod.PersistGameData:Unlocked(Mod.Trinket.ABYSSAL_PENNY.ACHIEVEMENT) end},
-		{ID = Mod.Trinket.GLITCHED_PENNY.ID, Unlocked = function() return true end}
+	ff.AddItemsToPennyTrinketPool({
+		Mod.Trinket.ABYSSAL_PENNY.ID,
+		Mod.Trinket.GLITCHED_PENNY.ID
 	})
 
 	Mod:AppendTable(FiendFolio.ReferenceItems.Passives, {
@@ -80,7 +80,7 @@ local function fiendFolioPatch()
 
 	local revertBlacklist = {}
 
-	local function onGainRenovator(_, _, _, _, _, player)
+	local function onGainRenovator(_, _, _, _, _, _, player)
 		local playerType = player:GetPlayerType()
 		if not ff.doubleTapCTRLBlacklist[playerType] then
 			ff.doubleTapCTRLBlacklist[playerType] = true
@@ -105,6 +105,8 @@ local function fiendFolioPatch()
 	local function onPlayerInit(_, player)
 		if player:HasCollectible(Mod.Item.HEART_RENOVATOR.ID) then
 			onGainRenovator(_, _, _, _, _, player)
+		else
+			onLoseRenovator(_, player)
 		end
 	end
 	Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, onPlayerInit)

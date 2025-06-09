@@ -23,4 +23,4 @@ function HEART_EMBEDDED_COIN:HeartsToCoins(pickup, collider)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, HEART_EMBEDDED_COIN.HeartsToCoins, PickupVariant.PICKUP_HEART)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, CallbackPriority.EARLY, HEART_EMBEDDED_COIN.HeartsToCoins, PickupVariant.PICKUP_HEART)

@@ -30,6 +30,14 @@ MUDDLED_CROSS.FLIP_X_SPEED = 0.15
 
 --#region Flip on use
 
+function MUDDLED_CROSS:CanUseUpgradedRoomFlip()
+	local useBetterFlip = PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.PETER_B)
+	if Epiphany and Epiphany.API:AnyPlayerHasGoldenCollectible() then
+		useBetterFlip = true
+	end
+	return useBetterFlip
+end
+
 function MUDDLED_CROSS:EnemyFlip()
 	local room = Mod.Room()
 	local effects = room:GetEffects()
