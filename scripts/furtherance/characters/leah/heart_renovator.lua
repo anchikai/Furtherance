@@ -145,7 +145,9 @@ HudHelper.RegisterHUDElement({
 	Name = "Heart Renovator Counter",
 	Priority = HudHelper.Priority.NORMAL,
 	XPadding = 0,
-	YPadding = 6,
+	YPadding = function(player, playerHUDIndex, hudLayout)
+		return playerHUDIndex == 1 and (6 + (1 - Options.HUDOffset) * 12) or 0
+	end,
 	Condition = function (player)
 		return player:HasCollectible(HEART_RENOVATOR.ID)
 	end,
