@@ -19,7 +19,7 @@ function HEART_EMBEDDED_COIN:HeartsToCoins(pickup, collider)
 	local amount = Mod.Item.HEART_RENOVATOR:CannotPickRedHeartsOrWillOverflow(pickup, player)
 
 	if amount then
-		player:AddCoins(amount * player:GetCollectibleNum(HEART_EMBEDDED_COIN.ID))
+		player:AddCoins(amount + (player:GetCollectibleNum(HEART_EMBEDDED_COIN.ID) - 1))
 	end
 end
 
