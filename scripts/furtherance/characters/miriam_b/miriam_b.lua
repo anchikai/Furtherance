@@ -220,7 +220,7 @@ function MIRIAM_B:NoSoulHeartCollision(pickup, collider)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, MIRIAM_B.NoSoulHeartCollision)
+Mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, MIRIAM_B.NoSoulHeartCollision, PickupVariant.PICKUP_HEART)
 
 ---@param effect EntityEffect
 function MIRIAM_B:StopFearAuraReflection(effect)
