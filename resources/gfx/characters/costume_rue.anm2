@@ -1,11 +1,11 @@
 <AnimatedActor>
-	<Info CreatedBy="trtv" CreatedOn="5/22/2025 6:15:14 PM" Version="4" Fps="30"/>
+	<Info CreatedBy="trtv" CreatedOn="6/10/2025 6:45:03 PM" Version="6" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="costumes\costume_rue.png" Id="0"/>
 		</Spritesheets>
 		<Layers>
-			<Layer Name="head" Id="0" SpritesheetId="0"/>
+			<Layer Name="head1" Id="0" SpritesheetId="0"/>
 		</Layers>
 		<Nulls/>
 		<Events/>
