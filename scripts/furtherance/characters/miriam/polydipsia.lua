@@ -55,9 +55,14 @@ function POLYDIPSIA:SpawnPolydipsiaCreep(player, ent, enemyPos)
 		(player:GetTearPoisonDamage() * 0.666) / player.Damage, 5, player)
 	local creep = player:SpawnAquariusCreep(tearParams)
 	local size = ent.Size
+	local mult = 1
 	if Mod.Character.MIRIAM:MiriamHasBirthright(player) then
-		size = ent.Size * 1.25
+		mult = mult + 1.25
 	end
+	if player:HasTrinket(TrinketType.TRINKET_LOST_CORK) then
+		mult = mult + 1.25
+	end
+	size = ent.Size * mult
 	--Epic Fetus
 	if ent:ToEffect() then
 		--They only exist for one frame and do change size with the explosion radius
@@ -132,6 +137,23 @@ function POLYDIPSIA:OnTearDeath(tear)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_TEAR_DEATH, POLYDIPSIA.OnTearDeath)
+
+---@param tear EntityTear
+function POLYDIPSIA:OnFlatStoneBounce(tear)
+	local player = Mod:TryGetPlayer(tear, true)
+	local data = Mod:TryGetData(tear)
+	if player
+		and data
+		and data.PolydipsiaShot
+		and tear:HasTearFlags(TearFlags.TEAR_HYDROBOUNCE)
+		and tear.PositionOffset.Y == -5
+		and not tear:IsDead()
+	then
+		POLYDIPSIA:SpawnPolydipsiaCreep(player, tear)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, POLYDIPSIA.OnFlatStoneBounce)
 
 ---@param tear EntityTear
 function POLYDIPSIA:OnLudoTearUpdate(tear)
