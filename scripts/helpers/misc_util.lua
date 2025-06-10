@@ -113,8 +113,8 @@ function Furtherance:CopySprite(sprite)
 
 	copySprite:Load(sprite:GetFilename(), true)
 
-	local anim = sprite:GetAnimation()
-	local overlayAnim = sprite:GetOverlayAnimation()
+	local anim, frame = sprite:GetAnimation(), sprite:GetFrame()
+	local overlayAnim, overlayFrame = sprite:GetOverlayAnimation(), sprite:GetOverlayFrame()
 
 	if anim == "" and overlayAnim == "" then
 		return copySprite
@@ -125,8 +125,10 @@ function Furtherance:CopySprite(sprite)
 	for key, value in pairs(s1Metatable.__propget) do
 		copySprite[key] = value(sprite)
 	end
-	copySprite:SetFrame(anim, sprite:GetFrame())
-	copySprite:SetOverlayFrame(overlayAnim, sprite:GetOverlayFrame())
+	copySprite:SetFrame(anim, frame)
+	if overlayFrame ~= -1 then
+		copySprite:SetOverlayFrame(overlayAnim, overlayFrame)
+	end
 	if REPENTOGON then
 		copySprite:SetRenderFlags(sprite:GetRenderFlags())
 	end

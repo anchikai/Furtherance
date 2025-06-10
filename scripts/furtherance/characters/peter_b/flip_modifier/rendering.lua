@@ -89,7 +89,11 @@ function FLIP_RENDERING:TempPreRender(ent)
 	if not FLIP.PETER_EFFECTS_ACTIVE then return end
 	local renderMode = Mod.Room():GetRenderMode()
 	local data = Mod:GetData(ent)
-	if renderMode == data.PeterFlippedIgnoredRenderFlag then
+
+	if (renderMode == data.PeterFlippedIgnoredRenderFlag)
+		or data.PeterFlippedIgnoredRenderFlag == RenderMode.RENDER_WATER_ABOVE
+		and renderMode == RenderMode.RENDER_NORMAL
+	then
 		return false
 	end
 end
@@ -187,31 +191,31 @@ local vd = Vector(0, 40)
 
 ---@param ent Entity
 ---@param spr Sprite
----@param trackMode integer
----|0 Regular + Overlay
----|1 Regular only
----|2 Overlay only
-function FLIP_RENDERING:AddOutlineSprite(ent, spr, trackMode, spriteToTrack)
+---@param trackMode? string @`head` to track the player's head animations. `body` for the body. `backup` if the player has a head and body costume and needs something to play player animations
+function FLIP_RENDERING:AddOutlineSprite(ent, spr, trackMode)
 	local data = Mod:GetData(ent)
-	local copyspr = Sprite(spr:GetFilename(), true)
-	copyspr:SetFrame(spr:GetAnimation(), spr:GetFrame())
-	copyspr:Play(spr:GetAnimation())
+	local copyspr = Mod:CopySprite(spr)
 
-	for i, layer in pairs(spr:GetAllLayers()) do
+	for _, layer in pairs(spr:GetAllLayers()) do
 		local id = layer:GetLayerID()
 		local clayer = copyspr:GetLayer(id)
+		local clayercolor = layer:GetColor()
+		clayercolor.A = 0.5
 		---@cast clayer LayerState
 		copyspr:ReplaceSpritesheet(id, layer:GetSpritesheetPath())
-		clayer:SetColor(Color(1, 1, 1, 0.5, 0, 0, 0, i))
+		clayer:SetColor(clayercolor)
 	end
 	copyspr:SetCustomShader("shaders/PeterBOutline")
 	copyspr:LoadGraphics()
+
 	copyspr.Offset = spr.Offset / 1
-	copyspr.FlipY = true
+	copyspr.Offset = -(spr.Offset + ent.PositionOffset / wtr)
+	copyspr.Rotation = spr.Rotation - 180
+	copyspr.FlipX = not spr.FlipX
 	copyspr.Color.A = 0
 
 	data.GSGSAGS = data.GSGSAGS or {}
-	Mod.Insert(data.GSGSAGS, { copyspr, trackMode, 0, spriteToTrack })
+	Mod.Insert(data.GSGSAGS, { copyspr, 0, spr, trackMode })
 end
 
 ---@param ent Entity
@@ -222,10 +226,12 @@ function FLIP_RENDERING:EntityUpdate(ent)
 	local underSolid = gridCol == GridCollisionClass.COLLISION_SOLID
 		or gridCol == GridCollisionClass.COLLISION_OBJECT
 		or gridCol == GridCollisionClass.COLLISION_WALL
+	local sprite = ent:GetSprite()
 
 	if not data.GSGSAGS
 		and FLIP:IsEntitySubmerged(ent)
 		and underSolid
+		and ent.Visible
 	then
 		local player = ent:ToPlayer()
 		if player then
@@ -233,57 +239,76 @@ function FLIP_RENDERING:EntityUpdate(ent)
 			local head = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_HEAD)
 			local hair = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_HEAD0)
 
-			if not head and not body then
-				FLIP_RENDERING:AddOutlineSprite(ent, ent:GetSprite(), 0)
-			end
 			if hair then
-				FLIP_RENDERING:AddOutlineSprite(ent, hair, 1, hair)
+				FLIP_RENDERING:AddOutlineSprite(ent, hair, "head")
+			end
+			if (not head and not body) or head and body then
+				FLIP_RENDERING:AddOutlineSprite(ent, sprite, head and body and "backup" or nil)
 			end
 			if head then
-				FLIP_RENDERING:AddOutlineSprite(ent, head, 1, head)
+				FLIP_RENDERING:AddOutlineSprite(ent, head, "head")
 				if not body then
-					FLIP_RENDERING:AddOutlineSprite(ent, ent:GetSprite(), 1)
+					FLIP_RENDERING:AddOutlineSprite(ent, sprite, "body")
 				end
 			end
 			if body then
 				if not head then
-					FLIP_RENDERING:AddOutlineSprite(ent, ent:GetSprite(), 2)
+					FLIP_RENDERING:AddOutlineSprite(ent, sprite, "head")
 				end
-				FLIP_RENDERING:AddOutlineSprite(ent, body, 1, body)
+				FLIP_RENDERING:AddOutlineSprite(ent, body, "body")
 			end
 		else
-			FLIP_RENDERING:AddOutlineSprite(ent, ent:GetSprite(), 0)
+			FLIP_RENDERING:AddOutlineSprite(ent, sprite)
 		end
 	elseif data.GSGSAGS then
 		if not FLIP:IsEntitySubmerged(ent) then
 			data.GSGSAGS = nil
 			return
 		end
+
 		for _, GSGSAGS in ipairs(data.GSGSAGS) do
+			---@type Sprite
 			local cspr = GSGSAGS[1]
-			local spr = GSGSAGS[4] or ent:GetSprite()
+			---@type Sprite
+			local spr = GSGSAGS[3]
+			local anim, frame = spr:GetAnimation(), spr:GetFrame()
+			local overlayAnim, overlayFrame = spr:GetOverlayAnimation(), spr:GetOverlayFrame()
+			local playerPart = GSGSAGS[4] ~= nil
+			local trackMode = GSGSAGS[4]
 
 			cspr.Rotation = spr.Rotation
 			cspr.Offset = -(spr.Offset + ent.PositionOffset / wtr)
 			cspr.Rotation = spr.Rotation - 180
 			cspr.FlipX = not spr.FlipX
 			cspr.FlipY = spr.FlipY
+			cspr.Scale = spr.Scale
 
-			if GSGSAGS[2] == 0 then
-				cspr:SetOverlayFrame(spr:GetOverlayAnimation(), spr:GetOverlayFrame())
-				cspr:SetFrame(spr:GetAnimation(), spr:GetFrame())
-			elseif GSGSAGS[2] == 1 then
-				cspr:SetFrame(spr:GetAnimation(), spr:GetFrame())
-			elseif GSGSAGS[2] == 2 then
-				cspr:SetFrame(spr:GetOverlayAnimation(), spr:GetOverlayFrame())
+			if overlayFrame ~= -1 then
+				cspr:SetOverlayFrame(overlayAnim, overlayFrame)
+			elseif cspr:GetOverlayFrame() ~= -1 then
+				cspr:RemoveOverlay()
+			end
+
+			cspr:SetFrame(anim, frame)
+
+			if playerPart then
+				if trackMode == "head" then
+					local headScale = sprite:GetLayer("head"):GetSize()
+					cspr.Scale = sprite.Scale * headScale
+				elseif trackMode == "body" then
+					local bodyScale = sprite:GetLayer("body"):GetSize()
+					cspr.Scale = sprite.Scale * bodyScale
+				end
 			end
 
 			if underSolid then
-				GSGSAGS[3] = GSGSAGS[3] * 0.8 + 0.2
+				GSGSAGS[2] = GSGSAGS[2] * 0.8 + 0.2
 			else
-				GSGSAGS[3] = GSGSAGS[3] * 0.8
+				GSGSAGS[2] = GSGSAGS[2] * 0.8
 			end
-			cspr.Color.A = GSGSAGS[3]
+
+			cspr.Color.A = GSGSAGS[2]
+
 			if cspr.Color.A <= 0.01 then
 				data.GSGSAGS = nil
 				break
@@ -310,8 +335,13 @@ function FLIP_RENDERING:EntityRender(ent, offset)
 	if data.GSGSAGS then
 		Mod:inverseiforeach(data.GSGSAGS, function(GSGSAGS)
 			local cspr = GSGSAGS[1]
-			local rendermod = Mod.Room():GetRenderMode()
-			if rendermod == RenderMode.RENDER_WATER_REFLECT then
+			local renderMode = Mod.Room():GetRenderMode()
+			if renderMode == RenderMode.RENDER_WATER_REFLECT
+				and (GSGSAGS[4] == nil
+					or (GSGSAGS[4] == "backup" and not ent:IsExtraAnimationFinished())
+					or (GSGSAGS[4] ~= "backup" and ent:IsExtraAnimationFinished())
+				)
+			then
 				renderlist[#renderlist + 1] = { cspr, WorldToScreen(ent.Position) }
 			end
 		end)
@@ -327,21 +357,11 @@ Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_RENDER, FLIP_RENDERING.EntityRen
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_RENDER, FLIP_RENDERING.EntityRender)
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_RENDER, FLIP_RENDERING.EntityRender)
 
-local didTheTHing = false
-local hadShidded = false
-
 local render = Sprite().Render
 Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function()
 	for i = 1, #renderlist do
-		hadShidded = true
 		local sr = renderlist[i]
 		render(sr[1], sr[2])
-		if not didTheTHing then
-			print(sr[1]:GetFilename(), sr[1]:GetAnimation())
-		end
-	end
-	if hadShidded then
-		didTheTHing = true
 	end
 	renderlist = {}
 end)
