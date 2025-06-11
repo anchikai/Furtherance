@@ -28,9 +28,10 @@ FLIP.BLACKLISTED_EFFECTS = Mod:Set({
 })
 --They have their own funky mirror stuff. Don't bother with their effects and allow them to exist on both sides
 FLIP.BLACKLISTED_ENTITIES = Mod:Set({
-	EntityType.ENTITY_WRAITH,
-	EntityType.ENTITY_GAPING_MAW,
-	EntityType.ENTITY_BROKEN_GAPING_MAW
+	tostring(EntityType.ENTITY_WRAITH) .. ".0.0",
+	tostring(EntityType.ENTITY_GAPING_MAW) .. ".0.0",
+	tostring(EntityType.ENTITY_BROKEN_GAPING_MAW) .. ".0.0",
+	tostring(EntityType.ENTITY_FIREPLACE) .. ".4.0" --White Fireplace
 })
 --Not an enemy but should only be interactable on the above world
 FLIP.WHITELISTED_ENTITIES = Mod:Set({
@@ -48,7 +49,7 @@ end
 ---@param ent Entity
 function FLIP:ShouldIgnoreEnemy(ent)
 	return ent:IsBoss()
-		or FLIP.BLACKLISTED_ENTITIES[ent.Type]
+		or FLIP.BLACKLISTED_ENTITIES[Mod:GetTypeVarSubFromEnt(ent, true)]
 end
 
 ---@param ent Entity
@@ -92,13 +93,8 @@ end
 
 ---@param ent Entity
 function FLIP:IsEntitySubmerged(ent)
-	local player = Mod:TryGetPlayer(ent)
-	local flipActive = FLIP:IsRoomEffectActive()
-	local fromEnemy = FLIP:TryGetEnemy(ent)
-	local isFlippedEnemy = fromEnemy and FLIP:IsFlippedEnemy(fromEnemy)
-	return (player and PETER_B:IsPeterB(player) and not flipActive)
-		or (fromEnemy and isFlippedEnemy and not flipActive)
-		or (fromEnemy and not isFlippedEnemy and flipActive)
+	local data = Mod:GetData(ent)
+	return (data.PeterFlippedIgnoredRenderFlag or 0) == RenderMode.RENDER_WATER_ABOVE
 end
 
 ---@param ent Entity

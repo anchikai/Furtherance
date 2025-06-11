@@ -43,16 +43,17 @@ Mod:AddCallback(ModCallbacks.MC_POST_RENDER, FLIP_SHADER.AnimateFlip)
 function FLIP_SHADER:FlashNearFlipEnd(ent)
 	if FLIP.PETER_EFFECTS_ACTIVE
 		and not FLIP:IsEntitySubmerged(ent)
-		and (FLIP:ValidEnemyToFlip(ent) or ent:ToPlayer())
+		and (FLIP:ValidEnemyToFlip(ent)
+		---@cast ent EntityPlayer
+		or (ent:ToPlayer() and Mod.Character.PETER_B:IsPeterB(ent)))
 	then
 		local room = Mod.Room():GetEffects()
 		if room:HasCollectibleEffect(MUDDLED_CROSS.ID) then
 			local cooldown = room:GetCollectibleEffect(MUDDLED_CROSS.ID).Cooldown
 			if cooldown > 0 and cooldown < 60 and cooldown % 15 == 0 then
 				ent:SetColor(
-					StatusEffectLibrary.StatusConfig[Mod.Character.PETER_B.FLIP.STATUS_EFFECTS.STRENGTH_NAME].Color, 15,
-					10,
-					true, false)
+					StatusEffectLibrary.StatusConfig[Mod.Character.PETER_B.FLIP.STATUS_EFFECTS.STRENGTH_NAME].Color,
+				15, 10, true, false)
 			end
 		end
 	end
@@ -87,9 +88,11 @@ function FLIP_SHADER:FreezeEnemiesDuringFlip()
 			Isaac.GetPlayer():UseActiveItem(CollectibleType.COLLECTIBLE_PAUSE, false, false, false, false, -1)
 			Isaac.GetPlayer():GetEffects():RemoveCollectibleEffect(CollectibleType.COLLECTIBLE_PAUSE)
 			FLIP.PAUSE_ENEMIES_DURING_FLIP = true
-			Mod.Foreach.Projectile(function (projectile, index)
-				projectile:Die()
-			end, nil, nil, {Inverse = true})
+			Mod.Foreach.Player(function (player)
+				Mod.Foreach.ProjectileInRadius(player.Position, 80, function (projectile)
+					projectile:Die()
+				end, nil, nil, {Inverse = true})
+			end)
 		end
 	else
 		if FLIP.PAUSE_ENEMIES_DURING_FLIP then

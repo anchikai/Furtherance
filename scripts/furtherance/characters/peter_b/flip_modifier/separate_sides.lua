@@ -66,7 +66,9 @@ function SEPARATE_SIDES:CollisionMode(ent, collider)
 	end
 	if enemyTarget then
 		local isFlippedEnemy = FLIP:IsFlippedEnemy(damageSource)
-		if oppositeTarget:ToPlayer()
+		local player = oppositeTarget:ToPlayer()
+		if player
+			and Mod.Character.PETER_B:IsPeterB(player)
 			and FLIP:ValidEnemyToFlip(ent)
 			and not isFlippedEnemy
 			and not FLIP:IsRoomEffectActive()
@@ -89,7 +91,8 @@ Mod:AddPriorityCallback(ModCallbacks.MC_PRE_FAMILIAR_COLLISION, CallbackPriority
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_BOMB_COLLISION, CallbackPriority.IMPORTANT, SEPARATE_SIDES.CollisionMode)
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_LASER_COLLISION, CallbackPriority.IMPORTANT, SEPARATE_SIDES.CollisionMode)
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_KNIFE_COLLISION, CallbackPriority.IMPORTANT, SEPARATE_SIDES.CollisionMode)
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, CallbackPriority.IMPORTANT, SEPARATE_SIDES.CollisionMode)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, CallbackPriority.IMPORTANT,
+	SEPARATE_SIDES.CollisionMode)
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_COLLISION, CallbackPriority.IMPORTANT, SEPARATE_SIDES.CollisionMode)
 
 ---@param ent Entity
@@ -186,7 +189,7 @@ function SEPARATE_SIDES:PressurePlateUpdate(gridEnt)
 		local grid_save = Mod:RoomSave(gridEnt:GetGridIndex())
 		local validPlayerOnPlate = false
 
-		Mod.Foreach.PlayerInRadius(gridEnt.Position, 40, function (player, index)
+		Mod.Foreach.PlayerInRadius(gridEnt.Position, 40, function(player, index)
 			if FLIP:IsEntitySubmerged(player) and gridEnt.State == 0 and not validPlayerOnPlate then
 				gridEnt.State = 3
 			elseif not FLIP:IsEntitySubmerged(player) and gridEnt.State == 3 and not grid_save.PeterBPlateTriggered then

@@ -195,6 +195,7 @@ local vd = Vector(0, 40)
 function FLIP_RENDERING:AddOutlineSprite(ent, spr, trackMode)
 	local data = Mod:GetData(ent)
 	local copyspr = Mod:CopySprite(spr)
+	local mirrorWorld = Mod.Room():IsMirrorWorld()
 
 	for _, layer in pairs(spr:GetAllLayers()) do
 		local id = layer:GetLayerID()
@@ -211,7 +212,11 @@ function FLIP_RENDERING:AddOutlineSprite(ent, spr, trackMode)
 	copyspr.Offset = spr.Offset / 1
 	copyspr.Offset = -(spr.Offset + ent.PositionOffset / wtr)
 	copyspr.Rotation = spr.Rotation - 180
-	copyspr.FlipX = not spr.FlipX
+	if mirrorWorld then
+		copyspr.FlipX = spr.FlipX
+	else
+		copyspr.FlipX = not spr.FlipX
+	end
 	copyspr.Color.A = 0
 
 	data.GSGSAGS = data.GSGSAGS or {}
@@ -237,7 +242,26 @@ function FLIP_RENDERING:EntityUpdate(ent)
 		if player then
 			local body = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_BODY)
 			local head = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_HEAD)
-			local hair = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_HEAD0)
+			local hairCostume = EntityConfig.GetPlayer(player:GetPlayerType()):GetCostumeID()
+			local hair
+			if hairCostume == -1 or not hairCostume then
+				hair = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_HEAD0)
+			else
+				local layerMap = player:GetCostumeLayerMap()
+				local costumeDescs = player:GetCostumeSpriteDescs()
+				for i = PlayerSpriteLayer.SPRITE_HEAD0, PlayerSpriteLayer.SPRITE_HEAD5 do
+					local costumeLayer = layerMap[i + 1]
+					if costumeLayer then
+						local costumeIndex = costumeLayer.costumeIndex
+						local costumeDesc = costumeDescs[costumeIndex + 1]
+						local itemConfig = costumeDesc:GetItemConfig()
+						if itemConfig:IsNull() and itemConfig.ID == hairCostume then
+							hair = costumeDesc:GetSprite()
+							break
+						end
+					end
+				end
+			end
 
 			if hair then
 				FLIP_RENDERING:AddOutlineSprite(ent, hair, "head")
@@ -265,10 +289,11 @@ function FLIP_RENDERING:EntityUpdate(ent)
 			data.GSGSAGS = nil
 			return
 		end
+		local mirrorWorld = Mod.Room():IsMirrorWorld()
 
 		for _, GSGSAGS in ipairs(data.GSGSAGS) do
 			---@type Sprite
-			local cspr = GSGSAGS[1]
+			local copyspr = GSGSAGS[1]
 			---@type Sprite
 			local spr = GSGSAGS[3]
 			local anim, frame = spr:GetAnimation(), spr:GetFrame()
@@ -276,28 +301,32 @@ function FLIP_RENDERING:EntityUpdate(ent)
 			local playerPart = GSGSAGS[4] ~= nil
 			local trackMode = GSGSAGS[4]
 
-			cspr.Rotation = spr.Rotation
-			cspr.Offset = -(spr.Offset + ent.PositionOffset / wtr)
-			cspr.Rotation = spr.Rotation - 180
-			cspr.FlipX = not spr.FlipX
-			cspr.FlipY = spr.FlipY
-			cspr.Scale = spr.Scale
+			copyspr.Rotation = spr.Rotation
+			copyspr.Offset = -(spr.Offset + ent.PositionOffset / wtr)
+			copyspr.Rotation = spr.Rotation - 180
+			if mirrorWorld then
+				copyspr.FlipX = spr.FlipX
+			else
+				copyspr.FlipX = not spr.FlipX
+			end
+			copyspr.FlipY = spr.FlipY
+			copyspr.Scale = spr.Scale
 
 			if overlayFrame ~= -1 then
-				cspr:SetOverlayFrame(overlayAnim, overlayFrame)
-			elseif cspr:GetOverlayFrame() ~= -1 then
-				cspr:RemoveOverlay()
+				copyspr:SetOverlayFrame(overlayAnim, overlayFrame)
+			elseif copyspr:GetOverlayFrame() ~= -1 then
+				copyspr:RemoveOverlay()
 			end
 
-			cspr:SetFrame(anim, frame)
+			copyspr:SetFrame(anim, frame)
 
 			if playerPart then
 				if trackMode == "head" then
 					local headScale = sprite:GetLayer("head"):GetSize()
-					cspr.Scale = sprite.Scale * headScale
+					copyspr.Scale = sprite.Scale * headScale
 				elseif trackMode == "body" then
 					local bodyScale = sprite:GetLayer("body"):GetSize()
-					cspr.Scale = sprite.Scale * bodyScale
+					copyspr.Scale = sprite.Scale * bodyScale
 				end
 			end
 
@@ -307,9 +336,9 @@ function FLIP_RENDERING:EntityUpdate(ent)
 				GSGSAGS[2] = GSGSAGS[2] * 0.8
 			end
 
-			cspr.Color.A = GSGSAGS[2]
+			copyspr.Color.A = GSGSAGS[2]
 
-			if cspr.Color.A <= 0.01 then
+			if copyspr.Color.A <= 0.01 then
 				data.GSGSAGS = nil
 				break
 			end
@@ -333,6 +362,7 @@ local renderlist = {}
 function FLIP_RENDERING:EntityRender(ent, offset)
 	local data = Mod:GetData(ent)
 	if data.GSGSAGS then
+		local mirrorWorld = Mod.Room():IsMirrorWorld()
 		Mod:inverseiforeach(data.GSGSAGS, function(GSGSAGS)
 			local cspr = GSGSAGS[1]
 			local renderMode = Mod.Room():GetRenderMode()
@@ -342,7 +372,11 @@ function FLIP_RENDERING:EntityRender(ent, offset)
 					or (GSGSAGS[4] ~= "backup" and ent:IsExtraAnimationFinished())
 				)
 			then
-				renderlist[#renderlist + 1] = { cspr, WorldToScreen(ent.Position) }
+				local renderPos = WorldToScreen(ent.Position)
+				if mirrorWorld then
+					renderPos.X = Isaac.GetScreenWidth() - renderPos.X
+				end
+				renderlist[#renderlist + 1] = { cspr, renderPos }
 			end
 		end)
 	end
