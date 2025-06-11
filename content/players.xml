@@ -36,7 +36,7 @@
 		birthright="Crashing waves" />
 	<player name="Miriam" bSkinParent="Miriam" skin="character_03_miriamb.png" costumeSuffix="miriam_b" skinColor="5" modcostume="6"
 		bonehearts="4" redhearts="4" card="55" healthtype="4"
-		pocketActive="Polarity Shift"
+		pocketActive=" Polarity Shift"
 		nameimage="playername_miriam.png" portrait="playerportrait_miriam_b.png"
 		birthright="Death field"
 		achievement="The Condemned"	/>

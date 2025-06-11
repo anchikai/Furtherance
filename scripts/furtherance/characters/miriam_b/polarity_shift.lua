@@ -21,7 +21,7 @@ function POLARITY_SHIFT:IsChainLightningActive(player)
 end
 
 ---@param player EntityPlayer
-function POLARITY_SHIFT:PolarityShfitNormal(itemID, _, player, _, _)
+function POLARITY_SHIFT:PolarityShiftNormal(itemID, _, player, _, _)
 	for _, itemID in ipairs(Mod.Character.MIRIAM_B.SPIRITUAL_WOUND.INNATE_COLLECTIBLES) do
 		if not player:HasCollectible(itemID, false, true) then
 			player:AddInnateCollectible(itemID)
@@ -38,12 +38,12 @@ function POLARITY_SHIFT:PolarityShfitNormal(itemID, _, player, _, _)
 	return true
 end
 
-Mod:AddCallback(ModCallbacks.MC_USE_ITEM, POLARITY_SHIFT.PolarityShfitNormal, POLARITY_SHIFT.ID_1)
+Mod:AddCallback(ModCallbacks.MC_USE_ITEM, POLARITY_SHIFT.PolarityShiftNormal, POLARITY_SHIFT.ID_1)
 
 ---@param player EntityPlayer
 function POLARITY_SHIFT:TryAddInnateItems(player)
 	--TemporaryEffects don't register as active on continue
-	if player.FrameCount == 1 then
+	if player.FrameCount == 1 and player:GetEffects():HasCollectibleEffect(POLARITY_SHIFT.ID_1) then
 		Mod.Character.MIRIAM_B.SPIRITUAL_WOUND:TryAddInnateItems(player)
 	end
 end

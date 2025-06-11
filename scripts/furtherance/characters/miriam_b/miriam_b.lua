@@ -6,7 +6,7 @@ local MIRIAM_B = {}
 
 Furtherance.Character.MIRIAM_B = MIRIAM_B
 
-MIRIAM_B.HEALTH_DRAIN_RATE = 30 * 3
+MIRIAM_B.HEALH_DRAIN_COUNTDOWN = 30 * 3
 MIRIAM_B.BASE_HEAL_DAMAGE_THRESHOLD = 20
 MIRIAM_B.ADD_SCALING_DAMAGE_THRESHOLD = 5
 
@@ -80,15 +80,15 @@ function MIRIAM_B:HealthDrain(player)
 		MIRIAM_B.SPIRITUAL_WOUND:TryStopAttackSFX(player)
 		return
 	end
-	local drainRate = MIRIAM_B.HEALTH_DRAIN_RATE
+	local drainCountdown = MIRIAM_B.HEALH_DRAIN_COUNTDOWN
 	if MIRIAM_B:MiriamBHasBirthright(player) then
-		drainRate = drainRate * 2
+		drainCountdown = drainCountdown * 2
 	end
 	local data = Mod:GetData(player)
 
 	if data and data.FrameStartedPolarityShift then
 		local frameReference = (player.FrameCount - data.FrameStartedPolarityShift)
-		if frameReference > 0 and frameReference % drainRate == 0 and player:GetHearts() > 0 then
+		if frameReference > 0 and frameReference % drainCountdown == 0 and player:GetHearts() > 0 then
 			player:AddHearts(-1)
 		end
 	end

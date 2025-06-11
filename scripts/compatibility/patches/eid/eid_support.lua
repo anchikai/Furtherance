@@ -824,7 +824,7 @@ EID_Birthrights = {
 			Name = "Leah",
 			Description = {
 				"{{ArrowUp}} {{Damage}} Damage bonus from {{Collectible" .. Item.HEART_RENOVATOR.ID .. "}} is doubled",
-				"Killing 20 enemies activates a normal damage bonus Heart Renovator effect"
+				"#Killing 20 enemies activates a normal damage bonus Heart Renovator effect"
 			}
 		}
 	},
@@ -874,7 +874,10 @@ EID_Birthrights = {
 		en_us = {
 			Name = "Tainted Miriam",
 			Description = {
-				"PlaceholderDesc"
+				"Spiritual Wound becomes Death Field",
+				"#Damage cooldown from Death Field is as fast as Chain Lightning",
+				"#Chain Lightning deals {{Damage}} x1.5 Damage to enemies inflicted with {{Fear}} Fear",
+				"#Health drains at half the rate while Chain Lightning is active"
 			}
 		}
 	},

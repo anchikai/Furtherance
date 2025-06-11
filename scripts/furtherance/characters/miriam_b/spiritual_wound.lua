@@ -199,7 +199,7 @@ function SPIRITUAL_WOUND:TryAddInnateItems(player)
 			Mod:GetData(player).IsMiriamB = true
 		end
 		for _, itemID in ipairs(SPIRITUAL_WOUND.INNATE_COLLECTIBLES) do
-			if not player:HasCollectible(itemID, false, true) then
+			if not player:HasCollectible(itemID, false, false) then
 				player:AddInnateCollectible(itemID)
 				local itemConfigItem = Mod.ItemConfig:GetCollectible(itemID)
 				if not player:HasCollectible(itemID, true, true) then
