@@ -4,6 +4,7 @@ local loader = Mod.PatchesLoader
 
 local function fiendFolioPatch()
 	local ff = FiendFolio
+
 	ff.AddItemsToPennyTrinketPool({
 		Mod.Trinket.ABYSSAL_PENNY.ID,
 		Mod.Trinket.GLITCHED_PENNY.ID
@@ -12,6 +13,10 @@ local function fiendFolioPatch()
 	Mod:AppendTable(FiendFolio.ReferenceItems.Passives, {
 		{ ID = Mod.Item.LITTLE_RAINCOAT.ID,      Reference = "Little Nightmares" }
 	})
+
+	Mod:AddToDictionary(ff.DadsBattery.BLACKLIST, Mod:Set({
+		Mod.Item.SERVITUDE.ID
+	}))
 
 	ff:AddStackableItems({
 		Item.BINDS_OF_DEVOTION.ID,
@@ -112,6 +117,12 @@ local function fiendFolioPatch()
 	Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, onPlayerInit)
 
 	--#endregion
+
+	Mod:AddToDictionary(ff.PocketObjectMimicCharges, {
+		[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]] = 4,
+		[Mod.Item.OLD_CAMERA.PHOTO_IDs[2]] = 8,
+		[Mod.Item.OLD_CAMERA.PHOTO_IDs[3]] = 12,
+	})
 end
 
 loader:RegisterPatch("FiendFolio", fiendFolioPatch)
