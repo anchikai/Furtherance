@@ -30,6 +30,7 @@ local function fiendFolioPatch()
 		Item.LIBERATION.ID,
 		Item.MOLTEN_GOLD.ID,
 		Item.ITCHING_POWDER.ID,
+		Item.POLYDIPSIA.ID,
 		Item.CADUCEUS_STAFF.ID,
 		Item.MIRIAMS_WELL.ID,
 		Item.FIRSTBORN_SON.ID,

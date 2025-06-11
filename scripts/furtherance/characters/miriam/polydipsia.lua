@@ -62,6 +62,8 @@ function POLYDIPSIA:SpawnPolydipsiaCreep(player, ent, enemyPos)
 	if player:HasTrinket(TrinketType.TRINKET_LOST_CORK) then
 		mult = mult + 1.25
 	end
+	--+1.25 size per Polydipsia
+	mult = mult + ((1 - player:GetCollectibleNum(POLYDIPSIA.ID)) * 0.25)
 	size = ent.Size * mult
 	--Epic Fetus
 	if ent:ToEffect() then
