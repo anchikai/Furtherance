@@ -20,7 +20,7 @@
 		pocketActive="Keys to the Kingdom"
 		nameimage="playername_peter.png" portrait="playerportrait_peter.png"
 		birthright="Mercy up" />
-	<player name="Peter" bSkinParent="Peter" skin="character_02_peterb.png" costumeSuffix="peter_b" skinColor="-1" modcostume="4"
+	<player name="Peter" bSkinParent="Peter" skin="character_02_peterb.png" costumeSuffix="peter_b" skinColor="0" modcostume="4"
 		heartcontainers="6" redhearts="6"
 		luckmodifier="-1"
 		pocketActive="Muddled Cross"
