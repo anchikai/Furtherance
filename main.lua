@@ -148,7 +148,6 @@ local helpers = {
 	"tears_util",
 	"proximity",
 	"npc_util",
-	"custom_callbacks",
 	"rooms_helper",
 	"pickups_helper",
 	"hearts"
