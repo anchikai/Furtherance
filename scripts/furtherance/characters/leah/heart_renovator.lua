@@ -78,7 +78,12 @@ end
 ---@param collider Entity
 function HEART_RENOVATOR:AddToHeartCounter(pickup, collider)
 	local player = collider:ToPlayer()
-	if not player or not player:HasCollectible(HEART_RENOVATOR.ID) then return end
+	if not (player
+			and player:HasCollectible(HEART_RENOVATOR.ID)
+			and Mod.HeartGroups.Red[pickup.SubType])
+	then
+		return
+	end
 	local player_run_save = Mod:RunSave(player)
 	local maxCount = HEART_RENOVATOR:GetMaxHeartCounter(player)
 
@@ -153,10 +158,10 @@ HudHelper.RegisterHUDElement({
 	Priority = HudHelper.Priority.NORMAL,
 	XPadding = 0,
 	YPadding = 6,
-	Condition = function (player)
+	Condition = function(player)
 		return player:HasCollectible(HEART_RENOVATOR.ID)
 	end,
-	OnRender = function (player, _, _, position)
+	OnRender = function(player, _, _, position)
 		local player_run_save = Mod:RunSave(player)
 		player_run_save.HeartRenovatorCounter = player_run_save.HeartRenovatorCounter or 0
 		local heartCounter = player_run_save.HeartRenovatorCounter

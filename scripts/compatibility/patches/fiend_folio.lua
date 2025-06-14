@@ -5,12 +5,12 @@ local loader = Mod.PatchesLoader
 local function fiendFolioPatch()
 	local ff = FiendFolio
 
-	Mod.HeartGroups.Black[ff.PICKUP.HALF_BLACK_HEART] = true
-	Mod.HeartGroups.Red[ff.PICKUP.BLENDED_BLACK_HEART] = true
-	Mod.HeartGroups.Black[ff.PICKUP.BLENDED_BLACK_HEART] = true
-	Mod.HeartGroups.Blended[ff.PICKUP.BLENDED_BLACK_HEART] = true
-	Mod.HeartAmount[ff.PICKUP.HALF_BLACK_HEART] = 1
-	Mod.HeartAmount[ff.PICKUP.BLENDED_BLACK_HEART] = 2
+	Mod.HeartGroups.Black[ff.PICKUP.VARIANT.HALF_BLACK_HEART] = true
+	Mod.HeartGroups.Red[ff.PICKUP.VARIANT.BLENDED_BLACK_HEART] = true
+	Mod.HeartGroups.Black[ff.PICKUP.VARIANT.BLENDED_BLACK_HEART] = true
+	Mod.HeartGroups.Blended[ff.PICKUP.VARIANT.BLENDED_BLACK_HEART] = true
+	Mod.HeartAmount[ff.PICKUP.VARIANT.HALF_BLACK_HEART] = 1
+	Mod.HeartAmount[ff.PICKUP.VARIANT.BLENDED_BLACK_HEART] = 2
 
 	ff.AddItemsToPennyTrinketPool({
 		Mod.Trinket.ABYSSAL_PENNY.ID,

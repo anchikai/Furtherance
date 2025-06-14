@@ -47,8 +47,8 @@ Furtherance.HeartAmount = {
 	[HeartSubType.HEART_HALF] = 1,
 	[HeartSubType.HEART_BLENDED] = 2,
 	[HeartSubType.HEART_HALF_SOUL] = 1,
-	[HeartSubType.HEART_SOUL] = 1,
-	[HeartSubType.HEART_BLACK] = 1
+	[HeartSubType.HEART_SOUL] = 2,
+	[HeartSubType.HEART_BLACK] = 2
 }
 
 ---@param player EntityPlayer
