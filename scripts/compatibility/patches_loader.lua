@@ -49,7 +49,7 @@ local patches = {
 	"epiphany",
 	"future",
 	"pogforgooditems",
-	"repentanceplus",
+	"repentance_plus",
 	"stageapi"
 }
 

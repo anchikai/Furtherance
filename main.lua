@@ -151,6 +151,7 @@ local helpers = {
 	"custom_callbacks",
 	"rooms_helper",
 	"pickups_helper",
+	"hearts"
 }
 
 local tools = {
@@ -163,7 +164,6 @@ local tools = {
 
 local core = {
 	"customhealthapi.core",
-	"hearts",
 	"custom_callbacks",
 	"entity_replacement"
 }

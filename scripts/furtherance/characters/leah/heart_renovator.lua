@@ -39,23 +39,19 @@ Mod:AddCallback(ModCallbacks.MC_USE_ITEM, HEART_RENOVATOR.OnUse, HEART_RENOVATOR
 ---@param player EntityPlayer
 ---@return number? HeartWorth
 function HEART_RENOVATOR:CannotPickRedHeartsOrWillOverflow(pickup, player)
-	local amount = Mod.Core.HEARTS.HeartAmount[pickup.SubType]
+	local amount = Mod.HeartAmount[pickup.SubType]
 	if not amount then return end
 	local canOverflow = false
 	local isBlended = pickup.SubType == HeartSubType.HEART_BLENDED
 	local redIsDoubled = player:HasCollectible(CollectibleType.COLLECTIBLE_MAGGYS_BOW)
 	local canJarRedHearts = player:HasCollectible(CollectibleType.COLLECTIBLE_THE_JAR) and  player:GetJarHearts() < 8
-	local canCollect = player:CanPickRedHearts()
+	local canCollect = Mod:CanCollectHeart(player, pickup.SubType)
 	local hasSodomApple = player:HasTrinket(TrinketType.TRINKET_APPLE_OF_SODOM)
 
 	if canJarRedHearts or hasSodomApple then return end
 
 	if redIsDoubled then
 		amount = amount * 2
-	end
-
-	if isBlended then
-		canCollect = canCollect or player:CanPickSoulHearts()
 	end
 
 	if canCollect then

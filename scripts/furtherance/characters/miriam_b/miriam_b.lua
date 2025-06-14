@@ -192,7 +192,7 @@ end
 function MIRIAM_B:ReplaceHearts(entType, variant, subtype, pos, spawner, seed)
 	if variant == PickupVariant.PICKUP_HEART
 		and PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.MIRIAM_B)
-		and Mod.Core.HEARTS.SoulHearts[subtype]
+		and (Mod.HeartGroups.Soul[subtype] or Mod.HeartGroups.Black)
 	then
 		local anyoneNotMiriamB = Mod.Foreach.Player(function (player, index)
 			if not MIRIAM_B(player) and not Mod.Character.LEAH_B:IsLeahB(player) then
@@ -200,7 +200,7 @@ function MIRIAM_B:ReplaceHearts(entType, variant, subtype, pos, spawner, seed)
 			end
 		end)
 		if anyoneNotMiriamB then return end
-		return {entType, variant, Mod.Character.LEAH_B.SPECIAL_HEART_TO_RED_HEART[subtype] or HeartSubType.HEART_FULL, seed}
+		return {entType, variant, (Mod.HeartAmount[subtype] or 0) == 1 and HeartSubType.HEART_HALF or HeartSubType.HEART_FULL, seed}
 	end
 end
 
@@ -212,9 +212,8 @@ function MIRIAM_B:NoSoulHeartCollision(pickup, collider)
 	local player = collider:ToPlayer()
 	if player
 		and MIRIAM_B:IsMiriamB(player)
-		and Mod.Core.HEARTS.SoulHearts[pickup.SubType]
-		and (pickup.SubType ~= HeartSubType.HEART_BLENDED
-		or not player:CanPickRedHearts())
+		and Mod.HeartGroups.SoulHearts[pickup.SubType]
+		and not Mod:CanCollectHeart(player, pickup.SubType)
 	then
 		return pickup:IsShopItem()
 	end

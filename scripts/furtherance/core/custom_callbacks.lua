@@ -1,6 +1,8 @@
 local Mod = Furtherance
 
 Furtherance.ModCallbacks = {
+	CAN_COLLECT_HEART = "FURTHERANCE_CAN_COLLECT_HEART",
+
 	---() - Called when the Muddled Cross flip shader is flipping from one side to the other
 	PETER_B_ENEMY_ROOM_FLIP = "FURTHERANCE_PETER_B_ENEMY_ROOM_FLIP",
 

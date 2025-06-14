@@ -19,12 +19,12 @@ function CARDIOMYOPATHY:CollectHeart(pickup, collider)
 
 	if player
 		and player:HasCollectible(CARDIOMYOPATHY.ID)
-		and player:CanPickRedHearts()
-		and Mod.Core.HEARTS.RedHearts[pickup.Variant]
+		and Mod.HeartGroups.Red[pickup.SubType]
+		and Mod:CanCollectHeart(player, pickup.SubType)
 	then
 		local rng = player:GetCollectibleRNG(CARDIOMYOPATHY.ID)
 		if rng:RandomFloat() <= CARDIOMYOPATHY.SHIELD_CHANCE then
-			player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_BOOK_OF_SHADOWS, true, CARDIOMYOPATHY.INVULNERABILITY_DURATION * Mod.Core.HEARTS.HeartAmount[pickup.Variant])
+			player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_BOOK_OF_SHADOWS, true, CARDIOMYOPATHY.INVULNERABILITY_DURATION * (Mod.HeartAmount[pickup.Variant] or 2))
 		end
 		if rng:RandomFloat() <= Mod:Clamp(player.Luck / CARDIOMYOPATHY.MAX_LUCK, CARDIOMYOPATHY.MIN_CHANCE, CARDIOMYOPATHY.MAX_CHANCE) then
 			player:AddMaxHearts(2)

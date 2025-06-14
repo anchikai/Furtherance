@@ -18,9 +18,6 @@ LEAH_B.HEART_LIMIT = 48
 ---We're allowed to add 23 broken hearts at a limit of 66. Tainted Leah manages removing hearts that exceed the expected 24
 LEAH_B.TECHNICAL_HEART_LIMIT = 66
 
-LEAH_B.SPECIAL_HEART_TO_RED_HEART = {
-	[HeartSubType.HEART_HALF_SOUL] = HeartSubType.HEART_HALF
-}
 LEAH_B.HEART_ADD_CHECK = Mod:Set({
 	AddHealthType.MAX,
 	AddHealthType.SOUL,
@@ -282,7 +279,7 @@ end
 function LEAH_B:ReplaceHearts(entType, variant, subtype, pos, spawner, seed)
 	if variant == PickupVariant.PICKUP_HEART
 		and PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.LEAH_B)
-		and Mod.Core.HEARTS.SoulHearts[subtype]
+		and (Mod.HeartGroups.Soul[subtype] or Mod.HeartGroups.Black)
 	then
 		local anyoneNotLeahB = Mod.Foreach.Player(function (player, index)
 			if not LEAH_B:IsLeahB(player) and not Mod.Character.MIRIAM_B:IsMiriamB(player) then
@@ -290,13 +287,13 @@ function LEAH_B:ReplaceHearts(entType, variant, subtype, pos, spawner, seed)
 			end
 		end)
 		if anyoneNotLeahB then return end
-		local heartSubtype = LEAH_B.SPECIAL_HEART_TO_RED_HEART[subtype] or HeartSubType.HEART_FULL
+		local heartSubtype = (Mod.HeartAmount[subtype] or 0) == 1 and HeartSubType.HEART_HALF or HeartSubType.HEART_FULL
 		if LEAH_B:LeahBHasBirthright() and RNG(seed):RandomFloat() <= LEAH_B.BIRTHRIGHT_HEART_UPGRADE_CHANCE then
 			local floor_save = Mod:FloorSave()
 			floor_save.LeahBBirthrightHeartUpgrade = floor_save.LeahBBirthrightHeartUpgrade or {}
 			if floor_save.LeahBBirthrightHeartUpgrade[tostring(seed)] then
 				floor_save.LeahBBirthrightHeartUpgrade[tostring(seed)] = true
-				heartSubtype = Mod.Core.HEARTS.HeartValueIncrease[heartSubtype] or heartSubtype
+				heartSubtype = Mod.HeartValueIncrease[heartSubtype] or heartSubtype
 			end
 		end
 		return {entType, variant, heartSubtype, seed}

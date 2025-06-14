@@ -11,9 +11,6 @@ SHATTERED_HEART.DEFAULT_EXPLOSION_DAMAGE = 5.25
 SHATTERED_HEART.EXPLOSION_MULT = 7.5
 
 SHATTERED_HEART.HEART_EXPLOSION = {
-	[HeartSubType.HEART_HALF] = 3.5,
-	[HeartSubType.HEART_DOUBLEPACK] = 10.5,
-	[HeartSubType.HEART_HALF_SOUL] = 3.5,
 	[HeartSubType.HEART_ETERNAL] = 21,
 	[HeartSubType.HEART_GOLDEN] = 10.5,
 	[HeartSubType.HEART_ROTTEN] = 10.5,
@@ -24,7 +21,7 @@ SHATTERED_HEART.HEART_EXPLOSION = {
 
 ---@param pickup EntityPickup
 function SHATTERED_HEART:GetHeartDamage(pickup)
-	local heartExplosion = SHATTERED_HEART.HEART_EXPLOSION[pickup.SubType]
+	local heartExplosion = SHATTERED_HEART.HEART_EXPLOSION[pickup.SubType] or ((Mod.HeartAmount[pickup.SubType] or 2) * 3.5)
 	local baseDamage = heartExplosion or SHATTERED_HEART.DEFAULT_EXPLOSION_DAMAGE
 	return baseDamage + (0.5 * Mod.Game:GetLevel():GetAbsoluteStage())
 end
@@ -95,11 +92,11 @@ Mod:AddCallback(ModCallbacks.MC_USE_ITEM, SHATTERED_HEART.OnUse, SHATTERED_HEART
 ---@param pickup EntityPickup
 function SHATTERED_HEART:SharpHeartUpdate(pickup)
 	local data = Mod:TryGetData(pickup)
-	if not data
-		or not data.ShatteredHeartPickup
-		or (not pickup:GetSprite():IsPlaying("Idle")
-			and not pickup:GetSprite():WasEventTriggered("DropSound")
-		)
+	if not (data
+		and data.ShatteredHeartPickup
+		and (pickup:GetSprite():IsPlaying("Idle")
+			or pickup:GetSprite():WasEventTriggered("DropSound")
+		))
 	then
 		return
 	end
@@ -107,7 +104,7 @@ function SHATTERED_HEART:SharpHeartUpdate(pickup)
 
 	Mod.Foreach.NPCInRadius(pickup.Position, pickup.Size, function (npc, index)
 		Mod.SFXMan:Play(SoundEffect.SOUND_MEAT_IMPACTS, 1, 2, false, 0.5)
-		if player and Mod.Character.LEAH_B:LeahBHasBirthright(player) and player:CanPickRedHearts() then
+		if player and Mod.Character.LEAH_B:LeahBHasBirthright(player) and Mod:CanCollectHeart(player, pickup.SubType) then
 			player:ForceCollide(pickup, true)
 		else
 			pickup:GetSprite():Play("Collect")
