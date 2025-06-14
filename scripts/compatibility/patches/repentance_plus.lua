@@ -28,8 +28,11 @@ local function repentancePlusMODPatch()
 		taintedHeart.HEART_HOARDED,
 		taintedHeart.HEART_CURDLED,
 		taintedHeart.HEART_SAVAGE,
-		taintedHeart.HEART_HARLOT
+		taintedHeart.HEART_HARLOT,
+		taintedHeart.HEART_DESERTED
 	}))
+
+	Mod.HeartGroups.Blended[taintedHeart.HEART_DESERTED] = true
 
 	Mod:AddToDictionary(Mod.HeartGroups.Soul, Mod:Set({
 		taintedHeart.HEART_DAUNTLESS,

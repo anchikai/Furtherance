@@ -42,7 +42,7 @@ function HEART_RENOVATOR:CannotPickRedHeartsOrWillOverflow(pickup, player)
 	local amount = Mod.HeartAmount[pickup.SubType]
 	if not amount then return end
 	local canOverflow = false
-	local isBlended = pickup.SubType == HeartSubType.HEART_BLENDED
+	local isBlended = Mod.HeartGroups.Blended[pickup.SubType]
 	local redIsDoubled = player:HasCollectible(CollectibleType.COLLECTIBLE_MAGGYS_BOW)
 	local canJarRedHearts = player:HasCollectible(CollectibleType.COLLECTIBLE_THE_JAR) and  player:GetJarHearts() < 8
 	local canCollect = Mod:CanCollectHeart(player, pickup.SubType)

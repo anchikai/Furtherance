@@ -5,7 +5,8 @@ Furtherance.HeartGroups = {
 		HeartSubType.HEART_FULL,
 		HeartSubType.HEART_HALF,
 		HeartSubType.HEART_SCARED,
-		HeartSubType.HEART_DOUBLEPACK
+		HeartSubType.HEART_DOUBLEPACK,
+		HeartSubType.HEART_BLENDED
 	}),
 	Rotten = Mod:Set({
 		HeartSubType.HEART_ROTTEN,
@@ -13,6 +14,9 @@ Furtherance.HeartGroups = {
 	Soul = Mod:Set({
 		HeartSubType.HEART_SOUL,
 		HeartSubType.HEART_HALF_SOUL,
+		HeartSubType.HEART_BLENDED
+	}),
+	Blended = Mod:Set({
 		HeartSubType.HEART_BLENDED
 	}),
 	Eternal = Mod:Set({

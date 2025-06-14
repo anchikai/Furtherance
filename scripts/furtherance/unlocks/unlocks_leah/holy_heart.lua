@@ -38,13 +38,15 @@ Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_COLLISION, HOLY_HEART.CollectHeart)
 ---@param player EntityPlayer
 ---@param chance number
 function HOLY_HEART:BlendedHeart(pickup, player, chance)
-	--Can only collect it
-	if player:GetHearts() == (player:GetEffectiveMaxHearts() - 1) then
-		chance = 0.5
-	elseif player:CanPickRedHearts() then
-		chance = 0
+	if Mod.HeartGroups.Blended[pickup.SubType] then
+		--Can only collect it
+		if player:GetHearts() == (player:GetEffectiveMaxHearts() - 1) then
+			chance = 0.5
+		elseif player:CanPickRedHearts() then
+			chance = 0
+		end
+		return chance
 	end
-	return chance
 end
 
-Mod:AddCallback(Mod.ModCallbacks.HOLY_HEART_GET_MANTLE_CHANCE, HOLY_HEART.BlendedHeart, HeartSubType.HEART_BLENDED)
+Mod:AddCallback(Mod.ModCallbacks.HOLY_HEART_GET_MANTLE_CHANCE, HOLY_HEART.BlendedHeart)
