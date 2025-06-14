@@ -77,7 +77,7 @@ function SPIRITUAL_WOUND:SpiritualWoundCache(player, cacheFlag)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, SPIRITUAL_WOUND.SpiritualWoundCache)
+Mod:AddPriorityCallback(ModCallbacks.MC_EVALUATE_CACHE, CallbackPriority.LATE, SPIRITUAL_WOUND.SpiritualWoundCache)
 
 ---Looks at the current attack SFX being played by the SW player and loops through the other players
 ---
