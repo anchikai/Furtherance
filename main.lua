@@ -177,6 +177,7 @@ local config = {
 Furtherance.Spawn = include("scripts.helpers.spawn")
 Furtherance.Foreach = include("scripts.helpers.for_each")
 
+Mod.Include("scripts.tools.jumplib").Init()
 Mod.LoopInclude(helpers, "scripts.helpers")
 Mod.ConsoleCommandHelper:AddParentDescription("debug", "Debug commands for specific interactions")
 Dump = include("scripts.helpers.everything_function")

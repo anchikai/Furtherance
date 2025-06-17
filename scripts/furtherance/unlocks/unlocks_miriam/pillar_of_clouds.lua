@@ -6,15 +6,6 @@ Furtherance.Item.PILLAR_OF_CLOUDS = PILLAR_OF_CLOUDS
 
 PILLAR_OF_CLOUDS.ID = Isaac.GetItemIdByName("Pillar of Clouds")
 
-PILLAR_OF_CLOUDS.FLIGHT_OFFSET = Vector(0, -80)
-
-local attackerInputs = Mod:Set({
-	ButtonAction.ACTION_SHOOTDOWN,
-	ButtonAction.ACTION_SHOOTLEFT,
-	ButtonAction.ACTION_SHOOTRIGHT,
-	ButtonAction.ACTION_SHOOTUP,
-})
-
 ---@param player EntityPlayer
 function PILLAR_OF_CLOUDS:IsCloudActive(player)
 	return player:GetEffects():HasCollectibleEffect(PILLAR_OF_CLOUDS.ID)
@@ -22,30 +13,51 @@ end
 
 function PILLAR_OF_CLOUDS:SpawnCloudTrail(player)
 	local trail = Mod.Spawn.Trail(player, 0.1)
-	trail.Position = player.Position + PILLAR_OF_CLOUDS.FLIGHT_OFFSET + Vector(0, -10 * player.SpriteScale.Y)
 	Mod:GetData(player).CloudTrail = EntityPtr(trail)
+	trail:FollowParent(player)
+	trail.SpriteScale = Vector(2, 2)
 end
 
 ---@param player EntityPlayer
 function PILLAR_OF_CLOUDS:OnUse(_, _, player)
-	player.PositionOffset = PILLAR_OF_CLOUDS.FLIGHT_OFFSET
-	player:SetCanShoot(false)
-	if not Mod:GetData(player).CloudTrail then
-		PILLAR_OF_CLOUDS:SpawnCloudTrail(player)
+	local flag = JumpLib.Flags
+	local entData = JumpLib.Internal:GetData(player)
+	if not entData.Tags or not entData.Tags["PillarOfClouds"] then
+		JumpLib:Jump(player, {
+			Height = 15,
+			Flags = flag.KNIFE_DISABLE_ENTCOLL | flag.DISABLE_SHOOTING_INPUT | flag.GRIDCOLL_NO_WALLS | flag.IGNORE_CONFIG_OVERRIDE | flag.FAMILIAR_FOLLOW_ORBITALS | flag.FAMILIAR_FOLLOW_TEARCOPYING | flag.FAMILIAR_FOLLOW_FOLLOWERS,
+			Tags = "PillarOfClouds"
+		})
+		player:SetCanShoot(false)
+		if not Mod:GetData(player).CloudTrail then
+			PILLAR_OF_CLOUDS:SpawnCloudTrail(player)
+		end
 	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, PILLAR_OF_CLOUDS.OnUse, PILLAR_OF_CLOUDS.ID)
 
----@param effect EntityEffect
-function PILLAR_OF_CLOUDS:TrailUpdate(effect)
-	local player = effect.SpawnerEntity and effect.SpawnerEntity:ToPlayer()
-	if player and PILLAR_OF_CLOUDS:IsCloudActive(player) then
-		effect.Position = player.Position + PILLAR_OF_CLOUDS.FLIGHT_OFFSET + Vector(0, -10 * player.SpriteScale.Y)
+---@param player EntityPlayer
+---@param jumpData JumpData
+function PILLAR_OF_CLOUDS:StopFallingAtMaxHeight(player, jumpData)
+	local entData = JumpLib.Internal:GetData(player)
+	if JumpLib:IsFalling(player) then
+		local timescale = JumpLib.Internal.WATCHSTATE_TO_TIMESCALE[Mod.Room():GetBrokenWatchState() or 0]
+        entData.Fallspeed = entData.Fallspeed - (JumpLib.Constants.FALLSPEED_INCR * entData.StaticJumpSpeed) * timescale
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, PILLAR_OF_CLOUDS.TrailUpdate, EffectVariant.SPRITE_TRAIL)
+Mod:AddCallback(JumpLib.Callbacks.ENTITY_UPDATE_60, PILLAR_OF_CLOUDS.StopFallingAtMaxHeight, {effect = PILLAR_OF_CLOUDS.ID})
+
+---@param effect EntityEffect
+function PILLAR_OF_CLOUDS:TrailFollowCloud(effect)
+	local player = effect.SpawnerEntity and effect.SpawnerEntity:ToPlayer()
+	if player and PILLAR_OF_CLOUDS:IsCloudActive(player) then
+		effect.ParentOffset = JumpLib:GetOffset(player) * 1.6
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, PILLAR_OF_CLOUDS.TrailFollowCloud, EffectVariant.SPRITE_TRAIL)
 
 ---@param player EntityPlayer
 function PILLAR_OF_CLOUDS:Transparent(player)
@@ -59,9 +71,8 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, PILLAR_OF_CLOUDS.Transparent)
 
 ---@param player EntityPlayer
-function PILLAR_OF_CLOUDS:RaisePlayer(player)
+function PILLAR_OF_CLOUDS:FlashNearEnd(player)
 	if PILLAR_OF_CLOUDS:IsCloudActive(player) then
-		player.PositionOffset = PILLAR_OF_CLOUDS.FLIGHT_OFFSET
 		local effects = player:GetEffects()
 		local cooldown = effects:GetCollectibleEffect(PILLAR_OF_CLOUDS.ID).Cooldown
 		if cooldown <= 30 then
@@ -74,76 +85,7 @@ function PILLAR_OF_CLOUDS:RaisePlayer(player)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_RENDER, PILLAR_OF_CLOUDS.RaisePlayer)
-
----@param player EntityPlayer
-function PILLAR_OF_CLOUDS:GrantFlight(player)
-	if PILLAR_OF_CLOUDS:IsCloudActive(player) then
-		player.CanFly = true
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, PILLAR_OF_CLOUDS.GrantFlight, CacheFlag.CACHE_FLYING)
-
-function PILLAR_OF_CLOUDS:NoAttacking(ent, hook, button)
-	local player = ent and ent:ToPlayer()
-	if player and PILLAR_OF_CLOUDS:IsCloudActive(player) and attackerInputs[button] then
-		if hook == InputHook.GET_ACTION_VALUE then
-			return 0
-		else
-			return false
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, PILLAR_OF_CLOUDS.NoAttacking)
-
----@param player EntityPlayer
-function PILLAR_OF_CLOUDS:NoPlayerEntCollision(player)
-	if PILLAR_OF_CLOUDS:IsCloudActive(player) then
-		return true
-	end
-end
-
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, CallbackPriority.EARLY,
-	PILLAR_OF_CLOUDS.NoPlayerEntCollision)
-
----@param collider Entity
-function PILLAR_OF_CLOUDS:NoPlayerEntCollision2(ent, collider)
-	local player = collider:ToPlayer()
-	if player and PILLAR_OF_CLOUDS:IsCloudActive(player) then
-		return true
-	end
-end
-
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_COLLISION, CallbackPriority.EARLY, PILLAR_OF_CLOUDS
-.NoPlayerEntCollision2)
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, CallbackPriority.EARLY,
-	PILLAR_OF_CLOUDS.NoPlayerEntCollision2)
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_SLOT_COLLISION, CallbackPriority.EARLY,
-	PILLAR_OF_CLOUDS.NoPlayerEntCollision2)
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, CallbackPriority.EARLY,
-	PILLAR_OF_CLOUDS.NoPlayerEntCollision2)
-
----@param player EntityPlayer
-function PILLAR_OF_CLOUDS:NoDamage(player)
-	if PILLAR_OF_CLOUDS:IsCloudActive(player) then
-		return false
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_TAKE_DMG, PILLAR_OF_CLOUDS.NoDamage)
-
----@param player EntityPlayer
-function PILLAR_OF_CLOUDS:NoPlayerGridCollision(player)
-	if PILLAR_OF_CLOUDS:IsCloudActive(player) then
-		player.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_NONE
-		return true
-	end
-end
-
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_GRID_COLLISION, CallbackPriority.EARLY,
-	PILLAR_OF_CLOUDS.NoPlayerGridCollision, PlayerVariant.PLAYER)
+Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_RENDER, PILLAR_OF_CLOUDS.FlashNearEnd)
 
 ---@param player EntityPlayer
 function PILLAR_OF_CLOUDS:OnEffectRemove(player)
@@ -153,6 +95,7 @@ function PILLAR_OF_CLOUDS:OnEffectRemove(player)
 	if data.CloudTrail and data.CloudTrail.Ref then
 		data.CloudTrail.Ref:Remove()
 	end
+	data.CloudTrail = nil
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED, PILLAR_OF_CLOUDS.OnEffectRemove)
