@@ -88,11 +88,15 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, PILLAR_OF_CLOUDS.GrantFlight, Ca
 function PILLAR_OF_CLOUDS:NoAttacking(ent, hook, button)
 	local player = ent and ent:ToPlayer()
 	if player and PILLAR_OF_CLOUDS:IsCloudActive(player) and attackerInputs[button] then
-		return 0
+		if hook == InputHook.GET_ACTION_VALUE then
+			return 0
+		else
+			return false
+		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, PILLAR_OF_CLOUDS.NoAttacking, InputHook.GET_ACTION_VALUE)
+Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, PILLAR_OF_CLOUDS.NoAttacking)
 
 ---@param player EntityPlayer
 function PILLAR_OF_CLOUDS:NoPlayerEntCollision(player)
@@ -161,23 +165,9 @@ RotationToDir[90] = Direction.RIGHT
 RotationToDir[180] = Direction.DOWN
 RotationToDir[-90] = Direction.LEFT
 
-local doorX = Mod:Set({
-	DoorSlot.DOWN0,
-	DoorSlot.DOWN1,
-	DoorSlot.UP0,
-	DoorSlot.UP1
-})
-
-local doorY = Mod:Set({
-	DoorSlot.LEFT0,
-	DoorSlot.LEFT1,
-	DoorSlot.RIGHT0,
-	DoorSlot.RIGHT1
-})
-
 local playerPos
 
---Credit to Car mod for getting the closest door
+--Credit to Car mod
 function PILLAR_OF_CLOUDS.FakeGentDoorFromStageApi(slot, force)
 	if StageAPI and StageAPI.Loaded then
 		local realfakedoors = Isaac.FindByType(1000, Isaac.GetEntityVariantByName("StageAPIDoor"), -1)
@@ -217,48 +207,42 @@ function PILLAR_OF_CLOUDS.FakeGentDoorFromStageApi(slot, force)
 	end
 end
 
+local thinRooms = Mod:Set({
+	RoomShape.ROOMSHAPE_IH,
+	RoomShape.ROOMSHAPE_IIH,
+	RoomShape.ROOMSHAPE_IIV,
+	RoomShape.ROOMSHAPE_IV
+})
+
+---Slight credit to Car mod/JSG for this code. Modified for my own needs
+---Will loop through all door slots allowed in the room and note down where their position *would* be if a door was there or not
+---The closest DoorSlot will be noted down within the minimum allowed distance, and if there's a door, will return it.
 ---@param pos Vector
 function PILLAR_OF_CLOUDS.GetNearDoor(pos)
-	--Find the wall we're on
+	local roomDesc = Mod:GetRoomDesc()
+	local allowedSlots = roomDesc.Data.Doors
 	local room = Mod.Room()
-	local roomDir
-	local topLeft = room:GetTopLeftPos()
-	local bottomRight = room:GetBottomRightPos()
-	local minDistWall = 99999
-	local distances = {
-		math.abs(topLeft.X - pos.X - 40),
-		math.abs(topLeft.Y - pos.Y - 40),
-		math.abs(bottomRight.X - pos.X + 40),
-		math.abs(bottomRight.Y - pos.Y + 40)
-	}
-	local doorSlotInverse = Mod:Invert(DoorSlot)
-	for i, dist in ipairs(distances) do
-		if dist < minDistWall then
-			minDistWall = dist
-			roomDir = i - 1
-		end
-	end
-	local roomDirString = string.sub(doorSlotInverse[roomDir], 1, -2)
-
-	local slots = {
-		DoorSlot[roomDirString .. "0"],
-		DoorSlot[roomDirString .. "1"]
-	}
-
+	local roomShape = room:GetRoomShape()
 	local nearDoor
 	local minDistDoor = 99999
-	for _, slot in ipairs(slots) do
-		local door = Mod.Room():GetDoor(slot)
-		if (not door) and StageAPI and StageAPI.Loaded then door = PILLAR_OF_CLOUDS.FakeGentDoorFromStageApi(slot) end
-			if door then
-			local newdist = door.Position:Distance(pos)
-			if newdist < minDistDoor then
-				minDistDoor = newdist
-				nearDoor = door
+	for slot = DoorSlot.NO_DOOR_SLOT + 1, DoorSlot.NUM_DOOR_SLOTS - 1 do
+		if Mod:HasBitFlags(allowedSlots, 1 << slot) then
+			local slotPos = room:GetDoorSlotPosition(slot)
+			if slotPos then
+				local door = room:GetDoor(slot)
+				if (not door) and StageAPI and StageAPI.Loaded then door = PILLAR_OF_CLOUDS.FakeGentDoorFromStageApi(slot) end
+
+				local newDist = slotPos:Distance(pos)
+				--Rooms are rectangular. Left/Right walls are shorter than Up/Down walls
+				local minDist = slot % 2 == 0 and 180 or 240
+				if thinRooms[roomShape] then
+					minDist = 100
+				end
+				if newDist < minDistDoor and newDist < minDist and (door and door.TargetRoomIndex > 0) then
+					minDistDoor = newDist
+					nearDoor = door
+				end
 			end
-		end
-		if (nearDoor and ((math.abs(nearDoor.Position.X - pos.X) > 180) or (math.abs(nearDoor.Position.Y - pos.Y) > 180)))then
-			return
 		end
 	end
 	return nearDoor
@@ -270,14 +254,16 @@ function PILLAR_OF_CLOUDS:ChangeRooms(player)
 
 	if PILLAR_OF_CLOUDS:IsCloudActive(player)
 		and not room:IsPositionInRoom(player.Position, -40)
-		and room:GetFrameCount() > 5
+		and room:IsPositionInRoom(player.Position, -80)
+		and Mod.Room():GetFrameCount() > 5
 	then
 		local door = PILLAR_OF_CLOUDS.GetNearDoor(player.Position)
 
 		if door then
 			Mod.Level().LeaveDoor = -1
-			Mod.Game:StartRoomTransition(door.TargetRoomIndex, Direction.NO_DIRECTION)
-			playerPos = {player, player.Position}
+			Mod.Game:StartRoomTransition(door.TargetRoomIndex, door.Direction)
+			local relativePos = player.Position - door.Position
+			playerPos = {player, relativePos}
 		else
 			--Credit to FF for this clean code to push back the player
 			local clampedPos = Mod.Room():GetClampedPosition(player.Position, -40)
@@ -305,11 +291,8 @@ function PILLAR_OF_CLOUDS:AdjustPositionOnNewRoom()
 		local pos = playerPos[2]
 		local doorSlot = Mod.Level().EnterDoor
 		local door = Mod.Room():GetDoor(doorSlot)
-		if doorX[doorSlot] then
-			player.Position = Vector(pos.X, door.Position.Y)
-		elseif doorY[doorSlot] then
-			player.Position = Vector(door.Position.X, pos.Y)
-		end
+		player.Position = door.Position + pos
+
 		playerPos = nil
 	end
 end
