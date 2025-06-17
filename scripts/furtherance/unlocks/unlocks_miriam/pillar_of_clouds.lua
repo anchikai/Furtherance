@@ -238,7 +238,7 @@ function PILLAR_OF_CLOUDS.GetNearDoor(pos)
 				if thinRooms[roomShape] then
 					minDist = 100
 				end
-				if newDist < minDistDoor and newDist < minDist and (door and door.TargetRoomIndex > 0) then
+				if newDist < minDistDoor and newDist < minDist and (door and door.TargetRoomIndex >= 0) then
 					minDistDoor = newDist
 					nearDoor = door
 				end
@@ -255,7 +255,8 @@ function PILLAR_OF_CLOUDS:ChangeRooms(player)
 	if PILLAR_OF_CLOUDS:IsCloudActive(player)
 		and not room:IsPositionInRoom(player.Position, -40)
 		and room:IsPositionInRoom(player.Position, -80)
-		and Mod.Room():GetFrameCount() > 5
+		and room:GetFrameCount() > 5
+		and Mod.Level():GetCurrentRoomIndex() >= 0
 	then
 		local door = PILLAR_OF_CLOUDS.GetNearDoor(player.Position)
 
@@ -266,7 +267,7 @@ function PILLAR_OF_CLOUDS:ChangeRooms(player)
 			playerPos = {player, relativePos}
 		else
 			--Credit to FF for this clean code to push back the player
-			local clampedPos = Mod.Room():GetClampedPosition(player.Position, -40)
+			local clampedPos = room:GetClampedPosition(player.Position, -40)
 			local distance = player.Position:Distance(clampedPos)
 			player.Velocity = player.Velocity + (clampedPos - player.Position):Resized(math.min(10, distance))
 			player.Position = clampedPos + (player.Position - clampedPos)
@@ -291,7 +292,7 @@ function PILLAR_OF_CLOUDS:AdjustPositionOnNewRoom()
 		local pos = playerPos[2]
 		local doorSlot = Mod.Level().EnterDoor
 		local door = Mod.Room():GetDoor(doorSlot)
-		player.Position = door.Position + pos
+		player.Position = Mod.Room():GetClampedPosition(door.Position + pos, -40)
 
 		playerPos = nil
 	end
