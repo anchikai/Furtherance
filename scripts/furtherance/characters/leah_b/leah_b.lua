@@ -276,10 +276,11 @@ end
 ---@param subtype integer
 ---@param spawner Entity
 ---@param seed integer
-function LEAH_B:ReplaceHearts(entType, variant, subtype, pos, spawner, seed)
-	if variant == PickupVariant.PICKUP_HEART
+function LEAH_B:ReplaceHearts(entType, variant, subtype, pos, vel, spawner, seed)
+	if entType == EntityType.ENTITY_PICKUP
+		and variant == PickupVariant.PICKUP_HEART
 		and PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.LEAH_B)
-		and (Mod.HeartGroups.Soul[subtype] or Mod.HeartGroups.Black)
+		and (Mod.HeartGroups.Soul[subtype] or Mod.HeartGroups.Black[subtype])
 	then
 		local anyoneNotLeahB = Mod.Foreach.Player(function (player, index)
 			if not LEAH_B:IsLeahB(player) and not Mod.Character.MIRIAM_B:IsMiriamB(player) then
@@ -296,10 +297,11 @@ function LEAH_B:ReplaceHearts(entType, variant, subtype, pos, spawner, seed)
 				heartSubtype = Mod.HeartValueIncrease[heartSubtype] or heartSubtype
 			end
 		end
+		Mod:DebugLog(entType, variant, heartSubtype, seed)
 		return {entType, variant, heartSubtype, seed}
 	end
 end
 
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, CallbackPriority.IMPORTANT, LEAH_B.ReplaceHearts, EntityType.ENTITY_PICKUP)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, CallbackPriority.IMPORTANT, LEAH_B.ReplaceHearts)
 
 --#endregion
