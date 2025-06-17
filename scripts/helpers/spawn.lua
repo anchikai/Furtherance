@@ -269,6 +269,16 @@ function Spawn.DustClouds(position, amount, velocity, spawner, seed)
 	return clouds
 end
 
+---@param spawner Entity
+---@param trailLength number @Recommended float. Smaller the number, longer the trail
+function Spawn.Trail(spawner, trailLength)
+	local trail = spawnEffect(EffectVariant.SPRITE_TRAIL, 0, spawner.Position, Vector.Zero, spawner)
+	trail.MinRadius = trailLength
+	trail.Parent = spawner
+	trail:Update()
+	return trail
+end
+
 --#endregion
 
 return Spawn

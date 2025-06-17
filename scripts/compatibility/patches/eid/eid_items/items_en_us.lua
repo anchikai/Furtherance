@@ -504,7 +504,11 @@ return function(modifiers)
 		[Item.PILLAR_OF_CLOUDS.ID] = {
 			Name = "Pillar of Clouds",
 			Description = {
-				"No effect at the moment. Sorry!"
+				"{{Timer}} Receive for 10 seconds:",
+				"#Flight",
+				"#Unable to interact with anything in the room",
+				"#Cannot shoot tears",
+				"#Touch a wall with a door to cross into the connected room"
 			}
 		},
 		[Item.PILLAR_OF_FIRE.ID] = {

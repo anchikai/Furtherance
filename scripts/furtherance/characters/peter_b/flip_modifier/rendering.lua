@@ -227,10 +227,13 @@ end
 function FLIP_RENDERING:EntityUpdate(ent)
 	if ent:ToNPC() and ent.FrameCount < 10 or ent.FrameCount < 1 then return end
 	local data = Mod:GetData(ent)
-	local gridCol = Mod.Room():GetGridCollisionAtPos(ent.Position + vd)
+	local room = Mod.Room()
+	local pos = ent.Position + vd + ent.PositionOffset
+	local gridCol = room:GetGridCollisionAtPos(pos)
 	local underSolid = gridCol == GridCollisionClass.COLLISION_SOLID
 		or gridCol == GridCollisionClass.COLLISION_OBJECT
 		or gridCol == GridCollisionClass.COLLISION_WALL
+		or not room:IsPositionInRoom(pos, 0)
 	local sprite = ent:GetSprite()
 
 	if not data.GSGSAGS

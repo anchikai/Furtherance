@@ -3,9 +3,6 @@
 	<entity anm2path="familiar_miriams_well.anm2" tags="cansacrifice" boss="0" champion="0" collisionDamage="0" collisionInterval="7" collisionMass="3" collisionRadius="8" friction="1" id="3" name="Miriam's Well" numGridCollisionPoints="12" shadowSize="14" stageHP="0" variant="1600" customtags="familiarblockprojectiles">
 		<gibs amount="3" blood="0" bone="1" eye="0" gut="0" large="0" />
 	</entity>
-	<entity anm2path="familiar_braincell.anm2" tags="cansacrifice" boss="0" champion="0" collisionDamage="1" collisionInterval="7" collisionMass="3" collisionRadius="8" friction="1" id="3" name="Braincell" numGridKEYS_TO_THE_KINGDOMCollisionPoints="12" shadowSize="14" stageHP="0" variant="1601">
-		<gibs amount="10" blood="1" bone="0" eye="0" gut="0" large="0" />
-	</entity>
 	<entity anm2path="familiar_firstborn_son.anm2" tags="cansacrifice" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="13" friction="1" id="3" name="Firstborn Son" numGridCollisionPoints="12" shadowSize="11" stageHP="0" variant="1602">
 		<gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
 	</entity>
