@@ -119,7 +119,7 @@ function POLARITY_SHIFT:PolarityShiftMiriam(itemID, rng, player, useFlags, slot)
 		if player:GetHearts() == 0 then
 			return
 		end
-		local data = Mod:GetData(player).FrameStartedPolarityShift
+		local data = Mod:GetData(player)
 		if not data.FrameStartedPolarityShift then
 			data.FrameStartedPolarityShift = player.FrameCount
 		else

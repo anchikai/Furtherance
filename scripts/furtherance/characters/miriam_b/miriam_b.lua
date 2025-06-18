@@ -213,7 +213,7 @@ function MIRIAM_B:NoSoulHeartCollision(pickup, collider)
 	local player = collider:ToPlayer()
 	if player
 		and MIRIAM_B:IsMiriamB(player)
-		and Mod.HeartGroups.SoulHearts[pickup.SubType]
+		and Mod.HeartGroups.Soul[pickup.SubType]
 		and not Mod:CanCollectHeart(player, pickup.SubType)
 	then
 		return pickup:IsShopItem()
