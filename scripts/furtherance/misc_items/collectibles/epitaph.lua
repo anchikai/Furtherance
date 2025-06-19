@@ -45,13 +45,14 @@ function EPITAPH:SavePlayerInventoryOnDeath(player)
 				firstItem = historyItem:GetItemID()
 			end
 		end
-		Furtherance:inverseiforeach(history, function(historyItem)
+		for i = #history, 1, -1 do
+			local historyItem = history[i]
 			if (not firstItem or historyItem:GetItemID() ~= firstItem)
 				and EPITAPH:IsValidPassive(historyItem)
 			then
 				lastItem = historyItem:GetItemID()
 			end
-		end)
+		end
 		if firstItem then
 			Mod.Insert(inv.Collectibles, firstItem)
 			Mod:DebugLog("Added", Mod:TryGetTranslatedString("Items", (Mod.ItemConfig:GetCollectible(firstItem).Name)),
@@ -145,13 +146,14 @@ function EPITAPH:PostNewLevel()
 	local stage = Mod.Level():GetAbsoluteStage()
 	local floor_save = Mod:FloorSave()
 	local tombstones = {}
-	Furtherance:inverseiforeach(run_save.EpitaphTombstones or {}, function(tombstoneData, index)
+	for index = #(run_save.EpitaphTombstones or {}), 1, -1 do
+		local tombstoneData = run_save.EpitaphTombstones[index]
 		if stage == tombstoneData.LevelStage then
 			Mod:DebugLog("Reached Epitaph Tombestone floor!")
 			Mod.Insert(tombstones, tombstoneData)
 			table.remove(run_save.EpitaphTombstones, index)
 		end
-	end)
+	end
 	local rooms = Mod:GetRandomRoomsOnFloor(#tombstones, Mod.GENERIC_RNG, function(room)
 		return room.Data.Type == RoomType.ROOM_DEFAULT
 	end)

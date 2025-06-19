@@ -18,7 +18,7 @@ local function fiendFolioPatch()
 	})
 
 	Mod:AppendTable(FiendFolio.ReferenceItems.Passives, {
-		{ ID = Mod.Item.LITTLE_RAINCOAT.ID,      Reference = "Little Nightmares" }
+		{ ID = Mod.Item.LITTLE_RAINCOAT.ID, Reference = "Little Nightmares" }
 	})
 
 	Mod:AddToDictionary(ff.DadsBattery.BLACKLIST, Mod:Set({
@@ -89,6 +89,32 @@ local function fiendFolioPatch()
 
 	Mod:AddCallback(Mod.ModCallbacks.POST_RAPTURE_BOSS_DEATH, killWhisperController, ff.FF.Whispers.ID)
 
+	Mod:AddToDictionary(ff.PocketObjectMimicCharges, {
+		[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]] = 4,
+		[Mod.Item.OLD_CAMERA.PHOTO_IDs[2]] = 8,
+		[Mod.Item.OLD_CAMERA.PHOTO_IDs[3]] = 12,
+	})
+
+	Mod.API:RegisterAltruismCoinBeggar(ff.FFID.ZodiacBeggar)
+	Mod.API:RegisterAltruismBeggar(ff.FFID.EvilBeggar,
+	function(player, slot)
+		return player:GetEffectiveMaxHearts() > 0 and slot:GetSprite():GetAnimation() == "Idle"
+	end,
+	function(player, slot)
+		Mod:GetData(player).AltruismPreventEvilBeggar = true
+		Mod:DelayOneFrame(function() Mod:GetData(player).AltruismPreventEvilBeggar = false end)
+	end)
+
+	local function preventHealthLoss(_, player)
+		if Mod:GetData(player).AltruismPreventEvilBeggar then
+			return 0
+		end
+	end
+
+	Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, preventHealthLoss, AddHealthType.SOUL)
+	Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, preventHealthLoss, AddHealthType.MAX)
+	Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, preventHealthLoss, AddHealthType.BONE)
+
 	--#region Heart Renovator double-tap drop prevention
 
 	local revertBlacklist = {}
@@ -125,12 +151,6 @@ local function fiendFolioPatch()
 	Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, onPlayerInit)
 
 	--#endregion
-
-	Mod:AddToDictionary(ff.PocketObjectMimicCharges, {
-		[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]] = 4,
-		[Mod.Item.OLD_CAMERA.PHOTO_IDs[2]] = 8,
-		[Mod.Item.OLD_CAMERA.PHOTO_IDs[3]] = 12,
-	})
 end
 
 loader:RegisterPatch("FiendFolio", fiendFolioPatch)

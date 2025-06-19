@@ -69,6 +69,8 @@ local function repentancePlusMODPatch()
 	end
 
 	Mod:AddCallback(Mod.ModCallbacks.CAN_COLLECT_HEART, alwaysCollectSavage, taintedHeart.HEART_SAVAGE)
+
+	Mod.API:RegisterAltruismCoinBeggar(RepentancePlusMod.CustomSlots.SLOT_STARGAZER, 7)
 end
 
 loader:RegisterPatch("RepentancePlusMod", repentancePlusMODPatch)

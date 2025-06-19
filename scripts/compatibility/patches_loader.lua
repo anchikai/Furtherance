@@ -43,23 +43,26 @@ function loader:ApplyPatches()
 end
 
 local patches = {
-	"furtherance",
-	"minimapi",
-	"fiend_folio",
+	"andromeda",
+	"arachna",
 	"epiphany",
+	"fiend_folio",
+	"furtherance",
 	"future",
+	"minimapi",
 	"pogforgooditems",
+	"punished",
 	"repentance_plus",
-	"stageapi"
+	"sheriff",
+	"stageapi",
+	"tainted_treasures",
 }
 
 for _, fileName in ipairs(patches) do
 	Furtherance.Include("scripts.compatibility.patches." .. fileName)
 end
 
--- This has to be done after all mods are loaded
--- Because otherwise mods that are loaded after Epiphany will not be detected
-Mod:AddPriorityCallback(ModCallbacks.MC_POST_GAME_STARTED, CallbackPriority.LATE, loader.ApplyPatches)
+Mod:AddPriorityCallback(ModCallbacks.MC_POST_MODS_LOADED, CallbackPriority.LATE, loader.ApplyPatches)
 
 Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function()
 	if not loader.AppliedPatches then

@@ -441,39 +441,6 @@ end
 
 ---@generic K, V
 ---@param tab table<K,V>
----@param func fun(val: V, key?: K): boolean?
-function Furtherance:foreach(tab, func)
-	for k, v in pairs(tab) do
-		if func(v, k) then
-			return
-		end
-	end
-end
-
----@generic V
----@param tab table<integer,V>
----@param func fun(val: V, key?: integer): boolean?
-function Furtherance:iforeach(tab, func)
-	for k, v in ipairs(tab) do
-		if func(v, k) then
-			return
-		end
-	end
-end
-
----@generic V
----@param tab table<integer,V>
----@param func fun(val: V, key?: integer): boolean?
-function Furtherance:inverseiforeach(tab, func)
-	for k = #tab, 1, -1 do
-		if func(tab[k], k) then
-			return
-		end
-	end
-end
-
----@generic K, V
----@param tab table<K,V>
 ---@return table<V,K>
 function Furtherance:Invert(tab)
 	local out = {}

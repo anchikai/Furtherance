@@ -366,7 +366,8 @@ function FLIP_RENDERING:EntityRender(ent, offset)
 	local data = Mod:GetData(ent)
 	if data.GSGSAGS then
 		local mirrorWorld = Mod.Room():IsMirrorWorld()
-		Mod:inverseiforeach(data.GSGSAGS, function(GSGSAGS)
+		for i = #data.GSGSAGS, 1, -1 do
+			local GSGSAGS = data.GSGSAGS[i]
 			local cspr = GSGSAGS[1]
 			local renderMode = Mod.Room():GetRenderMode()
 			if renderMode == RenderMode.RENDER_WATER_REFLECT
@@ -381,7 +382,7 @@ function FLIP_RENDERING:EntityRender(ent, offset)
 				end
 				renderlist[#renderlist + 1] = { cspr, renderPos }
 			end
-		end)
+		end
 	end
 end
 

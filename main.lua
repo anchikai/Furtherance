@@ -185,6 +185,7 @@ InputHelper = include("scripts.helpers.vendor.inputhelper")
 Mod.LoopInclude(tools, "scripts.tools")
 Mod.LoopInclude(core, "scripts.furtherance.core")
 Mod.LoopInclude(config, "scripts.furtherance.config")
+Mod.Include("scripts.furtherance.api")
 
 if CustomHealthAPI and CustomHealthAPI.Library and CustomHealthAPI.Library.UnregisterCallbacks then
 	CustomHealthAPI.Library.UnregisterCallbacks("Furtherance")

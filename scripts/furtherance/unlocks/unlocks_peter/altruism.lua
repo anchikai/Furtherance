@@ -9,6 +9,8 @@ ALTRUISM.ID = Isaac.GetTrinketIdByName("Altruism")
 ALTRUISM.BEGGAR_TRIGGER_ALTRUISM_CHANCE = 0.25
 ALTRUISM.BEGGAR_HEAL_CHANCE = 0.5
 
+ALTRUISM.DEBUG_REFUND = false
+
 ---@param ent Entity
 ---@param amount integer
 ---@param flags DamageFlag
@@ -19,7 +21,7 @@ function ALTRUISM:TryPreventDevilBeggarDamage(ent, amount, flags, source, frames
 		and source.Entity:ToSlot()
 		and Mod:GetData(ent).AltruismPreventDamage
 	then
-		Mod:GetData(ent).AltruismPreventDamage = false
+		Mod:GetData(ent).AltruismPreventDamage = nil
 		ent:TakeDamage(amount, flags | DamageFlag.DAMAGE_FAKE, source, frames)
 		return false
 	end
@@ -51,7 +53,7 @@ end
 ---@param player EntityPlayer
 local function hurtBeggarReward(player)
 	Mod:GetData(player).AltruismPreventDamage = true
-	Mod:DelayOneFrame(function() Mod:GetData(player).AltruismPreventDamage = false end)
+	Mod:DelayOneFrame(function() Mod:GetData(player).AltruismPreventDamage = nil end)
 end
 
 ---@type {[SlotVariant]: fun(player: EntityPlayer, slot: EntitySlot): boolean}
@@ -90,29 +92,58 @@ ALTRUISM.ResourceRefund = {
 ---@param collider Entity
 function ALTRUISM:PreBeggarCollision(slot, collider)
 	local player = collider:ToPlayer()
+
 	if not (player
-		and player:HasTrinket(ALTRUISM.ID)
-		and slot:GetState() == Furtherance.SlotState.IDLE
-		and ALTRUISM.ResourceRequirement[slot.Variant]
-		and ALTRUISM.ResourceRequirement[slot.Variant](player, slot)
-	) then
+			and player:HasTrinket(ALTRUISM.ID)
+			and slot:GetState() == Furtherance.SlotState.IDLE
+			and ALTRUISM.ResourceRequirement[slot.Variant]
+			and ALTRUISM.ResourceRequirement[slot.Variant](player, slot)
+		) then
 		return
 	end
 	local rng = player:GetTrinketRNG(ALTRUISM.ID)
 	local smallerMultiplier = (player:GetTrinketMultiplier(ALTRUISM.ID) - 1) * 0.5
 	local trinketMult = ALTRUISM.BEGGAR_TRIGGER_ALTRUISM_CHANCE * smallerMultiplier
 
-	if rng:RandomFloat() > ALTRUISM.BEGGAR_TRIGGER_ALTRUISM_CHANCE + trinketMult then Mod:DebugLog("Failed Altruism chance") return end
+	if rng:RandomFloat() > ALTRUISM.BEGGAR_TRIGGER_ALTRUISM_CHANCE + trinketMult and not ALTRUISM.DEBUG_REFUND then
+		Mod:DebugLog("Failed Altruism chance")
+		return
+	end
 
-	if rng:RandomFloat() <= ALTRUISM.BEGGAR_HEAL_CHANCE then
+	if rng:RandomFloat() <= ALTRUISM.BEGGAR_HEAL_CHANCE and not ALTRUISM.DEBUG_REFUND then
 		Mod:DebugLog("Altruism heal")
 		Mod:SpawnNotifyEffect(player.Position, Furtherance.NotifySubtype.HEART)
 		Mod.SFXMan:Play(SoundEffect.SOUND_VAMP_GULP)
 		player:AddHearts(1)
 	else
-		Mod:DebugLog("Altruism beggar refund")
-		ALTRUISM.ResourceRefund[slot.Variant](player, slot)
+		local data = Mod:GetData(player)
+		data.AltruismBeggarRefund = true
+		Mod:DelayOneFrame(function ()
+			data.AltruismBeggarRefund = nil
+		end)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_SLOT_COLLISION, ALTRUISM.PreBeggarCollision)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_SLOT_COLLISION, CallbackPriority.LATE, ALTRUISM.PreBeggarCollision)
+
+---@param slot EntitySlot
+---@param collider Entity
+function ALTRUISM:RefundPlayer(slot, collider)
+	local player = collider:ToPlayer()
+	if player and Mod:GetData(player).AltruismBeggarRefund then
+		Mod:DebugLog("Altruism beggar refund")
+		ALTRUISM.ResourceRefund[slot.Variant](player, slot)
+		Mod:GetData(player).AltruismBeggarRefund = nil
+	end
+end
+
+Mod:AddPriorityCallback(ModCallbacks.MC_POST_SLOT_COLLISION, CallbackPriority.LATE, ALTRUISM.RefundPlayer)
+
+Mod.ConsoleCommandHelper:Create("altruismrefund", "Beggars will always refund while having Altruism",
+	{},
+	function(arguments)
+		ALTRUISM.DEBUG_REFUND = not ALTRUISM.DEBUG_REFUND
+		return "[Furtherance] altruismrefund is now set to " .. tostring(ALTRUISM.DEBUG_REFUND)
+	end
+)
+Mod.ConsoleCommandHelper:SetParent("altruismrefund", "debug")

@@ -30,13 +30,14 @@ function ALT_KEY:OnUse(_, rng, player)
 	if stage <= LevelStage.STAGE4_2 and stageType < StageType.STAGETYPE_REPENTANCE then
 		useRepentance = true
 	end
-	Mod:inverseiforeach(stageList, function(stageTable, i)
+	for i = #stageList, 1, -1 do
+		local stageTable = stageList[i]
 		if useRepentance and stageTable[2] < StageType.STAGETYPE_REPENTANCE
 			or not useRepentance and stageTable[2] >= StageType.STAGETYPE_REPENTANCE
 		then
 			table.remove(stageList, i)
 		end
-	end)
+	end
 	if #stageList <= 1 then
 		player:AnimateSad()
 		return false

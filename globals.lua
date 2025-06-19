@@ -54,6 +54,7 @@ EnlightenmentMod = {}
 UniqueProgressBarIcon = {}
 CustomPoopAPI = {} --From Fiend Folio
 EeveeMod = {}
+Sheriff = {}
 
 ---@class EID_DescObj
 ---@field ObjType integer
