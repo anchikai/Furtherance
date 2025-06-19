@@ -5,6 +5,7 @@
 	<costume id="20" anm2path="costume_technology-1.anm2" type="passive" />
 	<costume id="35" anm2path="costume_binds_of_devotion.anm2" type="passive" hasSkinAlt="true" />
 	<costume id="41" anm2path="costume_polydipsia.anm2" type="passive" hasSkinAlt="true" hasOverlay="true" />
+	<costume id="42" anm2path="costume_kareth.anm2" type="passive" />
 	<costume id="43" anm2path="costume_pillar_of_fire.anm2" type="passive" skinColor="1" overwriteColor="true" />
 	<costume id="44" anm2path="costume_pillar_of_clouds.anm2" type="active" hasSkinAlt="true" isFlying="true" priority="60" />
 	<costume id="47" anm2path="costume_quarantine.anm2" type="passive" />
