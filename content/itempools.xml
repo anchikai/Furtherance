@@ -378,6 +378,14 @@
 		<Item Id="324" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Lil Portal -->
 		<Item Id="681" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+
+		<!-- Furtherance -->
 		<Item Name="Cosmic Omnibus" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+
+		<!-- Fiend Folio -->
+		<Item Name="Wrong Warp" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Too Many Options!" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Grappling Hook" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Bridge Bombs" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 </ItemPools>
