@@ -54,7 +54,6 @@ function SPECIAL_ROOM_FLIP:TryFlipSpecialRoom()
 	local room = Mod.Room()
 	local roomType = room:GetType()
 	local roomConfigRoom = Isaac.RunCallbackWithParam(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, roomType)
-	print(roomConfigRoom)
 	if not roomConfigRoom then return false end
 	---@cast roomConfigRoom RoomConfigRoom
 	local room_save = Mod:RoomSave()

@@ -40,7 +40,8 @@ function TECHNOLOGY_MINUS_1:LasersShootLasers(laser)
 		local data = Mod:TryGetData(laser)
 		if not data or not data.TechMinus1Laser then
 			local rng = player:GetCollectibleRNG(TECHNOLOGY_MINUS_1.ID)
-			local pos = laser:GetEndPoint()
+			local samples = laser:GetSamples()
+			local pos = samples:Get(#samples - 1)
 			if rng:RandomFloat() <= TECHNOLOGY_MINUS_1.SPLIT_CHANCE then
 				local num = player:GetCollectibleNum(TECHNOLOGY_MINUS_1.ID) - 1
 				local maxLasers = 3 + num

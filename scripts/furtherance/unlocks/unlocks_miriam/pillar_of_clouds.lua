@@ -11,11 +11,14 @@ function PILLAR_OF_CLOUDS:IsCloudActive(player)
 	return player:GetEffects():HasCollectibleEffect(PILLAR_OF_CLOUDS.ID)
 end
 
+---@param player EntityPlayer
 function PILLAR_OF_CLOUDS:SpawnCloudTrail(player)
 	local trail = Mod.Spawn.Trail(player, 0.1)
-	Mod:GetData(player).CloudTrail = EntityPtr(trail)
 	trail:FollowParent(player)
+	trail.ParentOffset = JumpLib:GetOffset(player) * 1.6
 	trail.SpriteScale = Vector(2, 2)
+	Mod:GetData(player).CloudTrail = EntityPtr(trail)
+	return trail
 end
 
 ---@param player EntityPlayer
