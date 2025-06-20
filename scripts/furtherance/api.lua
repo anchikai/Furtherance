@@ -37,13 +37,21 @@ function API:RegisterAltruismHurtBeggar(variant)
 		Mod:GetData(player).AltruismPreventDamage = true
 		Mod:DelayOneFrame(function() Mod:GetData(player).AltruismPreventDamage = nil end)
 	end
+	Mod.Trinket.ALTRUISM.PreCallbackBeggars[variant] = true
 end
 
----Registers a beggar for usage with the Altruism trinket
+---Registers a beggar for usage with the Altruism trinket to refund the player
 ---@param variant SlotVariant
 ---@param funcRequirement fun(player: EntityPlayer, slot: EntitySlot): boolean @If the player meets the conditions to pay the beggar. Runs on MC_PRE_SLOT_COLLISION
 ---@param funcRefund fun(player: EntityPlayer, slot: EntitySlot) @What to enact onto the player that negates the price paid. Runs on MC_POST_SLOT_COLLISION
 function API:RegisterAltruismBeggar(variant, funcRequirement, funcRefund)
 	Mod.Trinket.ALTRUISM.ResourceRequirement[variant] = funcRequirement
 	Mod.Trinket.ALTRUISM.ResourceRefund[variant] = funcRefund
+end
+
+---Registers a chest that the Astragali item can both select for reroll and reroll chests into
+---@param variant PickupVariant
+---@param unlockCond fun(): boolean
+function API:RegisterAstragaliChest(variant, unlockCond)
+	Mod.Insert(Mod.Item.ASTRAGALI.Chests, {ID = variant, unlockCond})
 end

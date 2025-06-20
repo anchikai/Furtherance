@@ -111,22 +111,93 @@ local function fiendFolioPatch()
 		},
 	})
 
-	Mod.API:RegisterAltruismCoinBeggar(ff.FF.ZodiacBeggar.Var)
+	Mod.API:RegisterAltruismBeggar(ff.FF.ZodiacBeggar.Var,
+		function (player, slot)
+			local sprite = slot:GetSprite()
+			return (sprite:IsOverlayPlaying("PayNothing") or sprite:IsOverlayPlaying("PayPrize")) and sprite:GetOverlayFrame() == 1
+		end,
+		function (player, slot)
+			player:AddCoins(1)
+		end
+	)
+
 	Mod.API:RegisterAltruismBeggar(ff.FF.EvilBeggar.Var,
 		function(player, slot)
-			return player:GetEffectiveMaxHearts() > 0 and slot:GetSprite():GetAnimation() == "Idle"
+			local sprite = slot:GetSprite()
+			return sprite:IsPlaying("PayCoin") and sprite:GetFrame() == 1
 		end,
 		function(player, slot)
-			Mod:GetData(player).AltruismPreventEvilBeggar = true
-			Mod:DelayOneFrame(function() Mod:GetData(player).AltruismPreventEvilBeggar = false end)
-		end)
+			player:AddCoins(15)
+		end
+	)
 
-	local function preventHealthLoss(_, player)
+	local ALTRUISM = Mod.Trinket.ALTRUISM
+
+	-- Doing this as this runs on POST_UPDATE which proceeds with payment before PRE_SLOT_COLLISION triggers
+	---@param player EntityPlayer
+	---@param slot EntitySlot
+	local function evilBeggarOnTouch(player, slot)
+
+		if not (
+				player:HasTrinket(ALTRUISM.ID)
+				and (player:GetEffectiveMaxHearts() > 0
+				or player:GetSoulHearts() >= 4)
+				and slot:GetSprite():IsPlaying("Idle")
+			)
+		then
+			return
+		end
+		local rng = player:GetTrinketRNG(ALTRUISM.ID)
+		local smallerMultiplier = (player:GetTrinketMultiplier(ALTRUISM.ID) - 1) * 0.5
+		local trinketMult = ALTRUISM.BEGGAR_TRIGGER_ALTRUISM_CHANCE * smallerMultiplier
+
+		if rng:RandomFloat() > ALTRUISM.BEGGAR_TRIGGER_ALTRUISM_CHANCE + trinketMult and not ALTRUISM.DEBUG_REFUND then
+			Mod:DebugLog("Failed Altruism chance")
+			return
+		end
+
+		if rng:RandomFloat() <= ALTRUISM.BEGGAR_HEAL_CHANCE and not ALTRUISM.DEBUG_REFUND then
+			Mod:DebugLog("Altruism heal")
+			Mod:SpawnNotifyEffect(player.Position, Furtherance.NotifySubtype.HEART)
+			Mod.SFXMan:Play(SoundEffect.SOUND_VAMP_GULP)
+			player:AddHearts(1)
+		else
+			local data = Mod:GetData(player)
+			Mod:DebugLog("Altruism beggar refund")
+			data.AltruismPreventEvilBeggar = true
+			Mod:DelayOneFrame(function ()
+				data.AltruismPreventEvilBeggar = nil
+			end)
+		end
+	end
+
+	--Copy of Fiend Folio's slot detection
+	local function evilBeggarAltruismPreUpdate(_, p)
+		local slots = Isaac.FindByType(EntityType.ENTITY_SLOT, ff.FF.EvilBeggar.Var, -1, false, false)
+		for _, slot in ipairs(slots) do
+			if slot:GetData().sizeMulti then
+				if (math.abs(slot.Position.X-p.Position.X) ^ 2 <= (slot.Size*slot.SizeMulti.X + p.Size) ^ 2)
+				and (math.abs(slot.Position.Y-p.Position.Y) ^ 2 <= (slot.Size*slot.SizeMulti.Y + p.Size) ^ 2)
+					then
+					evilBeggarOnTouch(p, slot:ToSlot())
+				end
+			else
+				if slot.Position:DistanceSquared(p.Position) <= (slot.Size + p.Size) ^ 2 then
+					evilBeggarOnTouch(p, slot:ToSlot())
+				end
+			end
+		end
+	end
+
+	Mod:AddPriorityCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, CallbackPriority.EARLY, evilBeggarAltruismPreUpdate)
+
+	local function preventHealthLoss(_, player, amount, healthtype)
 		if Mod:GetData(player).AltruismPreventEvilBeggar then
 			return 0
 		end
 	end
 
+	Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, preventHealthLoss, AddHealthType.BLACK)
 	Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, preventHealthLoss, AddHealthType.SOUL)
 	Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, preventHealthLoss, AddHealthType.MAX)
 	Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, preventHealthLoss, AddHealthType.BONE)

@@ -55,6 +55,7 @@ UniqueProgressBarIcon = {}
 CustomPoopAPI = {} --From Fiend Folio
 EeveeMod = {}
 Sheriff = {}
+LNF = {} --Lost and Forgotten
 
 ---@class EID_DescObj
 ---@field ObjType integer

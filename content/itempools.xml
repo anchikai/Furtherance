@@ -387,5 +387,10 @@
 		<Item Name="Too Many Options!" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Grappling Hook" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Bridge Bombs" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+
+		<!-- Lost and Forgotten -->
+		<Item Name="Gong" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Dedal's Blueprint" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Lums" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 </ItemPools>

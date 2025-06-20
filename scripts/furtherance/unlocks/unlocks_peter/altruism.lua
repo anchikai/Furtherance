@@ -88,6 +88,11 @@ ALTRUISM.ResourceRefund = {
 	[SlotVariant.ROTTEN_BEGGAR] = coinBeggarReward
 }
 
+ALTRUISM.PreCallbackBeggars = Mod:Set({
+	SlotVariant.DEVIL_BEGGAR,
+	SlotVariant.HELL_GAME
+})
+
 ---@param slot EntitySlot
 ---@param collider Entity
 function ALTRUISM:PreBeggarCollision(slot, collider)
@@ -115,6 +120,9 @@ function ALTRUISM:PreBeggarCollision(slot, collider)
 		Mod:SpawnNotifyEffect(player.Position, Furtherance.NotifySubtype.HEART)
 		Mod.SFXMan:Play(SoundEffect.SOUND_VAMP_GULP)
 		player:AddHearts(1)
+	elseif ALTRUISM.PreCallbackBeggars[slot.Variant] then
+		Mod:DebugLog("Altruism beggar refund")
+		ALTRUISM.ResourceRefund[slot.Variant](player, slot)
 	else
 		local data = Mod:GetData(player)
 		data.AltruismBeggarRefund = true
@@ -124,7 +132,7 @@ function ALTRUISM:PreBeggarCollision(slot, collider)
 	end
 end
 
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_SLOT_COLLISION, CallbackPriority.LATE, ALTRUISM.PreBeggarCollision)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_SLOT_COLLISION, CallbackPriority.EARLY, ALTRUISM.PreBeggarCollision)
 
 ---@param slot EntitySlot
 ---@param collider Entity

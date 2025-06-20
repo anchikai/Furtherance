@@ -51,6 +51,7 @@ local patches = {
 	"furtherance",
 	"future",
 	"gods_gambit",
+	"lost_and_forgotten",
 	"minimapi",
 	"pogforgooditems",
 	"punished",

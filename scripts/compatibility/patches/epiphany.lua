@@ -7,6 +7,9 @@ local function epiphanyPatch()
 	local KEEPER = Epiphany.Character.KEEPER
 	local GOLDEN_BEGGAR = KEEPER.GoldenBeggar
 
+	Mod.KeeperPlayers[Epiphany.PlayerType.KEEPER] = true
+	Mod.LostPlayers[Epiphany.PlayerType.LOST] = true
+
 	Epiphany.UnlockChecker:AddModdedItems("Furtherance", Item.KEY_ESC.ID, Item.ASTRAGALI.ID, function(item_id)
 		return Mod.PersistGameData:Unlocked(Mod.ItemConfig:GetCollectible(item_id).AchievementID)
 	end)
