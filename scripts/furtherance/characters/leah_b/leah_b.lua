@@ -16,6 +16,8 @@ LEAH_B.HEART_LIMIT = 48
 ---There's some sort of "invisible" cap on broken hearts, not allowing you to add more depending on the heart cap as it goes into higher numbers.
 ---
 ---We're allowed to add 23 broken hearts at a limit of 66. Tainted Leah manages removing hearts that exceed the expected 24
+---
+-- !This is disabled due to adding CustomHealthAPI but keeping it here as an important reminder
 LEAH_B.TECHNICAL_HEART_LIMIT = 66
 
 LEAH_B.HEART_ADD_CHECK = Mod:Set({
@@ -76,6 +78,9 @@ end
 --#region Heart limit
 
 ---Broken hearts, because of the weird heart limit, may or may not replace a container in the process of being added
+---
+---Disabled because CustomHealthAPI fixes this for us
+
 ---@param player EntityPlayer
 function LEAH_B:ReplaceHeartsIfAboveCap(player)
 	local maxHearts = LEAH_B:GetMaxHeartAmount(player)
@@ -117,9 +122,10 @@ function LEAH_B:StopHeartsBeyondCap(player, amount, addHealthType)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, LEAH_B.StopHeartsBeyondCap)
+--Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, LEAH_B.StopHeartsBeyondCap)
 
----!BUG: PRE/POST_PLAYER_ADD_HEARTS doesn't trigger for bone hearts, so we gotta do this instead
+-- !BUG: PRE/POST_PLAYER_ADD_HEARTS doesn't trigger for bone hearts, so we gotta do this instead
+-- ...CustomHealthAPI fixes this issue, so its now disabled
 ---@param player EntityPlayer
 function LEAH_B:RemoveBoneHeartsAboveCap(player)
 	local maxHearts = LEAH_B:GetMaxHeartAmount(player)
@@ -145,7 +151,7 @@ end
 
 ---@param player EntityPlayer
 function LEAH_B:OnPeffectUpdate(player)
-	LEAH_B:RemoveBoneHeartsAboveCap(player)
+	--LEAH_B:RemoveBoneHeartsAboveCap(player)
 	LEAH_B:UpdateRedHealthStats(player)
 end
 
