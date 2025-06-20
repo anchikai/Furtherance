@@ -53,5 +53,5 @@ end
 ---@param variant PickupVariant
 ---@param unlockCond fun(): boolean
 function API:RegisterAstragaliChest(variant, unlockCond)
-	Mod.Insert(Mod.Item.ASTRAGALI.Chests, {ID = variant, unlockCond})
+	Mod.Insert(Mod.Item.ASTRAGALI.Chests, {ID = variant, Unlocked = unlockCond})
 end

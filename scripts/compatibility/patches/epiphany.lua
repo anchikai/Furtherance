@@ -77,12 +77,7 @@ local function epiphanyPatch()
 		Item.LITTLE_RAINCOAT.ID
 	)
 
-	Mod:AppendTable(Mod.Item.ASTRAGALI.Chests, {
-		{
-			ID = Epiphany.Pickup.DUSTY_CHEST.ID,
-			Unlocked = function() return Epiphany:GetAchievement("DUSTY_CHEST") > 0 end
-		}
-	})
+	Mod.API:RegisterAstragaliChest(Epiphany.Pickup.DUSTY_CHEST.ID, function() return Epiphany:GetAchievement("DUSTY_CHEST") > 0 end)
 
 	local cainSynergies = {
 		bone_bagged = {

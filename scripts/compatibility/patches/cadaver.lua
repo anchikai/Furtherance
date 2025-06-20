@@ -3,13 +3,8 @@ local loader = Mod.PatchesLoader
 
 local function cadaverPatch()
 	local ROTTEN_CHEST = Isaac.GetEntityVariantByName("Rotten Chest")
-	Mod:AppendTable(Mod.Item.ASTRAGALI.Chests, {
-		{
-			ID = ROTTEN_CHEST,
-			---@diagnostic disable-next-line: undefined-global
-			Unlocked = function() return CadaverAchievements.RottenChest end
-		}
-	})
+
+	Mod.API:RegisterAstragaliChest(ROTTEN_CHEST, function() return CadaverAchievements.RottenChest end)
 
 	local function correctRottenChestSelection(_, pickup)
 		return pickup.SubType == 0 --For Rotten Chest, 1 is open, 0 is closed

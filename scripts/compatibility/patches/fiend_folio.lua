@@ -96,20 +96,30 @@ local function fiendFolioPatch()
 		[Mod.Item.OLD_CAMERA.PHOTO_IDs[3]] = 12,
 	})
 
-	Mod:AppendTable(Mod.Item.ASTRAGALI.Chests, {
-		{
-			ID = ff.PICKUP.VARIANT.DIRE_CHEST,
-			Unlocked = function()
-				return ff.ACHIEVEMENT.DIRE_CHEST:IsUnlocked()
-			end
-		},
-		{
-			ID = ff.PICKUP.VARIANT.GLASS_CHEST,
-			Unlocked = function()
-				return ff.ACHIEVEMENT.GLASS_CHEST:IsUnlocked()
-			end
-		},
-	})
+	local DIRE_CHEST = ff.PICKUP.VARIANT.DIRE_CHEST
+	local GLASS_CHEST = ff.PICKUP.VARIANT.GLASS_CHEST
+
+	Mod.API:RegisterAstragaliChest(DIRE_CHEST, function ()
+		return ff.ACHIEVEMENT.DIRE_CHEST:IsUnlocked()
+	end)
+
+	Mod.API:RegisterAstragaliChest(GLASS_CHEST, function ()
+		return ff.ACHIEVEMENT.GLASS_CHEST:IsUnlocked()
+	end)
+
+	local function correctChestSelection(_, pickup)
+		return pickup.SubType == 0 --For Rotten Chest, 1 is open, 0 is closed
+	end
+
+	Mod:AddCallback(Mod.ModCallbacks.ASTRAGALI_PRE_SELECT_CHEST, correctChestSelection, DIRE_CHEST)
+	Mod:AddCallback(Mod.ModCallbacks.ASTRAGALI_PRE_SELECT_CHEST, correctChestSelection, GLASS_CHEST)
+
+	local function correctChestReroll(_, pickup, selectedVariant)
+		return {EntityType.ENTITY_PICKUP, selectedVariant, 0}
+	end
+
+	Mod:AddCallback(Mod.ModCallbacks.ASTRAGALI_PRE_REROLL_CHEST, correctChestReroll, DIRE_CHEST)
+	Mod:AddCallback(Mod.ModCallbacks.ASTRAGALI_PRE_REROLL_CHEST, correctChestReroll, GLASS_CHEST)
 
 	Mod.API:RegisterAltruismBeggar(ff.FF.ZodiacBeggar.Var,
 		function (player, slot)
