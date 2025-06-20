@@ -12,6 +12,7 @@ function ASTRAGALI:IsChestAvailable(variant)
 	return not achievement or achievement()
 end
 
+---@type {ID: PickupVariant, Unlocked: fun(): boolean}[]
 ASTRAGALI.Chests = {
 	{ ID = PickupVariant.PICKUP_CHEST,        Unlocked = function() return true end },
 	{ ID = PickupVariant.PICKUP_BOMBCHEST,    Unlocked = function() return true end },
@@ -19,11 +20,29 @@ ASTRAGALI.Chests = {
 	{ ID = PickupVariant.PICKUP_ETERNALCHEST, Unlocked = function() return true end },
 	{ ID = PickupVariant.PICKUP_MIMICCHEST,   Unlocked = function() return true end },
 	{ ID = PickupVariant.PICKUP_OLDCHEST,     Unlocked = function() return true end },
-	{ ID = PickupVariant.PICKUP_WOODENCHEST,  Unlocked = function() return Mod.PersistGameData:Unlocked(Achievement.WOODEN_CHEST) end },
-	{ ID = PickupVariant.PICKUP_MEGACHEST,    Unlocked = function() return Mod.PersistGameData:Unlocked(Achievement.MEGA_CHEST) end },
-	{ ID = PickupVariant.PICKUP_HAUNTEDCHEST, Unlocked = function() return Mod.PersistGameData:Unlocked(Achievement.HAUNTED_CHEST) end },
-	{ ID = PickupVariant.PICKUP_LOCKEDCHEST,  Unlocked = function() return true end },
-	{ ID = PickupVariant.PICKUP_REDCHEST,     Unlocked = function() return true end }
+	{
+		ID = PickupVariant.PICKUP_WOODENCHEST,
+		Unlocked = function()
+			return Mod.PersistGameData:Unlocked(Achievement
+				.WOODEN_CHEST)
+		end
+	},
+	{
+		ID = PickupVariant.PICKUP_MEGACHEST,
+		Unlocked = function()
+			return Mod.PersistGameData:Unlocked(Achievement
+				.MEGA_CHEST)
+		end
+	},
+	{
+		ID = PickupVariant.PICKUP_HAUNTEDCHEST,
+		Unlocked = function()
+			return Mod.PersistGameData:Unlocked(Achievement
+				.HAUNTED_CHEST)
+		end
+	},
+	{ ID = PickupVariant.PICKUP_LOCKEDCHEST, Unlocked = function() return true end },
+	{ ID = PickupVariant.PICKUP_REDCHEST,    Unlocked = function() return true end }
 }
 
 ---@param player EntityPlayer
@@ -40,9 +59,16 @@ function ASTRAGALI:UseAstragali(_, _, player, flags)
 		end
 	end
 	Mod.Foreach.Pickup(function(pickup, index)
-		if isChest[pickup.Variant] and pickup.SubType == ChestSubType.CHEST_CLOSED then
+		local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.ASTRAGALI_PRE_SELECT_CHEST, pickup.Variant, pickup)
+		if result == true or result ~= false and (isChest[pickup.Variant] and pickup.SubType == ChestSubType.CHEST_CLOSED) then
 			local choice = rerollChestList[rng:RandomInt(#rerollChestList) + 1]
-			pickup:Morph(EntityType.ENTITY_PICKUP, choice, ChestSubType.CHEST_CLOSED)
+			local newChoice = Isaac.RunCallbackWithParam(Mod.ModCallbacks.ASTRAGALI_PRE_REROLL_CHEST, choice,
+				pickup, choice)
+			if newChoice and type(newChoice) == "table" and #newChoice == 3 then
+				pickup:Morph(newChoice[1], newChoice[2], newChoice[3])
+			else
+				pickup:Morph(EntityType.ENTITY_PICKUP, choice, ChestSubType.CHEST_CLOSED)
+			end
 		end
 	end)
 	return true

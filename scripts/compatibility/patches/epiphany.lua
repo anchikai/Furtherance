@@ -13,8 +13,8 @@ local function epiphanyPatch()
 
 	Mod:AddToDictionary(KEEPER.CollectibleSpawnedPickups, {
 		[Item.BOX_OF_BELONGINGS.ID] = {
-			{PickupVariant.PICKUP_TRINKET, 2},
-			{PickupVariant.PICKUP_TAROTCARD, 1}
+			{ PickupVariant.PICKUP_TRINKET,   2 },
+			{ PickupVariant.PICKUP_TAROTCARD, 1 }
 		}
 	})
 
@@ -37,35 +37,35 @@ local function epiphanyPatch()
 	})
 
 	api:AddCardsToCardGroup("Magic",
-		{V = Mod.Card.TRAP_CARD.ID}
+		{ V = Mod.Card.TRAP_CARD.ID }
 	)
 	api:AddCardsToCardGroup("Special",
-		{V = Mod.Card.KEY_CARD.ID},
-		{V = Mod.Card.GOLDEN_CARD.ID, Weight = 0.1}
+		{ V = Mod.Card.KEY_CARD.ID },
+		{ V = Mod.Card.GOLDEN_CARD.ID, Weight = 0.1 }
 	)
 
 	api:AddCardsToCardGroup("Suit",
-		{V = Mod.Card.TWO_OF_SHIELDS.ID, Weight = 0.2},
-		{V = Mod.Card.ACE_OF_SHIELDS.ID, Weight = 0.2}
+		{ V = Mod.Card.TWO_OF_SHIELDS.ID, Weight = 0.2 },
+		{ V = Mod.Card.ACE_OF_SHIELDS.ID, Weight = 0.2 }
 	)
 
 	api:AddCardsToCardGroup("Tarot",
-		{V = Mod.Card.HOPE.ID},
-		{V = Mod.Card.FAITH.ID},
-		{V = Mod.Card.CHARITY.ID}
+		{ V = Mod.Card.HOPE.ID },
+		{ V = Mod.Card.FAITH.ID },
+		{ V = Mod.Card.CHARITY.ID }
 	)
 
 	api:AddCardsToCardGroup("ReverseTarot",
-		{V = Mod.Card.REVERSE_HOPE.ID},
-		{V = Mod.Card.REVERSE_FAITH.ID},
-		{V = Mod.Card.REVERSE_CHARITY.ID}
+		{ V = Mod.Card.REVERSE_HOPE.ID },
+		{ V = Mod.Card.REVERSE_FAITH.ID },
+		{ V = Mod.Card.REVERSE_CHARITY.ID }
 	)
 
-	api:AddHeartsToHeartGroup("Soul", {V = Mod.Pickup.MOON_HEART.ID})
+	api:AddHeartsToHeartGroup("Soul", { V = Mod.Pickup.MOON_HEART.ID })
 
-	api:AddSlotsToSlotGroup("Beggars", {V = Mod.Slot.ESCORT_BEGGAR.SLOT})
-	api:AddSlotsToSlotGroup("SpecialBeggars", {V = Mod.Slot.ESCORT_BEGGAR.SLOT})
-	api:AddSlotsToSlotGroup("Slots", {V = Mod.Slot.LOVE_TELLER.ID})
+	api:AddSlotsToSlotGroup("Beggars", { V = Mod.Slot.ESCORT_BEGGAR.SLOT })
+	api:AddSlotsToSlotGroup("SpecialBeggars", { V = Mod.Slot.ESCORT_BEGGAR.SLOT })
+	api:AddSlotsToSlotGroup("Slots", { V = Mod.Slot.LOVE_TELLER.ID })
 
 	api:AddItemsToEdenBlackList(
 		Item.BRUNCH.ID,
@@ -73,6 +73,13 @@ local function epiphanyPatch()
 		Item.CRAB_LEGS.ID,
 		Item.LITTLE_RAINCOAT.ID
 	)
+
+	Mod:AppendTable(Mod.Item.ASTRAGALI.Chests, {
+		{
+			ID = Epiphany.Pickup.DUSTY_CHEST.ID,
+			Unlocked = function() return Epiphany:GetAchievement("DUSTY_CHEST") > 0 end
+		}
+	})
 
 	local cainSynergies = {
 		bone_bagged = {

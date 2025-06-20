@@ -45,10 +45,12 @@ end
 local patches = {
 	"andromeda",
 	"arachna",
+	"cadaver",
 	"epiphany",
 	"fiend_folio",
 	"furtherance",
 	"future",
+	"gods_gambit",
 	"minimapi",
 	"pogforgooditems",
 	"punished",

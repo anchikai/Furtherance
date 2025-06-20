@@ -41,7 +41,17 @@ Furtherance.ModCallbacks = {
 
 	POST_LOVE_TELLER_BABY_REMOVE_EFFECT = "FURTHERANCE_PRE_LOVE_TELLER_BABY_REMOVE_EFFECT",
 
-	HOLY_HEART_GET_MANTLE_CHANCE = "FURTHERANCE_HOLY_HEART_GET_MANTLE_CHANCE"
+	HOLY_HEART_GET_MANTLE_CHANCE = "FURTHERANCE_HOLY_HEART_GET_MANTLE_CHANCE",
+
+	--(EntityPickup pickup): boolean, OptionalArg: PickupVariant - Called when Astragali attempts to select a chest to reroll. Return `true` to force a reroll, `false` to prevent it from being rerolled.
+	ASTRAGALI_PRE_SELECT_CHEST = "FURTHERANCE_ASTRAGALI_PRE_SELECT_CHEST",
+
+	--(EntityPickup pickup, PickupVariant selectedVariant): {ID, Var, SubType}, OptionalArg: PickupVariant - Called before Astragali rerolls the selected pickup into a new chest
+	--
+	-- - `pickup` - The pickup being rerolled.
+	-- - `selectedVariant` - The entity variant selected to reroll the pickup into
+	-- - Optional Arg is for the `selectedVariant`
+	ASTRAGALI_PRE_REROLL_CHEST = "FURTHERANCE_ASTRAGALI_PRE_REROLL_CHEST"
 }
 
 local function postBombExplode(_, bomb)

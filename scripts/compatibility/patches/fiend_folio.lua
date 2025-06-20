@@ -77,8 +77,9 @@ local function fiendFolioPatch()
 	})
 
 	Mod:AddToDictionary(Mod.Item.KEYS_TO_THE_KINGDOM.MINIBOSS, Mod:Set({
-		ff.FF.Gravedigger.ID .. "." .. ff.FF.Gravedigger.Var .. Isaac.GetEntitySubTypeByName("Gravedigger"),
-		ff.FF.Psion.ID .. "." .. ff.FF.Psion.Var .. Isaac.GetEntitySubTypeByName("Psion"),
+		ff.FF.Gravedigger.ID .. "." .. ff.FF.Gravedigger.Var .. "." .. Isaac.GetEntitySubTypeByName("Gravedigger"),
+		ff.FF.Psion.ID .. "." .. ff.FF.Psion.Var .. "." ..  Isaac.GetEntitySubTypeByName("Psion"),
+		ff.FF.Hermit.ID .. "." .. ff.FF.Hermit.Var .. "." ..  Isaac.GetEntitySubTypeByName("Hermit"),
 	}))
 
 	local function killWhisperController(_, npc)
@@ -95,15 +96,30 @@ local function fiendFolioPatch()
 		[Mod.Item.OLD_CAMERA.PHOTO_IDs[3]] = 12,
 	})
 
-	Mod.API:RegisterAltruismCoinBeggar(ff.FFID.ZodiacBeggar)
-	Mod.API:RegisterAltruismBeggar(ff.FFID.EvilBeggar,
-	function(player, slot)
-		return player:GetEffectiveMaxHearts() > 0 and slot:GetSprite():GetAnimation() == "Idle"
-	end,
-	function(player, slot)
-		Mod:GetData(player).AltruismPreventEvilBeggar = true
-		Mod:DelayOneFrame(function() Mod:GetData(player).AltruismPreventEvilBeggar = false end)
-	end)
+	Mod:AppendTable(Mod.Item.ASTRAGALI.Chests, {
+		{
+			ID = ff.PICKUP.VARIANT.DIRE_CHEST,
+			Unlocked = function()
+				return ff.ACHIEVEMENT.DIRE_CHEST:IsUnlocked()
+			end
+		},
+		{
+			ID = ff.PICKUP.VARIANT.GLASS_CHEST,
+			Unlocked = function()
+				return ff.ACHIEVEMENT.GLASS_CHEST:IsUnlocked()
+			end
+		},
+	})
+
+	Mod.API:RegisterAltruismCoinBeggar(ff.FF.ZodiacBeggar.Var)
+	Mod.API:RegisterAltruismBeggar(ff.FF.EvilBeggar.Var,
+		function(player, slot)
+			return player:GetEffectiveMaxHearts() > 0 and slot:GetSprite():GetAnimation() == "Idle"
+		end,
+		function(player, slot)
+			Mod:GetData(player).AltruismPreventEvilBeggar = true
+			Mod:DelayOneFrame(function() Mod:GetData(player).AltruismPreventEvilBeggar = false end)
+		end)
 
 	local function preventHealthLoss(_, player)
 		if Mod:GetData(player).AltruismPreventEvilBeggar then
