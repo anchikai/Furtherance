@@ -10,13 +10,13 @@ local function onMantleAdd(_, familiar)
 	return true
 end
 
-Mod:AddCallback(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_ADD_EFFECT, onMantleAdd, PlayerType.PLAYER_THELOST)
+Mod:AddCallback(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_ADD_COLLECTIBLE, onMantleAdd, PlayerType.PLAYER_THELOST)
 
 local function stopRemoveMantle()
 	return true
 end
 
-Mod:AddCallback(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_REMOVE_EFFECT, stopRemoveMantle, PlayerType.PLAYER_THELOST)
+Mod:AddCallback(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_REMOVE_COLLECTIBLE, stopRemoveMantle, PlayerType.PLAYER_THELOST)
 
 ---@param player EntityPlayer
 ---@param itemConfig ItemConfigItem
@@ -24,7 +24,7 @@ local function onMantleRemove(_, player, itemConfig)
 	if itemConfig:IsCollectible()
 		and itemConfig.ID == CollectibleType.COLLECTIBLE_HOLY_MANTLE
 	then
-		Mod.Foreach.Familiar(function (familiar, index)
+		Mod.Foreach.Familiar(function(familiar, index)
 			local data = Mod:GetData(familiar)
 			if data.LostBabyAddedMantle then
 				data.LostBabyAddedMantle = nil

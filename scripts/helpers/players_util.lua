@@ -246,9 +246,18 @@ Furtherance.LostPlayers = Furtherance:Set({
 	PlayerType.PLAYER_THELOST_B
 })
 
+Furtherance.KeeperPlayers = Furtherance:Set({
+	PlayerType.PLAYER_KEEPER,
+	PlayerType.PLAYER_KEEPER_B
+})
+
 ---@param player EntityPlayer
 function Furtherance:IsAnyLost(player)
 	return Furtherance.LostPlayers[player:GetPlayerType()]
+end
+
+function Furtherance:IsAnyKeeper(player)
+	return Furtherance.KeeperPlayers[player:GetPlayerType()]
 end
 
 ---returns true if the player can pickup the item, false if they cannot (not being able to pickup due animation is included)
@@ -358,4 +367,11 @@ function Furtherance:GetCostumeSpriteFromLayer(player, layer)
 	local costumeDescs = player:GetCostumeSpriteDescs()
 	local costumeDesc = costumeDescs[costumeIndex + 1]
 	return costumeDesc and costumeDesc:GetSprite()
+end
+
+---@param player EntityPlayer
+---@param slot ActiveSlot
+function Furtherance:ActiveUsesCarBattery(player, slot)
+	return player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY)
+		or Epiphany and Epiphany.API:HasGoldenItem(player:GetActiveItem(slot), player, slot)
 end

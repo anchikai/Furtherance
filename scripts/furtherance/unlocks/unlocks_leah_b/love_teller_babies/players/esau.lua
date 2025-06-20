@@ -9,20 +9,21 @@ local function checkExistingStew(_, familiar)
 	end
 end
 
-Mod:AddCallback(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_ADD_EFFECT, checkExistingStew, PlayerType.PLAYER_ESAU)
+Mod:AddCallback(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_ADD_COLLECTIBLE, checkExistingStew, PlayerType.PLAYER_ESAU)
 
 ---@param familiar EntityFamiliar
 local function minimizeRedStew(_, familiar)
 	local player = familiar.Player
 	local data = Mod:GetData(familiar)
 	if data.EsauBabyHadStew then
-		player:SetRedStewBonusDuration(math.min(5400, player:GetRedStewBonusDuration() + Mod.Slot.LOVE_TELLER.BABY.EFFECT_COOLDOWN))
+		player:SetRedStewBonusDuration(math.min(5400,
+			player:GetRedStewBonusDuration() + Mod.Slot.LOVE_TELLER.BABY.EFFECT_COOLDOWN))
 	else
 		player:SetRedStewBonusDuration(Mod.Slot.LOVE_TELLER.BABY.EFFECT_COOLDOWN)
 	end
 end
 
-Mod:AddCallback(Mod.ModCallbacks.POST_LOVE_TELLER_BABY_ADD_EFFECT, minimizeRedStew, PlayerType.PLAYER_ESAU)
+Mod:AddCallback(Mod.ModCallbacks.POST_LOVE_TELLER_BABY_ADD_COLLECTIBLE, minimizeRedStew, PlayerType.PLAYER_ESAU)
 
 ---@param familiar EntityFamiliar
 local function removeRedStewEffect(_, familiar)
@@ -35,4 +36,4 @@ local function removeRedStewEffect(_, familiar)
 	data.EsauBabyHadStew = nil
 end
 
-Mod:AddCallback(Mod.ModCallbacks.POST_LOVE_TELLER_BABY_REMOVE_EFFECT, removeRedStewEffect, PlayerType.PLAYER_ESAU)
+Mod:AddCallback(Mod.ModCallbacks.POST_LOVE_TELLER_BABY_REMOVE_COLLECTIBLE, removeRedStewEffect, PlayerType.PLAYER_ESAU)

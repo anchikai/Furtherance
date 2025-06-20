@@ -6,4 +6,4 @@ local function allowCooldown(_, familiar)
 	data.LoveTellerActiveWait = nil
 end
 
-Mod:AddCallback(Mod.ModCallbacks.POST_LOVE_TELLER_BABY_ADD_EFFECT, allowCooldown, Mod.PlayerType.MIRIAM)
+Mod:AddCallback(Mod.ModCallbacks.POST_LOVE_TELLER_BABY_ADD_COLLECTIBLE, allowCooldown, Mod.PlayerType.MIRIAM)

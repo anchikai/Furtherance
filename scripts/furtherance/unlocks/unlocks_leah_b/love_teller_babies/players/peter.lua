@@ -20,4 +20,4 @@ local function preEffectAdd(_, familiar)
 	return true
 end
 
-Mod:AddCallback(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_ADD_EFFECT, preEffectAdd, Mod.PlayerType.PETER)
+Mod:AddCallback(Mod.ModCallbacks.PRE_LOVE_TELLER_BABY_ADD_COLLECTIBLE, preEffectAdd, Mod.PlayerType.PETER)

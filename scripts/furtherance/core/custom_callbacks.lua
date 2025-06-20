@@ -33,24 +33,46 @@ Furtherance.ModCallbacks = {
 	--(EntityPickup pickup): boolean, OptionalArg: HeartSubType - Called when Shattered Heart wants to explode a heart pickup. Return `true` to stop the heart from exploding
 	SHATTERED_HEART_EXPLODE = "FURTHERANCE_SHATTERED_HEART_EXPLODE",
 
-	PRE_LOVE_TELLER_BABY_ADD_EFFECT = "FURTHERANCE_PRE_LOVE_TELLER_BABY_ADD_EFFECT",
+	--(EntityFamiliar familiar, CollectibleType itemID, boolean isEffect): boolean, Optional Arg: PlayerType - Called before a Love Teller Baby adds a set CollectibleType to the player for a set amount of time. Return `true` to cancel adding the effect. This will still trigger the cooldown until they can roll to trigger the collectible again
+	-- - `familiar` - The familiar adding the item
+	-- - `itemID` - The CollectibleType being added to the player
+	-- - `isEffect` - `false` if it's an innate item. `true` if it's a CollectibleEffect
+	-- - OptionalArg - Corresponds to the SubType of the familiar, which matches the PlayerType of the character it represents
+	PRE_LOVE_TELLER_BABY_ADD_COLLECTIBLE = "FURTHERANCE_PRE_LOVE_TELLER_BABY_ADD_COLLECTIBLE",
 
-	POST_LOVE_TELLER_BABY_ADD_EFFECT = "FURTHERANCE_PRE_LOVE_TELLER_BABY_ADD_EFFECT",
 
-	PRE_LOVE_TELLER_BABY_REMOVE_EFFECT = "FURTHERANCE_PRE_LOVE_TELLER_BABY_REMOVE_EFFECT",
+	--(EntityFamiliar familiar, CollectibleType itemID, boolean isEffect), Optional Arg: PlayerType - Called after a Love Teller Baby adds a set CollectibleType to the player for a set amount of time
+	-- - `familiar` - The familiar adding the item
+	-- - `itemID` - The CollectibleType added to the player
+	-- - `isEffect` - `false` if it's an innate item. `true` if it's a CollectibleEffect
+	-- - OptionalArg - Corresponds to the SubType of the familiar, which matches the PlayerType of the character it represents
+	POST_LOVE_TELLER_BABY_ADD_COLLECTIBLE = "FURTHERANCE_PRE_LOVE_TELLER_BABY_ADD_COLLECTIBLE",
 
-	POST_LOVE_TELLER_BABY_REMOVE_EFFECT = "FURTHERANCE_PRE_LOVE_TELLER_BABY_REMOVE_EFFECT",
 
+	--(EntityFamiliar familiar, CollectibleType itemID, boolean isEffect): boolean, Optional Arg: PlayerType - Called before a Love Teller Baby removes its previously added CollectibleType from the player. Return `true` to cancel removing the effect. This is only allowed due to the nature of The Lost's baby, which grants a mantle that isn't removed until it's broken
+	-- - `familiar` - The familiar adding the item
+	-- - `itemID` - The CollectibleType being removed from the player
+	-- - `isEffect` - `false` if it's an innate item. `true` if it's a CollectibleEffect
+	-- - OptionalArg - Corresponds to the SubType of the familiar, which matches the PlayerType of the character it represents
+	PRE_LOVE_TELLER_BABY_REMOVE_COLLECTIBLE = "FURTHERANCE_PRE_LOVE_TELLER_BABY_REMOVE_COLLECTIBLE",
+
+	--(EntityFamiliar familiar, CollectibleType itemID, boolean isEffect): boolean, Optional Arg: PlayerType - Called after a Love Teller Baby removes its previously added CollectibleType from the player
+	-- - `familiar` - The familiar adding the item
+	-- - `itemID` - The CollectibleType removed from the player
+	-- - `isEffect` - `false` if it's an innate item. `true` if it's a CollectibleEffect
+	-- - OptionalArg - Corresponds to the SubType of the familiar, which matches the PlayerType of the character it represents
+	POST_LOVE_TELLER_BABY_REMOVE_COLLECTIBLE = "FURTHERANCE_PRE_LOVE_TELLER_BABY_REMOVE_COLLECTIBLE",
+
+	--(EntityPickup pickup, EntityPlayer player, number chance): number, Optional Arg: HeartSubType - Called when getting the chance of activating Holy Heart's mantle effect when collecting a registered black, soul, or eternal heart. Return a number to override the chance
 	HOLY_HEART_GET_MANTLE_CHANCE = "FURTHERANCE_HOLY_HEART_GET_MANTLE_CHANCE",
 
 	--(EntityPickup pickup): boolean, OptionalArg: PickupVariant - Called when Astragali attempts to select a chest to reroll. Return `true` to force a reroll, `false` to prevent it from being rerolled.
 	ASTRAGALI_PRE_SELECT_CHEST = "FURTHERANCE_ASTRAGALI_PRE_SELECT_CHEST",
 
 	--(EntityPickup pickup, PickupVariant selectedVariant): {ID, Var, SubType}, OptionalArg: PickupVariant - Called before Astragali rerolls the selected pickup into a new chest
-	--
 	-- - `pickup` - The pickup being rerolled.
 	-- - `selectedVariant` - The entity variant selected to reroll the pickup into
-	-- - Optional Arg is for the `selectedVariant`
+	-- - Optional Arg - Corresponds to the `selectedVariant`
 	ASTRAGALI_PRE_REROLL_CHEST = "FURTHERANCE_ASTRAGALI_PRE_REROLL_CHEST"
 }
 
