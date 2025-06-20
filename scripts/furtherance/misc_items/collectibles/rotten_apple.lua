@@ -7,7 +7,7 @@ Furtherance.Item.ROTTEN_APPLE = ROTTEN_APPLE
 ROTTEN_APPLE.ID = Isaac.GetItemIdByName("Rotten Apple")
 
 ROTTEN_APPLE.DAMAGE_UP = 2
-ROTTEN_APPLE.WORMS = {
+ROTTEN_APPLE.Worms = {
 	TrinketType.TRINKET_PULSE_WORM,
 	TrinketType.TRINKET_WIGGLE_WORM,
 	TrinketType.TRINKET_RING_WORM,
@@ -24,7 +24,7 @@ ROTTEN_APPLE.WORMS = {
 function ROTTEN_APPLE:OnFirstPickup(itemID, charge, firstTime, slot, varData, player)
 	if firstTime then
 		local rng = player:GetCollectibleRNG(itemID)
-		local chosenWorm = ROTTEN_APPLE.WORMS[rng:RandomInt(#ROTTEN_APPLE.WORMS) + 1]
+		local chosenWorm = ROTTEN_APPLE.Worms[rng:RandomInt(#ROTTEN_APPLE.Worms) + 1]
 		player:AddSmeltedTrinket(chosenWorm, true)
 	end
 end

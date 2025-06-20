@@ -56,6 +56,7 @@ local patches = {
 	"pogforgooditems",
 	"punished",
 	"repentance_plus",
+	"retribution",
 	"sheriff",
 	"stageapi",
 	"tainted_treasures",

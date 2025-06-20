@@ -55,3 +55,9 @@ end
 function API:RegisterAstragaliChest(variant, unlockCond)
 	Mod.Insert(Mod.Item.ASTRAGALI.Chests, {ID = variant, Unlocked = unlockCond})
 end
+
+---Adds a trinket to the list of worm trinkets that the Rotten Apple item will randomly selected from to become a gulped trinket
+---@param variant TrinketType
+function API:AddRottenAppleWormTrinket(variant)
+	Mod.Insert(Mod.Item.ROTTEN_APPLE.Worms, variant)
+end

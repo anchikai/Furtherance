@@ -25,6 +25,9 @@ local function fiendFolioPatch()
 		Mod.Item.SERVITUDE.ID
 	}))
 
+	Mod.API:AddRottenAppleWormTrinket(ff.ITEM.TRINKET.FORTUNE_WORM)
+	Mod.API:AddRottenAppleWormTrinket(ff.ITEM.TRINKET.TRINITY_WORM)
+
 	ff:AddStackableItems({
 		Item.BINDS_OF_DEVOTION.ID,
 		Item.RUE.ID,
