@@ -79,11 +79,9 @@ local function fiendFolioPatch()
 		ff.Sounds.MadommeDeath
 	})
 
-	Mod:AddToDictionary(Mod.Item.KEYS_TO_THE_KINGDOM.MINIBOSS, Mod:Set({
-		ff.FF.Gravedigger.ID .. "." .. ff.FF.Gravedigger.Var .. "." .. Isaac.GetEntitySubTypeByName("Gravedigger"),
-		ff.FF.Psion.ID .. "." .. ff.FF.Psion.Var .. "." ..  Isaac.GetEntitySubTypeByName("Psion"),
-		ff.FF.Hermit.ID .. "." .. ff.FF.Hermit.Var .. "." ..  Isaac.GetEntitySubTypeByName("Hermit"),
-	}))
+	Mod.API:RegisterKTTKMiniboss(ff.FF.Gravedigger.ID, ff.FF.Gravedigger.Var, Isaac.GetEntitySubTypeByName("Gravedigger"))
+	Mod.API:RegisterKTTKMiniboss(ff.FF.Psion.ID, ff.FF.Psion.Var, Isaac.GetEntitySubTypeByName("Psion"))
+	Mod.API:RegisterKTTKMiniboss(ff.FF.Hermit.ID, ff.FF.Hermit.Var, Isaac.GetEntitySubTypeByName("Hermit"))
 
 	local function killWhisperController(_, npc)
 		if npc.Variant == ff.FF.Whispers.Var and npc.SpawnerEntity and not npc.SpawnerEntity:IsDead() then
@@ -192,10 +190,12 @@ local function fiendFolioPatch()
 				if (math.abs(slot.Position.X-p.Position.X) ^ 2 <= (slot.Size*slot.SizeMulti.X + p.Size) ^ 2)
 				and (math.abs(slot.Position.Y-p.Position.Y) ^ 2 <= (slot.Size*slot.SizeMulti.Y + p.Size) ^ 2)
 					then
+					---@diagnostic disable-next-line: param-type-mismatch
 					evilBeggarOnTouch(p, slot:ToSlot())
 				end
 			else
 				if slot.Position:DistanceSquared(p.Position) <= (slot.Size + p.Size) ^ 2 then
+					---@diagnostic disable-next-line: param-type-mismatch
 					evilBeggarOnTouch(p, slot:ToSlot())
 				end
 			end

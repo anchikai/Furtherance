@@ -19,4 +19,4 @@ local function cadaverPatch()
 	Mod:AddCallback(Mod.ModCallbacks.ASTRAGALI_PRE_REROLL_CHEST, correctRottenChestReroll, ROTTEN_CHEST)
 end
 
-loader:RegisterPatch("CadaverRNG", cadaverPatch)
+loader:RegisterPatch("CadaverAchievements", cadaverPatch)

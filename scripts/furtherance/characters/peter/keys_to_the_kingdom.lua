@@ -82,7 +82,7 @@ KEYS_TO_THE_KINGDOM.BOSS_FORGIVE_COOLDOWN = 60
 KEYS_TO_THE_KINGDOM.MAX_CHARGES = Mod.ItemConfig:GetCollectible(KEYS_TO_THE_KINGDOM.ID).MaxCharges
 KEYS_TO_THE_KINGDOM.COLLECTION_DISTANCE = 20 ^ 2
 KEYS_TO_THE_KINGDOM.SPARE_TIMER = {
-	[EntityType.ENTITY_BABY_PLUM] = KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN * 0.5
+	[tostring(EntityType.ENTITY_BABY_PLUM) .. "0.0"] = KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN * 0.5
 }
 
 KEYS_TO_THE_KINGDOM.StatTable = {
@@ -156,10 +156,11 @@ function KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, ent)
 		return 30 * 3
 	end
 	local raptureCountdown = KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN
-	if KEYS_TO_THE_KINGDOM.MINIBOSS[Mod:GetTypeVarSubFromEnt(ent, true)] then
+	local typeVarSub = Mod:GetTypeVarSubFromEnt(ent, true)
+	if KEYS_TO_THE_KINGDOM.MINIBOSS[typeVarSub] then
 		raptureCountdown = KEYS_TO_THE_KINGDOM.MINIBOSS_RAPTURE_COUNTDOWN
-	elseif KEYS_TO_THE_KINGDOM.SPARE_TIMER[ent.Type] then
-		raptureCountdown = KEYS_TO_THE_KINGDOM.SPARE_TIMER[ent.Type]
+	elseif KEYS_TO_THE_KINGDOM.SPARE_TIMER[typeVarSub] then
+		raptureCountdown = KEYS_TO_THE_KINGDOM.SPARE_TIMER[typeVarSub]
 	end
 	if PETER:IsPeter(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 		raptureCountdown = raptureCountdown * 0.5

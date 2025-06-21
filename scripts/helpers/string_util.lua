@@ -41,9 +41,9 @@ function Furtherance:GetTypeVarSubFromString(typeVarSub)
 end
 
 ---@param entityConfig EntityConfigEntity
+---@return string
 function Furtherance:GetTypeVarSubFromEntityConfig(entityConfig)
-	local typeVarSub = entityConfig:GetType() .. "." .. entityConfig:GetVariant()
-	typeVarSub = entityConfig:GetSubType() > 0 and typeVarSub .. "." .. entityConfig:GetSubType() or typeVarSub
+	local typeVarSub = entityConfig:GetType() .. "." .. entityConfig:GetVariant() .. "." .. entityConfig:GetSubType()
 	return typeVarSub
 end
 

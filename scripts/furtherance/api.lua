@@ -61,3 +61,43 @@ end
 function API:AddRottenAppleWormTrinket(variant)
 	Mod.Insert(Mod.Item.ROTTEN_APPLE.Worms, variant)
 end
+
+---Registers a miniboss. Used by Keys to the Kingdom for sparing enemies faster than normal bosses
+---@param entTypeOrName string
+---@param var nil
+---@param sub nil
+---@overload fun(self: table, entTypeOrName: EntityType, var: integer, sub: integer)
+function API:RegisterKTTKMiniboss(entTypeOrName, var, sub)
+	if type(entTypeOrName) == "string" then
+		local name = entTypeOrName ---@type string
+		local typeVarSub = Mod:GetTypeVarSubFromName(name, true)
+		Mod.Item.KEYS_TO_THE_KINGDOM.MINIBOSS[typeVarSub] = true
+	else
+		local entType = entTypeOrName ---@type EntityType
+		local entityConfig = EntityConfig.GetEntity(entType, var, sub)
+		if entityConfig then
+			local typeVarSub = Mod:GetTypeVarSubFromEntityConfig(entityConfig)
+			Mod.Item.KEYS_TO_THE_KINGDOM.MINIBOSS[typeVarSub] = true
+		end
+	end
+end
+
+---Sets a new default spare timer for the entity for Keys to the Kingdom. Normally only used for Baby Plum
+---@param entTypeOrName string
+---@param var nil
+---@param sub nil
+---@overload fun(self: table, entTypeOrName: EntityType, var: integer, sub: integer)
+function API:SetDefaultKTTKSpareCountdown(time, entTypeOrName, var, sub)
+	if type(entTypeOrName) == "string" then
+		local name = entTypeOrName ---@type string
+		local typeVarSub = Mod:GetTypeVarSubFromName(name, true)
+		Mod.Item.KEYS_TO_THE_KINGDOM.SPARE_TIMER[typeVarSub] = time
+	else
+		local entType = entTypeOrName ---@type EntityType
+		local entityConfig = EntityConfig.GetEntity(entType, var, sub)
+		if entityConfig then
+			local typeVarSub = Mod:GetTypeVarSubFromEntityConfig(entityConfig)
+			Mod.Item.KEYS_TO_THE_KINGDOM.SPARE_TIMER[typeVarSub] = time
+		end
+	end
+end

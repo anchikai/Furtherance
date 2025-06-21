@@ -56,6 +56,8 @@ CustomPoopAPI = {} --From Fiend Folio
 EeveeMod = {}
 Sheriff = {}
 LNF = {} --Lost and Forgotten
+LastJudgement = {}
+CadaverAchievements = {} ---Cadaver has a bunch of dumb globals but we only really need this for both achievements and mod detection
 
 ---@class EID_DescObj
 ---@field ObjType integer
