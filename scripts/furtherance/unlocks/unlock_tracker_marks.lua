@@ -26,7 +26,7 @@ function Furtherance:TryUpdateCompletionMark(playerType, completionType)
 	elseif completionTable[completionType] then
 		return Mod.PersistGameData:TryUnlock(completionTable[completionType])
 	end
-	if Isaac.AllMarksFilled(playerType) then
+	if Isaac.AllMarksFilled(playerType) == 2 then
 		return Mod.PersistGameData:TryUnlock(completionTable[Mod.CompletionType.ALL])
 	end
 	return false
