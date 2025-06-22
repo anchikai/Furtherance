@@ -47,6 +47,8 @@ local function lostAndForgottenPatch()
 			Mod:DelayOneFrame(function()
 				data.AltruismPreventWeirdBeggar = nil
 			end)
+			Mod.Spawn.Effect(ALTRUISM.NOTIFY_COIN, 0, player.Position)
+			Mod.SFXMan:Play(SoundEffect.SOUND_PENNYPICKUP)
 		end
 	end
 

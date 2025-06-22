@@ -179,6 +179,8 @@ local function fiendFolioPatch()
 			Mod:DelayOneFrame(function ()
 				data.AltruismPreventEvilBeggar = nil
 			end)
+			Mod.Spawn.Effect(ALTRUISM.NOTIFY_COIN, 0, player.Position)
+			Mod.SFXMan:Play(SoundEffect.SOUND_PENNYPICKUP)
 		end
 	end
 
