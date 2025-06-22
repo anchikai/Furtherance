@@ -19,7 +19,7 @@ function ZZZZOPTIONSZZZZ:ZZZZ()
 				optionIndex = pickup:SetNewOptionsPickupIndex()
 				pickup.OptionsPickupIndex = optionIndex
 			end
-			local glitchPickup = Mod.Spawn.Collectible(NullPickupSubType.ANY, room:FindFreePickupSpawnPosition(pickup.Position + Vector(40, 0)))
+			local glitchPickup = Mod.Spawn.Collectible(NullPickupSubType.ANY, room:FindFreePickupSpawnPosition(pickup.Position, 80))
 			glitchPickup.OptionsPickupIndex = optionIndex
 			glitchPickup:AddEntityFlags(EntityFlag.FLAG_GLITCH)
 			if pickup:IsShopItem() then

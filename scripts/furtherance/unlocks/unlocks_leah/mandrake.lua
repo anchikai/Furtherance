@@ -25,7 +25,7 @@ function MANDRAKE:SpawnFamiliarItem()
 				local itemID = game:GetItemPool():GetCollectible(ItemPoolType.POOL_BABY_SHOP, true, rng:GetSeed())
 				rng:Next()
 
-				local mandrakeSpawn = Mod.Spawn.Collectible(itemID, room:FindFreePickupSpawnPosition(pickup.Position + Vector(40, 0)))
+				local mandrakeSpawn = Mod.Spawn.Collectible(itemID, room:FindFreePickupSpawnPosition(pickup.Position, 80))
 				mandrakeSpawn.OptionsPickupIndex = optionIndex
 				Mod:GetData(mandrakeSpawn).MandrakeItem = true
 				if pickup:IsShopItem() then

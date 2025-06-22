@@ -53,7 +53,7 @@ local function updateCollectibles()
 				optionIndex = pickup:SetNewOptionsPickupIndex()
 				pickup.OptionsPickupIndex = optionIndex
 			end
-			local pickupSpawn = Mod.Spawn.Collectible(NullPickupSubType.ANY, room:FindFreePickupSpawnPosition(pickup.Position + Vector(40, 0)))
+			local pickupSpawn = Mod.Spawn.Collectible(NullPickupSubType.ANY, room:FindFreePickupSpawnPosition(pickup.Position, 80))
 			pickupSpawn.OptionsPickupIndex = optionIndex
 			Mod:GetData(pickupSpawn).PeterBBirthrightTreasure = true
 			if pickup:IsShopItem() then
