@@ -8,12 +8,24 @@ Furtherance.Item.SERVITUDE = SERVITUDE
 
 SERVITUDE.ID = Isaac.GetItemIdByName("Servitude")
 
+SERVITUDE.MAX_CHARGES = Mod.ItemConfig:GetCollectible(SERVITUDE.ID).MaxCharges
+
+local glowingCollectibles = {}
+
+local servitudeSpr = Sprite("gfx/005.100_collectible.anm2", true)
+servitudeSpr:ReplaceSpritesheet(1, "gfx/items/collectibles/servitude.png", true)
+servitudeSpr:Play("PlayerPickup")
+servitudeSpr.Scale = Vector(0.5, 0.5)
+
 --#endregion
 
 --#region Selecting collectibles
 
 ---@param player EntityPlayer
 function SERVITUDE:GetNearestCollectible(player)
+	if #Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, -1, true) == 0 then
+		return
+	end
 	local nearestCollectible = nil
 	local nearestDistance
 
@@ -31,6 +43,45 @@ function SERVITUDE:GetNearestCollectible(player)
 end
 
 ---@param player EntityPlayer
+---@return Entity
+local function tryGetTarget(player)
+	local data = Mod:GetData(player)
+	---@type EntityPtr
+	local targetItem = data.ServitudeCollectibleTarget
+	return targetItem and targetItem.Ref
+end
+
+---@param player EntityPlayer
+function SERVITUDE:SearchForCollectibleTarget(player)
+	if not player:HasCollectible(SERVITUDE.ID) then return end
+	local slots = Mod:GetActiveItemCharges(player, SERVITUDE.ID)
+	local fullCharge = false
+	for _, slotData in ipairs(slots) do
+		if slotData.Charge >= SERVITUDE.MAX_CHARGES then
+			fullCharge = true
+			break
+		end
+	end
+	if not fullCharge then return end
+	local item = SERVITUDE:GetNearestCollectible(player)
+	if not item then return end
+	local data = Mod:GetData(player)
+	local targetItem = tryGetTarget(player)
+	if not targetItem then
+		data.ServitudeCollectibleTarget = EntityPtr(item)
+		glowingCollectibles[GetPtrHash(item)] = true
+		targetItem = item
+	end
+	if GetPtrHash(targetItem) ~= GetPtrHash(item) then
+		glowingCollectibles[GetPtrHash(targetItem)] = nil
+		data.ServitudeCollectibleTarget:SetReference(item)
+		glowingCollectibles[GetPtrHash(item)] = true
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SERVITUDE.SearchForCollectibleTarget)
+
+---@param player EntityPlayer
 ---@param flags UseFlag
 ---@param slot ActiveSlot
 function SERVITUDE:OnUse(_, _, player, flags, slot)
@@ -40,15 +91,14 @@ function SERVITUDE:OnUse(_, _, player, flags, slot)
 	then
 		return
 	end
-	local item = SERVITUDE:GetNearestCollectible(player)
-	local player_run_save = Mod:RunSave(player)
-	local counter = player_run_save.ServitudeCounter
+	local item = tryGetTarget(player)
 	local foundItem = false
 
-	if item and (not counter or counter == 0) then
+	if item and player:GetActiveItemDesc(slot).VarData == 0 then
 		player:SetActiveVarData(item.SubType, slot)
 		player:SetActiveCharge(player:GetActiveCharge(slot) - 1, slot)
 		foundItem = true
+		Mod.SFXMan:Play(SoundEffect.SOUND_ANIMA_TRAP)
 	end
 	return { Discharge = false, ShowAnim = foundItem, Remove = false }
 end
@@ -68,12 +118,19 @@ function SERVITUDE:OnRoomClear(player)
 		if itemDesc.VarData == 0 then
 			player:AddActiveCharge(chargeAmount, slot, true, false, true)
 		else
-			local newCharge = player:GetActiveCharge(slot) - 1
+			local newCharge = math.max(0, player:GetActiveCharge(slot) - chargeAmount)
 			player:SetActiveCharge(newCharge, slot)
-			if newCharge == 0 then
-				Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, itemDesc.VarData,
-					Isaac.GetFreeNearPosition(player.Position, 40), Vector.Zero, player)
+			Mod.SFXMan:Play(SoundEffect.SOUND_BEEP, 1, 2, false, 0.75)
+			Mod.HUD:FlashChargeBar(player, slot)
+			if newCharge <= 0 then
+				Mod.Spawn.Collectible(
+					itemDesc.VarData,
+					Mod.Room():FindFreePickupSpawnPosition(player.Position, 40, true),
+					player,
+					player:GetCollectibleRNG(SERVITUDE.ID):Next()
+				)
 				player:SetActiveVarData(0, slot)
+				player:AnimateHappy()
 			end
 		end
 	end
@@ -83,7 +140,7 @@ Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR, CallbackP
 
 --#endregion
 
---#region Resset on taking damage
+--#region Reset on taking damage
 
 ---@param ent Entity
 ---@param flag DamageFlag
@@ -117,33 +174,33 @@ Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, SERVITUDE.ResetServitude, 
 
 --#region Render target
 
---[[ ---@param player EntityPlayer
-function SERVITUDE:SelectClosestCollectible(player)
-	if not player:HasCollectible(SERVITUDE.ID) or #Isaac.FindByType(5, 100) == 0 then return end
-	local item = SERVITUDE:GetNearestCollectible(player)
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SERVITUDE.SelectClosestCollectible)
-
----@param pickup EntityPickup
-function SERVITUDE:ServitudeTarget(pickup)
-
-	local room = game:GetRoom()
-	for p = 0, game:GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(p)
-		local data = Mod:GetData(player)
-
-		local item = SERVITUDE:GetNearestCollectible(player)
-		if player:HasCollectible(SERVITUDE.ID) and item ~= nil and data.ServitudeCounter == 0 then
-			local sprite = Sprite()
-			sprite:Load("gfx/effect_spiritual_wound_target.anm2", true)
-			sprite:Play("Idle", true)
-			sprite:Render(room:WorldToScreenPosition(item.Position, Vector.Zero, Vector.Zero))
-		end
+---@param player EntityPlayer
+---@param itemID CollectibleType
+function SERVITUDE:StopRenderingOnRemove(player, itemID)
+	if not player:HasCollectible(itemID) then
+		Mod:ClearTable(glowingCollectibles)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_RENDER, SERVITUDE.ServitudeTarget) ]]
+Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, SERVITUDE.StopRenderingOnRemove, SERVITUDE.ID)
+
+function SERVITUDE:ResetOnNewRoom()
+	Mod:ClearTable(glowingCollectibles)
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, SERVITUDE.ResetOnNewRoom)
+
+---@param pickup EntityPickup
+---@param offset Vector
+function SERVITUDE:ServitudeTarget(pickup, offset)
+	local offset2 = Mod.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT and 1 or -1
+	local renderPos = Mod:GetEntityRenderPosition(pickup, offset) + Vector(0, 40 * offset2)
+	if glowingCollectibles[GetPtrHash(pickup)] then
+		servitudeSpr:Render(renderPos)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_RENDER, SERVITUDE.ServitudeTarget)
 
 --#endregion
 
@@ -161,8 +218,8 @@ HudHelper.RegisterHUDElement({
 	OnRender = function(player, playerHUDIndex, hudLayout, position, alpha, scale, slot)
 		---@cast slot ActiveSlot
 		local itemID = player:GetActiveItemDesc(slot).VarData
-		HudHelper.RenderHUDItem(Mod.ItemConfig:GetCollectible(itemID).GfxFileName, position, scale, alpha, false, false)
-		HudHelper.RenderHUDElements(HudHelper.HUDType.ACTIVE_ID, false, player, playerHUDIndex, hudLayout, position, alpha, scale * 0.5, slot)
+		HudHelper.RenderHUDItem(Mod.ItemConfig:GetCollectible(itemID).GfxFileName, position, scale * 0.5, alpha * 0.5, false, false)
+		HudHelper.RenderHUDElements(HudHelper.HUDType.ACTIVE_ID, false, player, playerHUDIndex, hudLayout, position, alpha, scale, slot)
 	end
 }, HudHelper.HUDType.ACTIVE)
 
