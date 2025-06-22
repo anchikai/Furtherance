@@ -20,8 +20,7 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, LITTLE_RAINCOAT.RaincoatSize, Ca
 function LITTLE_RAINCOAT:OnFirstPickup(item, charge, firstTime, slot, varData, player)
 	if firstTime then
 		local color = Mod.Game:GetItemPool():ForceAddPillEffect(PillEffect.PILLEFFECT_POWER)
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_PILL, color,
-			Mod.Room():FindFreePickupSpawnPosition(player.Position, 40), Vector.Zero, player)
+		Mod.Spawn.Pill(color, Mod.Room():FindFreePickupSpawnPosition(player.Position, 40), nil, player, player:GetCollectibleRNG(LITTLE_RAINCOAT.ID):Next())
 	end
 end
 

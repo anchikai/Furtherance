@@ -127,10 +127,9 @@ function SHATTERED_HEART:RemoveBrokensFromDamage(ent, amount, flags, source, cou
 	if player and PlayerManager.AnyoneHasCollectible(Mod.Item.SHATTERED_HEART.ID) then
 		local rng = player:GetCollectibleRNG(Mod.Item.SHATTERED_HEART.ID)
 		if rng:RandomFloat() <= SHATTERED_HEART.SCARED_HEART_CHANCE then
-			local sharpPickup = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART,
-				HeartSubType.HEART_SCARED,
-				ent.Position, RandomVector():Resized(3), player):ToPickup()
-			---@cast sharpPickup EntityPickup
+			local sharpPickup = Mod.Spawn.Heart(HeartSubType.HEART_SCARED, ent.Position,
+				EntityPickup.GetRandomPickupVelocity(ent.Position, rng), player, rng:Next()
+			)
 			local data = Mod:GetData(sharpPickup)
 			data.ShatteredHeartPickup = true
 			sharpPickup:GetSprite().Color = Color(0.5, 0.5, 0.5)

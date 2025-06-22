@@ -45,8 +45,7 @@ function THE_DREIDEL:OnUse(_, rng, player)
 		end
 	end
 	if itemID then
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, itemID,
-			Mod.Room():FindFreePickupSpawnPosition(player.Position, 40, true, false), Vector.Zero, player)
+		Mod.Spawn.Collectible(itemID, Mod.Room():FindFreePickupSpawnPosition(player.Position, 40, true), player)
 	end
 
 	player:AddCacheFlags(CacheFlag.CACHE_ALL, true)

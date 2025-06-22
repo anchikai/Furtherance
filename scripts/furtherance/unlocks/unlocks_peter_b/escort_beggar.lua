@@ -180,7 +180,7 @@ function ESCORT_BEGGAR:OnSlotUpdate(slot)
 			Mod.SFXMan:Play(SoundEffect.SOUND_SLOTSPAWN)
 			local itemID = Mod.Game:GetItemPool():GetCollectible(ESCORT_BEGGAR.ITEM_POOL, true, slot.InitSeed)
 			local pos = Mod.Room():FindFreePickupSpawnPosition(slot.Position, 40, true, false)
-			Mod.Spawn.Pickup(PickupVariant.PICKUP_COLLECTIBLE, itemID, pos, nil, slot, slot.InitSeed)
+			Mod.Spawn.Collectible(itemID, pos, slot, slot.InitSeed)
 		elseif sprite:IsFinished("Prize") then
 			sprite:Play("Teleport")
 		end

@@ -128,7 +128,7 @@ function Spawn.Tear(tearVariant, position, velocity, tearFlags, spawner, seed)
 	return tear
 end
 
----@type fun(slotVariant: integer, position: Vector, spawner: EntityOrNil, seed: IntOrNil): EntitySlot
+---@type fun(slotVariant: SlotVariant, position: Vector, spawner: EntityOrNil, seed: IntOrNil): EntitySlot
 function Spawn.Slot(slotVariant, position, spawner, seed)
 	local slot = game:Spawn(
 		EntityType.ENTITY_SLOT, slotVariant,

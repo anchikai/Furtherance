@@ -53,10 +53,7 @@ local function updateCollectibles()
 				optionIndex = pickup:SetNewOptionsPickupIndex()
 				pickup.OptionsPickupIndex = optionIndex
 			end
-
-			local pickupSpawn = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, 0,
-				room:FindFreePickupSpawnPosition(pickup.Position + Vector(40, 0)), Vector.Zero, nil):ToPickup()
-			---@cast pickupSpawn EntityPickup
+			local pickupSpawn = Mod.Spawn.Collectible(NullPickupSubType.ANY, room:FindFreePickupSpawnPosition(pickup.Position + Vector(40, 0)))
 			pickupSpawn.OptionsPickupIndex = optionIndex
 			Mod:GetData(pickupSpawn).PeterBBirthrightTreasure = true
 			if pickup:IsShopItem() then

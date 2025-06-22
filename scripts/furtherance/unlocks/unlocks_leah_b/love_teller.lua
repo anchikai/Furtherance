@@ -291,8 +291,8 @@ function LOVE_TELLER:OnSlotUpdate(slot)
 			slot:SetState(Mod.SlotState.IDLE)
 		elseif num == "1" then
 			for _ = 1, 2 do
-				Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, NullPickupSubType.ANY, slot.Position,
-					EntityPickup.GetRandomPickupVelocity(slot.Position, Mod.RandomRNG, 1), nil)
+				Mod.Spawn.Pickup(PickupVariant.PICKUP_HEART, NullPickupSubType.ANY, slot.Position,
+				EntityPickup.GetRandomPickupVelocity(slot.Position, Mod.RandomRNG, 1), slot, data.SlotRNG:Next())
 			end
 			Mod.SFXMan:Play(SoundEffect.SOUND_SLOTSPAWN)
 			slot:SetState(Mod.SlotState.IDLE)
@@ -353,8 +353,9 @@ function LOVE_TELLER:SlotDrops(slot)
 		pickup = PickupVariant.PICKUP_HEART
 	end
 	for _ = 1, num do
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, pickup, NullPickupSubType.ANY, slot.Position,
-			EntityPickup.GetRandomPickupVelocity(slot.Position, Mod.RandomRNG, 0), nil)
+		Mod.Spawn.Pickup(pickup, NullPickupSubType.ANY, slot.Position,
+			EntityPickup.GetRandomPickupVelocity(slot.Position, Mod.RandomRNG, 0), nil, rng:Next()
+		)
 	end
 	return false
 end

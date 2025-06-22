@@ -24,8 +24,7 @@ function NIL_NUM:Duplicate(ent)
 				end
 			end
 			local itemID = itemIDs[rng:RandomInt(#itemIDs) + 1]
-			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, itemID,
-				Mod.Room():FindFreePickupSpawnPosition(player.Position, 40), Vector.Zero, player)
+			Mod.Spawn.Collectible(itemID, Mod.Room():FindFreePickupSpawnPosition(player.Position, 40), player, player:GetTrinketRNG(NIL_NUM.ID):Next())
 			player:TryRemoveTrinket(NIL_NUM.ID)
 		end
 	end

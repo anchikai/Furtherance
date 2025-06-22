@@ -9,9 +9,10 @@ ESSENCE_OF_HATE.ID = Isaac.GetCardIdByName("Essence of Hate")
 ---@param player EntityPlayer?
 local function spawnExplodingHeart(player)
 	local room = Mod.Room()
-	local heart = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_FULL,
-		room:FindFreeTilePosition(Isaac.GetRandomPosition(), 0), Vector.Zero, player):ToPickup()
-	---@cast heart EntityPickup
+	local heart = Mod.Spawn.Heart(HeartSubType.HEART_FULL,
+		room:FindFreeTilePosition(Isaac.GetRandomPosition(), 0),
+		nil, player, player and player:GetCardRNG(ESSENCE_OF_HATE.ID):Next()
+	)
 	heart.Timeout = 32
 	heart.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
 	Mod:GetData(heart).EssenceOfHateHeart = true

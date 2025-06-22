@@ -22,8 +22,7 @@ function GOLDEN_SACK:OnSackCollision(pickup, collider)
 		if rng:RandomFloat() > GOLDEN_SACK.DISAPPEAR_CHANCE then
 			pickup_save.GoldenSackRNGSeed = rng:Next()
 			local room = Mod.Room()
-			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_GRAB_BAG, GOLDEN_SACK.ID,
-				room:FindFreePickupSpawnPosition(room:GetRandomPosition(0)), Vector.Zero, nil):ToPickup()
+			Mod.Spawn.Sack(GOLDEN_SACK.ID, room:FindFreePickupSpawnPosition(room:GetRandomPosition(0)), nil, nil, rng:Next())
 		end
 	end
 end

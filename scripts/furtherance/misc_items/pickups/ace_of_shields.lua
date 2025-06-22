@@ -21,8 +21,7 @@ function ACE_OF_SHIELDS:OnUse(_, player)
 
 	Mod.Foreach.NPC(function (npc, index)
 		if not npc:IsBoss() and npc:IsActiveEnemy(false) then
-			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_LIL_BATTERY, BatterySubType.BATTERY_MICRO,
-				npc.Position, Vector.Zero, nil)
+			Mod.Spawn.Battery(BatterySubType.BATTERY_MICRO, npc.Position, nil, nil, npc:GetDropRNG():GetSeed())
 			npc:Remove()
 		end
 	end, nil, nil, nil, {Inverse = true, UseEnemySearchParams = true})

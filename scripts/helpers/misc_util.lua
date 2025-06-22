@@ -354,7 +354,7 @@ end
 
 ---@param ent Entity
 function Furtherance:IsDeadEnemy(ent)
-	return ent:IsActiveEnemy(true) or ent:ToNPC() and ent:ToNPC().CanShutDoors
+	return ent:IsActiveEnemy(true) and ent:ToNPC() and ent:ToNPC().CanShutDoors
 end
 
 ---@return string

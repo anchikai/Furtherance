@@ -856,10 +856,9 @@ function KEYS_TO_THE_KINGDOM:PostAngelSpare(npc)
 		and not PlayerManager.AnyoneHasTrinket(TrinketType.TRINKET_FILIGREE_FEATHERS)
 	then
 		local angelItem = Mod.Game:GetItemPool():GetCollectible(ItemPoolType.POOL_ANGEL, true,
-			PlayerManager.FirstCollectibleOwner(KEYS_TO_THE_KINGDOM.ID):GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID)
-			:Next(), nil)
+			PlayerManager.FirstCollectibleOwner(KEYS_TO_THE_KINGDOM.ID):GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID):Next(), nil)
 		local pos = Mod.Room():FindFreePickupSpawnPosition(npc.Position)
-		Mod.Spawn.Pickup(PickupVariant.PICKUP_COLLECTIBLE, angelItem, pos, nil, npc, npc:GetDropRNG():GetSeed())
+		Mod.Spawn.Collectible(angelItem, pos, npc, npc:GetDropRNG():GetSeed())
 	end
 end
 

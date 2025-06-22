@@ -29,8 +29,9 @@ function JAR_OF_MANNA:GetNeededChargeSlot(player)
 	end
 end
 
+---@param rng RNG
 ---@param player EntityPlayer
-function JAR_OF_MANNA:OnUse(_, _, player)
+function JAR_OF_MANNA:OnUse(_, rng, player)
 	local pickupTable = player:GetGlyphOfBalanceDrop()
 	local variant, subtype = pickupTable[1], pickupTable[2]
 	if variant == -1 then
@@ -56,14 +57,13 @@ function JAR_OF_MANNA:OnUse(_, _, player)
 				lowestStat = playerStats[i]
 			end
 		end
-		local statIndex = lowestStats[player:GetCollectibleRNG(JAR_OF_MANNA.ID):RandomInt(#lowestStats) + 1]
+		local statIndex = lowestStats[rng:RandomInt(#lowestStats) + 1]
 		local key = tostring(statIndex)
 		local flag = JAR_OF_MANNA.StatTable[statIndex].Flag
 		player_run_save.JarOfMannaStatUps[key] = (player_run_save.JarOfMannaStatUps[key] or 0) + 1
 		player:AddCacheFlags(flag, true)
 	else
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, variant, subtype,
-			Mod.Room():FindFreePickupSpawnPosition(player.Position, 40, false, false), Vector.Zero, nil)
+		Mod.Spawn.Pickup(variant, subtype, Mod.Room():FindFreePickupSpawnPosition(player.Position, 40), nil, player, rng:Next())
 	end
 
 	return true

@@ -19,8 +19,7 @@ function KARETH:ReplacePedestalWithTrinkets(pickup)
 	end
 	local numTrinkets = itemConfig.Quality == 3 and 2 or Mod:Clamp(itemConfig.Quality, 1, 3)
 	for _ = 1, numTrinkets do
-		local trinket = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TRINKET, 0, Mod.Room():FindFreePickupSpawnPosition(pickup.Position), Vector.Zero, pickup.SpawnerEntity):ToPickup()
-		---@cast trinket EntityPickup
+		local trinket = Mod.Spawn.Trinket(NullPickupSubType.ANY, Mod.Room():FindFreePickupSpawnPosition(pickup.Position), nil, pickup.SpawnerEntity)
 		if pickup:IsShopItem() then
 			trinket:MakeShopItem(-1)
 		end

@@ -22,12 +22,10 @@ function MANDRAKE:SpawnFamiliarItem()
 				---@cast player EntityPlayer
 
 				local rng = player:GetCollectibleRNG(MANDRAKE.ID)
-				local ID = game:GetItemPool():GetCollectible(ItemPoolType.POOL_BABY_SHOP, true, rng:GetSeed())
+				local itemID = game:GetItemPool():GetCollectible(ItemPoolType.POOL_BABY_SHOP, true, rng:GetSeed())
 				rng:Next()
 
-				local mandrakeSpawn = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, ID,
-					room:FindFreePickupSpawnPosition(pickup.Position + Vector(40, 0)), Vector.Zero, nil):ToPickup()
-				---@cast mandrakeSpawn EntityPickup
+				local mandrakeSpawn = Mod.Spawn.Collectible(itemID, room:FindFreePickupSpawnPosition(pickup.Position + Vector(40, 0)))
 				mandrakeSpawn.OptionsPickupIndex = optionIndex
 				Mod:GetData(mandrakeSpawn).MandrakeItem = true
 				if pickup:IsShopItem() then

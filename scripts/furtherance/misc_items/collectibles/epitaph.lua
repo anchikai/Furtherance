@@ -297,21 +297,18 @@ function EPITAPH:DestroyTombstone(gridEnt)
 
 	for _ = 1, coinCount do
 		local velocity = EntityPickup.GetRandomPickupVelocity(gridEnt.Position, rng)
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, CoinSubType.COIN_PENNY,
-			gridEnt.Position, velocity, nil)
+		Mod.Spawn.Coin(CoinSubType.COIN_PENNY, gridEnt.Position, velocity, nil, rng:Next())
 	end
 
 	local keyCount = rng:RandomInt(2) + 2
 	for _ = 1, keyCount do
 		local velocity = EntityPickup.GetRandomPickupVelocity(gridEnt.Position, rng)
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_KEY, KeySubType.KEY_NORMAL, gridEnt.Position,
-			velocity, nil)
+		Mod.Spawn.Key(KeySubType.KEY_NORMAL, gridEnt.Position, velocity, nil, rng:Next())
 	end
 
 	if grid_save.TombstoneCollectibles then
 		for _, itemID in ipairs(grid_save.TombstoneCollectibles) do
-			Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, itemID,
-				room:FindFreePickupSpawnPosition(gridEnt.Position, 40), Vector.Zero, nil)
+			Mod.Spawn.Collectible(itemID, room:FindFreePickupSpawnPosition(gridEnt.Position, 40))
 		end
 	end
 	if gridEnt.VarData < 3 then

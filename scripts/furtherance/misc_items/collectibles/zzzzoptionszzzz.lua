@@ -19,9 +19,7 @@ function ZZZZOPTIONSZZZZ:ZZZZ()
 				optionIndex = pickup:SetNewOptionsPickupIndex()
 				pickup.OptionsPickupIndex = optionIndex
 			end
-			local glitchPickup = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, 0,
-				room:FindFreePickupSpawnPosition(pickup.Position + Vector(40, 0)), Vector.Zero, nil):ToPickup()
-			---@cast glitchPickup EntityPickup
+			local glitchPickup = Mod.Spawn.Collectible(NullPickupSubType.ANY, room:FindFreePickupSpawnPosition(pickup.Position + Vector(40, 0)))
 			glitchPickup.OptionsPickupIndex = optionIndex
 			glitchPickup:AddEntityFlags(EntityFlag.FLAG_GLITCH)
 			if pickup:IsShopItem() then

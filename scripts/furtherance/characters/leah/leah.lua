@@ -26,8 +26,7 @@ function LEAH:ScaredHeartOnDeath(npc)
 		local hrRNG = player:GetCollectibleRNG(Mod.Item.HEART_RENOVATOR.ID)
 		if npc:IsActiveEnemy(true) then
 			if hrRNG:RandomFloat() <= LEAH.SCARED_HEART_CHANCE then
-				Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_SCARED,
-				npc.Position, Vector.Zero, player)
+				Mod.Spawn.Heart(HeartSubType.HEART_SCARED, npc.Position, nil, player, npc:GetDropRNG():GetSeed())
 			end
 		end
 	end
