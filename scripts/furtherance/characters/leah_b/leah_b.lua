@@ -17,7 +17,7 @@ LEAH_B.HEART_LIMIT = 48
 ---
 ---We're allowed to add 23 broken hearts at a limit of 66. Tainted Leah manages removing hearts that exceed the expected 24
 ---
--- !This is disabled due to adding CustomHealthAPI but keeping it here as an important reminder
+-- !This is now unused due to adding CustomHealthAPI but keeping it here as an important note I guess?
 LEAH_B.TECHNICAL_HEART_LIMIT = 66
 
 LEAH_B.HEART_ADD_CHECK = Mod:Set({
@@ -38,8 +38,7 @@ LEAH_B.STAT_TABLE = {
 	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.01 },
 }
 
-local brokenHeart = Sprite(Mod:GetHealthPath(), true)
-brokenHeart:SetFrame("BrokenHeart", 0)
+local leahHeartHUD = Sprite(Mod:GetHealthPath(), true)
 
 --#endregion
 
@@ -137,6 +136,14 @@ function LEAH_B:RemoveBoneHeartsAboveCap(player)
 	end
 end
 
+local function heartLimit(player)
+	if LEAH_B:IsLeahB(player) then
+		return LEAH_B.HEART_LIMIT
+	end
+end
+
+CustomHealthAPI.Library.AddCallback("Furtherance", CustomHealthAPI.Enums.Callbacks.GET_MAX_HP_CAP, CustomHealthAPI.Enums.CallbackPriorities.FIRST, heartLimit)
+
 ---@param player EntityPlayer
 function LEAH_B:UpdateRedHealthStats(player)
 	local redHearts = player:GetHearts() + player:GetRottenHearts()
@@ -202,6 +209,7 @@ function LEAH_B:HeartDecay(player)
 		data.LeahBBrokenDamage = data.LeahBBrokenDamage - damageNeeded
 		player:AddBrokenHearts(-1)
 		player:AddMaxHearts(2)
+		Mod:SpawnNotifyEffect(player.Position, Mod.NotifySubtype.HEART)
 	end
 	local numBrokens = player:GetBrokenHearts()
 	--23
@@ -243,6 +251,7 @@ HudHelper.RegisterHUDElement({
 	Condition = function (player, playerHUDIndex, hudLayout)
 		return LEAH_B:IsLeahB(player)
 			and player:GetBrokenHearts() < (LEAH_B.HEART_LIMIT / 2) - 1
+
 	end,
 	OnRender = function (player, playerHUDIndex, hudLayout, position, maxColumns, _, numPlayers)
 		local alpha = (sin(Mod.Game:GetFrameCount() * 4 * 1.5 * math.pi / 180) + 1) / 2
@@ -255,8 +264,34 @@ HudHelper.RegisterHUDElement({
 		end
 		local pos = Vector(position.X + (offset % maxColumns) * 12,
 			position.Y + math.floor(offset / maxColumns) * 10)
-		brokenHeart.Color = Color(0, 0, 0, alpha / 2 + 0.25, 0.5, 0, 0)
-		brokenHeart:Render(pos)
+		leahHeartHUD:SetFrame("BrokenHeart", 0)
+		leahHeartHUD.Color = Color(0, 0, 0, alpha / 2 + 0.25, 0.5, 0, 0)
+		leahHeartHUD:Render(pos)
+	end
+}, HudHelper.HUDType.HEALTH)
+
+HudHelper.RegisterHUDElement({
+	Name = "Leah B Heart Gain",
+	Priority = HudHelper.Priority.NORMAL,
+	Condition = function (player, playerHUDIndex, hudLayout)
+		return LEAH_B:IsLeahB(player)
+			and (Mod:GetData(player).LeahBBrokenDamage or 0) > 0
+			and player:GetBrokenHearts() > 0
+	end,
+	OnRender = function (player, playerHUDIndex, hudLayout, position, maxColumns)
+		local allHearts = LEAH_B:GetMaxHeartAmount(player)
+		local offset = 0
+		if allHearts == LEAH_B.HEART_LIMIT then
+			offset = LEAH_B:GetMaxHeartSlots(player)
+		else
+			offset = ceil(allHearts / 2) - 1
+		end
+		local pos = Vector(position.X + (offset % maxColumns) * 12,
+			position.Y + math.floor(offset / maxColumns) * 10)
+		leahHeartHUD:SetFrame("RedHeartFull", 0)
+		leahHeartHUD.Color = Color(1, 1, 1, 1, 0.25, 0.25, 0.25)
+		local amountTillHeal = (Mod:GetData(player).LeahBBrokenDamage / LEAH_B:GetDamageRequirement()) * 16
+		leahHeartHUD:Render(pos, Vector(0, 16 - amountTillHeal))
 	end
 }, HudHelper.HUDType.HEALTH)
 
