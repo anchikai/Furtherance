@@ -133,7 +133,20 @@ end
 Mod:AddCallback(ModCallbacks.MC_USE_ITEM, POLARITY_SHIFT.PolarityShiftMiriam, POLARITY_SHIFT.ID_2)
 
 HudHelper.RegisterHUDElement({
+	ItemID = POLARITY_SHIFT.ID_1,
+	Condition = function (player, playerHUDIndex, hudLayout)
+		return POLARITY_SHIFT:IsChainLightningActive(player)
+	end,
+	OnRender = function (player, playerHUDIndex, hudLayout, position, alpha, scale)
+		HudHelper.RenderHUDItem("gfx/items/polarity_shift_alt.png", position, scale, alpha)
+	end
+}, HudHelper.HUDType.ACTIVE_ID)
+
+HudHelper.RegisterHUDElement({
 	ItemID = POLARITY_SHIFT.ID_2,
+	Condition = function (player, playerHUDIndex, hudLayout)
+		return POLARITY_SHIFT:IsChainLightningActive(player)
+	end,
 	OnRender = function (player, playerHUDIndex, hudLayout, position, alpha, scale)
 		HudHelper.RenderHUDItem("gfx/items/polarity_shift_alt.png", position, scale, alpha)
 	end
