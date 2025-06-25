@@ -14,9 +14,9 @@ local function lostAndForgottenPatch()
 		local sprite = collider:GetSprite()
 
 		if not (
-				--I don't :ToSlot() here (I cast out of habit even if its not needed) because it breaks LNF's code
-				--Their :GetLNFData() is directly embedded into the class functions and :ToX() casts remove it for the remainer of the callback
-				--Truly wacky
+			--I don't :ToSlot() here (I cast out of habit even if its not needed) because it breaks LNF's code
+			--Their :GetLNFData() is directly embedded into the class functions and :ToX() casts remove it for the remainer of the callback
+			--Truly wacky
 				collider.Type == EntityType.ENTITY_SLOT
 				and collider.Variant == LNF.SlotVariant.SLOT_WEIRD_BEGGAR
 				and player:HasTrinket(ALTRUISM.ID)
@@ -37,7 +37,7 @@ local function lostAndForgottenPatch()
 
 		if rng:RandomFloat() <= ALTRUISM.BEGGAR_HEAL_CHANCE and not ALTRUISM.DEBUG_REFUND then
 			Mod:DebugLog("Altruism heal")
-			Mod:SpawnNotifyEffect(player.Position, Furtherance.NotifySubtype.HEART)
+			Mod.Spawn.Notification(player.Position, 0, true)
 			Mod.SFXMan:Play(SoundEffect.SOUND_VAMP_GULP)
 			player:AddHearts(1)
 		else
@@ -47,8 +47,7 @@ local function lostAndForgottenPatch()
 			Mod:DelayOneFrame(function()
 				data.AltruismPreventWeirdBeggar = nil
 			end)
-			Mod.Spawn.Effect(ALTRUISM.NOTIFY_COIN, 0, player.Position)
-			Mod.SFXMan:Play(SoundEffect.SOUND_PENNYPICKUP)
+			Mod.Trinket.ALTRUISM:SpawnRefundNotification(player.Position)
 		end
 	end
 

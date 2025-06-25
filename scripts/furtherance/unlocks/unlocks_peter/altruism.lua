@@ -9,8 +9,6 @@ ALTRUISM.ID = Isaac.GetTrinketIdByName("Altruism")
 ALTRUISM.BEGGAR_TRIGGER_ALTRUISM_CHANCE = 0.25
 ALTRUISM.BEGGAR_HEAL_CHANCE = 0.5
 
-ALTRUISM.NOTIFY_COIN = Isaac.GetEntityVariantByName("Effect Notification (FR)")
-
 ALTRUISM.DEBUG_REFUND = false
 
 ---@param ent Entity
@@ -95,12 +93,17 @@ ALTRUISM.PreCallbackBeggars = Mod:Set({
 	SlotVariant.HELL_GAME
 })
 
+function ALTRUISM:SpawnRefundNotification(pos)
+	local effect = Mod.Spawn.Notification(pos, 1)
+	effect:GetSprite():ReplaceSpritesheet(0, "gfx/effects/effect_notify_furtherance.png", true)
+	Mod.SFXMan:Play(SoundEffect.SOUND_PENNYPICKUP)
+end
+
 ---@param player EntityPlayer
 ---@param slot EntitySlot
 function ALTRUISM:GrantReward(player, slot)
 	ALTRUISM.ResourceRefund[slot.Variant](player, slot)
-	Mod.Spawn.Effect(ALTRUISM.NOTIFY_COIN, 0, player.Position)
-	Mod.SFXMan:Play(SoundEffect.SOUND_PENNYPICKUP)
+	ALTRUISM:SpawnRefundNotification(player.Position)
 	Mod:DebugLog("Altruism beggar refund")
 end
 
@@ -128,15 +131,14 @@ function ALTRUISM:PreBeggarCollision(slot, collider)
 
 	if rng:RandomFloat() <= ALTRUISM.BEGGAR_HEAL_CHANCE and not ALTRUISM.DEBUG_REFUND then
 		Mod:DebugLog("Altruism heal")
-		Mod:SpawnNotifyEffect(player.Position, Furtherance.NotifySubtype.HEART)
-		Mod.SFXMan:Play(SoundEffect.SOUND_VAMP_GULP)
+		Mod.Spawn.Notification(player.Position, 0, true)
 		player:AddHearts(1)
 	elseif ALTRUISM.PreCallbackBeggars[slot.Variant] then
 		ALTRUISM:GrantReward(player, slot)
 	else
 		local data = Mod:GetData(player)
 		data.AltruismBeggarRefund = true
-		Mod:DelayOneFrame(function ()
+		Mod:DelayOneFrame(function()
 			data.AltruismBeggarRefund = nil
 		end)
 	end
@@ -155,17 +157,6 @@ function ALTRUISM:RefundPlayer(slot, collider)
 end
 
 Mod:AddPriorityCallback(ModCallbacks.MC_POST_SLOT_COLLISION, CallbackPriority.LATE, ALTRUISM.RefundPlayer)
-
-Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, function(_, effect)
-	effect:GetSprite().Offset = Vector(0, -24)
-	effect.DepthOffset = 1
-end, ALTRUISM.NOTIFY_COIN)
-
-Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, function(_, effect)
-	if effect:GetSprite():IsFinished() then
-		effect:Remove()
-	end
-end, ALTRUISM.NOTIFY_COIN)
 
 Mod.ConsoleCommandHelper:Create("altruismrefund", "Beggars will always refund while having Altruism",
 	{},

@@ -186,16 +186,6 @@ function Furtherance:CheckTypeVarSub(ent, type, var, sub)
 		and ent.SubType == sub
 end
 
----@param pos Vector
----@param subType NotifySubType
-function Furtherance:SpawnNotifyEffect(pos, subType)
-	local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.HEART, subType, pos, Vector.Zero, nil):ToEffect()
-	---@cast effect EntityEffect
-
-	effect:GetSprite().Offset = Vector(0, -24)
-	effect.DepthOffset = 1
-end
-
 ---RoomCheckLine is inaccurate and has a variance of roughly 10 pixels, alwyas off by at least 5, when returning the obstructed position.
 ---
 ---This tries to get an *exact* position by inching forward until it finds the grid entity.

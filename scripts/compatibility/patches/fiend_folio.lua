@@ -169,8 +169,7 @@ local function fiendFolioPatch()
 
 		if rng:RandomFloat() <= ALTRUISM.BEGGAR_HEAL_CHANCE and not ALTRUISM.DEBUG_REFUND then
 			Mod:DebugLog("Altruism heal")
-			Mod:SpawnNotifyEffect(player.Position, Furtherance.NotifySubtype.HEART)
-			Mod.SFXMan:Play(SoundEffect.SOUND_VAMP_GULP)
+			Mod.Spawn.Notification(player.Position, 0, true)
 			player:AddHearts(1)
 		else
 			local data = Mod:GetData(player)
@@ -179,8 +178,7 @@ local function fiendFolioPatch()
 			Mod:DelayOneFrame(function ()
 				data.AltruismPreventEvilBeggar = nil
 			end)
-			Mod.Spawn.Effect(ALTRUISM.NOTIFY_COIN, 0, player.Position)
-			Mod.SFXMan:Play(SoundEffect.SOUND_PENNYPICKUP)
+			Mod.Trinket.ALTRUISM:SpawnRefundNotification(player.Position)
 		end
 	end
 

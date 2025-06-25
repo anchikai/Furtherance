@@ -67,8 +67,7 @@ function MIRIAM_B:TryHealFromDamageDealt(player)
 		healed = true
 	end
 	if healed then
-		Mod:SpawnNotifyEffect(player.Position, Furtherance.NotifySubtype.HEART)
-		Mod.SFXMan:Play(SoundEffect.SOUND_VAMP_GULP)
+		Mod.Spawn.Notification(player.Position, 0, true)
 	end
 end
 

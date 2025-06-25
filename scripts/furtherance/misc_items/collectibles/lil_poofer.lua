@@ -81,8 +81,7 @@ function LIL_POOFER:Explode(familiar)
 			and player:GetHealthType() == HealthType.RED
 		then
 			player:AddHearts(1)
-			Mod:SpawnNotifyEffect(player.Position, Furtherance.NotifySubtype.HEART)
-			Mod.SFXMan:Play(SoundEffect.SOUND_VAMP_GULP)
+			Mod.Spawn.Notification(player.Position, 0, true)
 		end
 	end)
 

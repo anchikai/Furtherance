@@ -77,8 +77,7 @@ function LITTLE_RAINCOAT:AddHeart(ent, amount, flags, source, countdown)
 		and player:GetCollectibleRNG(LITTLE_RAINCOAT.ID):RandomFloat() <= LITTLE_RAINCOAT.HEART_CHANCE
 	then
 		player:AddMaxHearts(2)
-		Mod:SpawnNotifyEffect(ent.Position, Mod.NotifySubtype.HEART)
-		Mod.SFXMan:Play(SoundEffect.SOUND_VAMP_GULP)
+		Mod.Spawn.Notification(ent.Position, 0, true)
 	end
 end
 

@@ -279,6 +279,40 @@ function Spawn.Trail(spawner, trailLength)
 	return trail
 end
 
+---@alias NotificationSubType
+---|0 #Heart
+---|1 #Battery Up
+---|2 #Backstabber
+---|3 #Battery Down
+---|4 #Soul Heart
+---|5 #Black Heart
+
+local subTypeToSFX = {
+	[0] = SoundEffect.SOUND_VAMP_GULP,
+	[1] = SoundEffect.SOUND_BATTERYCHARGE,
+	[2] = SoundEffect.SOUND_MEATY_DEATHS,
+	[3] = SoundEffect.SOUND_BATTERYDISCHARGE,
+	[4] = SoundEffect.SOUND_HOLY,
+	[5] = SoundEffect.SOUND_UNHOLY
+}
+
+local sfxman = SFXManager()
+
+---@param pos Vector
+---@param notifType NotificationSubType
+---@param playSFX? boolean
+function Spawn.Notification(pos, notifType, playSFX)
+	local effect = spawnEffect(EffectVariant.HEART, notifType, pos)
+
+	effect:GetSprite().Offset = Vector(0, -24)
+	effect.DepthOffset = 1
+
+	if playSFX then
+		sfxman:Play(subTypeToSFX[notifType])
+	end
+	return effect
+end
+
 --#endregion
 
 return Spawn

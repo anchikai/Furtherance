@@ -201,6 +201,12 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, LEAH_B.HealthyStatUp)
 
 --#region Gain/remove broken hearts
 
+---@param pos Vector
+function LEAH_B:SpawnEmptyHeartUpNotification(pos)
+	local effect = Mod.Spawn.Notification(pos, 0)
+	effect:GetSprite():ReplaceSpritesheet(0, "gfx/effects/effect_notify_furtherance.png", true)
+end
+
 ---@param player EntityPlayer
 function LEAH_B:HeartDecay(player)
 	local data = Mod:GetData(player)
@@ -209,7 +215,7 @@ function LEAH_B:HeartDecay(player)
 		data.LeahBBrokenDamage = data.LeahBBrokenDamage - damageNeeded
 		player:AddBrokenHearts(-1)
 		player:AddMaxHearts(2)
-		Mod:SpawnNotifyEffect(player.Position, Mod.NotifySubtype.HEART)
+		LEAH_B:SpawnEmptyHeartUpNotification(player.Position)
 	end
 	local numBrokens = player:GetBrokenHearts()
 	--23
@@ -288,8 +294,8 @@ HudHelper.RegisterHUDElement({
 		end
 		local pos = Vector(position.X + (offset % maxColumns) * 12,
 			position.Y + math.floor(offset / maxColumns) * 10)
-		leahHeartHUD:SetFrame("RedHeartFull", 0)
-		leahHeartHUD.Color = Color(1, 1, 1, 1, 0.25, 0.25, 0.25)
+		leahHeartHUD:SetFrame("EmptyHeart", 0)
+		leahHeartHUD.Color = Color(1, 1, 1, 1, 0.25)
 		local amountTillHeal = (Mod:GetData(player).LeahBBrokenDamage / LEAH_B:GetDamageRequirement()) * 16
 		leahHeartHUD:Render(pos, Vector(0, 16 - amountTillHeal))
 	end
