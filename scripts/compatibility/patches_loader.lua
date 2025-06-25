@@ -11,10 +11,11 @@ Furtherance.PatchesLoader = loader
 -- Registers a Mod patch
 -- Mod:string           Name of Mod global
 -- patchFunc:function   Function that takes 0 arguments and applies the patch
----@function
-function loader:RegisterPatch(Mod, patchFunc)
-	table.insert(loader.Patches, { Mod = Mod, PatchFunc = patchFunc, Loaded = false })
-	--Isaac.DebugString(Dump({ Mod = Mod, PatchFunc = patchFunc, Loaded = false }))
+---@param mod string|fun():boolean
+---@param patchFunc fun()
+---@param modName? string
+function loader:RegisterPatch(mod, patchFunc, modName)
+	table.insert(loader.Patches, { Mod = mod, ModName = modName or tostring(mod), PatchFunc = patchFunc, Loaded = false })
 end
 
 ---@function
@@ -35,7 +36,7 @@ function loader:ApplyPatches()
 			patch.PatchFunc()
 			patch.Loaded = true
 
-			Mod:DebugLog(table.concat({ "Loaded", tostring(patch.Mod), "patch" }, " "))
+			Mod:DebugLog(table.concat({ "Loaded", patch.ModName, "patch" }, " "))
 		end
 	end
 
@@ -43,8 +44,10 @@ function loader:ApplyPatches()
 end
 
 local patches = {
+	"addicted_beggar",
 	"andromeda",
 	"arachna",
+	"brawler_beggar",
 	"cadaver",
 	"epiphany",
 	"fiend_folio",

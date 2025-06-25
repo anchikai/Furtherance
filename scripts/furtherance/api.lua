@@ -9,13 +9,19 @@ Furtherance.API = API
 ---Use API:RegisterAltruismBeggar if this doesn't happen to trigger for your beggar
 ---@param variant SlotVariant
 ---@param payAmount? integer
-function API:RegisterAltruismCoinBeggar(variant, payAmount)
+function API:RegisterAltruismCoinBeggar(variant, payAmount, rgonMethod)
 	payAmount = payAmount or 1
-	Mod.Trinket.ALTRUISM.ResourceRequirement[variant] = function (player, slot)
-		local sprite = slot:GetSprite()
-		local anim = sprite:GetAnimation()
-		local frame = sprite:GetFrame()
-		return player:GetNumCoins() >= payAmount and (sprite:IsPlaying("Idle") or frame == 0 and (anim == "PayNothing" or anim == "PayPrize"))
+	if rgonMethod then
+		Mod.Trinket.ALTRUISM.ResourceRequirement[variant] = function (player, slot)
+			return player:GetNumCoins() >= payAmount and slot:GetState() == Mod.SlotState.IDLE
+		end
+	else
+		Mod.Trinket.ALTRUISM.ResourceRequirement[variant] = function (player, slot)
+			local sprite = slot:GetSprite()
+			local anim = sprite:GetAnimation()
+			local frame = sprite:GetFrame()
+			return player:GetNumCoins() >= payAmount and (sprite:IsPlaying("Idle") or frame == 0 and (anim == "PayNothing" or anim == "PayPrize"))
+		end
 	end
 	Mod.Trinket.ALTRUISM.ResourceRefund[variant] = function (player, slot)
 		player:AddCoins(payAmount)

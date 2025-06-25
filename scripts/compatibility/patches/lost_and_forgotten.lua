@@ -63,4 +63,4 @@ local function lostAndForgottenPatch()
 	Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, preventHealthLoss, AddHealthType.BLACK)
 end
 
-loader:RegisterPatch("LNF", lostAndForgottenPatch)
+loader:RegisterPatch("LNF", lostAndForgottenPatch, "Lost and Forgotten")
