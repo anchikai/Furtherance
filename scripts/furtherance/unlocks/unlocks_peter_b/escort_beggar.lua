@@ -247,7 +247,7 @@ end
 ---@param player EntityPlayer
 function ESCORT_BEGGAR:OnFamiliarCache(player)
 	local firstAlivePlayer = ESCORT_BEGGAR:GetFirstAlivePlayer()
-	if GetPtrHash(player) ~= GetPtrHash(firstAlivePlayer) then return end
+	if not firstAlivePlayer or GetPtrHash(player) ~= GetPtrHash(firstAlivePlayer) then return end
 	local numBeggars = Mod:FloorSave().EscortBeggars or 0
 	local familiars = player:CheckFamiliarEx(ESCORT_BEGGAR.FAMILIAR, numBeggars, RNG())
 
@@ -472,8 +472,9 @@ function ESCORT_BEGGAR:AbandonBeggars(_, newLevel)
 
 	if noBitches and not newLevel then return end
 
-	local player = ESCORT_BEGGAR:GetFirstAlivePlayer()
-	player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
+	Mod.Foreach.Player(function (player, index)
+		player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
+	end)
 	--To update MinimapAPI
 	Mod.Game:Render()
 end
@@ -500,8 +501,9 @@ function ESCORT_BEGGAR:ResetOnNewFloor()
 	local floor_save = Mod:FloorSave()
 	if #Isaac.FindByType(EntityType.ENTITY_FAMILIAR, ESCORT_BEGGAR.FAMILIAR) > 0 then
 		floor_save.EscortBeggars = nil
-		local player = ESCORT_BEGGAR:GetFirstAlivePlayer()
-		player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
+		Mod.Foreach.Player(function (player, index)
+			player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
+		end)
 	end
 end
 
@@ -549,8 +551,7 @@ function ESCORT_BEGGAR:RespawnBeggarOnEntry()
 		local player = ESCORT_BEGGAR:GetFirstAlivePlayer()
 		for _, abandoned_beggar in ipairs(room_save.AbandonedFamiliarEscorts) do
 			local spawnPos = Vector(abandoned_beggar.Position.X, abandoned_beggar.Position.Y)
-			local familiar = Isaac.Spawn(EntityType.ENTITY_FAMILIAR, ESCORT_BEGGAR.FAMILIAR, 0, spawnPos, Vector.Zero,
-				player)
+			local familiar = Isaac.Spawn(EntityType.ENTITY_FAMILIAR, ESCORT_BEGGAR.FAMILIAR, 0, spawnPos, Vector.Zero, player)
 			Mod:FloorSave(familiar).EscortRoom = (abandoned_beggar.EscortRoom)
 			familiar:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
 			familiar.Visible = true
@@ -726,7 +727,6 @@ function ESCORT_BEGGAR:EnterDestinationRoom()
 	local floor_save = Mod:FloorSave()
 	if floor_save.EscortBeggars == 0 then return end
 	local room = Mod.Room()
-	local player = ESCORT_BEGGAR:GetFirstAlivePlayer()
 
 	Mod.Foreach.Familiar(function(familiar, index)
 		local familiar_floor_save = Mod:FloorSave(familiar)
@@ -740,7 +740,9 @@ function ESCORT_BEGGAR:EnterDestinationRoom()
 		end
 	end, ESCORT_BEGGAR.FAMILIAR)
 
-	player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
+	Mod.Foreach.Player(function (player, index)
+		player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
+	end)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, ESCORT_BEGGAR.EnterDestinationRoom)
