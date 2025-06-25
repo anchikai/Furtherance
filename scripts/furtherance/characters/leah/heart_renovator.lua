@@ -44,7 +44,7 @@ function HEART_RENOVATOR:CannotPickRedHeartsOrWillOverflow(pickup, player)
 	local canOverflow = false
 	local isBlended = Mod.HeartGroups.Blended[pickup.SubType]
 	local redIsDoubled = player:HasCollectible(CollectibleType.COLLECTIBLE_MAGGYS_BOW)
-	local canJarRedHearts = player:HasCollectible(CollectibleType.COLLECTIBLE_THE_JAR) and  player:GetJarHearts() < 8
+	local canJarRedHearts = player:HasCollectible(CollectibleType.COLLECTIBLE_THE_JAR) and player:GetJarHearts() < 8
 	local canCollect = Mod:CanCollectHeart(player, pickup.SubType)
 	local hasSodomApple = player:HasTrinket(TrinketType.TRINKET_APPLE_OF_SODOM)
 
@@ -156,7 +156,12 @@ Mod:AddCallback(ModCallbacks.MC_USE_CARD, HEART_RENOVATOR.TwoOfHearts, Card.CARD
 HudHelper.RegisterHUDElement({
 	Name = "Heart Renovator Counter",
 	Priority = HudHelper.Priority.NORMAL,
-	XPadding = 0,
+	XPadding = {
+		-5,
+		0,
+		0,
+		0
+	},
 	YPadding = 6,
 	Condition = function(player)
 		return player:HasCollectible(HEART_RENOVATOR.ID)
