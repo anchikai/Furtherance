@@ -34,7 +34,7 @@ LEAH_B.STAT_TABLE = {
 	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.05 },
 	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = 0.025}, --Set for tears, not firedelay.
 	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.125 * Mod.RANGE_BASE_MULT },
-	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.05 },
+	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.01 },
 	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.01 },
 }
 
