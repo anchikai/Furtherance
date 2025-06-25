@@ -92,7 +92,7 @@
 	<active id="57" name="Alternate Reality" description="All" gfx="alternate_reality.png" quality="0" craftquality="0" tags="nochallenge offensive nogreed" />
 	<active id="61" name="Cosmic Omnibus" description="Soar above the heavens" gfx="cosmic_omnibus.png" maxcharges="6" quality="3" craftquality="3" tags="book offensive" />
 	<active id="65" name="D9" description="Reroll your journey" gfx="d9.png" maxcharges="4" quality="1" craftquality="1" tags="offensive" />
-	<active id="72" name="Polarity Shift" description="Reverberating force" gfx="polarity_shift.png" cache="tearflag tearcolor firedelay" maxcharges="100000" initcharge="50000" persistent="true" cooldown="300" chargetype="special" quality="1" craftquality="1" customtag="nometronome" />
+	<active id="72" name="Polarity Shift" description="Reverberating force" gfx="polarity_shift.png" cache="tearflag tearcolor firedelay" maxcharges="100000" initcharge="50000" persistent="true" cooldown="300" chargetype="special" quality="1" craftquality="1" customtag="nometronome" achievement="Polarity Shift" />
 	<active id="73" name=" Polarity Shift" description="Reverberating force" gfx="polarity_shift.png" cache="tearflag tearcolor" hidden="true" maxcharges="0" quality="0" craftquality="0" customtag="nometronome" />
 	<active id="74" name="Book of Books" description="Endless books!" gfx="book_of_books.png" maxcharges="6" quality="4" craftquality="4" tags="book offensive" /> <!-- Concept by retro100! -->
 	<active id="76" name="Servitude" description="7 years of labour" gfx="servitude.png" maxcharges="8" quality="2" craftquality="2" chargetype="special" tags="nocantrip" customtag="nometronome" />
