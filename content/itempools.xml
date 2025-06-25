@@ -378,6 +378,10 @@
 		<Item Id="324" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Lil Portal -->
 		<Item Id="681" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<!-- YO LISTEN! -->
+		<Item Id="492" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<!-- Dog Tooth -->
+		<Item Id="445" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 
 		<!-- Furtherance -->
 		<Item Name="Cosmic Omnibus" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
