@@ -13,7 +13,7 @@
 	<costume id="72" anm2path="costume_polarity_shift.anm2" type="active" />
 	<costume id="74" anm2path="costume_keratoconus.anm2" type="passive" hasSkinAlt="true" />
 	<costume id="87" anm2path="costume_cold_hearted.anm2" type="passive" skinColor="0" overwriteColor="true" />
-	<costume id="89" anm2path="costume_rue.anm2" type="passive" />
+	<costume id="90" anm2path="costume_rue.anm2" type="passive" hasSkinAlt="true" />
 	<costume id="93" anm2path="costume_molten_gold.anm2" type="passive" hasSkinAlt="true" />
 	<costume id="97" anm2path="costume_severed_ear.anm2" type="passive" hasSkinAlt="true" />
 	<costume id="98" anm2path="costume_golden_port.anm2" type="passive" />
