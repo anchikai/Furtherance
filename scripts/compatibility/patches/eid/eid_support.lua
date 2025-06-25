@@ -441,18 +441,6 @@ EID_Pills = {
 				"↓ {{BrokenHeart}} +1 Broken Heart"
 			}
 		},
-		ru = {
-			Name = "PlaceholderName",
-			Description = {
-				"PlaceholderDesc"
-			}
-		},
-		spa = {
-			Name = "PlaceholderName",
-			Description = {
-				"PlaceholderDesc"
-			}
-		}
 	},
 	[Mod.Pill.HEARTACHE.ID_DOWN] = {
 		_metadata = { 6, "3+" },
@@ -462,18 +450,6 @@ EID_Pills = {
 				"↑ {{BrokenHeart}} -1 Broken Heart"
 			}
 		},
-		ru = {
-			Name = "PlaceholderName",
-			Description = {
-				"PlaceholderDesc"
-			}
-		},
-		spa = {
-			Name = "PlaceholderName",
-			Description = {
-				"PlaceholderDesc"
-			}
-		}
 	},
 }
 
@@ -525,18 +501,6 @@ EID_Entities = {
 						"#!!! 1% chance to explode if Isaac has more than a half heart of health"
 					}
 				},
-				ru = {
-					Name = "PlaceholderName",
-					Description = {
-						"PlaceholderDesc"
-					}
-				},
-				spa = {
-					Name = "PlaceholderName",
-					Description = {
-						"PlaceholderDesc"
-					}
-				}
 			},
 		},
 		[PickupVariant.PICKUP_GRAB_BAG] = {
@@ -547,18 +511,6 @@ EID_Entities = {
 						"80% chance to spawn another Golden Sack somewhere in the room upon pickup"
 					}
 				},
-				ru = {
-					Name = "PlaceholderName",
-					Description = {
-						"PlaceholderDesc"
-					}
-				},
-				spa = {
-					Name = "PlaceholderName",
-					Description = {
-						"PlaceholderDesc"
-					}
-				}
 			},
 		},
 		[PickupVariant.PICKUP_HEART] = {
@@ -576,30 +528,19 @@ EID_Entities = {
 				end,
 
 				en_us = {
-					Name = "{{MoonHeart}} Moon Heart",
+					Name = "Moon Heart {{MoonHeart}}",
 					Description = {
 						"{{SoulHeart}} Functions like a Soul Heart",
-						"#{{SecretRoom}} Secret and Super Secret Rooms will contain a {{Collectible589}} Luna beam",
+						"#{{SecretRoom}} Secret and Super Secret Rooms will contain a {{Collectible589}} Luna light beam",
+						"#The first light gives Isaac +1 Fire rate, and all subsequent ones give +0.5 Fire rate",
 						function(descObj)
 							return EID_Entities[5][10][Mod.Pickup.MOON_HEART.ID]._modifier(descObj,
-								"#The number of Luna beams available is dependent on the amount of Moon Hearts available across all players (e.g. 1 Moon Heart = Can only find 1 beam on the floor)",
+								"#The number of Luna beams available is equivalent to the amount of Moon Hearts available across all players (e.g. 1 Moon Heart = Can only find 1 beam on the floor)",
 								"#{{Collectible589}} Grants an additional {{Tears}} +0.5 Fire rate for every Moon Heart Isaac has when interacting with a Luna beam"
 							)
 						end
 					}
 				},
-				ru = {
-					Name = "PlaceholderName",
-					Description = {
-						"PlaceholderDesc"
-					}
-				},
-				spa = {
-					Name = "PlaceholderName",
-					Description = {
-						"PlaceholderDesc"
-					}
-				}
 			},
 		},
 		[PickupVariant.PICKUP_COIN] = {
@@ -611,18 +552,6 @@ EID_Entities = {
 						"#↑ {{Damage}} +0.5 Damage"
 					}
 				},
-				ru = {
-					Name = "PlaceholderName",
-					Description = {
-						"PlaceholderDesc"
-					}
-				},
-				spa = {
-					Name = "PlaceholderName",
-					Description = {
-						"PlaceholderDesc"
-					}
-				}
 			},
 		},
 	},
@@ -650,6 +579,7 @@ EID_Entities = {
 					desc = string.sub(desc, 1, -2)
 					return desc
 				end,
+
 				en_us = {
 					Name = "Love Teller",
 					Description = {
@@ -737,7 +667,7 @@ for id, variantDescData in pairs(EID_Entities) do
 				if not containsFunction(minimized) and not entityDescData._AppendToEnd then
 					EID:addEntity(id, variant, subtype, name, table.concat(minimized, ""), language)
 				else
-					EID:addEntity(id, variant, subtype, "", name, language) -- description only contains name/language, the actual description is generated at runtime
+					EID:addEntity(id, variant, subtype, name, "", language) -- description only contains name/language, the actual description is generated at runtime
 					DD:SetCallback(DD:CreateCallback(minimized, entityDescData._AppendToEnd), id, variant, subtype,
 						language)
 				end

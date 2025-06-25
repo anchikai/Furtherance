@@ -133,6 +133,16 @@ end
 function EID:addTarotClothBuffsCondition(ID, text, numberToDouble, newNumber, language)
 end
 
+---Adds a description for a an arbitrary Entity
+---@param id EntityType
+---@param variant integer
+---@param subtype? integer @If `nil` or `-1`, it will affect all subtypes of that entity
+---@param entityName string
+---@param description string
+---@param language? string @Default: "en_us"
+function EID:addEntity(id, variant, subtype, entityName, description, language)
+end
+
 ---@type string
 MOD_PATH = nil
 
