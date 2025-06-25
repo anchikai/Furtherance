@@ -101,3 +101,13 @@ function API:SetDefaultKTTKSpareCountdown(time, entTypeOrName, var, sub)
 		end
 	end
 end
+
+---@param cards Card[]
+function API:AddToBoxOfBelongingsCardPool(cards)
+	Mod:AppendTable(Mod.Item.BOX_OF_BELONGINGS.CARD_DROPS, cards)
+end
+
+---@param trinkets TrinketType[]
+function API:AddToBoxOfBelongingsTrinketPool(trinkets)
+	Mod:AppendTable(Mod.Item.BOX_OF_BELONGINGS.TRINKET_DROPS, trinkets)
+end
