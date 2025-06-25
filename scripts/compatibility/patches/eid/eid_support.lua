@@ -392,8 +392,6 @@ for id, trinketDescData in pairs(EID_Trinkets) do
 	end
 end
 
---Tarot Cloth uses ColorShinyPurple
-
 local EID_Cards = Mod.Include("scripts.compatibility.patches.eid.eid_cards_descriptions")
 
 for id, cardDescData in pairs(EID_Cards) do
@@ -431,27 +429,7 @@ for id, cardDescData in pairs(EID_Cards) do
 	end
 end
 
-local EID_Pills
-EID_Pills = {
-	[Mod.Pill.HEARTACHE.ID_UP] = {
-		_metadata = { 4, "3-" },
-		en_us = {
-			Name = "Heartache Up",
-			Description = {
-				"↓ {{BrokenHeart}} +1 Broken Heart"
-			}
-		},
-	},
-	[Mod.Pill.HEARTACHE.ID_DOWN] = {
-		_metadata = { 6, "3+" },
-		en_us = {
-			Name = "Heartache Down",
-			Description = {
-				"↑ {{BrokenHeart}} -1 Broken Heart"
-			}
-		},
-	},
-}
+local EID_Pills = Mod.Include("scripts.compatibility.patches.eid.eid_pills_descriptions")
 
 for id, pillDescData in pairs(EID_Pills) do
 	for language, descData in pairs(pillDescData) do
@@ -488,165 +466,7 @@ for id, pillDescData in pairs(EID_Pills) do
 	end
 end
 
-local EID_Entities
-EID_Entities = {
-	[EntityType.ENTITY_PICKUP] = {
-		[PickupVariant.PICKUP_BOMB] = {
-			[Mod.Pickup.CHARGED_BOMB.ID] = {
-				en_us = {
-					Name = "Charged Bomb",
-					Description = {
-						"{{Bomb}} +1 Bomb",
-						"#{{Battery}} Fully recharges one of Isaac's active items",
-						"#!!! 1% chance to explode if Isaac has more than a half heart of health"
-					}
-				},
-			},
-		},
-		[PickupVariant.PICKUP_GRAB_BAG] = {
-			[Mod.Pickup.GOLDEN_SACK.ID] = {
-				en_us = {
-					Name = "Golden Sack",
-					Description = {
-						"80% chance to spawn another Golden Sack somewhere in the room upon pickup"
-					}
-				},
-			},
-		},
-		[PickupVariant.PICKUP_HEART] = {
-			[Mod.Pickup.MOON_HEART.ID] = {
-				---@param descObj EID_DescObj
-				---@param noLuna string
-				---@param hasLuna string
-				_modifier = function(descObj, noLuna, hasLuna)
-					local player = FR_EID:ClosestPlayerTo(descObj.Entity)
-					if player:HasCollectible(CollectibleType.COLLECTIBLE_LUNA) then
-						return hasLuna
-					else
-						return noLuna
-					end
-				end,
-
-				en_us = {
-					Name = "Moon Heart {{MoonHeart}}",
-					Description = {
-						"{{SoulHeart}} Functions like a Soul Heart",
-						"#{{SecretRoom}} Secret and Super Secret Rooms will contain a {{Collectible589}} Luna light beam",
-						"#The first light gives Isaac +1 Fire rate, and all subsequent ones give +0.5 Fire rate",
-						function(descObj)
-							return EID_Entities[5][10][Mod.Pickup.MOON_HEART.ID]._modifier(descObj,
-								"#The number of Luna beams available is equivalent to the amount of Moon Hearts available across all players (e.g. 1 Moon Heart = Can only find 1 beam on the floor)",
-								"#{{Collectible589}} Grants an additional {{Tears}} +0.5 Fire rate for every Moon Heart Isaac has when interacting with a Luna beam"
-							)
-						end
-					}
-				},
-			},
-		},
-		[PickupVariant.PICKUP_COIN] = {
-			[Mod.Pickup.UNLUCKY_PENNY.ID] = {
-				en_us = {
-					Name = "Unlucky Penny",
-					Description = {
-						"↓ {{Luck}} -1 Luck",
-						"#↑ {{Damage}} +0.5 Damage"
-					}
-				},
-			},
-		},
-	},
-	[EntityType.ENTITY_SLOT] = {
-		[Mod.Slot.LOVE_TELLER.ID] = {
-			[0] = {
-				_modifier = function(charList)
-					local renderedPlayerTypes = {}
-					local desc = "#"
-					for _, player in ipairs(EID.coopAllPlayers) do
-						local playerType = player:GetPlayerType()
-						local iconPlayerType = playerType
-						local parentType = Mod.Slot.LOVE_TELLER.ParentPlayerTypes[playerType]
-						if parentType then
-							playerType = parentType
-						end
-						if not renderedPlayerTypes[playerType] then
-							local icon = EID:GetPlayerIcon(iconPlayerType)
-							local lover = Mod.Slot.LOVE_TELLER:GetMatchMaker(playerType, 2)
-							local loverIcon = EID:GetPlayerIcon(lover)
-							desc = desc .. icon .. " {{Heart}}" .. loverIcon .. " - " .. charList[lover] .. "#"
-							renderedPlayerTypes[playerType] = true
-						end
-					end
-					desc = string.sub(desc, 1, -2)
-					return desc
-				end,
-
-				en_us = {
-					Name = "Love Teller",
-					Description = {
-						"{{Coin}} Costs 5 coins to use",
-						"#Randomly pairs Isaac with another character. Grants a reward depending on the matchup",
-						"#{{EmptyHeart}} Spawns a fly",
-						"#{{HalfHeart}} Spawns two heart pickups",
-						"#{{Heart}} Spawns a unique shooter familiar related to the selected character",
-						function(descObj)
-							return EID_Entities[EntityType.ENTITY_SLOT][Mod.Slot.LOVE_TELLER.ID][0]._modifier({
-								[PlayerType.PLAYER_ISAAC] =
-								"Occasionally temporarily grants {{Collectible206}} Guillotine",
-								[PlayerType.PLAYER_MAGDALENE] = "Occasionally activates {{Collectible45}} Yum Heart",
-								[PlayerType.PLAYER_CAIN] = "Occasionally refunds keys used on chests",
-								[PlayerType.PLAYER_JUDAS] = "Occasionally activates {{Collectible34}} Book of Belial",
-								[PlayerType.PLAYER_BLUEBABY] =
-								"Occasionally temporarily grants {{Collectible248}} Hive Mind",
-								[PlayerType.PLAYER_EVE] =
-								"Occasionally temporarily grants the {{Collectible122}} Whore of Babylon effect",
-								[PlayerType.PLAYER_SAMSON] =
-								"Occasionally temporarily grants {{Collectible157}} Blood Lust with +3 hits",
-								[PlayerType.PLAYER_AZAZEL] =
-								"Occasionally temporarily grants the {{Trinket162}} Azazel's Stump effect",
-								[PlayerType.PLAYER_LAZARUS] =
-								"Occasionally temporarily grants the {{Collectible214}} Anemic effect",
-								[PlayerType.PLAYER_EDEN] =
-								"Becomes a random Love Teller baby. After activating its effect, will become another random Love Teller baby",
-								[PlayerType.PLAYER_THELOST] =
-								"Occasionally temporarily grants a {{Collectible313}} mantle shield. Cannot grant another until the shield breaks",
-								[PlayerType.PLAYER_LILITH] = "Occasionally activates {{Collectible357}} Box of Friends",
-								[PlayerType.PLAYER_KEEPER] =
-								"Occasionally temporarily grants {{Collectible450}} Eye of Greed",
-								[PlayerType.PLAYER_APOLLYON] = "Occasionally spawns a random locust",
-								[PlayerType.PLAYER_THEFORGOTTEN] =
-								"Occasionally swaps between bone and soul form, each shooting different tears",
-								[PlayerType.PLAYER_BETHANY] =
-								"Occasionally temporarily grants {{Collectible584}} Book of Virtues",
-								[PlayerType.PLAYER_JACOB] = "Occasionally activates {{Collectible687}} Friend Finder",
-								[PlayerType.PLAYER_ESAU] =
-								"Occasionally temporarily grants a small {{Collectible621}} Red Stew effect",
-								[Mod.PlayerType.LEAH] = "Occasionally activates {{Collectible" ..
-								Item.HEART_RENOVATOR.ID .. "}} Heart Renovator",
-								[Mod.PlayerType.PETER] = "Occasionally activates {{Collectible" ..
-								Item.KEYS_TO_THE_KINGDOM.ID .. "}} Keys to the Kingdom on a single non-boss target",
-								[Mod.PlayerType.MIRIAM] = "Occasionally activates {{Collectible" ..
-								Item.TAMBOURINE.ID .. "}} Tambourine",
-							})
-						end
-					}
-				}
-			}
-		},
-		[Mod.Slot.ESCORT_BEGGAR.SLOT] = {
-			[0] = {
-				en_us = {
-					Name = "Escort Beggar",
-					Description = {
-						"Can be picked up and carried to the requested special room on the floor for a reward from their {{ItemPoolEscortBeggar}} Item Pool",
-						"#{{Throwable}} Throw against enemies to knock them back for 5 damage",
-						"#!!! Can take damage and will die after 3 hits",
-						"#!!! Will be abducted if left in a previous room for too long"
-					}
-				}
-			}
-		},
-	},
-}
+local EID_Entities = Mod.Include("scripts.compatibility.patches.eid.eid_entities_descriptions")
 
 for id, variantDescData in pairs(EID_Entities) do
 	for variant, subtypeDescData in pairs(variantDescData) do
