@@ -80,6 +80,9 @@ local function epiphanyPatch()
 	Mod.API:RegisterAstragaliChest(Epiphany.Pickup.DUSTY_CHEST.ID, function() return Epiphany:GetAchievement("DUSTY_CHEST") > 0 end)
 
 	local cainSynergies = {
+		angel_bagged = {
+			Item.KEYS_TO_THE_KINGDOM.ID
+		},
 		bone_bagged = {
 			Item.ASTRAGALI.ID
 		},
@@ -89,7 +92,8 @@ local function epiphanyPatch()
 			Item.BOOK_OF_GUIDANCE.ID,
 			Item.BOOK_OF_LEVITICUS.ID,
 			Item.BOOK_OF_SWIFTNESS.ID,
-			Item.SECRET_DIARY.ID
+			Item.SECRET_DIARY.ID,
+			Item.COSMIC_OMNIBUS.ID
 		},
 		cursed_bagged = {
 			Item.MUDDLED_CROSS.ID
@@ -183,6 +187,35 @@ local function epiphanyPatch()
 	for generic_group, items_list in pairs(cainSynergies) do
 		api:AddCollectibleToCainBagSynergy(generic_group, items_list)
 	end
+
+	--[[ Mod.Capsule.D9 = {
+		ID = Isaac.GetCardIdByName("Capsule D9"),
+		WEIGHT = 0.3,
+		MOD = "Furtherance"
+	}
+
+	Mod.Capsule.D16 = {
+		ID = Isaac.GetCardIdByName("Capsule D16"),
+		WEIGHT = 0.3,
+		MOD = "Furtherance"
+	}
+
+	--#region Dice Capsules
+	for name, capsuleData in pairs(Mod.Capsule) do
+		local weight = Dice.WEIGHT or 1
+		if capsuleData.MOD == "Furtherance" then
+			api:AddCardsToCardGroup("DiceCapsule", { V = capsuleData.ID, Weight = weight })
+
+			Mod:AddCallback(ModCallbacks.MC_USE_CARD, function(_, _, player, useFlags)
+				player:UseActiveItem(Mod.Item[name].ID, 1, -1)
+			end)
+		end
+	end
+
+	Mod:AddExtraCallback(Mod.ExtraCallbacks.PRE_UNLOCK_CACHE, function(unlocks)
+		unlocks.Cards[Mod.Capsule.D9] = true
+		unlocks.Cards[Mod.Capsule.D16] = Mod.PersistGameData:Unlocked(Mod.Item.D16.ACHIEVEMENT)
+	end) ]]
 end
 
 loader:RegisterPatch("Epiphany", epiphanyPatch)
