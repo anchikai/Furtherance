@@ -91,14 +91,19 @@ end
 Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_RENDER, PILLAR_OF_CLOUDS.FlashNearEnd)
 
 ---@param player EntityPlayer
-function PILLAR_OF_CLOUDS:OnEffectRemove(player)
-	player.PositionOffset = Vector.Zero
-	player:SetCanShoot(true)
-	local data = Mod:GetData(player)
-	if data.CloudTrail and data.CloudTrail.Ref then
-		data.CloudTrail.Ref:Remove()
+---@param itemConfig ItemConfigItem
+function PILLAR_OF_CLOUDS:OnEffectRemove(player, itemConfig)
+	if itemConfig:IsCollectible() and itemConfig.ID == PILLAR_OF_CLOUDS.ID then
+		player.PositionOffset = Vector.Zero
+		if player:GetEntityConfigPlayer():CanShoot() then
+			player:SetCanShoot(true)
+		end
+		local data = Mod:GetData(player)
+		if data.CloudTrail and data.CloudTrail.Ref then
+			data.CloudTrail.Ref:Remove()
+		end
+		data.CloudTrail = nil
 	end
-	data.CloudTrail = nil
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED, PILLAR_OF_CLOUDS.OnEffectRemove)
