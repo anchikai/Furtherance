@@ -45,7 +45,7 @@ end
 
 function SPECIAL_ROOM_FLIP:IsFlippedRoom()
 	local room_save = Mod:RoomSave()
-	return room_save.MuddledCrossFlippedRoom
+	return room_save.MuddledCrossFlippedRoom and not room_save.MuddledCrossCannotFlip
 end
 
 local roomToLoad
@@ -261,7 +261,7 @@ function SPECIAL_ROOM_FLIP:InvalidateFlip(pickup, collider)
 		and SPECIAL_ROOM_FLIP:CanFlipRoom()
 	then
 		local room_save = Mod:RoomSave()
-		room_save.MuddledCrossFlippedRoom = true
+		room_save.MuddledCrossCannotFlip = true
 
 		Mod.Foreach.Effect(function(effect, index)
 			effect.Timeout = 4
