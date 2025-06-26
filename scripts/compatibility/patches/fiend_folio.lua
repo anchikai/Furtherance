@@ -125,10 +125,31 @@ local function fiendFolioPatch()
 	Mod.API:RegisterAltruismBeggar(ff.FF.ZodiacBeggar.Var,
 		function (player, slot)
 			local sprite = slot:GetSprite()
-			return (sprite:IsOverlayPlaying("PayNothing") or sprite:IsOverlayPlaying("PayPrize")) and sprite:GetOverlayFrame() == 1
+			return player:GetNumCoins() >= 1 and (sprite:IsOverlayPlaying("PayNothing") or sprite:IsOverlayPlaying("PayPrize")) and sprite:GetOverlayFrame() == 1
 		end,
 		function (player, slot)
 			player:AddCoins(1)
+		end
+	)
+
+	Mod.API:RegisterAltruismBeggar(ff.FF.CosplayBeggar.Var,
+		function (player, slot)
+			local sprite = slot:GetSprite()
+			return player:GetNumCoins() >= 5 and (sprite:IsPlaying("PayNothing") or sprite:IsPlaying("PayPrize")) and sprite:GetFrame() == 1
+		end,
+		function (player, slot)
+			player:AddCoins(5)
+		end
+	)
+
+	Mod.API:RegisterAltruismBeggar(ff.FF.CellGame.Var,
+		function (player, slot)
+			local sprite = slot:GetSprite()
+			print(sprite:GetAnimation(), sprite:GetFrame())
+			return player:GetNumKeys() >= 1 and sprite:IsPlaying("PayShuffle") and sprite:GetFrame() == 1
+		end,
+		function (player, slot)
+			player:AddKeys(1)
 		end
 	)
 
