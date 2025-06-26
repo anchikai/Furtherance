@@ -32,7 +32,7 @@ MUDDLED_CROSS.FLIP_X_SPEED = 0.15
 
 function MUDDLED_CROSS:CanUseUpgradedRoomFlip()
 	local useBetterFlip = PlayerManager.AnyPlayerTypeHasBirthright(Mod.PlayerType.PETER_B)
-	if Epiphany and Epiphany.API:AnyPlayerHasGoldenCollectible() then
+	if Epiphany and Epiphany.API:IsGoldenItem() then
 		useBetterFlip = true
 	end
 	return useBetterFlip
