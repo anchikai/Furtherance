@@ -10,12 +10,8 @@ SERVITUDE.ID = Isaac.GetItemIdByName("Servitude")
 
 SERVITUDE.MAX_CHARGES = Mod.ItemConfig:GetCollectible(SERVITUDE.ID).MaxCharges
 
+---@type {[integer]: Sprite}
 local glowingCollectibles = {}
-
-local servitudeSpr = Sprite("gfx/005.100_collectible.anm2", true)
-servitudeSpr:ReplaceSpritesheet(1, "gfx/items/collectibles/servitude.png", true)
-servitudeSpr:Play("PlayerPickup")
-servitudeSpr.Scale = Vector(0.5, 0.5)
 
 --#endregion
 
@@ -29,7 +25,7 @@ function SERVITUDE:GetNearestCollectible(player)
 	local nearestCollectible = nil
 	local nearestDistance
 
-	Mod.Foreach.Pickup(function (pickup, index)
+	Mod.Foreach.Pickup(function(pickup, index)
 		local distance = player.Position:DistanceSquared(pickup.Position)
 		if pickup.SubType ~= CollectibleType.COLLECTIBLE_NULL then
 			if not nearestDistance or distance < nearestDistance then
@@ -51,31 +47,49 @@ local function tryGetTarget(player)
 	return targetItem and targetItem.Ref
 end
 
+local function tryRemoveTarget(player)
+	local targetitem = tryGetTarget(player)
+	if targetitem then
+		local data = Mod:GetData(player)
+		glowingCollectibles[GetPtrHash(targetitem)]:Stop()
+		glowingCollectibles[GetPtrHash(targetitem)] = nil
+		data.ServitudeCollectibleTarget = nil
+	end
+end
+
 ---@param player EntityPlayer
 function SERVITUDE:SearchForCollectibleTarget(player)
 	if not player:HasCollectible(SERVITUDE.ID) then return end
 	local slots = Mod:GetActiveItemCharges(player, SERVITUDE.ID)
 	local fullCharge = false
 	for _, slotData in ipairs(slots) do
-		if slotData.Charge >= SERVITUDE.MAX_CHARGES then
+		if slotData.Charge >= SERVITUDE.MAX_CHARGES and player:GetActiveItemDesc(slotData.Slot).VarData == 0 then
 			fullCharge = true
 			break
 		end
 	end
-	if not fullCharge then return end
-	local item = SERVITUDE:GetNearestCollectible(player)
-	if not item then return end
 	local data = Mod:GetData(player)
+	if not fullCharge then
+		tryRemoveTarget(player)
+		return
+	end
+	local item = SERVITUDE:GetNearestCollectible(player)
+	if not item then
+		tryRemoveTarget(player)
+		return
+	end
 	local targetItem = tryGetTarget(player)
 	if not targetItem then
 		data.ServitudeCollectibleTarget = EntityPtr(item)
-		glowingCollectibles[GetPtrHash(item)] = true
+		local spr = Sprite("gfx/effect_servitude_chain.anm2", true)
+		spr:Play("Idle")
+		glowingCollectibles[GetPtrHash(item)] = spr
 		targetItem = item
 	end
 	if GetPtrHash(targetItem) ~= GetPtrHash(item) then
-		glowingCollectibles[GetPtrHash(targetItem)] = nil
 		data.ServitudeCollectibleTarget:SetReference(item)
-		glowingCollectibles[GetPtrHash(item)] = true
+		glowingCollectibles[GetPtrHash(item)] = glowingCollectibles[GetPtrHash(targetItem)]
+		glowingCollectibles[GetPtrHash(targetItem)] = nil
 	end
 end
 
@@ -97,8 +111,10 @@ function SERVITUDE:OnUse(_, _, player, flags, slot)
 	if item and player:GetActiveItemDesc(slot).VarData == 0 then
 		player:SetActiveVarData(item.SubType, slot)
 		player:SetActiveCharge(player:GetActiveCharge(slot) - 1, slot)
+		glowingCollectibles[GetPtrHash(item)]:Play("Chained")
 		foundItem = true
 		Mod.SFXMan:Play(SoundEffect.SOUND_ANIMA_TRAP)
+		Mod:GetData(player).ServitudeCollectibleTarget = nil
 	end
 	return { Discharge = false, ShowAnim = foundItem, Remove = false }
 end
@@ -149,7 +165,7 @@ function SERVITUDE:ResetServitude(ent, amount, flag)
 	if player
 		and player:HasCollectible(SERVITUDE.ID)
 		and (not Mod:HasBitFlags(flag, DamageFlag.DAMAGE_FAKE)
-		or not Mod:HasBitFlags(flag, DamageFlag.DAMAGE_NO_PENALTIES))
+			or not Mod:HasBitFlags(flag, DamageFlag.DAMAGE_NO_PENALTIES))
 	then
 		local punished = false
 		local slots = Mod:GetActiveItemSlots(player, SERVITUDE.ID)
@@ -192,15 +208,37 @@ Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, SERVITUDE.ResetOnNewRoom)
 
 ---@param pickup EntityPickup
 ---@param offset Vector
-function SERVITUDE:ServitudeTarget(pickup, offset)
-	local offset2 = Mod.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT and 1 or -1
-	local renderPos = Mod:GetEntityRenderPosition(pickup, offset) + Vector(0, 40 * offset2)
-	if glowingCollectibles[GetPtrHash(pickup)] then
-		servitudeSpr:Render(renderPos)
+function SERVITUDE:ServitudeTargetPreRender(pickup, offset)
+	local renderPos = Mod:GetEntityRenderPosition(pickup, offset)
+	local spr = glowingCollectibles[GetPtrHash(pickup)]
+	if spr then
+		spr:RenderLayer(1, renderPos)
+		spr:RenderLayer(3, renderPos)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_RENDER, SERVITUDE.ServitudeTarget)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PICKUP_RENDER, CallbackPriority.LATE, SERVITUDE.ServitudeTargetPreRender,
+	PickupVariant.PICKUP_COLLECTIBLE)
+
+---@param pickup EntityPickup
+---@param offset Vector
+function SERVITUDE:ServitudeTargetPostRender(pickup, offset)
+	local renderPos = Mod:GetEntityRenderPosition(pickup, offset)
+	local spr = glowingCollectibles[GetPtrHash(pickup)]
+	if spr then
+		spr:RenderLayer(0, renderPos)
+		spr:RenderLayer(2, renderPos)
+		if Mod:ShouldUpdateSprite() then
+			spr:Update()
+		end
+		if spr:IsFinished("Chained") then
+			glowingCollectibles[GetPtrHash(pickup)] = nil
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_RENDER, SERVITUDE.ServitudeTargetPostRender, PickupVariant
+.PICKUP_COLLECTIBLE)
 
 --#endregion
 
@@ -218,8 +256,10 @@ HudHelper.RegisterHUDElement({
 	OnRender = function(player, playerHUDIndex, hudLayout, position, alpha, scale, slot)
 		---@cast slot ActiveSlot
 		local itemID = player:GetActiveItemDesc(slot).VarData
-		HudHelper.RenderHUDItem(Mod.ItemConfig:GetCollectible(itemID).GfxFileName, position, scale * 0.5, alpha * 0.5, false, false)
-		HudHelper.RenderHUDElements(HudHelper.HUDType.ACTIVE_ID, false, player, playerHUDIndex, hudLayout, position, alpha, scale, slot)
+		HudHelper.RenderHUDItem(Mod.ItemConfig:GetCollectible(itemID).GfxFileName, position, scale * 0.5, alpha * 0.5,
+			false, false)
+		HudHelper.RenderHUDElements(HudHelper.HUDType.ACTIVE_ID, false, player, playerHUDIndex, hudLayout, position,
+			alpha, scale, slot)
 	end
 }, HudHelper.HUDType.ACTIVE)
 
