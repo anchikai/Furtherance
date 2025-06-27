@@ -19,7 +19,16 @@ function BLOOD_CYST:GrantHitsphere(familiar)
 	hitbox.CollisionDamage = 0
 	hitbox.Parent = familiar
 	hitbox:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
-	hitbox:AddEntityFlags(EntityFlag.FLAG_NO_STATUS_EFFECTS|EntityFlag.FLAG_NO_SPRITE_UPDATE|EntityFlag.FLAG_NO_QUERY|EntityFlag.FLAG_NO_KNOCKBACK|EntityFlag.FLAG_NO_PHYSICS_KNOCKBACK|EntityFlag.FLAG_NO_PLAYER_CONTROL)
+	hitbox:AddEntityFlags(
+		EntityFlag.FLAG_NO_STATUS_EFFECTS
+		|EntityFlag.FLAG_NO_SPRITE_UPDATE
+		|EntityFlag.FLAG_NO_QUERY
+		|EntityFlag.FLAG_NO_KNOCKBACK
+		|EntityFlag.FLAG_NO_PHYSICS_KNOCKBACK
+		|EntityFlag.FLAG_NO_PLAYER_CONTROL
+		|EntityFlag.FLAG_NO_TARGET
+		|EntityFlag.FLAG_NO_REWARD
+	)
 end
 
 ---@param familiar EntityFamiliar
@@ -94,7 +103,8 @@ function BLOOD_CYST:FamiliarCache(player)
 	local numFamiliars = player:GetCollectibleNum(BLOOD_CYST.ID) + effects:GetCollectibleEffectNum(BLOOD_CYST.ID)
 	local rng = player:GetCollectibleRNG(BLOOD_CYST.ID)
 	rng:Next()
-	local familiars = player:CheckFamiliarEx(BLOOD_CYST.FAMILIAR, numFamiliars, rng, Mod.ItemConfig:GetCollectible(BLOOD_CYST.ID))
+	local familiars = player:CheckFamiliarEx(BLOOD_CYST.FAMILIAR, numFamiliars, rng,
+		Mod.ItemConfig:GetCollectible(BLOOD_CYST.ID))
 	for _, familiar in ipairs(familiars) do
 		familiar:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
 		BLOOD_CYST:UpdateCystState(familiar)
