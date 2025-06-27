@@ -5,12 +5,18 @@ local loader = Mod.PatchesLoader
 local function fiendFolioPatch()
 	local ff = FiendFolio
 
+	--#region Hearts
+
 	Mod.HeartGroups.Black[ff.PICKUP.VARIANT.HALF_BLACK_HEART] = true
 	Mod.HeartGroups.Red[ff.PICKUP.VARIANT.BLENDED_BLACK_HEART] = true
 	Mod.HeartGroups.Black[ff.PICKUP.VARIANT.BLENDED_BLACK_HEART] = true
 	Mod.HeartGroups.Blended[ff.PICKUP.VARIANT.BLENDED_BLACK_HEART] = true
 	Mod.HeartAmount[ff.PICKUP.VARIANT.HALF_BLACK_HEART] = 1
 	Mod.HeartAmount[ff.PICKUP.VARIANT.BLENDED_BLACK_HEART] = 2
+
+	--#endregion
+
+	--#region Adding stuff to lists
 
 	ff.AddItemsToPennyTrinketPool({
 		Mod.Trinket.ABYSSAL_PENNY.ID,
@@ -62,6 +68,16 @@ local function fiendFolioPatch()
 		Item.COFFEE_BREAK.ID
 	})
 
+	Mod:AddToDictionary(ff.PocketObjectMimicCharges, {
+		[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]] = 4,
+		[Mod.Item.OLD_CAMERA.PHOTO_IDs[2]] = 8,
+		[Mod.Item.OLD_CAMERA.PHOTO_IDs[3]] = 12,
+	})
+
+	--#endregion
+
+	-- Keys to the Kingdom
+
 	Mod:AddToDictionary(Mod.Item.KEYS_TO_THE_KINGDOM.ENTITY_BLACKLIST, Mod:Set({
 		Mod:GetTypeVarSubFromName("Whispers Controller", true)
 	}))
@@ -91,11 +107,9 @@ local function fiendFolioPatch()
 
 	Mod:AddCallback(Mod.ModCallbacks.POST_RAPTURE_BOSS_DEATH, killWhisperController, ff.FF.Whispers.ID)
 
-	Mod:AddToDictionary(ff.PocketObjectMimicCharges, {
-		[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]] = 4,
-		[Mod.Item.OLD_CAMERA.PHOTO_IDs[2]] = 8,
-		[Mod.Item.OLD_CAMERA.PHOTO_IDs[3]] = 12,
-	})
+	--#endregion
+
+	--#region Astragali
 
 	local DIRE_CHEST = ff.PICKUP.VARIANT.DIRE_CHEST
 	local GLASS_CHEST = ff.PICKUP.VARIANT.GLASS_CHEST
@@ -121,6 +135,10 @@ local function fiendFolioPatch()
 
 	Mod:AddCallback(Mod.ModCallbacks.ASTRAGALI_PRE_REROLL_CHEST, correctChestReroll, DIRE_CHEST)
 	Mod:AddCallback(Mod.ModCallbacks.ASTRAGALI_PRE_REROLL_CHEST, correctChestReroll, GLASS_CHEST)
+
+	--#endregion
+
+	--#region Altruism
 
 	Mod.API:RegisterAltruismBeggar(ff.FF.ZodiacBeggar.Var,
 		function (player, slot)
@@ -235,6 +253,8 @@ local function fiendFolioPatch()
 	Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, preventHealthLoss, AddHealthType.SOUL)
 	Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, preventHealthLoss, AddHealthType.MAX)
 	Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, preventHealthLoss, AddHealthType.BONE)
+
+	--#endregion
 
 	--#region Heart Renovator double-tap drop prevention
 

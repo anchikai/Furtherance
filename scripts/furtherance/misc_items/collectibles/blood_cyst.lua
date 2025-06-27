@@ -19,6 +19,7 @@ function BLOOD_CYST:GrantHitsphere(familiar)
 	hitbox.CollisionDamage = 0
 	hitbox.Parent = familiar
 	hitbox:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
+	hitbox:AddEntityFlags(EntityFlag.FLAG_NO_STATUS_EFFECTS|EntityFlag.FLAG_NO_SPRITE_UPDATE|EntityFlag.FLAG_NO_QUERY|EntityFlag.FLAG_NO_KNOCKBACK|EntityFlag.FLAG_NO_PHYSICS_KNOCKBACK|EntityFlag.FLAG_NO_PLAYER_CONTROL)
 end
 
 ---@param familiar EntityFamiliar

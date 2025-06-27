@@ -278,7 +278,6 @@
 		<Item Name="Plug N' Play" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="ZZZZoptionsZZZZ" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Muddled Cross" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Alternate Reality" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Flux" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Beginner's Luck" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Polaris" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -308,7 +307,7 @@
 		<Item Name="Heart Renovator" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Crab Legs" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Shattered Heart" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Apocalypse" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Apocalypse" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
 		<Item Name="Muddled Cross" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Book of Books" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Ceres?" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>

@@ -100,7 +100,7 @@
 	<active id="80" name="D16" description="Rerolls hearts" gfx="d16.png" achievement="D16" maxcharges="4" quality="1" craftquality="1" tags="offensive" />
 	<active id="92" name="Prayer Journal" description="Scripture" gfx="prayer_journal.png" achievement="Prayer Journal" maxcharges="4" quality="2" craftquality="2" tags="book nolostbr" />
 	<active id="93" name="Book of Leviticus" description="Set in stone" gfx="book_of_leviticus.png" achievement="Book of Leviticus" maxcharges="3" quality="2" craftquality="2" tags="book offensive" />
-	<active id="96" name="Astragali" description="Reroll your biddings" gfx="astragali.png" achievement="Astragali" maxcharges="4" quality="1" craftquality="1" />
+	<active id="96" name="Astragali" description="Reroll your biddings" gfx="astragali.png" achievement="Astragali" maxcharges="4" quality="1" craftquality="1" tags="offensive" />
 
 	<!-- Trinkets -->
 	<trinket id="0" name="Holy Heart" description="Protective hearts" gfx="holy_heart.png" achievement="Holy Heart"/> <!-- Concept by HoneyVee! -->
