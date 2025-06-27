@@ -256,10 +256,10 @@ HudHelper.RegisterHUDElement({
 	OnRender = function(player, playerHUDIndex, hudLayout, position, alpha, scale, slot)
 		---@cast slot ActiveSlot
 		local itemID = player:GetActiveItemDesc(slot).VarData
-		HudHelper.RenderHUDItem(Mod.ItemConfig:GetCollectible(itemID).GfxFileName, position, scale * 0.5, alpha * 0.5,
+		local itemScale = scale * 0.75
+		HudHelper.RenderHUDItem(Mod.ItemConfig:GetCollectible(itemID).GfxFileName, position + Vector(7 * itemScale, 8 * itemScale), scale * 0.75, alpha,
 			false, false)
-		HudHelper.RenderHUDElements(HudHelper.HUDType.ACTIVE_ID, false, player, playerHUDIndex, hudLayout, position,
-			alpha, scale, slot)
+		HudHelper.RenderHUDItem("gfx/ui/hud_servitude.png", position, scale, alpha, false, false)
 	end
 }, HudHelper.HUDType.ACTIVE)
 
