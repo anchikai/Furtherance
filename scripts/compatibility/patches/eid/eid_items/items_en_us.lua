@@ -275,12 +275,11 @@ return function(modifiers)
 		[Item.KEYS_TO_THE_KINGDOM.ID] = { --123 filigree feather
 			Name = "Keys to the Kingdom",
 			Description = {
-				"Has different interactions depending on the room",
-				"#{{Timer}} Rooms with enemies will \"spare\" them, removing them from the room and granting a random stat up per enemy for the duration of the floor",
-				"#{{BossRoom}}: Rooms with bosses will begin a 30 second countdown. Afterwards, spares the boss and grants 3 stronger, permanent random stat ups compared to sparing enemies",
-				"#{{Blank}} Getting hit or hurting the boss will add 10 seconds to the countdown",
-				"#{{AngelRoom}}: Instantly spares angels, dropping a {{Collectible238}}{{Collectible239}} key piece, or if Isaac has them already, a random {{ItemPoolAngel}}angel room item",
-				"#{{DevilRoom}}: Removes all Devil Deals from the room. Grants a random permanent for each deal removed"
+				"#{{Timer}} Normal enemies will  be \"spared\", disappearing and granting a random stat up per enemy for the duration of the floor",
+				"#{{BossRoom}} Bosses will be spared after 30 seconds, granting 3 random stat ups",
+				"#{{Blank}} Getting hit or hurting the boss will add 1/3rd of the countdown back",
+				"#{{AngelRoom}} Instantly spares angels, dropping a {{Collectible238}}{{Collectible239}} key piece, or if Isaac has them already, a random {{ItemPoolAngel}}angel room item",
+				"#{{DevilRoom}} Removes all Devil Deals from the room. Grants a random permanent for each deal removed"
 			}
 		},
 		[Item.KEY_ALT.ID] = {
@@ -292,7 +291,7 @@ return function(modifiers)
 		[Item.KEY_BACKSPACE.ID] = {
 			Name = "Backspace Key",
 			Description = {
-				"Removes 2 of Isaac's earliest passive items and brings him to the previous floor.",
+				"!!! Removes 2 of Isaac's earliest passive items and brings him to the previous floor.",
 				"#The floor is newly generated but remains the same floor variant as when it was last visited",
 				"#!!! Can only be used up to 3 times before disappearing"
 			}
@@ -562,7 +561,9 @@ return function(modifiers)
 				"#↓ {{Tears}} +8 Tear delay",
 				"#Isaac's tears are shot in an arc",
 				"#Isaac's tears leave creep, its size scaling with the size of the tear",
-				"#{{Damage}} The creep deals 66% of Isaac's damage per second and inherits his tear effects"
+				"#{{Damage}} The creep deals 66% of Isaac's damage per second and inherits his tear effects",
+				"#When coming into contact with another Polydipsia creep, increases its lifetime by 1 second",
+				"#The creep will stay alive for "
 			}
 		},
 		[Item.PRAYER_JOURNAL.ID] = {

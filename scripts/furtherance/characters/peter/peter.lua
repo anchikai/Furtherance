@@ -28,7 +28,7 @@ function PETER:DistributeSoulHeartsToPocket(player, amount)
 		if activeItem == Mod.Item.KEYS_TO_THE_KINGDOM.ID then
 			local charge = player:GetActiveCharge(ActiveSlot.SLOT_POCKET)
 			local maxCharge = Mod.ItemConfig:GetCollectible(activeItem).MaxCharges
-		if charge < maxCharge then
+			if charge < maxCharge then
 				local newAmount = charge + amount - maxCharge
 				player:AddActiveCharge(amount, ActiveSlot.SLOT_POCKET, true, false, true)
 				return max(0, newAmount)
