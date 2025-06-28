@@ -1,5 +1,5 @@
 <AnimatedActor>
-	<Info CreatedBy="anchikai." CreatedOn="6/27/2025 12:40:43 PM" Version="85" Fps="30"/>
+	<Info CreatedBy="anchikai." CreatedOn="6/27/2025 6:15:13 PM" Version="86" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="controls.png" Id="0"/>
@@ -110,7 +110,7 @@
 					<Frame XPosition="44" YPosition="24" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
 				</NullAnimation>
 				<NullAnimation NullId="3" Visible="true">
-					<Frame XPosition="128" YPosition="28" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
+					<Frame XPosition="128" YPosition="28" XScale="100" YScale="100" Delay="1" Visible="false" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
 				</NullAnimation>
 				<NullAnimation NullId="4" Visible="true">
 					<Frame XPosition="128" YPosition="28" XScale="100" YScale="100" Delay="1" Visible="false" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
@@ -119,7 +119,7 @@
 					<Frame XPosition="126" YPosition="30" XScale="100" YScale="100" Delay="1" Visible="false" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
 				</NullAnimation>
 				<NullAnimation NullId="6" Visible="true">
-					<Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="false" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
+					<Frame XPosition="128" YPosition="28" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
 				</NullAnimation>
 				<NullAnimation NullId="7" Visible="true">
 					<Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="false" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
