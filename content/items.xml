@@ -1,16 +1,16 @@
 <items gfxroot="gfx/items/" version="1" deathanm2="gfx/death items.anm2">
 	<!-- Isaac's Keyboard -->
-	<active id="24" name="Esc Key" description="I gotta get outta here!" gfx="key_esc.png" shopprice="30" devilprice="2" quality="3" craftquality="3" />
-	<active id="1" name="Tilde Key" description="Dirty cheater" gfx="key_tilde.png" maxcharges="12" initcharge="0" quality="0" craftquality="0" />
-	<active id="2" name="Alt Key" description="Reality" gfx="key_alt.png" maxcharges="2" chargetype="special" quality="4" craftquality="4" tags="nocantrip nochallenge nogreed" />
-	<active id="3" name="Spacebar Key" description="Feedback loop" gfx="key_spacebar.png" maxcharges="12" quality="4" craftquality="4" tags="nocantrip" />
+	<active id="24" name="Esc Key" description="I gotta get outta here!" gfx="key_esc.png" shopprice="30" devilprice="2" quality="3" craftquality="3" tags="offensive nocantrip" />
+	<active id="1" name="Tilde Key" description="Dirty cheater" gfx="key_tilde.png" maxcharges="12" initcharge="0" quality="0" craftquality="0" tags="nocantrip nochallenge" />
+	<active id="2" name="Alt Key" description="Reality" gfx="key_alt.png" maxcharges="2" chargetype="special" quality="3" craftquality="3" tags="offensive nocantrip nochallenge nogreed" />
+	<active id="3" name="Spacebar Key" description="Feedback loop" gfx="key_spacebar.png" maxcharges="12" quality="4" craftquality="4" tags="nocantrip nogreed" />
 	<active id="4" name="Backspace Key" description="No, go back!" gfx="key_backspace.png" maxcharges="12" quality="3" craftquality="3" tags="offensive nocantrip nochallenge" />
 	<active id="5" name="Q Key" description="Plagiarism" gfx="key_q.png" maxcharges="6" quality="4" craftquality="4" tags="nocantrip offensive" />
 	<active id="6" name="E Key" description="Quite explosive" gfx="key_e.png" maxcharges="6" quality="3" craftquality="3" tags="nocantrip offensive" />
 	<active id="7" name="C Key" description="Encyclopedia Support" gfx="key_c.png" maxcharges="6" initcharge="0" quality="3" craftquality="3" tags="nocantrip offensive" />
 	<active id="8" name="Caps Key" description="Locked in size" gfx="key_caps.png" maxcharges="6" quality="3" craftquality="3" tags="nocantrip offensive" />
 	<active id="9" name="Enter Key" description="Meet no boundaries" gfx="key_enter.png" maxcharges="12" initcharge="0" quality="3" craftquality="3" tags="nocantrip offensive" />
-	<active id="10" name="Shift Key" description="Temporary DMG up" gfx="key_shift.png" cache="damage" maxcharges="12" quality="3" craftquality="3" tags="offensive" persistent="true" cooldown="1800" tags="nocantrip" />
+	<active id="10" name="Shift Key" description="TEMPORARY DMG UP" gfx="key_shift.png" cache="damage" maxcharges="12" quality="3" craftquality="3" tags="offensive nocantrip" persistent="true" cooldown="1800"/>
 	<active id="31" name="F4 Key" description="Be careful..." gfx="key_f4.png" shopprice="30" devilprice="2" maxcharges="6" quality="4" craftquality="4" tags="nocantrip offensive" />
 	<active id="32" name="Tab Key" description="Pretty useful!" gfx="key_tab.png" maxcharges="12" quality="4" craftquality="4" tags="nocantrip offensive" />
 
@@ -82,7 +82,7 @@
 	<active id="33" name="Shattered Heart" description="Eternal sorrow" gfx="shattered_heart.png" achievement="Shattered Heart" chargetype="timed" maxcharges="300" quality="2" craftquality="2" tags="nolostbr nocantrip" />
 	<active id="34" name="Keys to the Kingdom" description="Strength in salvation" gfx="keys_to_the_kingdom.png" achievement="Keys to the Kingdom" maxcharges="6" chargetype="special" quality="4" craftquality="4" tags="angel" />
 	<active id="36" name="Muddled Cross" description="Change your perspective" gfx="muddled_cross.png" achievement="Muddled Cross" maxcharges="300" chargetype="special" quality="4" craftquality="4" cooldown="150" tags="offensive" customtag="nometronome" />
-	<active id="44" name="Pillar of Clouds" description="The path is clouded" gfx="pillar_of_clouds.png" achievement="Pillar of Clouds" cache="flying" maxcharges="6" cooldown="300" persistent="true" quality="2" craftquality="2" tags="summonable" />
+	<active id="44" name="Pillar of Clouds" description="The path is clouded" gfx="pillar_of_clouds.png" achievement="Pillar of Clouds" cache="flying" maxcharges="6" cooldown="300" persistent="true" quality="2" craftquality="2" tags="" />
 	<active id="48" name="Book of Guidance" description="The exodus ends" gfx="book_of_guidance.png" achievement="Book of Guidance" maxcharges="12" quality="3" craftquality="3" tags="book offensive" />
 	<active id="49" name="Jar of Manna" description="Fill with faith" gfx="jar_of_manna.png" achievement="Jar of Manna" maxcharges="20" chargetype="special" quality="4" craftquality="4" initcharge="0" tags="nocantrip offensive" />
 	<active id="50" name="Tambourine" description="It's rattling!" gfx="tambourine.png" achievement="Tambourine" chargetype="timed" maxcharges="300" quality="0" craftquality="0" tags="offensive" />
@@ -92,11 +92,11 @@
 	<active id="57" name="Alternate Reality" description="All" gfx="alternate_reality.png" quality="0" craftquality="0" tags="nochallenge offensive nogreed" />
 	<active id="61" name="Cosmic Omnibus" description="Soar above the heavens" gfx="cosmic_omnibus.png" maxcharges="6" quality="3" craftquality="3" tags="book offensive" />
 	<active id="65" name="D9" description="Reroll your journey" gfx="d9.png" maxcharges="4" quality="1" craftquality="1" tags="offensive" />
-	<active id="72" name="Polarity Shift" description="Reverberating force" gfx="polarity_shift.png" cache="tearflag tearcolor firedelay" maxcharges="100000" initcharge="50000" persistent="true" cooldown="300" chargetype="special" quality="1" craftquality="1" customtag="nometronome" achievement="Polarity Shift" />
+	<active id="72" name="Polarity Shift" description="Reverberating force" gfx="polarity_shift.png" cache="tearflag tearcolor firedelay" maxcharges="100000" initcharge="50000" persistent="true" cooldown="300" chargetype="special" quality="2" craftquality="1" customtag="nometronome" achievement="Polarity Shift" />
 	<active id="73" name=" Polarity Shift" description="Reverberating force" gfx="polarity_shift.png" cache="tearflag tearcolor" hidden="true" maxcharges="0" quality="0" craftquality="0" customtag="nometronome" />
 	<active id="74" name="Book of Books" description="Endless books!" gfx="book_of_books.png" maxcharges="6" quality="4" craftquality="4" tags="book offensive" /> <!-- Concept by retro100! -->
 	<active id="76" name="Servitude" description="7 years of labour" gfx="servitude.png" maxcharges="8" quality="2" craftquality="2" chargetype="special" tags="nocantrip" customtag="nometronome" />
-	<active id="79" name="Secret Diary" description="No one can know" gfx="secret_diary.png" achievement="Secret Diary" maxcharges="6" quality="2" craftquality="3" tags="book nocantrip" />
+	<active id="79" name="Secret Diary" description="No one can know" gfx="secret_diary.png" achievement="Secret Diary" maxcharges="6" quality="2" craftquality="2" tags="book nocantrip" />
 	<active id="80" name="D16" description="Rerolls hearts" gfx="d16.png" achievement="D16" maxcharges="4" quality="1" craftquality="1" tags="offensive" />
 	<active id="92" name="Prayer Journal" description="Scripture" gfx="prayer_journal.png" achievement="Prayer Journal" maxcharges="4" quality="2" craftquality="2" tags="book nolostbr" />
 	<active id="93" name="Book of Leviticus" description="Set in stone" gfx="book_of_leviticus.png" achievement="Book of Leviticus" maxcharges="3" quality="2" craftquality="2" tags="book offensive" />
@@ -106,7 +106,7 @@
 	<trinket id="0" name="Holy Heart" description="Protective hearts" gfx="holy_heart.png" achievement="Holy Heart"/> <!-- Concept by HoneyVee! -->
 	<trinket id="1" name="Cringe" description="You're posting it" gfx="cringe.png" /> <!-- Concept by Freg! -->
 	<trinket id="2" name="Rebound Worm" description="Pew!" gfx="rebound_worm.png" /> <!-- Concept by Freg! -->
-	<trinket id="3" name="Grass" description="Go touch some" cache="speed" cleareffectsonremove="true" gfx="grass.png" /> <!-- Concept by Aeronaut! -->
+	<trinket id="3" name="Grass" description="Go touch some" cache="speed" cleareffectsonremove="true" gfx="grass.png" />
 	<trinket id="4" name="Alabaster Scrap" description="With devotion comes power" gfx="alabaster_scrap.png" achievement="Alabaster Scrap" cache="damage" persistent="true" />
 	<trinket id="5" name="Leah's Lock" description="No pain? no gain" gfx="leahs_lock.png" achievement="Leah's Lock" />
 	<trinket id="6" name="Abyssal Penny" description="Wealth of H2O" gfx="abyssal_penny.png" achievement="Abyssal Penny" />

@@ -34,6 +34,7 @@
 		<Item Name="Trepanation" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Heart Renovator" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Shattered Heart" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Plug N' Play" Weight="0.5" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="shop">
 		<Item Name="Tambourine" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -82,20 +83,19 @@
 		<Item Name="Binds of Devotion" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="secret">
-		<Item Name="Esc Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Tilde Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Alt Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-        <Item Name="Spacebar Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Backspace Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Q Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="E Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="C Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Caps Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Enter Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Shift Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="F4 Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Tab Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Plug N' Play" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Esc Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="Tilde Key" Weight="0.1" DecreaseBy="0.1" RemoveOn="0.1"/>
+		<Item Name="Alt Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+        <Item Name="Spacebar Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="Backspace Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="Q Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="E Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="C Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="Caps Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="Enter Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="Shift Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="F4 Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="Tab Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
 		<Item Name="ZZZZoptionsZZZZ" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Muddled Cross" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Alternate Reality" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -108,6 +108,7 @@
 		<Item Name="Book of Books" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Epitaph" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Old Camera" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Servitude" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
     </Pool>
 	<Pool Name="library">
 		<Item Name="Book of Swiftness" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -171,7 +172,6 @@
 		<Item Name="Technology -1" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Book of Swiftness" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Book of Ambit" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Plug N' Play" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Owl's Eye" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Pharaoh Cat" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Lil Poofer" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -184,7 +184,6 @@
 		<Item Name="Wine Bottle" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Cosmic Omnibus" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Keratoconus" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Servitude" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Cardiomyopathy" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Sunscreen" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="D9" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -237,6 +236,7 @@
 		<Item Name="Itching Powder" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Binds of Devotion" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Heart Embedded Coin" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Servitude" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="greedDevil">
 		<Item Name="Owl's Eye" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -268,17 +268,18 @@
 		<Item Name="Rue" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Severed Ear" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Itching Powder" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Shattered Heart" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="greedSecret">
-		<Item Name="Esc Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Tilde Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Backspace Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Q Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="E Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Caps Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Shift Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="F4 Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Tab Key" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Esc Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="Tilde Key" Weight="0.1" DecreaseBy="0.1" RemoveOn="0.1"/>
+		<Item Name="Backspace Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="Q Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="E Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="Caps Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="Shift Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="F4 Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
+		<Item Name="Tab Key" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1"/>
 		<Item Name="Plug N' Play" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="ZZZZoptionsZZZZ" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Muddled Cross" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -292,6 +293,7 @@
 		<Item Name="Book of Books" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Epitaph" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Old Camera" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Servitude" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="craneGame">
 		<Item Name="Polydipsia" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -376,7 +378,7 @@
 		<!-- How To Jump -->
 		<Item Id="282" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Red Key -->
-		<Item Id="580" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Id="580" Weight="0.5" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Undefined -->
 		<Item Id="324" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<!-- Lil Portal -->
@@ -388,9 +390,10 @@
 
 		<!-- Furtherance -->
 		<Item Name="Cosmic Omnibus" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Alternate Reality" Weight="0.2" DecreaseBy="1" RemoveOn="0.1"/>
 
 		<!-- Fiend Folio -->
-		<Item Name="Wrong Warp" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Wrong Warp" Weight="0.2" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Too Many Options!" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Grappling Hook" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Bridge Bombs" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
