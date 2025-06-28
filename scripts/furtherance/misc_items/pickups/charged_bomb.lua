@@ -17,25 +17,6 @@ Mod:RegisterReplacement({
 	ReplacementChance = 0.02
 })
 
----@param entType EntityType
----@param variant PickupVariant
----@param subtype integer
----@param spawner Entity
----@param seed integer
-function CHARGED_BOMB:SpawnChargedBomb(entType, variant, subtype, _, _, spawner, seed)
-	if entType == EntityType.ENTITY_PICKUP
-		and variant == PickupVariant.PICKUP_BOMB
-		and subtype == BombSubType.BOMB_NORMAL
-	then
-		local rng = RNG(seed)
-		if rng:RandomFloat() <= CHARGED_BOMB.REPLACE_CHANCE then
-			return { entType, variant, CHARGED_BOMB.ID, seed }
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, CHARGED_BOMB.SpawnChargedBomb)
-
 ---@param pickup EntityPickup
 ---@param collider Entity
 function CHARGED_BOMB:CollectChargedBomb(pickup, collider)
