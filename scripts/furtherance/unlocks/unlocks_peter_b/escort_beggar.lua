@@ -10,8 +10,6 @@ ESCORT_BEGGAR.SLOT = Isaac.GetEntityVariantByName("Escort Beggar (Slot)")
 ESCORT_BEGGAR.FAMILIAR = Isaac.GetEntityVariantByName("Escort Beggar (Familiar)")
 ESCORT_BEGGAR.ITEM_POOL = Isaac.GetPoolIdByName("escortBeggar")
 
-ESCORT_BEGGAR.REPLACE_CHANCE = 0.05
-
 --You can blame Warhamm for these
 ESCORT_BEGGAR.ANIM_RAISE_HANDS = "GdezheVashiRuchkiNuGdezheVashiRuchki"
 ESCORT_BEGGAR.ANIM_HANDS_LOOP =

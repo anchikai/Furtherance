@@ -6,7 +6,6 @@ Furtherance.Pickup.CHARGED_BOMB = CHARGED_BOMB
 
 CHARGED_BOMB.ID = Isaac.GetEntitySubTypeByName("Charged Bomb")
 
-CHARGED_BOMB.REPLACE_CHANCE = 0.02
 CHARGED_BOMB.EXPLODE_CHANCE = 0.01
 
 Mod:RegisterReplacement({
@@ -15,7 +14,7 @@ Mod:RegisterReplacement({
 	NewType = EntityType.ENTITY_PICKUP,
 	NewVariant = PickupVariant.PICKUP_BOMB,
 	NewSubtype = CHARGED_BOMB.ID,
-	ReplacementChance = CHARGED_BOMB.REPLACE_CHANCE
+	ReplacementChance = 0.02
 })
 
 ---@param entType EntityType

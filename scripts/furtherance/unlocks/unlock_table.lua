@@ -223,7 +223,7 @@ Mod:RegisterReplacement({
 	OldVariant = Mod:Set({ SlotVariant.SLOT_MACHINE, SlotVariant.FORTUNE_TELLING_MACHINE, SlotVariant.CRANE_GAME }),
 	NewType = EntityType.ENTITY_SLOT,
 	NewVariant = Mod.Slot.LOVE_TELLER.ID,
-	ReplacementChance = Mod.Slot.LOVE_TELLER.REPLACE_CHANCE,
+	ReplacementChance = 0.05,
 	Achievement = Mod.Slot.LOVE_TELLER.ACHIEVEMENT,
 })
 
@@ -232,18 +232,18 @@ Mod:RegisterReplacement({
 	OldVariant = Mod:Set({ SlotVariant.BEGGAR, SlotVariant.DEVIL_BEGGAR, SlotVariant.KEY_MASTER }),
 	NewType = EntityType.ENTITY_SLOT,
 	NewVariant = Mod.Slot.ESCORT_BEGGAR.ID,
-	ReplacementChance = Mod.Slot.ESCORT_BEGGAR.REPLACE_CHANCE,
+	ReplacementChance = 0.05,
 	Achievement = Mod.Slot.ESCORT_BEGGAR.ACHIEVEMENT,
 })
 
 Mod:RegisterReplacement({
 	OldType = Mod:Set({ EntityType.ENTITY_PICKUP }),
 	OldVariant = Mod:Set({ PickupVariant.PICKUP_HEART }),
-	OldSubtype = Mod:Set({ HeartSubType.HEART_ETERNAL }),
+	OldSubtype = Mod:Set({ HeartSubType.HEART_SOUL }),
 	NewType = EntityType.ENTITY_PICKUP,
 	NewVariant = PickupVariant.PICKUP_HEART,
 	NewSubtype = Mod.Pickup.MOON_HEART.ID,
-	ReplacementChance = Mod.Pickup.MOON_HEART.REPLACE_CHANCE,
+	ReplacementChance = 0.25,
 	Achievement = Mod.Pickup.MOON_HEART.ACHIEVEMENT
 })
 
@@ -253,7 +253,7 @@ Mod:RegisterReplacement({
 	NewType = EntityType.ENTITY_PICKUP,
 	NewVariant = PickupVariant.PICKUP_GRAB_BAG,
 	NewSubtype = Mod.Pickup.GOLDEN_SACK.ID,
-	ReplacementChance = Mod.Pickup.GOLDEN_SACK.REPLACE_CHANCE,
+	ReplacementChance = 0.1,
 	Achievement = Mod.Pickup.GOLDEN_SACK.ACHIEVEMENT
 })
 

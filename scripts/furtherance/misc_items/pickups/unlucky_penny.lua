@@ -7,8 +7,6 @@ Furtherance.Pickup.UNLUCKY_PENNY = UNLUCKY_PENNY
 UNLUCKY_PENNY.ID = Isaac.GetEntitySubTypeByName("Unlucky Penny")
 UNLUCKY_PENNY.NULL_ID = Isaac.GetNullItemIdByName("unlucky penny")
 
-UNLUCKY_PENNY.REPLACE_CHANCE = 0.25
-
 Mod:RegisterReplacement({
 	OldType = Mod:Set({ EntityType.ENTITY_PICKUP }),
 	OldVariant = Mod:Set({ PickupVariant.PICKUP_COIN }),
@@ -16,7 +14,7 @@ Mod:RegisterReplacement({
 	NewType = EntityType.ENTITY_PICKUP,
 	NewVariant = PickupVariant.PICKUP_COIN,
 	NewSubtype = UNLUCKY_PENNY.ID,
-	ReplacementChance = UNLUCKY_PENNY.REPLACE_CHANCE
+	ReplacementChance = 0.25
 })
 
 ---@param pickup EntityPickup

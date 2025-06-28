@@ -6,7 +6,6 @@ Furtherance.Pickup.GOLDEN_SACK = GOLDEN_SACK
 
 GOLDEN_SACK.ID = Isaac.GetEntitySubTypeByName("Golden Sack")
 
-GOLDEN_SACK.REPLACE_CHANCE = 0.1
 GOLDEN_SACK.DISAPPEAR_CHANCE = 0.2
 
 ---@param pickup EntityPickup

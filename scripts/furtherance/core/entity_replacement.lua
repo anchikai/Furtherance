@@ -32,11 +32,13 @@ end
 local function entityReplacement(entType, variant, subtype, seed)
 	for _, replacement_info in pairs(Mod.EntityReplacements) do
 		--Must match type
+		local isNullPickup = entType == EntityType.ENTITY_PICKUP and replacement_info.NewType == EntityType.ENTITY_PICKUP and variant == PickupVariant.PICKUP_NULL
 		if replacement_info.OldType[entType]
 			--Variant can match, or if replacing a pickup with a pickup, PickupVariant.PICKUP_NULL can be nearly any variant
-			and (replacement_info.OldVariant[variant] or entType == EntityType.ENTITY_PICKUP and replacement_info.NewType == EntityType.ENTITY_PICKUP and variant == PickupVariant.PICKUP_NULL)
-			--If no SubType specified, can only replace spawns that are "0" instead of set spawns
-			and (not replacement_info.OldSubtype and subtype == NullPickupSubType.ANY or replacement_info.OldSubtype and replacement_info.OldSubtype[subtype])
+			and (replacement_info.OldVariant[variant] or isNullPickup)
+			--If no SubType specified, can only replace spawns that are "0" instead of set spawns. Otherwise, double check it matches variant or is the ANY pickup variant
+			and (not replacement_info.OldSubtype and subtype == NullPickupSubType.ANY
+			or replacement_info.OldSubtype and replacement_info.OldSubtype[subtype] or isNullPickup)
 			--No achievement, or achieveable
 			and (not replacement_info.Achievement or Mod.PersistGameData:Unlocked(replacement_info.Achievement))
 		then
@@ -56,12 +58,16 @@ local function entityReplacement(entType, variant, subtype, seed)
 			if xmlData then
 				entName = xmlData.name
 			end
+			local replaceChance = replacement_info.ReplacementChance
+			if isNullPickup then
+				replaceChance = replaceChance / 10
+			end
 
 			Mod:DebugLog("Attempting replacement for", entType .. "." .. variant .. "." .. subtype, "with",
 				replacement_info.NewType .. "." .. replacement_info.NewVariant .. "." .. newSubType, "(" .. entName .. ")")
-			Mod:DebugLog("Roll:", roll, "Chance:", replacement_info.ReplacementChance)
+			Mod:DebugLog("Roll:", roll, "Chance:", replaceChance)
 
-			if roll <= replacement_info.ReplacementChance then
+			if roll <= replaceChance then
 				Mod:DebugLog("Replacement successful!")
 				return { replacement_info.NewType, replacement_info.NewVariant, newSubType, seed }
 			else

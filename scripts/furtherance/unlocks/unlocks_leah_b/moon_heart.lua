@@ -8,7 +8,6 @@ MOON_HEART.ID = Isaac.GetEntitySubTypeByName("Moon Heart")
 MOON_HEART.KEY = "HEART_MOON"
 MOON_HEART.PICKUP_SFX = Isaac.GetSoundIdByName("Moon Heart Pickup")
 
-MOON_HEART.REPLACE_CHANCE = 0.2
 MOON_HEART.ROOM_MOONLIGHT_FLAGS = {
 	---Spawn moonlight flag
 	FLAG_SPAWN = 1 << 0,
