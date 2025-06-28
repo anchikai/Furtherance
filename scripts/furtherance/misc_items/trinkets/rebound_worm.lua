@@ -13,7 +13,6 @@ function REBOUND_WORM:PreTearAndBombCollision(tearorBomb, gridIndex, gridEnt)
 	if gridEnt and player and player:HasTrinket(REBOUND_WORM.ID) then
 		local data = Mod:GetData(tearorBomb)
 		if data.SlickWormBounced then
-			print("bounced")
 			return
 		end
 		local dir = tearorBomb.Velocity:Rotated(180)
@@ -43,6 +42,7 @@ function REBOUND_WORM:LaserUpdate(laser)
 	end
 	if (laser.SubType ~= LaserSubType.LASER_SUBTYPE_LINEAR
 		or not laser:IsSampleLaser())
+		or laser.Timeout <= 0
 	then
 		return
 	end
@@ -55,6 +55,8 @@ function REBOUND_WORM:LaserUpdate(laser)
 		local slickLaserEnt = slickLaserRef and slickLaserRef.Ref and slickLaserRef.Ref:ToLaser()
 		if slickLaserEnt then
 			slickLaserEnt.Position = endPoint
+			slickLaserEnt.Timeout = laser.Timeout
+			slickLaserEnt.MaxDistance = laser.MaxDistance
 		end
 		local vecAngle = Vector.FromAngle(laser.AngleDegrees)
 		local referencePos = endPoint - vecAngle:Resized(20)
@@ -63,7 +65,12 @@ function REBOUND_WORM:LaserUpdate(laser)
 				false, false)
 			if enemy and not slickLaserEnt then
 				local dir = (enemy.Position - endPoint)
-				local slickLaser = player:FireBrimstone(dir, player, laser:GetDamageMultiplier())
+				local slickLaser
+				if laser.Variant == LaserVariant.THIN_RED then
+					slickLaser = player:FireTechLaser(endPoint, LaserOffset.LASER_SHOOP_OFFSET, dir, false, false, player, laser:GetDamageMultiplier())
+				else
+					slickLaser = player:FireBrimstone(dir, player, laser:GetDamageMultiplier())
+				end
 				slickLaser.Timeout = laser.Timeout
 				slickLaser.DisableFollowParent = true
 				slickLaser.Position = endPoint
