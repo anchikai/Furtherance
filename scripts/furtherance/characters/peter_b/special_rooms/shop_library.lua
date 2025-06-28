@@ -72,7 +72,9 @@ end
 Mod:AddCallback(Mod.ModCallbacks.MUDDLED_CROSS_ROOM_FLIP, libraryRoomFlip, RoomType.ROOM_LIBRARY)
 
 local function libraryRoomBackdrop()
-	return MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_LIBRARY]
+	if not Mod.Game:IsGreedMode() then
+		return MUDDLED_CROSS.SPECIAL_ROOM_FLIP.ROOM_BACKDROPS[RoomType.ROOM_LIBRARY]
+	end
 end
 
 Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, libraryRoomBackdrop, RoomType.ROOM_SHOP)
