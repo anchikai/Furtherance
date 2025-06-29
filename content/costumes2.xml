@@ -3,6 +3,7 @@
 	<costume id="15" anm2path="costume_ceres.anm2" type="passive" />
 	<costume id="17" anm2path="costume_techix.anm2" type="passive" />
 	<costume id="20" anm2path="costume_technology-1.anm2" type="passive" />
+	<costume id="23" anm2path="costume_owls_eye.anm2" type="passive" />
 	<costume id="35" anm2path="costume_binds_of_devotion.anm2" type="passive" hasSkinAlt="true" />
 	<costume id="41" anm2path="costume_polydipsia.anm2" type="passive" hasSkinAlt="true" hasOverlay="true" />
 	<costume id="42" anm2path="costume_kareth.anm2" type="passive" />
@@ -43,4 +44,5 @@
 	<costume anm2path="character_03b_miriam_pog.anm2" type="none" priority="99" />
 	<!-- Misc Null Costumes -->
 	<costume anm2path="n_double_severed_ear.anm2" type="none" priority="1" />
+	<costume anm2path="n_double_owls_eye.anm2" type="none" priority="1" />
 </costumes>

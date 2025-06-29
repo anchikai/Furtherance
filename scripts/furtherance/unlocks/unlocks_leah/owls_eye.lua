@@ -5,6 +5,7 @@ local OWLS_EYE = {}
 Furtherance.Item.OWLS_EYE = OWLS_EYE
 
 OWLS_EYE.ID = Isaac.GetItemIdByName("Owl's Eye")
+OWLS_EYE.DOUBLE_COSTUME = Isaac.GetCostumeIdByPath("gfx/characters/n_double_owls_eye.anm2")
 
 OWLS_EYE.COLOR = Color(1, 1, 1, 1, 0, 0, 0, 3, 1, 0, 1)
 
@@ -44,3 +45,19 @@ function modifier:PostFire(object)
 		end
 	end
 end
+
+---@param player EntityPlayer
+---@param itemID CollectibleType
+function OWLS_EYE:UpdateDoubleCostume(player, itemID)
+	local numEars = player:GetCollectibleNum(itemID)
+	if numEars >= 2 then
+		player:AddNullCostume(OWLS_EYE.DOUBLE_COSTUME)
+	else
+		player:TryRemoveNullCostume(OWLS_EYE.DOUBLE_COSTUME)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, function(_, itemID, _, _, _, _, player)
+	OWLS_EYE:UpdateDoubleCostume(player, itemID)
+end, OWLS_EYE.ID)
+Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, OWLS_EYE.UpdateDoubleCostume, OWLS_EYE.ID)
