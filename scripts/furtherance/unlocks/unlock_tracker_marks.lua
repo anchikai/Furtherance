@@ -23,7 +23,7 @@ function Furtherance:TryUpdateCompletionMark(playerType, completionType)
 		elseif completionTable[completionType] then
 			return Mod.PersistGameData:TryUnlock(completionTable[completionType])
 		end
-	elseif completionTable[completionType] then
+	elseif completionTable[completionType] and (completionType ~= CompletionType.MOMS_HEART or Mod.Game:IsHardMode()) then
 		return Mod.PersistGameData:TryUnlock(completionTable[completionType])
 	end
 	if Isaac.AllMarksFilled(playerType) == 2 then
