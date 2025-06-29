@@ -30,7 +30,7 @@
 	<passive id="19" name="Unstable Core" description="Shockingly active" gfx="unstable_core.png" quality="0" craftquality="0" tags="summonable" /> <!-- Concept by SybilScribble! -->
 	<passive id="20" name="Technology -1" description="Underflow shots" gfx="technology_-1.png" quality="3" craftquality="3" tags="tech offensive summonable" />
 	<passive id="28" name="ZZZZoptionsZZZZ" description="ZZZZmZZZZoZZZZrZZZZeZZZZ" gfx="ZZZZoptionsZZZZ.PNG" quality="0" craftquality="0" tags="nocantrip offensive" /> <!-- Concept by Joply! -->
-	<passive id="27" name="Brunch" description="HP + shot speed up" gfx="brunch.png" cache="shotspeed" hearts="6" maxhearts="4" quality="2" craftquality="1" tags="nolostbr" /> <!-- Concept by Tesseract! -->
+	<passive id="27" name="Brunch" description="HP + shot speed up" gfx="brunch.png" cache="shotspeed" hearts="6" maxhearts="4" quality="2" craftquality="2" tags="nolostbr" /> <!-- Concept by Tesseract! -->
 	<passive id="26" name="Crab Legs" description="Do the crab walk" gfx="crab_legs.png" cache="speed" hearts="4" maxhearts="2" quality="1" craftquality="1" tags="offensive summonable" /> <!-- Concept by Tesseract! -->
 	<passive id="23" name="Owl's Eye" description="The master guides you" gfx="owls_eye.png" achievement="Owl's Eye" cache="tearflag damage" tags="offensive summonable" quality="3" craftquality="3" /> <!-- Concept by Freg! -->
 	<passive id="30" name="Pharaoh Cat" description="Bastet's protection" gfx="pharaoh_cat.png" cache="firedelay" quality="3" craftquality="4" tags="offensive summonable" /> <!-- Concept by Freg! (reworked by me :troll: (and going to be reworked again by Benny...eventually)) -->
@@ -58,14 +58,14 @@
 	<passive id="78" name="Sunscreen" description="Beat the heat!" gfx="sunscreen.png" quality="0" craftquality="0" tags="summonable" />
 	<passive id="82" name="Rotten Apple" description="Random worm + Damage up" gfx="rotten_apple.png" cache="damage" quality="1" craftquality="1" tags="offensive" />
 	<passive id="83" name="Beginner's Luck" description="Fading fortune" gfx="beginners_luck.png" cache="luck" quality="2" craftquality="2" persistent="true" tags="offensive nogreed" />
-	<passive id="84" name="Box of Belongings" description="All that is evil of this world" gfx="box_of_belongings.png" quality="1" craftquality="1" tags="offensive" />
+	<passive id="84" name="Box of Belongings" description="Saved from sin" gfx="box_of_belongings.png" quality="1" craftquality="1" tags="offensive" />
 	<passive id="85" name="Chi Rho" description="Faithful intervention" gfx="chi_rho.png" achievement="Chi Rho" quality="3" craftquality="3" tag="offensive summonable" />
 	<passive id="86" name="Leah's Heart" description="Her heart beats" gfx="leahs_heart.png" achievement="Leah's Heart" cache="damage" shopprice="30" devilprice="2" quality="3" craftquality="3" tags="summonable" />
 	<passive id="87" name="Pallium" description="Authority" gfx="pallium.png" achievement="Pallium" quality="4" craftquality="4" tags="angel offensive summonable" />
 	<passive id="88" name="Cold Hearted" description="Icy touch" gfx="cold_hearted.png" achievement="Cold Hearted" quality="3" craftquality="3" tags="nolostbr" />
 	<passive id="89" name="Coffee Break" description="HP + speed up" gfx="coffee_break.png" cache="speed" maxhearts="2" hearts="4" soulhearts="2" quality="2" craftquality="2" tags="nolostbr" />
 	<passive id="90" name="Rue" description="Love's undoing" gfx="rue.png" achievement="Rue" quality="3" craftquality="3" tags="nolostbr summonable" />
-	<passive id="91" name="Exsanguination" description="Rarer hearts" gfx="exsanguination.png" achievement="Exsanguination" cache="damage" quality="2" craftquality="2" tags="offensive summonable" />
+	<passive id="91" name="Exsanguination" description="Rarer hearts" gfx="exsanguination.png" achievement="Exsanguination" cache="damage" quality="2" craftquality="2" tags="offensive summonable nolostbr" />
 	<passive id="94" name="Molten Gold" description="It's more valuable this way..." gfx="molten_gold.png" achievement="Molten Gold" quality="2" craftquality="2" tags="nolostbr summonable" />
 	<passive id="95" name="Trepanation" description="Blood mortar" gfx="trepanation.png" quality="3" craftquality="3" tags="offensive summonable" />
 	<passive id="97" name="Liberation" description="Let go your earthly tether" gfx="liberation.png" achievement="Liberation" cache="flying" quality="1" craftquality="1" tags="offensive summonable" />
