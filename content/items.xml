@@ -61,7 +61,7 @@
 	<passive id="84" name="Box of Belongings" description="Saved from sin" gfx="box_of_belongings.png" quality="1" craftquality="1" tags="offensive" />
 	<passive id="85" name="Chi Rho" description="Faithful intervention" gfx="chi_rho.png" achievement="Chi Rho" quality="3" craftquality="3" tag="offensive summonable" />
 	<passive id="86" name="Leah's Heart" description="Her heart beats" gfx="leahs_heart.png" achievement="Leah's Heart" cache="damage" shopprice="30" devilprice="2" quality="3" craftquality="3" tags="summonable" />
-	<passive id="87" name="Pallium" description="Authority" gfx="pallium.png" achievement="Pallium" quality="4" craftquality="4" tags="angel offensive summonable" />
+	<passive id="87" name="Pallium" description="Authority" gfx="pallium.png" achievement="Pallium" quality="3" craftquality="3" tags="angel offensive summonable" />
 	<passive id="88" name="Cold Hearted" description="Icy touch" gfx="cold_hearted.png" achievement="Cold Hearted" quality="3" craftquality="3" tags="nolostbr" />
 	<passive id="89" name="Coffee Break" description="HP + speed up" gfx="coffee_break.png" cache="speed" maxhearts="2" hearts="4" soulhearts="2" quality="2" craftquality="2" tags="nolostbr" />
 	<passive id="90" name="Rue" description="Love's undoing" gfx="rue.png" achievement="Rue" quality="3" craftquality="3" tags="nolostbr summonable" />
@@ -92,7 +92,7 @@
 	<active id="57" name="Alternate Reality" description="All" gfx="alternate_reality.png" quality="0" craftquality="0" tags="nochallenge offensive nogreed" />
 	<active id="61" name="Cosmic Omnibus" description="Soar above the heavens" gfx="cosmic_omnibus.png" maxcharges="6" quality="3" craftquality="3" tags="book offensive" />
 	<active id="65" name="D9" description="Reroll your journey" gfx="d9.png" maxcharges="4" quality="1" craftquality="1" tags="offensive" />
-	<active id="72" name="Polarity Shift" description="Reverberating force" gfx="polarity_shift.png" cache="tearflag tearcolor firedelay" maxcharges="100000" initcharge="50000" persistent="true" cooldown="300" chargetype="special" quality="2" craftquality="1" customtag="nometronome" achievement="Polarity Shift" />
+	<active id="72" name="Polarity Shift" description="Reverberating force" gfx="polarity_shift.png" cache="tearflag tearcolor firedelay" maxcharges="100000" initcharge="50000" persistent="true" cooldown="300" chargetype="special" quality="3" craftquality="3" customtag="nometronome" achievement="Polarity Shift" />
 	<active id="73" name=" Polarity Shift" description="Reverberating force" gfx="polarity_shift.png" cache="tearflag tearcolor" hidden="true" maxcharges="0" quality="0" craftquality="0" customtag="nometronome" />
 	<active id="74" name="Book of Books" description="Endless books!" gfx="book_of_books.png" maxcharges="6" quality="4" craftquality="4" tags="book offensive" /> <!-- Concept by retro100! -->
 	<active id="76" name="Servitude" description="7 years of labour" gfx="servitude.png" maxcharges="8" quality="2" craftquality="2" chargetype="special" tags="nocantrip" customtag="nometronome" />
