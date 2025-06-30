@@ -1,0 +1,58 @@
+```A complete overhaul of the old Furtherance MOD originally released in 2022. Coded from the ground up under the experienced eye of a single coder with the power of REPENTOGON, this new release breathes new life into every corner of the original MOD to create a sizeable quality package of content.
+
+Features:
+- 3 characters and 3 tainted characters
+- Full completion mark unlocks for all characters
+- 90 items
+- 20 trinkets
+- 20 cards and runes
+
+__Leah__(img)
+Jacob's first wife
+Starts with Heart Renovator, a flowering representation of Leah's love
+Red health can overflow into a heart counter. Turn them into broken hearts and mend them with Heart Renovator to feel a little stronger, or leave them broken to get your tears flowing
+
+__Peter__(img)
+One of the twelve apostles of Christianity
+Starts with Keys to the Kingdom, a gift from the angels to open the gates of heaven
+Use it to spare enemies. Bosses take longer to spare. Has special interactions with angels and in devil rooms!
+
+__Miriam__(img)
+Moses' sister and the first female Jewish prophetess
+Starts with Polydipsisa and Tambourine, overflowing with water and shaking enemies off your tail
+Shoot large arcing tears that leave damaging puddles. Puddles that touch have their lifetime extended!
+Tambourine inflicts knockback to nearby enemies and briefly creates a gigantic puddle to help increase the lifetime of other puddles
+
+Mod Compatibility
+- EID (Full English support. Translators are welcome to help!)
+- Fiend Folio
+- Epiphany
+- The Future
+- Pog For Good Items
+- And more!
+
+Credits
+(Img)
+Benny: Coded almost everything
+
+(img)
+Explodingturtle: Commissioned Benny to fix up this mod
+
+(Img)
+The original Furtherance Team
+- Demi (Spriter)
+- anchikai (Lead Dev)
+- oddivo (Designer)
+- poody_blue (Spriter)
+- Shoop (Coder)
+- BrakeDude (Coder)
+- Sky (Designer)
+- PixelPiz (Spriter/Coder)
+
+Warhamm: Commissioned to provide numerous new and refurbished sprites
+
+Special Thanks:
+- The Epiphany team! Many of Furtherance's handy tools and helper code files come from Epiphany
+
+[img that this is a commission]
+```
