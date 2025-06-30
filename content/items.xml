@@ -17,7 +17,7 @@
 	<!-- Astrological Signs -->
 	<!-- Rework Concepts by Losfrail! -->
 	<passive id="11" name="Ophiuchus?" description="The dream that holds together" gfx="ophiuchus.png" cache="tearflag damage firedelay" soulhearts="2" quality="2" craftquality="2" tags="stars tearsup offensive" />
-	<passive id="12" name="Chiron?" description="The wisest and justest" gfx="chiron.png" cache="speed" quality="2" craftquality="2" tags="syringe book stars offensive" />
+	<passive id="12" name="Chiron?" description="The wisest and justest" gfx="chiron.png" cache="speed" quality="2" craftquality="2" tags="book stars offensive" />
 	<passive id="13" name="Juno?" description="Ruler of Everything" gfx="juno.png" soulhearts="4" quality="4" craftquality="4" tags="stars offensive" />
 	<passive id="14" name="Pallas?" description="Weathered by time" gfx="pallas.png" cache="tearflag damage" quality="2" craftquality="2" tags="stars offensive" />
 	<passive id="15" name="Ceres?" description="It shimmers with life..." gfx="ceres.png" cache="damage" quality="2" craftquality="2" tags="stars offensive" />

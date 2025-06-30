@@ -2,6 +2,7 @@
 	<!-- Passive Costumes -->
 	<costume id="15" anm2path="costume_ceres.anm2" type="passive" />
 	<costume id="17" anm2path="costume_techix.anm2" type="passive" />
+	<costume id="19" anm2path="costume_unstable_core.anm2" type="passive" />
 	<costume id="20" anm2path="costume_technology-1.anm2" type="passive" />
 	<costume id="23" anm2path="costume_owls_eye.anm2" type="passive" />
 	<costume id="35" anm2path="costume_binds_of_devotion.anm2" type="passive" hasSkinAlt="true" />
