@@ -28,7 +28,12 @@ function CHARGED_BOMB:CollectChargedBomb(pickup, collider)
 		pickup:PlayPickupSound()
 		pickup:Die()
 		player:AddBombs(1)
-		player:FullCharge(ActiveSlot.SLOT_PRIMARY, false)
+		for i = ActiveSlot.SLOT_PRIMARY, ActiveSlot.SLOT_POCKET do
+			if player:NeedsCharge(i) then
+				player:FullCharge(i)
+				break
+			end
+		end
 		pickup.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
 		pickup.Friction = 0
 		if pickup.OptionsPickupIndex > 0 then
