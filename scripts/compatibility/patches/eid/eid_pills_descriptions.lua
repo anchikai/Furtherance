@@ -11,6 +11,7 @@ local modifiers = {
 }
 local descriptions = {
 	en_us = Mod.Include("scripts.compatibility.patches.eid.eid_pills.pills_en_us")(modifiers),
+	spa = Mod.Include("scripts.compatibility.patches.eid.eid_pills.pills_spa")(modifiers),
 }
 
 local descData = {}
