@@ -271,15 +271,16 @@ end
 function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 	local room = Mod.Room()
 	local failedToRapture = true
+	local shouldGrantMantle = Isaac.RunCallback(Mod.ModCallbacks.KTTK_GRANT_HOLY_MANTLE)
 
 	if KEYS_TO_THE_KINGDOM:DenyHisOfferings(player) then
 		return true
 	elseif room:GetAliveEnemiesCount() == 0 then
 		return { Discharge = false, ShowAnim = false, Remove = false }
 	elseif KEYS_TO_THE_KINGDOM.STORY_BOSS_IDS[room:GetBossID()]
-		or PETER:IsPeter(player)
-		and (room:GetType() == RoomType.ROOM_BOSSRUSH
-			or room:GetType() == RoomType.ROOM_CHALLENGE)
+		or room:GetType() == RoomType.ROOM_BOSSRUSH
+		or room:GetType() == RoomType.ROOM_CHALLENGE
+		or shouldGrantMantle
 	then
 		player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_HOLY_MANTLE, true)
 		return true

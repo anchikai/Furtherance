@@ -53,6 +53,7 @@ local patches = {
 	"fiend_folio",
 	"furtherance",
 	"future",
+	"heavens_call",
 	"gods_gambit",
 	"last_judgement",
 	"lost_and_forgotten",
@@ -63,7 +64,7 @@ local patches = {
 	"retribution",
 	"sheriff",
 	"stageapi",
-	"tainted_treasures",
+	"tainted_treasures"
 }
 
 for _, fileName in ipairs(patches) do
