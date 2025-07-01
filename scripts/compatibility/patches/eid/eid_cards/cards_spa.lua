@@ -100,66 +100,66 @@ return function(modifiers)
 			}
 		},
 		[Mod.Rune.ESSENCE_OF_LIFE.ID] = {
-			Name = "Essence of Life",
+			Name = "Esencia de la Vida",
 			Description = {
-				"{{Collectible658}} Spawns 1 Minisaac for each enemy in the room"
+				"{{Collectible658}} Genera 1 miniIsaac por cada enemigo en la habitacion",
 			}
 		},
 		[Mod.Rune.ESSENCE_OF_LOVE.ID] = {
-			Name = "Essence of Love",
+			Name = "Esencia del Amor",
 			Description = {
-				"{{Friendly}} Turns all non-boss enemies into permanent friendly companions"
+				"{{Friendly}} Vuelve todo enemigo no-jefe en la habitacion en un aliado permanente"
 			}
 		},
 		[Mod.Rune.SOUL_OF_LEAH.ID] = {
-			Name = "Soul of Leah",
+			Name = "Alma de Leah",
 			Description = {
-				"↑ The max amount of heart containers is increased by 3",
-				"#↓ {{BrokenHeart}} +3 Broken Hearts",
-				"#!!! Cannot increase max heart containers past 24, but still grants Broken Hearts",
+				"↑ El maximo de contenedores de corazon aumenta en 3",
+				"#↓ {{BrokenHeart}} +3 Corazones Rotos",
+				"#!!! No aumenta el maximo de corazones mas de 24, pero si otorgara los corazones rotos",
 				function(descObj)
 					return modifiers[Mod.Rune.SOUL_OF_LEAH.ID]._modifier(descObj,
-						"Only increases max health by 1 and gains +1 Broken Coin Heart"
+						"Solo incrementa el maximo de corazones por 1 y otorga 1 corazon roto moneda"
 					)
 				end
 			}
 		},
 		[Mod.Rune.SOUL_OF_MIRIAM.ID] = {
-			Name = "Soul of Miriam",
+			Name = "Alma de Miriam",
 			Description = {
-				"Starts raining in the room and fills the room with water",
-				"#A damaging creep will slowly and infinitely grow from the center of the room",
-				"#Lasts 40 seconds between rooms and floors"
+				"Empieza a llover y llena la habitacion de agua",
+				"#A damaging creep crecera infinitamente en el centro de la habitacion",
+				"#dura 40 segundos entre habitaciones y pisos"
 			}
 		},
 		[Mod.Rune.SOUL_OF_PETER.ID] = {
-			Name = "Soul of Peter",
+			Name = "Alma de Peter",
 			Description = {
-				"Adds 5 rooms randomly on the map",
-				"#Rooms can either be a default room or a 10% chance of being a random special room",
+				"Añade 5 habitaciones aelatorias en el piso actual",
+				"#Las habitaciones tienen un 10% de probabilidad de ser una habitacion especial",
 			}
 		},
 		[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]] = {
-			Name = "Spooky Photo",
+			Name = "Foto Aterradora",
 			Description = function()
 				return modifiers[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]]._modifier(Mod.Item.OLD_CAMERA.PHOTO_IDs[1],
-					"{{Collectible634}} Spawns %s Purgatory ghosts to immediately target enemies"
+					"{{Collectible634}} Genera %s Fantasmas del Purgatorio que atacan inmediatamente a los enemigos"
 				)
 			end
 		},
 		[Mod.Item.OLD_CAMERA.PHOTO_IDs[2]] = {
-			Name = "Haunted Photo",
+			Name = "Foto Embrujada",
 			Description = function()
 				return modifiers[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]]._modifier(Mod.Item.OLD_CAMERA.PHOTO_IDs[2],
-					"{{Collectible634}} Spawns %s Purgatory ghosts to immediately target enemies"
+					"{{Collectible634}} Genera %s Fantasmas del Purgatorio que atacan inmediatamente a los enemigos"
 				)
 			end
 		},
 		[Mod.Item.OLD_CAMERA.PHOTO_IDs[3]] = {
-			Name = "Possessed Photo",
+			Name = "Foto Poseida",
 			Description = function()
 				return modifiers[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]]._modifier(Mod.Item.OLD_CAMERA.PHOTO_IDs[3],
-				"{{Collectible634}} Spawns %s Purgatory ghosts to immediately target enemies"
+				"{{Collectible634}} Genera %s Fantasmas del Purgatorio que atacan inmediatamente a los enemigos"
 				)
 			end
 		}
