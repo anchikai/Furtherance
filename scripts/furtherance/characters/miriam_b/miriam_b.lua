@@ -42,6 +42,7 @@ function MIRIAM_B:OnPlayerInit(player)
 		deathAura:FollowParent(player)
 		deathAura:AddEntityFlags(EntityFlag.FLAG_PERSISTENT | EntityFlag.FLAG_DONT_OVERWRITE)
 		Mod:GetData(deathAura).MiriamBFearAura = true
+		Mod.Game:GetItemPool():RemoveCollectible(Mod.Item.POLARITY_SHIFT.ID_1)
 	end
 end
 

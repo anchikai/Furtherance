@@ -2,7 +2,6 @@
 <metadata>
     <name>Furtherance</name>
     <directory>furtherance</directory>
-    <id></id>
     <description>[img]https://imgur.com/9RMULvf.png[/img]
 A complete overhaul of the old Furtherance MOD originally released in 2022. Coded from the ground up under the experienced eye of a single coder with the power of REPENTOGON, this new release breathes new life into every corner of the original MOD to create a sizeable quality package of content.
 
@@ -72,12 +71,13 @@ Explodingturtle: Commissioned Benny to fix up this mod
 
 [url=https://steamcommunity.com/id/Warhamm2000]Warhamm[/url]: Commissioned to provide numerous new and refurbished sprites
 [url=https://steamcommunity.com/profiles/76561198211529504]Ferpe[/url]: Thumbnail artist, and a few other misc sprites
+[url=https://steamcommunity.com/profiles/76561198371196314]Muffin Tea[/url]: Most of the new item costume sprites
 
 [h2]Special Thanks[/h2]
 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3012430463]The Epiphany team[/url]! Many of Furtherance's handy tools and helper code files come from Epiphany
 
 [img]https://imgur.com/WH2LUbP.png[/img]</description>
-    <version>1.26</version>
+    <version>1.0</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Items"/>
