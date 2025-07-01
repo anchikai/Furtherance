@@ -2,71 +2,81 @@
 <metadata>
     <name>Furtherance</name>
     <directory>furtherance</directory>
-    <id>2737123333</id>
-    <description>[h1]The Binding of Isaac: Furtherance is a modded expansion that adds a flavorful amount of new content![/h1]
+    <id></id>
+    <description>[img]https://imgur.com/9RMULvf.png[/img]
+A complete overhaul of the old Furtherance MOD originally released in 2022. Coded from the ground up under the experienced eye of a single coder with the power of REPENTOGON, this new release breathes new life into every corner of the original MOD to create a sizeable quality package of content.
 
-[h2]Features[/h2]
-- 42 Passive Items
-- 26 Active Items
-- 20 Trinkets
-- 3 Characters w/ Tainted Counterparts: Leah, Peter, &amp; Miriam
-- Unlocks for all Characters
-- Mod Config Menu Support
-- EID Suppport
-- Encyclopedia Support
-- Pog Support
-- And more to come!
+[h2]Features:[/h2]
+[list]
+[*]3 characters and 3 tainted characters
+[*]Full completion mark unlocks for all characters
+[*]90 items
+[*]20 trinkets
+[*]20 cards and runes
+[/list]
 
-[h1]I strongly recommend you play this mod with EID and Encyclopedia installed![/h1]
-[h3]Here is the [url=https://github.com/anchikai/Furtherance]github page[/url] for Furtherance, including a [url=https://github.com/anchikai/Furtherance/wiki]wiki[/url][/h3]
-[h3]And here you can join our [url=https://discord.gg/fy2ACyxDt6]Discord![/url][/h3]
+[img]https://imgur.com/SgnitFv.png[/img]
+Jacob's first wife
+Starts with Heart Renovator, a flowering representation of Leah's love
+Red health can overflow into a heart counter. Turn them into broken hearts and mend them with Heart Renovator to feel a little stronger, or leave them broken to get your tears flowing
 
-[h3]Supported Languages (With EID)[/h3]
-- [b]English[/b]
-- [b]Spanish[/b]
-- [b]Russian[/b]
+[img]https://imgur.com/OOclQB2.png[/img]
+One of the twelve apostles of Christianity
+Starts with Keys to the Kingdom, a gift from the angels to open the gates of heaven
+Use it to spare enemies. Bosses take longer to spare. Has special interactions with angels and in devil rooms!
 
-[h2]Configuration[/h2]
-Simply install [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2681875787]Mod Config Menu[/url]
+[img]https://imgur.com/VBeVhFO.png[/img]
+Moses' sister and the first female Jewish prophetess
+Starts with Polydipsisa and Tambourine, overflowing with water and shaking enemies off your tail
+Shoot large arcing tears that leave damaging puddles. Puddles that touch have their lifetime extended!
+Tambourine inflicts knockback to nearby enemies and briefly creates a gigantic puddle to help increase the lifetime of other puddles
 
-[h2]The Team[/h2]
-- anchikai.
-- BrakeDude
-- oddvio
-- PixelPlz
-- poody_blue
-- Shoop
-- Soaring__Sky
-- thedemisemihemidemisemiquaver
+[h2]Mod Compatibility[/h2]
+[list]
+[*]EID (Full English support. Translators are welcome to help!)
+[*]Fiend Folio
+[*]Epiphany
+[*]The Future
+[*]Pog For Good Items
+[*]And more!
+[/list]
 
-[h2]Contributors[/h2]
-- AgentDrako
-- Akad
-- Aladar
-- kittenchilly
-- Kotry
-- lambchop_is_ok
-- Rack_Jet
-- RogueWatermelon
-- shrkiツ
-- Sillst
-- ThePolarPorfim
+[h2]Links[/h2]
+We have a Discord Server where you can talk with the team and other fans of the mod
+[url=discord.gg/fy2ACyxDt6]Join here![/url]
 
-[h2]Contributions from the Community[/h2]
-- Aeronaut
-- DLNT
-- Freg
-- HoneyVee
-- Joply
-- nightshade
-- retro100
-- SybilScribble
-- Tesseract
+We have a Wiki on the Modding of Isaac Wiki...but it's heavily WIP!
+Check the wiki [url=https://moddingofisaac.wiki.gg/wiki/User:BenevolusGoat/Furtherance]here[/url] if you wish to check it out anyways
+A wiki on Furtherance will also come soon to IsaacGuru
 
+[h2]Credits[/h2]
+[img]https://imgur.com/zviAv2l.png[/img]
+[url=https://steamcommunity.com/id/benevolusgoat/]Benny[/url]: Coded almost everything
 
-[h3]Disclaimer![/h3]
-Furtherance isn't always consisting of brand new content, as we often take content from our past mods &amp; content and apply them to this pack. If any of our concepts appear again but in another mod, we did not copy them- do your homework (eg. Andromeda's astrological signs vs. [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2500898099]our own[/url], ours predating Andromeda by almost a year).
-Quite a handful of people on this team are not well-versed in the modding community, anyway. Thus, we will not remove or readily change content that is coincidentally similar to something someone else happened to repeat. As much as we love modding and respect this community, we will not cater to anyone at our own expense- wouldn't you, or maybe even aren't you doing the same?</description>
+[img]https://imgur.com/GOhI8Jb.png[/img]
+Explodingturtle: Commissioned Benny to fix up this mod
+
+[img]https://imgur.com/wQt6ed5.png[/img]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=2737123333]The original Furtherance Team[/url]
+(Left to right, top to bottom)
+[list]
+[*]Demi (Spriter)
+[*]anchikai (Lead Dev, Coder)
+[*]oddivo (Designer)
+[*]poody_blue (Spriter)
+[*]Shoop (Coder)
+[*]BrakeDude (Coder)
+[*]Sky (Designer)
+[*]PixelPiz (Spriter, Coder)
+[/list]
+
+[url=https://steamcommunity.com/id/Warhamm2000]Warhamm[/url]: Commissioned to provide numerous new and refurbished sprites
+[url=https://steamcommunity.com/profiles/76561198211529504]Ferpe[/url]: Thumbnail artist, and a few other misc sprites
+
+[h2]Special Thanks[/h2]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3012430463]The Epiphany team[/url]! Many of Furtherance's handy tools and helper code files come from Epiphany
+
+[img]https://imgur.com/WH2LUbP.png[/img]</description>
     <version>1.26</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
