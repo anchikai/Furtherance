@@ -5,14 +5,14 @@ return function(modifiers)
 		[Mod.Pill.HEARTACHE.ID_UP] = {
 			Name = "Más Dolor de Corazón",
 			Description = {
-				"↓ {{BrokenHeart}} +1 Corazon Roto"
+				"↓ {{BrokenHeart}} +1 Corazón Roto"
 			}
 
 		},
 		[Mod.Pill.HEARTACHE.ID_DOWN] = {
 			Name = "Menos Dolor de Corazón",
 			Description = {
-				"↑ {{BrokenHeart}} -1 Corazon Roto"
+				"↑ {{BrokenHeart}} -1 Corazón Roto"
 			}
 
 		},

@@ -11,8 +11,8 @@ return function(modifiers)
 		[Mod.Card.CHARITY.ID] = {
 			Name = "XXIV - Caridad",
 			Description = {
-				"{{Collectible464}} Otorga a Isaac lo que necesita mas 3 veces",
-				"#Si tiene lo que necesita en vida y recolectables, incrementa su peor estadistica en su lugar"
+				"{{Collectible464}} Otorga a Isaac lo que más necesita 3 veces",
+				"#Si tiene lo que necesita en vida y recolectables, incrementa su peor estadística en su lugar"
 			}
 		},
 		[Mod.Card.FAITH.ID] = {
@@ -31,7 +31,7 @@ return function(modifiers)
 		[Mod.Card.HOPE.ID] = {
 			Name = "XXIII - Esperanza",
 			Description = {
-				"Por la duracion de la habitacion, los enemigos tienen un 20% de probabilidad de soltar un recolectable aleatorio al morir",
+				"Por la duración de la habitación, los enemigos tienen un 20% de probabilidad de soltar un recolectable aleatorio al morir",
 				"#los recolectables soltados no pueden ser objetos, cofres o trinkets"
 			}
 		},
@@ -44,7 +44,7 @@ return function(modifiers)
 		[Mod.Card.REVERSE_CHARITY.ID] = {
 			Name = "XXIV - Caridad?",
 			Description = {
-				"Duplica todos los recolectables en la habitacion y los convierte en objetos de tienda"
+				"Duplica todos los recolectables en la habitación y los convierte en objetos de tienda"
 			}
 		},
 		[Mod.Card.REVERSE_FAITH.ID] = {
@@ -56,7 +56,7 @@ return function(modifiers)
 		[Mod.Card.REVERSE_HOPE.ID] = {
 			Name = "XXIII - Esperanza?",
 			Description = {
-				"Teletransporta a Isaac a una habitacion de desafio extra"
+				"Teletransporta a Isaac a una habitación de desafio extra"
 			}
 		},
 		[Mod.Card.TRAP_CARD.ID] = {
@@ -74,20 +74,20 @@ return function(modifiers)
 		[Mod.Rune.ESSENCE_OF_DEATH.ID] = {
 			Name = "Esencia de la Muerte",
 			Description = {
-				"{{Collectible693}} Mata a todo enemigo no-jefe en la habitacion y genera una mosca orbital por cada uno"
+				"{{Collectible693}} Mata a todo enemigo no-jefe en la habitación y genera una mosca orbital por cada uno"
 			}
 		},
 		[Mod.Rune.ESSENCE_OF_DELUGE.ID] = {
 			Name = "Esencia del Diluvio",
 			Description = {
-				"Genera 15 gotas de lluvia encima de cada enemigo en la habitacionen el transcurso de 5 segundos",
-				"#{{Slow}} Las gotas de lluvia realentizan enemigos e inflingen el 66% del daño de Isaac"
+				"Genera 15 gotas de lluvia encima de cada enemigo en la habitación en el transcurso de 5 segundos",
+				"#{{Slow}} Las gotas de lluvia ralentizan enemigos e inflingen el 66% del daño de Isaac"
 			}
 		},
 		[Mod.Rune.ESSENCE_OF_DROUGHT.ID] = {
 			Name = "Esencia de la Sequía",
 			Description = {
-				"{{BleedingOut}} Inflige sangrado permanente a todo enemigo no jefe en la habitacion, los jefes sangran por 5 segundo ",
+				"{{BleedingOut}} Inflige sangrado permanente a todo enemigo no jefe en la habitación, los jefes sangran por 5 segunds ",
 				"#{{Freezing}} Los enemigos se vuelven estatuas congeladas al morir"
 			}
 		},
@@ -102,24 +102,24 @@ return function(modifiers)
 		[Mod.Rune.ESSENCE_OF_LIFE.ID] = {
 			Name = "Esencia de la Vida",
 			Description = {
-				"{{Collectible658}} Genera 1 miniIsaac por cada enemigo en la habitacion",
+				"{{Collectible658}} Genera 1 miniIsaac por cada enemigo en la habitación",
 			}
 		},
 		[Mod.Rune.ESSENCE_OF_LOVE.ID] = {
 			Name = "Esencia del Amor",
 			Description = {
-				"{{Friendly}} Vuelve todo enemigo no-jefe en la habitacion en un aliado permanente"
+				"{{Friendly}} Vuelve todo enemigo no-jefe en la habitación en un aliado permanente"
 			}
 		},
 		[Mod.Rune.SOUL_OF_LEAH.ID] = {
 			Name = "Alma de Leah",
 			Description = {
-				"↑ El maximo de contenedores de corazon aumenta en 3",
+				"↑ El máximo de contenedores de corazon aumenta en 3",
 				"#↓ {{BrokenHeart}} +3 Corazones Rotos",
-				"#!!! No aumenta el maximo de corazones mas de 24, pero si otorgara los corazones rotos",
+				"#!!! No puede aumentar el máximo de corazones más de 24, pero si otorgará los corazones rotos",
 				function(descObj)
 					return modifiers[Mod.Rune.SOUL_OF_LEAH.ID]._modifier(descObj,
-						"Solo incrementa el maximo de corazones por 1 y otorga 1 corazon roto moneda"
+						"Solo incrementa el máximo de corazones por 1 y otorga 1 corazón roto moneda"
 					)
 				end
 			}
@@ -128,15 +128,15 @@ return function(modifiers)
 			Name = "Alma de Miriam",
 			Description = {
 				"Empieza a llover y llena la habitacion de agua",
-				"#A damaging creep crecera infinitamente en el centro de la habitacion",
+				"#Un creep dañino crecerá infinitamente en el centro de la habitación",
 				"#dura 40 segundos entre habitaciones y pisos"
 			}
 		},
 		[Mod.Rune.SOUL_OF_PETER.ID] = {
 			Name = "Alma de Peter",
 			Description = {
-				"Añade 5 habitaciones aelatorias en el piso actual",
-				"#Las habitaciones tienen un 10% de probabilidad de ser una habitacion especial",
+				"Añade 5 habitaciones aleatorias en el piso actual",
+				"#Las habitaciones tienen un 10% de probabilidad de ser una habitación especial",
 			}
 		},
 		[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]] = {
@@ -156,7 +156,7 @@ return function(modifiers)
 			end
 		},
 		[Mod.Item.OLD_CAMERA.PHOTO_IDs[3]] = {
-			Name = "Foto Poseida",
+			Name = "Foto Poseída",
 			Description = function()
 				return modifiers[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]]._modifier(Mod.Item.OLD_CAMERA.PHOTO_IDs[3],
 				"{{Collectible634}} Genera %s Fantasmas del Purgatorio que atacan inmediatamente a los enemigos"

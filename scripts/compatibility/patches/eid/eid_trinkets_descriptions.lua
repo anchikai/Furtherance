@@ -43,6 +43,7 @@ local modifiers = {
 }
 local descriptions = {
 	en_us = Mod.Include("scripts.compatibility.patches.eid.eid_trinkets.trinkets_en_us")(modifiers),
+	spa = Mod.Include("scripts.compatibility.patches.eid.eid_trinkets.trinekts_spa")(modifiers),
 }
 
 local descData = {}
