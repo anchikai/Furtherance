@@ -373,5 +373,9 @@ end
 ---@param slot ActiveSlot
 function Furtherance:ActiveUsesCarBattery(player, slot)
 	return player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY)
-		or Epiphany and Epiphany.API:HasGoldenItem(player:GetActiveItem(slot), player, slot)
+		or Epiphany and (
+			Epiphany.API.HasGoldenItem
+			and Epiphany.API:HasGoldenItem(player:GetActiveItem(slot), player, slot)
+			or Epiphany.API:IsGoldenItem(player:GetActiveItem(slot))
+		)
 end
