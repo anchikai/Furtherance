@@ -2,6 +2,7 @@
 <metadata>
     <name>Furtherance</name>
     <directory>furtherance</directory>
+    <id>3513706025</id>
     <description>[img]https://imgur.com/9RMULvf.png[/img]
 A complete overhaul of the old Furtherance MOD originally released in 2022. Coded from the ground up under the experienced eye of a single coder with the power of REPENTOGON, this new release breathes new life into every corner of the original MOD to create a sizeable quality package of content.
 
@@ -13,7 +14,7 @@ A complete overhaul of the old Furtherance MOD originally released in 2022. Code
 [*]Full completion mark unlocks for all characters
 [*]90 items
 [*]20 trinkets
-[*]20 cards and runes
+[*]20+ pickups, including cards, runes, and more!
 [/list]
 
 [img]https://imgur.com/SgnitFv.png[/img]
@@ -77,7 +78,7 @@ Flacker01 and HazyWonder: Playtesters who helped find lots of bugs!
 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3012430463]The Epiphany team[/url]! Many of Furtherance's handy tools and helper code files come from Epiphany
 
 [img]https://imgur.com/WH2LUbP.png[/img]</description>
-    <version>1.0</version>
+    <version>1.1</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Items"/>
@@ -88,8 +89,6 @@ Flacker01 and HazyWonder: Playtesters who helped find lots of bugs!
     <tag id="Pickups"/>
     <tag id="Player Characters"/>
     <tag id="Familiars"/>
-    <tag id="Enemies"/>
-    <tag id="Challenges"/>
     <tag id="Shaders"/>
     <tag id="Sound Effects"/>
 </metadata>
