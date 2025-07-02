@@ -334,7 +334,6 @@ function SaveManager.Utility.GetSaveIndex(ent, allowSoulSave)
 			if player:GetPlayerType() == PlayerType.PLAYER_LAZARUS2_B then
 				id = 2
 				if player.FrameCount == 0 then
-					print(game:GetNumPlayers(), Isaac.GetPlayer(game:GetNumPlayers() - 1):GetPlayerType())
 					identifier = tostring(Isaac.GetPlayer(game:GetNumPlayers() - 1):GetCollectibleRNG(2):GetSeed())
 				end
 			end
