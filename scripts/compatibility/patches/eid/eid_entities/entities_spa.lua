@@ -60,26 +60,26 @@ return function(modifiers)
 						function(descObj)
 							return modifiers[EntityType.ENTITY_SLOT][Mod.Slot.LOVE_TELLER.ID][0]._modifier({
 								[PlayerType.PLAYER_ISAAC] = "Ocasionalmente otorga temporalmente {{Collectible206}} Guillotina",
-								[PlayerType.PLAYER_MAGDALENE] = "Ocasionalmente activa {{Collectible45}} Yum Heart",
-								[PlayerType.PLAYER_CAIN] = "Occasionally refunds keys used on chests",
-								[PlayerType.PLAYER_JUDAS] = "Ocasionalmente activa {{Collectible34}} Book of Belial",
-								[PlayerType.PLAYER_BLUEBABY] = "Ocasionalmente otorga temporalmente {{Collectible248}} Hive Mind",
-								[PlayerType.PLAYER_EVE] = "Ocasionalmente otorga temporalmente el efecto {{Collectible122}} Whore of Babylon effect",
-								[PlayerType.PLAYER_SAMSON] = "Ocasionalmente otorga temporalmente {{Collectible157}} Blood Lust with +3 hits",
-								[PlayerType.PLAYER_AZAZEL] = "Ocasionalmente otorga temporalmente el efecto {{Trinket162}} Azazel's Stump effect",
-								[PlayerType.PLAYER_LAZARUS] = "Ocasionalmente otorga temporalmente el efecto {{Collectible214}} Anemic effect",
+								[PlayerType.PLAYER_MAGDALENE] = "Ocasionalmente activa {{Collectible45}} Corazón delicioso",
+								[PlayerType.PLAYER_CAIN] = "Ocasionalmente devuelve las llaves usadas en cofre",
+								[PlayerType.PLAYER_JUDAS] = "Ocasionalmente activa {{Collectible34}} Libro de Belial",
+								[PlayerType.PLAYER_BLUEBABY] = "Ocasionalmente otorga temporalmente {{Collectible248}} Mente Colmena",
+								[PlayerType.PLAYER_EVE] = "Ocasionalmente otorga temporalmente el efecto {{Collectible122}} Ramera de Babilonia",
+								[PlayerType.PLAYER_SAMSON] = "Ocasionalmente otorga temporalmente {{Collectible157}} Lujuria de Sangre con +3 golpes",
+								[PlayerType.PLAYER_AZAZEL] = "Ocasionalmente otorga temporalmente el efecto {{Trinket162}} Muñon de Azazel",
+								[PlayerType.PLAYER_LAZARUS] = "Ocasionalmente otorga temporalmente el efecto {{Collectible214}} Anemico",
 								[PlayerType.PLAYER_EDEN] = "Se vuelve un familiar de Contador del amor al azar. Despues de activar su efecto se convertira en otro al azar",
-								[PlayerType.PLAYER_THELOST] = "Ocasionalmente otorga temporalmente un {{Collectible313}} mantle shield. Cannot grant another until the shield breaks",
-								[PlayerType.PLAYER_LILITH] = "Ocasionalmente activa {{Collectible357}} Box of Friends",
-								[PlayerType.PLAYER_KEEPER] = "Ocasionalmente otorga temporalmente {{Collectible450}} Eye of Greed",
+								[PlayerType.PLAYER_THELOST] = "Ocasionalmente otorga temporalmente un {{Collectible313}} Manto Sagrado. No puede otorgar otro hasta que el anterior se rompa",
+								[PlayerType.PLAYER_LILITH] = "Ocasionalmente activa {{Collectible357}} Cajon de Amigos",
+								[PlayerType.PLAYER_KEEPER] = "Ocasionalmente otorga temporalmente {{Collectible450}} Ojo de Codicia",
 								[PlayerType.PLAYER_APOLLYON] = "Ocasionalmente Genera un Locust al azar",
-								[PlayerType.PLAYER_THEFORGOTTEN] = "Occasionally swaps between bone and soul form, each shooting different tears",
-								[PlayerType.PLAYER_BETHANY] = "Ocasionalmente otorga temporalmente {{Collectible584}} Book of Virtues",
-								[PlayerType.PLAYER_JACOB] = "Ocasionalmente activa {{Collectible687}} Friend Finder",
-								[PlayerType.PLAYER_ESAU] = "Ocasionalmente otorga temporalmente un pequeño efecot de {{Collectible621}} Red Stew effect",
-								[Mod.PlayerType.LEAH] = "Ocasionalmente activa {{Collectible" .. Mod.Item.HEART_RENOVATOR.ID .. "}} Heart Renovator",
-								[Mod.PlayerType.PETER] = "Ocasionalmente activa {{Collectible" .. Mod.Item.KEYS_TO_THE_KINGDOM.ID .. "}} Keys to the Kingdom on a single non-boss target",
-								[Mod.PlayerType.MIRIAM] = "Ocasionalmente activa {{Collectible" .. Mod.Item.TAMBOURINE.ID .. "}} Tambourine",
+								[PlayerType.PLAYER_THEFORGOTTEN] = "Ocasionalmente cambia entre la forma hueso y la forma alma, cada uno dispara lagrimas distintas",
+								[PlayerType.PLAYER_BETHANY] = "Ocasionalmente otorga temporalmente {{Collectible584}} Libro de virtudes",
+								[PlayerType.PLAYER_JACOB] = "Ocasionalmente activa {{Collectible687}} Buscador de Amigos",
+								[PlayerType.PLAYER_ESAU] = "Ocasionalmente otorga temporalmente un pequeño efecto de {{Collectible621}} Guisado Rojo",
+								[Mod.PlayerType.LEAH] = "Ocasionalmente activa {{Collectible" .. Mod.Item.HEART_RENOVATOR.ID .. "}} Reneuva Corazon",
+								[Mod.PlayerType.PETER] = "Ocasionalmente activa {{Collectible" .. Mod.Item.KEYS_TO_THE_KINGDOM.ID .. "}} Llaves al reino en un solo enemigo no-jefe ",
+								[Mod.PlayerType.MIRIAM] = "Ocasionalmente activa {{Collectible" .. Mod.Item.TAMBOURINE.ID .. "}} Pandereta",
 							})
 						end
 					}
@@ -87,12 +87,12 @@ return function(modifiers)
 			},
 			[Mod.Slot.ESCORT_BEGGAR.SLOT] = {
 				[0] = {
-					Name = "Escort Beggar",
+					Name = "Mendigo Escoltado",
 					Description = {
-						"Can be picked up and carried to the requested special room on the floor for a reward from their {{ItemPoolEscortBeggar}} Item Pool",
-						"#{{Throwable}} Throw against enemies to knock them back for 5 damage",
-						"#!!! Can take damage and will die after 3 hits",
-						"#!!! Will be abducted if left in a previous room for too long"
+						"Puede ser recogido y llevado a la habitacion especial pedida para una recomepsa de su {{ItemPoolEscortBeggar}} Item Pool",
+						"#{{Throwable}} Tiralo contra enemigos para que sean empujados con 5 de daño",
+						"#!!! Puede recibir daño y morira en 3 golpes",
+						"#!!! Sera abducidp si se deja en la habitacion anterior mucho tiempo"
 					}
 				}
 			},
