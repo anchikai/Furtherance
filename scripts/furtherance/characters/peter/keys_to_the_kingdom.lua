@@ -270,7 +270,6 @@ end
 ---@param player EntityPlayer
 function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 	local room = Mod.Room()
-	local failedToRapture = true
 	local shouldGrantMantle = Isaac.RunCallback(Mod.ModCallbacks.KTTK_GRANT_HOLY_MANTLE)
 
 	if KEYS_TO_THE_KINGDOM:DenyHisOfferings(player) then
@@ -295,21 +294,14 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 					return
 				end
 				local raptureCountdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, npc)
-				local addedStatus = SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil, { MaxCountdown = raptureCountdown })
-				if addedStatus then
-					failedToRapture = false
-				end
+				SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil, { MaxCountdown = raptureCountdown })
 			elseif canSpare and npc:Exists() then
-				failedToRapture = false
 				KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
 				if npc.SpawnerType == EntityType.ENTITY_NULL then
 					KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, 1, true)
 				end
 			end
 		end, nil, nil, nil, { Inverse = true })
-	end
-	if failedToRapture then
-		Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
 	end
 	return true
 end
