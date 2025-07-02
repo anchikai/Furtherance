@@ -198,7 +198,7 @@ function MUDDLED_CROSS:ChargeOnEnemyDeath(ent)
 	if Mod.Character.PETER_B.FLIP:IsRoomEffectActive() and effects:HasCollectibleEffect(MUDDLED_CROSS.ID) then
 		Mod:DelayOneFrame(function()
 			local aliveFlippedEnemies = Mod.Foreach.NPC(function (npc, index)
-				if GetPtrHash(npc) ~= GetPtrHash(ent) and Mod:GetData(npc).PeterFlipped then
+				if GetPtrHash(npc) ~= GetPtrHash(ent) and Mod:GetData(npc).PeterFlipped or Mod.Character.PETER_B.FLIP:ShouldIgnoreEnemy(npc) then
 					return true
 				end
 			end, nil, nil, nil, {UseEnemySearchParams = true})

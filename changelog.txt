@@ -2,6 +2,7 @@ v1.0.1
 Changes
 - Removed error buzz when Keys to the Kingdom fails to spare any enemies in the room
 - Spotlights that appear when using Keys to the Kingdom on bosses no longer appear on every enemy in a parent-child chain (Larry Jr., Chub, etc)
+- T. Peter's flip no longer instantly flips back upon killing an enemy if there are enemies in the room that are un-flippable
 
 Fixes
 - Fixed Peter's soul hearts being absorbed into Keys to the Kingdom when continuing a run if not fully charged
