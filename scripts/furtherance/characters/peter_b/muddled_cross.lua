@@ -164,11 +164,11 @@ function MUDDLED_CROSS:TimedRecharge(player)
 	end
 	local slots = Mod:GetActiveItemSlots(player, MUDDLED_CROSS.ID)
 	for _, slot in ipairs(slots) do
-		player:AddActiveCharge(1, slot, false, false, true)
-		if player:GetActiveCharge(slot) == MUDDLED_CROSS.MAX_CHARGES and player:GetBatteryCharge(slot) == 0 then
+		if player:GetActiveCharge(slot) == MUDDLED_CROSS.MAX_CHARGES - 1 then
 			Mod.HUD:FlashChargeBar(player, slot)
 			Mod.SFXMan:Play(SoundEffect.SOUND_BEEP)
 		end
+		player:AddActiveCharge(1, slot, false, false, true)
 	end
 end
 

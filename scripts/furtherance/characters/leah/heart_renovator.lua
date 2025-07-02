@@ -181,6 +181,11 @@ function HEART_RENOVATOR:AddExtraRedHealth(player, amount)
 		local willOverflow, newAmount = HEART_RENOVATOR:GetOverflowAmount(player, amount, false)
 
 		if willOverflow then
+			--Situations that would induce a full heal push an amount of 99.
+			--Just to be safe, anything at or past the regular expected max health should be declined.
+			if amount > 48 then
+				return
+			end
 			HEART_RENOVATOR:AddToCounter(player, newAmount)
 		end
 	end

@@ -1,0 +1,15 @@
+v1.0.1
+Changes
+- Removed error buzz when Keys to the Kingdom fails to spare any enemies in the room
+- Spotlights that appear when using Keys to the Kingdom on bosses no longer appear on every enemy in a parent-child chain (Larry Jr., Chub, etc)
+
+Fixes
+- Fixed Peter's soul hearts being absorbed into Keys to the Kingdom when continuing a run if not fully charged
+- Fixed Keys to the Kingdom returning an error when attempting to spawn dust clouds for bosses with an odd-numbered hitbox size
+- Fixed E Key's EID entry having a missing texture markup. Now has a Giga Bomb icon as intended
+- Fixed an error with T. Peter if you had a costume on that overrode your default hair costume
+- Fixed Muddled Cross constantly making beeping noises while fully charged in uncleared rooms
+- Fixed full heals such as XIX - The Sun completely filling the Heart Renovator heart counter
+
+v1.0
+Release!
