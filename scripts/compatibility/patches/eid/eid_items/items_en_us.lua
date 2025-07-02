@@ -313,7 +313,7 @@ return function(modifiers)
 		[Item.KEY_E.ID] = {
 			Name = "E Key",
 			Description = {
-				"{{GigaBomb}} Spawns a lit Giga Bomb"
+				"{{Crafting17}} Spawns a lit Giga Bomb"
 			}
 		},
 		[Item.KEY_ENTER.ID] = {
