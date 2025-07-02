@@ -177,7 +177,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, HEART_RENOVATOR.ConsumeHeart
 ---@param player EntityPlayer
 ---@param amount integer
 function HEART_RENOVATOR:AddExtraRedHealth(player, amount)
-	if player:HasCollectible(HEART_RENOVATOR.ID) and amount > 0 then
+	if player:HasCollectible(HEART_RENOVATOR.ID) and amount > 0 and player.FrameCount > 0 then
 		local willOverflow, newAmount = HEART_RENOVATOR:GetOverflowAmount(player, amount, false)
 
 		if willOverflow then

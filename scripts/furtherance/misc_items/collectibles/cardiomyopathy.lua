@@ -37,7 +37,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_COLLISION, CARDIOMYOPATHY.CollectHea
 ---@param player EntityPlayer
 ---@param amount integer
 function CARDIOMYOPATHY:ConvertBoneHearts(player, amount)
-	if amount > 0 and player:HasCollectible(CARDIOMYOPATHY.ID) and player:GetHealthType() ~= HealthType.BONE then
+	if amount > 0 and player:HasCollectible(CARDIOMYOPATHY.ID) and player:GetHealthType() ~= HealthType.BONE and player.FrameCount > 0 then
 		player:AddMaxHearts(amount * 2)
 		return 0
 	end

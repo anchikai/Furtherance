@@ -54,7 +54,7 @@ local function lostAndForgottenPatch()
 	Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, CallbackPriority.EARLY, weirdBeggarOnTouch)
 
 	local function preventHealthLoss(_, player, amount, healthtype)
-		if Mod:GetData(player).AltruismPreventWeirdBeggar then
+		if Mod:GetData(player).AltruismPreventWeirdBeggar and amount < 0 then
 			return 0
 		end
 	end
