@@ -92,7 +92,7 @@ return function(modifiers)
 						"Puede ser recogido y llevado a la habitacion especial pedida para una recomepsa de su {{ItemPoolEscortBeggar}} Item Pool",
 						"#{{Throwable}} Tiralo contra enemigos para que sean empujados con 5 de daño",
 						"#!!! Puede recibir daño y morira en 3 golpes",
-						"#!!! Sera abducidp si se deja en la habitacion anterior mucho tiempo"
+						"#!!! Sera abducido si se deja en la habitacion anterior mucho tiempo"
 					}
 				}
 			},
