@@ -136,11 +136,13 @@ SEL.Callbacks.AddCallback(SEL.Callbacks.ID.PRE_ADD_ENTITY_STATUS_EFFECT,
 	KEYS_TO_THE_KINGDOM.OnPreStatusEffectAdd, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 
 function KEYS_TO_THE_KINGDOM:OnStatusEffectAdd(ent, _, statusEffectData)
-	local spotlight = Mod.Spawn.Effect(KEYS_TO_THE_KINGDOM.EFFECT, KEYS_TO_THE_KINGDOM.SPOTLIGHT, ent.Position, nil, ent)
-	spotlight.Parent = ent
-	spotlight:FollowParent(ent)
-	spotlight:GetSprite().Scale = Vector(1.25, 1.25)
-	statusEffectData.CustomData.Spotlight = EntityPtr(spotlight)
+	if GetPtrHash(ent) == GetPtrHash(StatusEffectLibrary.Utils.GetLastParent(ent)) then
+		local spotlight = Mod.Spawn.Effect(KEYS_TO_THE_KINGDOM.EFFECT, KEYS_TO_THE_KINGDOM.SPOTLIGHT, ent.Position, nil, ent)
+		spotlight.Parent = ent
+		spotlight:FollowParent(ent)
+		spotlight:GetSprite().Scale = Vector(1.25, 1.25)
+		statusEffectData.CustomData.Spotlight = EntityPtr(spotlight)
+	end
 end
 
 SEL.Callbacks.AddCallback(SEL.Callbacks.ID.POST_ADD_ENTITY_STATUS_EFFECT,
@@ -392,7 +394,8 @@ function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 		if #slots == 0 then return end
 		for _, slotData in ipairs(slots) do
 			if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES then
-				if npc:IsBoss() and not (Mod:GetData(npc) and Mod:GetData(npc).Raptured) then
+				local data = Mod:TryGetData(npc)
+				if npc:IsBoss() and not (data and data.Raptured) then
 					KEYS_TO_THE_KINGDOM:SpawnBossSoulCharge(npc, player)
 				else
 					KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(npc, player)
