@@ -4,147 +4,143 @@ local Trinket = Mod.Trinket
 return function(modifiers)
 	return {
 		[Trinket.ABYSSAL_PENNY.ID] = {
-			Name = "Abyssal Penny",
+			Name = "Penique Abisal",
 			Description = {
-				"Picking up a coin spawns a damaging creep, dealing 40 damage per second",
-				"#Creep size and duration scales with the value of the coin"
+				"Recoger una moneda genera un charco dañino que inflige 40 de daño por segundo",
+				"#El tamaño varía dependiendo del valor de la moneda"
 			}
 		},
 		[Trinket.ALABASTER_SCRAP.ID] = {
-			Name = "Alabaster Scrap",
+			Name = "Chatarra de Alabastro",
 			Description = {
-				"↑ {{Damage}} +0.5 Damage for every item that counts towards the {{Seraphim}} Seraphim transformation"
+				"↑ {{Damage}} +0.5 de daño por cada objeto que cuente para la transformación {{Seraphim}} Serafín"
 			}
 		},
 		[Trinket.ALMAGEST_SCRAP.ID] = {
-			Name = "Almagest Scrap",
+			Name = "Chatarra de Almagesto",
 			Description = {
-				"{{Planetarium}} Treasure Rooms are replaced with Planetariums",
-				"#{{BrokenHeart}} Items inside grant broken hearts",
+				"{{Planetarium}} Las habitaciones del tesoro se convierten en planetarios",
+				"#{{BrokenHeart}} Los objetos dentro otorgan corazones rotos",
 				function(descObj)
 					return modifiers[Trinket.ALMAGEST_SCRAP.ID]._modifier(descObj,
-						"Items inside are free"
+						"Los objetos dentro son gratuitos"
 					)
 				end
 			}
 		},
 		[Trinket.ALTRUISM.ID] = {
-			Name = "Altruism",
+			Name = "Altruismo",
 			Description = {
-				"25% chance to heal Isaac for a {{HalfHeart}} Half Red Heart or refund the price Isaac paid to a beggar"
+				"25% de probabilidad de curar a Isaac {{HalfHeart}} medio corazón rojo o devolver el precio pagado a un mendigo"
 			}
 		},
 		[Trinket.BI_84.ID] = {
 			Name = "BI-84",
 			Description = {
-				"{{Collectible68}} 25% chance to grant a random Technology-related item for the room"
+				"{{Collectible68}} 25% de probabilidad de obtener un objeto coleccionable relacionado con tecnología por habitación",
 			}
 		},
 		[Trinket.CRINGE.ID] = {
 			Name = "Cringe",
 			Description = {
-				"{{Petrify}} Taking damage petrifies all enemies in the room for 2 seconds",
-				"#Replaces Isaac's hurt sounds with the \"Bruh\" sound effect"
+				"{{Petrify}} Petrifica a todos los enemigos en la habitación durante 2 segundos al recibir daño",
+				"#Cambia el sonido al recibir daño por \"Bruh\""
 			}
 		},
 		[Trinket.DUNGEON_KEY.ID] = {
-			Name = "Dungeon Key",
+			Name = "Llave de Mazmorra",
 			Description = {
-				"Opens Challenge Room doors regardless of Isaac's health"
+				"Las habitaciones de desafío estarán abiertas sin importar la vida de Isaac"
 			}
 		},
 		[Trinket.ESCAPE_PLAN.ID] = {
-			Name = "Escape Plan",
+			Name = "Plan de Escape",
 			Description = {
-				"Taking damage has a 10% chance to teleport Isaac to the starting room"
+				"Recibir daño tiene un 10% de probabilidad de teletransportar a Isaac a la habitación inicial"
 			}
 		},
 		[Trinket.GLITCHED_PENNY.ID] = {
-			Name = "Glitched Penny",
+			Name = "Penique Glitcheado",
 			Description = {
-				"Picking up a coin has a 25% chance to use a random active item",
-				"#{{Battery}} Only uses actives found in the {{TreasureRoom}} Treasure Room pool that have at least 1 charge"
+				"Recoger una moneda tiene un 25% de probabilidad de activar un objeto activo aleatorio",
+				"#{{Battery}} Solo utiliza objetos de {{TreasureRoom}} habitaciones del tesoro con más de 1 carga",
 			}
 		},
 		[Trinket.GRASS.ID] = {
-			Name = "Grass",
+			Name = "Hierba",
 			Description = {
-				"Replaces all prop decorations with grass",
-				"#Walking over grass grants a {{Speed}} +0.05 Speed up for the room"
+				"Reemplaza las decoraciones de la habitación con hierba",
+				"#Caminar sobre hierba otorga {{Speed}} +0.05 de velocidad por habitación"
 			}
 		},
 		[Trinket.HAMMERHEAD_WORM.ID] = {
-			Name = "Hammerhead Worm",
+			Name = "Gusano Cabeza de Martillo",
 			Description = {
-				"Isaac's tears are slightly randomized in damage, range, and shotspeed"
+				"Las lágrimas de Isaac obtienen rango, daño y velocidad de disparo ligeramente aleatorizados"
 			}
 		},
 		[Trinket.HOLY_HEART.ID] = {
-			Name = "Holy Heart",
+			Name = "Corazón Sagrado",
 			Description = {
-				"Picking up Soul, Black, or Eternal Hearts grants a {{Collectible313}} Holy Mantle shield",
-				"#{{HalfSoulHeart}} Half Soul Hearts and Blended Hearts only have a 50% chance to grant a shield",
+				"Recoger un corazón negro, de alma o eterno otorga un {{Collectible313}} escudo del manto sagrado",
+				"#{{HalfSoulHeart}} Medio corazón de alma o corazones mezclados solo tienen un 50% de probabilidad de otorgarlo",
 			}
 		},
 		[Trinket.LEAHS_LOCK.ID] = {
-			Name = "Leah's Lock",
+			Name = "Cerradura de Leah",
 			Description = {
-				"25% chance to fire {{Charm}} Charm or {{Fear}} Fear tears",
-				"#{{Luck}} 50% chance at 10 luck",
+				"25% de probabilidad de disparar lágrimas con efecto de {{Charm}} Encanto o {{Fear}} Miedo",
+				"#{{Luck}} 50% de probabilidad con 10 de suerte",
 				function(descObj)
-					local funy= modifiers[Trinket.LEAHS_LOCK.ID]._modifier(descObj,
-						"Can trigger both charm and fear at the same time"
+					local funy = modifiers[Trinket.LEAHS_LOCK.ID]._modifier(descObj,
+						"Ambos efectos pueden activarse a la vez"
 					)
 					return funy
 				end
 			}
 		},
 		[Trinket.LEVIATHANS_TENDRIL.ID] = {
-			Name = "Leviathan's Tendril",
+			Name = "Zarcillo del Leviatán",
 			Description = function(descObj)
 				return modifiers[Trinket.LEVIATHANS_TENDRIL.ID]._modifier(descObj, {
-						"%s chance to deflect projectiles away from Isaac, gaining homing and increased velocity",
-						"#{{Fear}} %s chance to inflict fear when near enemies",
+						"%s de probabilidad de desviar proyectiles lejos de Isaac, otorgando persecución y velocidad aumentada",
+						"#{{Fear}} %s de probabilidad de infligir Miedo a los enemigos cercanos",
 					},
-					"#{{Leviathan}} Additional +5% chance to each effect"
+					"#{{Leviathan}} +5% de probabilidad adicional para cada efecto"
 				)
 			end
 		},
 		[Trinket.NIL_NUM.ID] = {
-			Name = "Nil Num",
+			Name = "Número Nulo",
 			Description = {
-				"2% chance to get destroyed and spawn a duplicate of one of Isaac's passive items in his inventory when hit"
+				"2% de probabilidad de destruirse y crear un clon de un objeto pasivo en el inventario de Isaac"
 			}
 		},
 		[Trinket.PARASOL.ID] = {
 			Name = "Parasol",
 			Description = {
-				"All of Isaac's familiars block projectiles"
+				"Todos los familiares de Isaac bloquean proyectiles"
 			}
-
 		},
 		[Trinket.REBOUND_WORM.ID] = {
-			Name = "Rebound Worm",
+			Name = "Gusano de Rebote",
 			Description = {
-				"Tears ricochet off of walls and grid entities, firing at the closest enemy in range"
+				"Las lágrimas rebotan en las paredes y obstáculos, disparando al enemigo más cercano dentro del rango"
 			}
-
 		},
 		[Trinket.SALINE_SPRAY.ID] = {
-			Name = "Saline Spray",
+			Name = "Spray Salino",
 			Description = {
-				"{{Collectible596}} 5% chance to shoot freezing tears",
-				"#{{Luck}} 100% chance at 10 luck",
+				"{{Collectible596}} 5% de probabilidad de disparar lágrimas congelantes",
+				"#{{Luck}} 100% de probabilidad con 10 de suerte",
 			}
-
 		},
 		[Trinket.WORMWOOD_LEAF.ID] = {
-			Name = "Wormwood Leaf",
+			Name = "Hoja de Ajenjo",
 			Description = {
-				"10% chance to negate damage and turn Isaac into an invulnerable immobile statue for 2 seconds",
-				"#Grants Isaac a half second of invulnerability afterwards"
+				"10% de probabilidad de negar daño y convertir a Isaac en una estatua inmóvil durante 2 segundos",
+				"#Otorga medio segundo de invencibilidad después del efecto"
 			}
-
 		},
 	}
 end
