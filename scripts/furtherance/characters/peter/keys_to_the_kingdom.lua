@@ -1,8 +1,8 @@
 --#region Variables
-
 local Mod = Furtherance
 local SEL = StatusEffectLibrary
 local PETER = Mod.Character.PETER
+local floor = math.floor
 
 local KEYS_TO_THE_KINGDOM = {}
 
@@ -625,7 +625,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 		Mod:GetData(effect).RaptureCloud = true
 		effect.Color = Color(1, 1, 1, 1, 0.5, 0.5, 0.5)
 		effect:SetTimeout(30)
-		effect.PositionOffset = Vector(Mod:RandomNum(-npc.Size / 2, npc.Size / 2), Mod:RandomNum(-npc.Size, 0))
+		effect.PositionOffset = Vector(Mod:RandomNum(floor(-npc.Size / 2), floor(npc.Size / 2)), Mod:RandomNum(floor(-npc.Size), 0))
 	end
 
 	local spotlight = tryGetSpotlight(statusData)

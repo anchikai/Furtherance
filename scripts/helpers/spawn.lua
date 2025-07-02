@@ -258,6 +258,7 @@ end
 ---@param velocity? Vector
 ---@param spawner? Entity
 ---@param seed? integer
+---@return EntityEffect[]
 function Spawn.DustClouds(position, amount, velocity, spawner, seed)
 	local clouds = {}
 	for _ = 1, amount or 5 do
