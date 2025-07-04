@@ -1,63 +1,46 @@
 # The Binding of Isaac: Furtherance is a modded expansion that adds a flavorful amount of new content!
 
-## Features
-- 42 Passive Items
-- 26 Active Items
-- 20 Trinkets
-- 3 Characters w/ Tainted Counterparts: Leah, Peter, & Miriam
-- Unlocks for all Characters
-- Mod Config Menu Support
-- EID Suppport
-- Encyclopedia Support
-- Pog Support
-- And more to come!
+### Features:
+- 3 characters and 3 tainted characters
+- Full completion mark unlocks for all characters
+- 80 items
+- 20 trinkets
+- 20+ pickups, including cards, runes, and more!
 
-I strongly recommend you play this mod with EID and Encyclopedia installed!
-Here is the [wiki page](https://github.com/anchikai/Furtherance/wiki) for Furtherance.
-And here you can join our [Discord!](https://discord.gg/fy2ACyxDt6)
+### Leah
+Jacob's first wife. Starts with Heart Renovator, a flowering representation of Leah's love. Red health can overflow into a heart counter. Turn them into broken hearts and mend them with Heart Renovator to feel a little stronger, or leave them broken to get your tears flowing.
 
-## Supported Languages (With EID)
-- English
-- Spanish
-- Russian
+### Peter
+One of the twelve apostles of Christianity. Starts with Keys to the Kingdom, a gift from the angels to open the gates of heaven. Use it to spare enemies. Bosses take longer to spare. Has special interactions with angels and in devil rooms!
 
-## Configuration
-Simply install [Mod Config Menu](https://steamcommunity.com/sharedfiles/filedetails/?id=2681875787)
+### Miriam
+Moses' sister and the first female Jewish prophetess. Starts with Polydipsisa and Tambourine, overflowing with water and shaking enemies off your tail. Shoot large arcing tears that leave damaging puddles. Puddles that touch have their lifetime extended!. Tambourine inflicts knockback to nearby enemies and briefly creates a gigantic puddle to help increase the lifetime of other puddles.
 
-## The Team
-- anchikai.
-- BrakeDude
-- oddvio
-- PixelPlz
-- poody_blue
-- Shoop
-- Soaring__Sky
-- thedemisemihemidemisemiquaver
+### Mod Compatibility
+EID (Full English support. Translators are welcome to help!)
+Fiend Folio
+Epiphany
+The Future
+Pog For Good Items
+And more!
 
-## Contributors
-- AgentDrako
-- Akad
-- Aladar
-- kittenchilly
-- Kotry
-- lambchop_is_ok
-- Rack_Jet
-- RogueWatermelon
-- shrkiツ
-- Sillst
-- ThePolarPorfim
+### Credits
 
-## Contributions from the Community
-- Aeronaut
-- DLNT
-- Freg
-- HoneyVee
-- Joply
-- nightshade
-- retro100
-- SybilScribble
-- Tesseract
+- Benny: Coded almost everything
+- Explodingturtle: Commissioned Benny to fix up this mod
 
-### Disclaimer!
-Furtherance isn't always consisting of brand new content, as we often take content from our past mods & content and apply them to this pack. If any of our concepts appear again but in another mod, we did not copy them- do your homework (eg. Andromeda's astrological signs vs. [our own](https://steamcommunity.com/sharedfiles/filedetails/?id=2500898099), ours predating Andromeda by almost a year).
-Quite a handful of people on this team are not well-versed in the modding community, anyway. Thus, we will not remove or readily change content that is coincidentally similar to something someone else happened to repeat. As much as we love modding and respect this community, we will not cater to anyone at our own expense- wouldn't you, or maybe even aren't you doing the same?
+The original Furtherance Team
+- Demi (Spriter)
+- anchikai (Lead Dev, Coder)
+- oddivo (Designer)
+- poody_blue (Spriter)
+- Shoop (Coder)
+- BrakeDude (Coder)
+- Sky (Designer)
+- PixelPlz (Spriter, Coder)
+
+Other contributors
+- Warhamm2000: Commissioned to provide numerous new and refurbished sprites
+- Ferpe: Thumbnail artist, and a few other misc sprites
+- Muffin Tea: Most of the new item costume sprites
+- Flacker01 and HazyWonder: Playtesters who helped find lots of bugs!
