@@ -40,9 +40,9 @@ function MOON_HEART:GetMoonHearts(player)
 		if player:GetSubPlayer() == nil then
 			return 0
 		end
-		return CustomHealthAPI.Library.GetHPOfKey(player:GetSubPlayer(), MOON_HEART.KEY)
+		return CustomHealthAPI.Library.GetHPOfKey(player:GetSubPlayer(), MOON_HEART.KEY, nil, nil, true)
 	end
-	return CustomHealthAPI.Library.GetHPOfKey(player, MOON_HEART.KEY)
+	return CustomHealthAPI.Library.GetHPOfKey(player, MOON_HEART.KEY, nil, nil, true)
 end
 
 CustomHealthAPI.Library.RegisterSoulHealth(MOON_HEART.KEY, {
