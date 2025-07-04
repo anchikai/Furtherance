@@ -47,9 +47,10 @@ function FLIP:IsRoomEffectActive()
 end
 
 ---@param ent Entity
-function FLIP:ShouldIgnoreEnemy(ent)
+function FLIP:ShouldIgnoreEntity(ent)
 	return ent:IsBoss()
 		or FLIP.BLACKLISTED_ENTITIES[Mod:GetTypeVarSubFromEnt(ent, true)]
+		or ent:ToPickup()
 end
 
 ---@param ent Entity
@@ -57,7 +58,7 @@ function FLIP:ValidEnemyToFlip(ent)
 	return ent:IsActiveEnemy(false)
 		and ent:ToNPC()
 		and ent:ToNPC().CanShutDoors
-		and not FLIP:ShouldIgnoreEnemy(ent)
+		and not FLIP:ShouldIgnoreEntity(ent)
 end
 
 ---@param inverse? boolean
@@ -86,9 +87,9 @@ function FLIP:IsFlippedEnemy(ent)
 end
 
 ---@param ent Entity
-function FLIP:TryGetEnemy(ent)
-	if FLIP:ShouldIgnoreEnemy(ent) then return end
-	return ent.SpawnerEntity and ent.SpawnerEntity:ToNPC() or ent:ToNPC()
+function FLIP:TryGetNPC(ent)
+	if FLIP:ShouldIgnoreEntity(ent) then return end
+	return ent:ToNPC() or ent.SpawnerEntity and ent.SpawnerEntity:ToNPC()
 end
 
 ---@param ent Entity

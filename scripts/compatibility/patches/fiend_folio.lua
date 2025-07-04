@@ -244,7 +244,7 @@ local function fiendFolioPatch()
 	Mod:AddPriorityCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, CallbackPriority.EARLY, evilBeggarAltruismPreUpdate)
 
 	local function preventHealthLoss(_, player, amount, healthtype)
-		if Mod:GetData(player).AltruismPreventEvilBeggar then
+		if Mod:GetData(player).AltruismPreventEvilBeggar and amount < 0 then
 			return 0
 		end
 	end

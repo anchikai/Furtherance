@@ -23,7 +23,7 @@ Mod:AddCallback(ModCallbacks.MC_PLAYER_INIT_POST_LEVEL_INIT_STATS, PETER.OnInit,
 ---@param player EntityPlayer
 ---@param amount integer
 function PETER:DistributeSoulHeartsToPocket(player, amount)
-	if PETER:IsPeter(player) then
+	if PETER:IsPeter(player) and player.FrameCount > 0 and amount > 0 then
 		local activeItem = player:GetActiveItem(ActiveSlot.SLOT_POCKET)
 		if activeItem == Mod.Item.KEYS_TO_THE_KINGDOM.ID then
 			local charge = player:GetActiveCharge(ActiveSlot.SLOT_POCKET)

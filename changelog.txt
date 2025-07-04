@@ -1,0 +1,36 @@
+v1.1.0
+
+I took some time to gather bug reports and evaluate the state of the characters, namely Peter and Tainted Peter. Thank you everyone for playing the mod!
+
+General Adjustments
+- "Two of Shields" renamed to "2 of Shields"
+- Removed error buzz when Keys to the Kingdom fails to spare any enemies in the room
+- Spotlights that appear when using Keys to the Kingdom on bosses no longer appear on every segment of a segmented enemy (Larry Jr., Chub, etc)
+
+Gameplay Changes
+- Tech IX, when paired with Technology or Tech X, now share the same synergy as Tech IX + Brimstone
+- Old Camera's photo pickups spawn Purgatory ghosts on a brief delay rather than all at the same time
+- Enemies spawned from other enemies no longer grant soul charges to Keys of the Kingdom
+- For T. Peter, removed all previous methods of recharging Muddled Cross (room clear, timed recharge in clear room, killing enemies). They are instead gained from submerging 10 enemies, 10th of a charge per enemies. This can be reduced by AAA Battery and 9 Volt
+- For T. Peter's enemy flip, the extra duration gained from the amount of submerged enemies is capped at a total of 30 seconds. Car Battery allows this to extend up to a full minute
+- Pressure Plates can now be interacted with on both sides of T. Peter's water
+- T. Peter's enemy flip no longer instantly flips back upon killing an enemy if there are enemies in the room that are normally available on both ends of the reflection, such as any bosses
+- T. Peter's enemy flip destroys all projectiles in the room instead of in a small radius around each player
+- Anything submerged in T. Peter's water no longer takes damage from spikes
+- For non-T. Peter players, Muddled Cross is no longer charged across all players and all active slots simultaneously with every kill. They now only charge one Muddled Cross to the player that dealt the killing blow to the enemy.
+- For non-T. Peter characters, increased number of enemies required to kill to recharge Muddled Cross from 18 to 30
+
+Bug Fixes
+- Fixed Peter's soul hearts being absorbed into Keys to the Kingdom when continuing a run if not fully charged
+- Fixed Keys to the Kingdom returning an error when attempting to spawn dust clouds for bosses with an odd-numbered hitbox size
+- Fixed E Key's EID entry having a missing texture markup. Now has a Giga Bomb icon as intended
+- Fixed an error with T. Peter if you had a costume on that overrode your default hair costume
+- Fixed Muddled Cross constantly making beeping noises while fully charged in uncleared rooms
+- Fixed full heals such as XIX - The Sun completely filling the Heart Renovator heart counter
+- Fixed enemies that spawned from other enemies not properly obeying the rules of which side of T. Peter's water they should be on
+- Fixed entities that are allowed on both sides of T. Peter's water unable to interact with entities on only one side
+- Fixed returning to the starting room after entering, room-flipping, and exiting an off-grid room, such as angel and devil rooms
+- Starting health and starting costumes now use the vanilla API instead of REPENTOGON due to a few reports of them not working, resulting in instant death/baldness
+
+v1.0
+Release!

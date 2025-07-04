@@ -77,7 +77,11 @@ local function epiphanyPatch()
 		Item.LITTLE_RAINCOAT.ID
 	)
 
-	Mod.API:RegisterAstragaliChest(Epiphany.Pickup.DUSTY_CHEST.ID, function() return Epiphany:GetAchievement("DUSTY_CHEST") > 0 end)
+	Mod.API:RegisterAstragaliChest(Epiphany.Pickup.DUSTY_CHEST.ID,
+		function()
+			return Epiphany:GetAchievement("DUSTY_CHEST") > 0
+		end
+	)
 
 	local cainSynergies = {
 		angel_bagged = {

@@ -194,6 +194,10 @@ function SPECIAL_ROOM_FLIP:UpdateRoom()
 			occupiedSpawns[tostring(spawn.X) .. tostring(spawn.Y)] = {}
 		end
 		--GetEntitiesSaveState():Clear() only works if you're outside the room you're changing
+		local returnIdx = level.DungeonReturnRoomIndex
+		local targetLeaveIndex = curIndex < 0 and Mod.Foreach.Door(function (door, doorSlot)
+			return door.TargetRoomIndex
+		end)
 		level.LeaveDoor = -1
 		Mod.Game:ChangeRoom(84)
 		local startingRoom = Mod.Level():GetRoomByIdx(84)
@@ -214,6 +218,13 @@ function SPECIAL_ROOM_FLIP:UpdateRoom()
 			room:RemoveGridEntityImmediate(spawnGrid:GetGridIndex(), 0, false)
 		end
 		roomToLoad = nil
+		level.DungeonReturnRoomIndex = returnIdx
+		Mod.Foreach.Door(function (door, doorSlot)
+			if targetLeaveIndex then
+				door.TargetRoomIndex = targetLeaveIndex
+				return true
+			end
+		end)
 	else
 		level.LeaveDoor = -1
 		Mod.Game:ChangeRoom(curIndex)

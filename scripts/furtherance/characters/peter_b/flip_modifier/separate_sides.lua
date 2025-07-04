@@ -1,6 +1,7 @@
 local Mod = Furtherance
 local SEL = StatusEffectLibrary
 local FLIP = Mod.Character.PETER_B.FLIP
+local floor = math.floor
 
 local SEPARATE_SIDES = {}
 
@@ -55,12 +56,12 @@ function SEPARATE_SIDES:CollisionMode(ent, collider)
 	local damageSource
 	local enemyTarget
 	local oppositeTarget
-	if FLIP:TryGetEnemy(ent) then
-		enemyTarget = FLIP:TryGetEnemy(ent)
+	if FLIP:TryGetNPC(ent) then
+		enemyTarget = FLIP:TryGetNPC(ent)
 		damageSource = ent
 		oppositeTarget = collider
-	elseif FLIP:TryGetEnemy(collider) then
-		enemyTarget = FLIP:TryGetEnemy(collider)
+	elseif FLIP:TryGetNPC(collider) then
+		enemyTarget = FLIP:TryGetNPC(collider)
 		damageSource = collider
 		oppositeTarget = ent
 	end
@@ -74,12 +75,32 @@ function SEPARATE_SIDES:CollisionMode(ent, collider)
 			and not FLIP:IsRoomEffectActive()
 		then
 			SEPARATE_SIDES:BringEnemyToFlipside(damageSource)
+			local slots = Mod:GetActiveItemCharges(player, Mod.Item.MUDDLED_CROSS.ID)
+			local maxCharge = Mod.Item.MUDDLED_CROSS.MAX_CHARGES
+			local CHARGE_FRACTION = Mod.Item.MUDDLED_CROSS:GetChargeFractionPerSubmerge(player)
+			if player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY) then
+				maxCharge = maxCharge * 2
+			end
+			for _, slotData in ipairs(slots) do
+				if slotData.Charge < maxCharge then
+					player:AddActiveCharge(floor(Mod.Item.MUDDLED_CROSS.MAX_CHARGES / CHARGE_FRACTION), slotData.Slot,
+					false, false, true)
+					break
+				end
+			end
 			return false
 		end
 		local enemyData = Mod:GetData(enemyTarget)
 		local entData = Mod:GetData(oppositeTarget)
 
-		if (entData.PeterFlippedIgnoredRenderFlag ~= enemyData.PeterFlippedIgnoredRenderFlag or Mod:GetData(enemyTarget).PeterJustFlipped) and not enemyTarget:IsBoss() then
+		if (entData.PeterFlippedIgnoredRenderFlag ~= enemyData.PeterFlippedIgnoredRenderFlag
+			or Mod:GetData(enemyTarget).PeterJustFlipped)
+			and not enemyTarget:IsBoss()
+			and not FLIP:ShouldIgnoreEntity(enemyTarget)
+			and not FLIP:ShouldIgnoreEntity(oppositeTarget)
+			and entData.PeterFlippedIgnoredRenderFlag ~= nil
+			and enemyData.PeterFlippedIgnoredRenderFlag ~= nil
+		then
 			return true
 		end
 	end
@@ -148,7 +169,6 @@ Mod:AddPriorityCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, CallbackPriority.IMPORT
 function SEPARATE_SIDES:PreventDamageFromGrids(gridEnt, ent, _, _)
 	if FLIP.PETER_EFFECTS_ACTIVE
 		and FLIP:IsEntitySubmerged(ent)
-		and not gridEnt:ToSpikes()
 		and (
 			Mod.Room():GetType() ~= RoomType.ROOM_SACRIFICE
 			and (Mod.Room():GetType() ~= RoomType.ROOM_DEVIL
@@ -176,32 +196,6 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_PRE_GRID_ENTITY_WEB_UPDATE, SEPARATE_SIDES.PreventNoCollGridUpdate)
 Mod:AddCallback(ModCallbacks.MC_PRE_GRID_ENTITY_TELEPORTER_UPDATE, SEPARATE_SIDES.PreventNoCollGridUpdate)
-
----@param gridEnt GridEntityPressurePlate
-function SEPARATE_SIDES:PressurePlateUpdate(gridEnt)
-	if FLIP.PETER_EFFECTS_ACTIVE
-		and (not Mod.Game:IsGreedMode()
-			or gridEnt:GetGridIndex() == 112
-			and not Mod:IsInStartingRoom()
-		)
-		and gridEnt.State ~= 1
-	then
-		local grid_save = Mod:RoomSave(gridEnt:GetGridIndex())
-		local validPlayerOnPlate = false
-
-		Mod.Foreach.PlayerInRadius(gridEnt.Position, 40, function(player, index)
-			if FLIP:IsEntitySubmerged(player) and gridEnt.State == 0 and not validPlayerOnPlate then
-				gridEnt.State = 3
-			elseif not FLIP:IsEntitySubmerged(player) and gridEnt.State == 3 and not grid_save.PeterBPlateTriggered then
-				validPlayerOnPlate = true
-				gridEnt.State = 0
-				grid_save.PeterBPlateTriggered = true
-			end
-		end)
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_GRID_ENTITY_PRESSUREPLATE_UPDATE, SEPARATE_SIDES.PressurePlateUpdate)
 
 ---@param tear EntityTear
 function SEPARATE_SIDES:FlatStone(tear)

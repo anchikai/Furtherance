@@ -16,9 +16,21 @@ function TECH_IX:EvaluteCache(player, cacheFlag)
 	if cacheFlag == CacheFlag.CACHE_WEAPON then
 		Mod:DelayOneFrame(function()
 			local weapon = player:GetWeapon(1)
-			if weapon and weapon:GetWeaponType() == WeaponType.WEAPON_BRIMSTONE and not Mod:HasBitFlags(weapon:GetModifiers(), WeaponModifier.LUDOVICO_TECHNIQUE) then
+			local weaponType = weapon and weapon:GetWeaponType()
+			if weapon
+				and (
+					weaponType == WeaponType.WEAPON_BRIMSTONE
+					or weaponType == WeaponType.WEAPON_TECH_X
+					or weaponType == WeaponType.WEAPON_LASER
+				)
+				and not Mod:HasBitFlags(weapon:GetModifiers(), WeaponModifier.LUDOVICO_TECHNIQUE)
+			then
 				player:SetWeapon(Isaac.CreateWeapon(WeaponType.WEAPON_TEARS, player), 1)
-			elseif weapon and weapon:GetWeaponType() == WeaponType.WEAPON_LUDOVICO_TECHNIQUE then
+				local modifiers = weapon:GetModifiers()
+				if not Mod:HasBitFlags(modifiers, WeaponModifier.BRIMSTONE) then
+					weapon:SetModifiers(modifiers | WeaponModifier.BRIMSTONE)
+				end
+			elseif weapon and weaponType == WeaponType.WEAPON_LUDOVICO_TECHNIQUE then
 				local newWeapon = Isaac.CreateWeapon(WeaponType.WEAPON_LASER, player)
 				newWeapon:SetModifiers(weapon:GetModifiers() | WeaponModifier.LUDOVICO_TECHNIQUE)
 				player:SetWeapon(newWeapon, 1)

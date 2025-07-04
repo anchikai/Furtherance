@@ -132,15 +132,6 @@ EID:setModIndicatorIcon("Furtherance ModIcon")
 
 --#region Dynamic Descriptions functions
 
-local function containsFunction(tbl)
-	for _, v in pairs(tbl) do
-		if type(v) == "function" then
-			return true
-		end
-	end
-	return false
-end
-
 local DynamicDescriptions = {
 	[EntityType.ENTITY_PICKUP] = {
 		[PickupVariant.PICKUP_COLLECTIBLE] = {},
@@ -149,6 +140,15 @@ local DynamicDescriptions = {
 }
 
 local DD = {} ---@class DynamicDescriptions
+
+function DD:ContainsFunction(tbl)
+	for _, v in pairs(tbl) do
+		if type(v) == "function" then
+			return true
+		end
+	end
+	return false
+end
 
 ---@param descTab table
 ---@return {Func: fun(descObj: table): (string), AppendToEnd: boolean}
@@ -301,357 +301,23 @@ function FR_EID:TrinketMultiStr(multiplier, ...)
 	return ({ ... })[multiplier] or ""
 end
 
-local function trinketMulti(player, trinketId)
-	return FR_EID:TrinketMulti(player, trinketId)
-end
-
-local function trinketMultiStr(multiplier, ...)
-	return FR_EID:TrinketMultiStr(multiplier, ...)
-end
-
--- OK means the language's description has been made
--- ! means the description needs to be updated
--- X means the description hasn't been done yet
-
---!EXAMPLE SETUP
---[[ [Item.X.ID] = { -- EN: [OK] | RU: [X] | SPA: [X]
-		_modifier = function(descStr)
-			return descStr .. " but epic"
-		end,
-
-		en_us = {
-			Name = "PlaceholderName"
-			---@param descObj EID_DescObj
-			Description = function(descObj)
-				return EID_Collectibles[Item.X]._modifier()
-			end
-		},
-}, ]]
-
-local EID_Collectibles = Mod.Include("scripts.compatibility.patches.eid.eid_items_descriptions")
-
-for id, collectibleDescData in pairs(EID_Collectibles) do
-	for language, descData in pairs(collectibleDescData) do
-		if language:match('^_') then goto continue end -- skip helper private fields
-
-		local name = descData.Name
-		local description = descData.Description
-
-		if not DD:IsValidDescription(description) then
-			Mod:Log("Invalid collectible description for " .. name .. " (" .. id .. ")", "Language: " .. language)
-			goto continue
-		end
-
-		local minimized = DD:MakeMinimizedDescription(description)
-
-		if not containsFunction(minimized) and not collectibleDescData._AppendToEnd then
-			EID:addCollectible(id, table.concat(minimized, ""), name, language)
-		else
-			-- don't add descriptions for vanilla items that already have one
-			if not EID.descriptions[language].collectibles[id] then
-				EID:addCollectible(id, "", name, language) -- description only contains name/language, the actual description is generated at runtime
-			end
-
-			DD:SetCallback(DD:CreateCallback(minimized, collectibleDescData._AppendToEnd), EntityType.ENTITY_PICKUP,
-				PickupVariant.PICKUP_COLLECTIBLE, id, language)
-		end
-
-		::continue::
-	end
-end
-
-local EID_Trinkets = Mod.Include("scripts.compatibility.patches.eid.eid_trinkets_descriptions")
-
-for id, trinketDescData in pairs(EID_Trinkets) do
-	for language, descData in pairs(trinketDescData) do
-		if language:match('^_') then goto continue end -- skip helper private fields
-
-		local name = descData.Name
-		local description = descData.Description
-
-		if not DD:IsValidDescription(description) then
-			Mod:Log("Invalid trinket description for " .. name .. " (" .. id .. ")", "Language: " .. language)
-			goto continue
-		end
-
-		local minimized = DD:MakeMinimizedDescription(description)
-
-		if not containsFunction(minimized) and not trinketDescData._AppendToEnd then
-			EID:addTrinket(id, table.concat(minimized, ""), name, language)
-		else
-			-- don't add descriptions for vanilla trinkets that already have one
-			if not EID.descriptions[language].trinkets[id] then
-				EID:addTrinket(id, "", name, language) -- description only contains name/language, the actual description is generated at runtime
-			end
-
-			DD:SetCallback(DD:CreateCallback(minimized, trinketDescData._AppendToEnd), EntityType.ENTITY_PICKUP,
-				PickupVariant.PICKUP_TRINKET, id, language)
-		end
-
-		::continue::
-	end
-end
-
-local EID_Cards = Mod.Include("scripts.compatibility.patches.eid.eid_cards_descriptions")
-
-for id, cardDescData in pairs(EID_Cards) do
-	for language, descData in pairs(cardDescData) do
-		if language:match('^_') then goto continue end -- skip helper private fields
-
-		local name = descData.Name
-		local description = descData.Description
-		local metadata = cardDescData._metadata
-
-		if not DD:IsValidDescription(description) then
-			Mod:Log("Invalid card description for " .. name .. " (" .. id .. ")", "Language: " .. language)
-			goto continue
-		end
-
-		local minimized = DD:MakeMinimizedDescription(description)
-
-		if not containsFunction(minimized) and not cardDescData._AppendToEnd then
-			EID:addCard(id, table.concat(minimized, ""), name, language)
-		else
-			-- don't add descriptions for vanilla cards that already have one
-			if not EID.descriptions[language].cards[id] then
-				EID:addCard(id, "", name, language) -- description only contains name/language, the actual description is generated at runtime
-			end
-
-			DD:SetCallback(DD:CreateCallback(minimized, cardDescData._AppendToEnd), EntityType.ENTITY_PICKUP,
-				PickupVariant.PICKUP_TAROTCARD, id, language)
-		end
-
-		if metadata then
-			EID:addCardMetadata(id, metadata[1], metadata[2])
-		end
-
-		::continue::
-	end
-end
-
-local EID_Pills = Mod.Include("scripts.compatibility.patches.eid.eid_pills_descriptions")
-
-for id, pillDescData in pairs(EID_Pills) do
-	for language, descData in pairs(pillDescData) do
-		if language:match('^_') then goto continue end -- skip helper private fields
-
-		local name = descData.Name
-		local description = descData.Description
-		local metadata = pillDescData._metadata
-
-		if not DD:IsValidDescription(description) then
-			Mod:Log("Invalid pill description for " .. name .. " (" .. id .. ")", "Language: " .. language)
-			goto continue
-		end
-
-		local minimized = DD:MakeMinimizedDescription(description)
-
-		if not containsFunction(minimized) and not pillDescData._AppendToEnd then
-			EID:addPill(id, table.concat(minimized, ""), name, language)
-		else
-			-- don't add descriptions for vanilla pills that already have one
-			if not EID.descriptions[language].pills[id + 1] then
-				EID:addPill(id, "", name, language) -- description only contains name/language, the actual description is generated at runtime
-			end
-
-			DD:SetCallback(DD:CreateCallback(minimized, pillDescData._AppendToEnd), EntityType.ENTITY_PICKUP,
-				PickupVariant.PICKUP_PILL, id, language)
-		end
-
-		if metadata then
-			EID:addPillMetadata(id, metadata[1], metadata[2])
-		end
-
-		::continue::
-	end
-end
-
-local EID_Entities = Mod.Include("scripts.compatibility.patches.eid.eid_entities_descriptions")
-
-for id, variantDescData in pairs(EID_Entities) do
-	for variant, subtypeDescData in pairs(variantDescData) do
-		for subtype, entityDescData in pairs(subtypeDescData) do
-			for language, descData in pairs(entityDescData) do
-				if language:match('^_') then goto continue end -- skip helper private fields
-
-				local name = descData.Name
-				local description = descData.Description
-
-				if not DD:IsValidDescription(description) then
-					Mod:Log("Invalid entity description for " .. name .. " (" .. subtype .. ")", "Language: " .. language)
-					goto continue
-				end
-
-				local minimized = DD:MakeMinimizedDescription(description)
-
-				if not containsFunction(minimized) and not entityDescData._AppendToEnd then
-					EID:addEntity(id, variant, subtype, name, table.concat(minimized, ""), language)
-				else
-					EID:addEntity(id, variant, subtype, name, "", language) -- description only contains name/language, the actual description is generated at runtime
-					DD:SetCallback(DD:CreateCallback(minimized, entityDescData._AppendToEnd), id, variant, subtype,
-						language)
-				end
-
-				::continue::
-			end
-		end
-	end
-end
-
-local EID_Characters
-EID_Characters = {
-	[Mod.PlayerType.LEAH] = {
-		en_us = {
-			Name = "Leah",
-			Description = {
-				"{{Tears}} +0.2 Tears for every {{BrokenHeart}} Broken Heart"
-			}
-		}
-	},
-	[Mod.PlayerType.PETER] = {
-		en_us = {
-			Name = "Peter",
-			Description = {
-				"{{Battery}} {{SoulHeart}} Soul/Black Hearts will instead charge {{Collectible" ..
-				Mod.Item.KEYS_TO_THE_KINGDOM.ID ..
-				"}} Keys to the Kingdom instead of Peter's health if it still needs charges"
-			}
-		}
-	},
-	[Mod.PlayerType.MIRIAM] = {
-		en_us = {
-			Name = "Miriam",
-			Description = {
-				"Every 12 tears, a whirlpool will spawn where the tear landed. It sucks enemies into it in a spiral motion, dealing constant damage",
-				"#Whirlpool lasts 2 seconds"
-			}
-		}
-	},
-	[Mod.PlayerType.LEAH_B] = {
-		en_us = {
-			Name = "Tainted Leah",
-			Description = {
-				"{{EmptyHeart}} Maximum of 24 heart containers",
-				"#{{BrokenHeart}} Health above one heart will be slowly be replaced with Broken Hearts, 1 every 20 seconds",
-				"#{{Heart}} Damaging enemies may have them drop a special Scared Heart. It disappears after 10 seconds and be collected by enemies, damaging them",
-				"#↑ All stats up for every Half Red Heart Leah has",
-				"#{{SoulHeart}} Soul/Black Hearts are replaced with Red Hearts"
-			}
-		}
-	},
-	[Mod.PlayerType.PETER_B] = {
-		en_us = {
-			Name = "Tainted Peter",
-			Description = {
-				"Permanent water rooms",
-				"#Peter and non-boss enemies exist separately between the water",
-				"#Walking below an enemy will submerge them. They gain {{StrengthStatus}} Strength and take 25% less damage",
-				"#{{Collectible" ..
-				Mod.Item.MUDDLED_CROSS.ID ..
-				"}} On use: Enemies and players swap sides for X * 5 seconds, where X is 1 + number of submerged enemies",
-				"#While room is flipped: Cannot recharge Muddled Cross, cannot interact with enemies. {{Weakness}} Weakness instead of Strength"
-			}
-		}
-	},
-	[Mod.PlayerType.MIRIAM_B] = {
-		en_us = {
-			Name = "Tainted Miriam",
-			Description = {
-				"{{BoneHeart}} Heart containers converted to Bone Hearts",
-				"#{{SoulHeart}} Can't use Soul Hearts as health",
-				"#Spiritual Wound: Rapidly fire a wide arc of short homing lasers. Has a small delay to how often it damages an enemy",
-				"#{{Fear}} Fear aura that increases in size with {{Heart}} Red Hearts",
-				"#{{HealingRed}} Heal a Half Red Heart after dealing enough damage",
-			}
-		}
-	},
+local eidCategory = {
+	"items",
+	"trinkets",
+	"cards",
+	"pills",
+	"entities",
+	"characters",
+	"birthrights"
 }
 
-local EID_Birthrights
-EID_Birthrights = {
-	[Mod.PlayerType.LEAH] = {
-		en_us = {
-			Name = "Leah",
-			Description = {
-				"{{ArrowUp}} {{Damage}} Damage bonus from {{Collectible" .. Item.HEART_RENOVATOR.ID .. "}} is doubled",
-				"#Killing 20 enemies activates a normal damage bonus Heart Renovator effect"
-			}
-		}
-	},
-	[Mod.PlayerType.PETER] = {
-		en_us = {
-			Name = "Peter",
-			Description = {
-				"Time to spare bosses reduced from 30 seconds to 15 seconds"
-			}
-		}
-	},
-	[Mod.PlayerType.MIRIAM] = {
-		en_us = {
-			Name = "Miriam",
-			Description = {
-				"Increased knockback",
-				"#Whirlpools spawn every 8 tears",
-				"#Increased tear knockback"
-			}
-		}
-	},
-	[Mod.PlayerType.LEAH_B] = {
-		en_us = {
-			Name = "Tainted Leah",
-			Description = {
-				"20% chance to upgrade any spawned {{Heart}} Red Hearts",
-				"#Enemies that collide with the specially dropped Scared Hearts will have it also act like it was collected by Isaac",
-				"#{{Collectible" .. Item.SHATTERED_HEART.ID .. "}} double damage of exploded hearts"
-			}
-		}
-	},
-	[Mod.PlayerType.PETER_B] = {
-		en_us = {
-			Name = "Tainted Peter",
-			Description = {
-				"Provides bonuses to specially flipped rooms",
-				"#{{TreasureRoom}} {{RedTreasureRoom}} : Allows two items to choose from",
-				"#{{Planetarium}} : Planetarium items no longer grant broken hearts",
-				"#{{Library}} : Library books no longer cost money",
-				"#{{Shop}} : {{Player33}} Tainted Keeper-style shops",
-				"#{{DevilRoom}} : One item can be taken for free without removing the others",
-				"#{{AngelRoom}} : {{Collectible64}} Steam Sale effect",
-			}
-		}
-	},
-	[Mod.PlayerType.MIRIAM_B] = {
-		en_us = {
-			Name = "Tainted Miriam",
-			Description = {
-				"Spiritual Wound becomes Death Field",
-				"#Damage cooldown from Death Field is as fast as Chain Lightning",
-				"#Chain Lightning deals {{Damage}} x1.5 Damage to enemies inflicted with {{Fear}} Fear",
-				"#Health drains at half the rate while Chain Lightning is active"
-			}
-		}
-	},
-}
-
-for playerId, brDescData in pairs(EID_Birthrights) do
-	for lang, descData in pairs(brDescData) do
-		if not DD:IsValidDescription(descData.Description) or containsFunction(descData.Description) then
-			Mod:Log("Invalid birthright description for " .. descData.Name, "Language: " .. lang)
-		else
-			EID:addBirthright(playerId, table.concat(descData.Description, ""), descData.Name, lang)
-		end
-	end
+for _, category in ipairs(eidCategory) do
+	Mod.Include("scripts.compatibility.patches.eid.eid_" .. category .. "_descriptions")
 end
 
-for playerId, charDescData in pairs(EID_Characters) do
-	for lang, descData in pairs(charDescData) do
-		if not DD:IsValidDescription(descData.Description) or containsFunction(descData.Description) then
-			Mod:Log("Invalid character description for " .. descData.Name, "Language: " .. lang)
-		else
-			EID:addCharacterInfo(playerId, table.concat(descData.Description, ""), descData.Name, lang)
-		end
-	end
-end
+
+
+
 
 EID:addDescriptionModifier(
 	"Furtherance Dynamic Description Manager",

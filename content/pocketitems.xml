@@ -1,5 +1,5 @@
 <pocketitems>
-	<card type="suit" pickup="2" description="Item multiplier" hud="Two of Shields" name="Two of Shields" mimiccharge="12" />
+	<card type="suit" pickup="2" description="Item multiplier" hud="2 of Shields" name="2 of Shields" mimiccharge="12" />
 	<card type="suit" pickup="2" description="Convert all" hud="Ace of Shields" name="Ace of Shields" mimiccharge="12" />
 	<card type="special" pickup="8" description="It's time to duel" hud="Trap Card" name="Trap Card" mimiccharge="1" />
 	<card type="special" pickup="8" description="High level access" hud="Key Card" name="Key Card" mimiccharge="6" />

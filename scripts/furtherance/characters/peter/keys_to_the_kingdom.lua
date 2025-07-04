@@ -1,8 +1,8 @@
 --#region Variables
-
 local Mod = Furtherance
 local SEL = StatusEffectLibrary
 local PETER = Mod.Character.PETER
+local floor = math.floor
 
 local KEYS_TO_THE_KINGDOM = {}
 
@@ -136,11 +136,13 @@ SEL.Callbacks.AddCallback(SEL.Callbacks.ID.PRE_ADD_ENTITY_STATUS_EFFECT,
 	KEYS_TO_THE_KINGDOM.OnPreStatusEffectAdd, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 
 function KEYS_TO_THE_KINGDOM:OnStatusEffectAdd(ent, _, statusEffectData)
-	local spotlight = Mod.Spawn.Effect(KEYS_TO_THE_KINGDOM.EFFECT, KEYS_TO_THE_KINGDOM.SPOTLIGHT, ent.Position, nil, ent)
-	spotlight.Parent = ent
-	spotlight:FollowParent(ent)
-	spotlight:GetSprite().Scale = Vector(1.25, 1.25)
-	statusEffectData.CustomData.Spotlight = EntityPtr(spotlight)
+	if GetPtrHash(ent) == GetPtrHash(StatusEffectLibrary.Utils.GetLastParent(ent)) then
+		local spotlight = Mod.Spawn.Effect(KEYS_TO_THE_KINGDOM.EFFECT, KEYS_TO_THE_KINGDOM.SPOTLIGHT, ent.Position, nil, ent)
+		spotlight.Parent = ent
+		spotlight:FollowParent(ent)
+		spotlight:GetSprite().Scale = Vector(1.25, 1.25)
+		statusEffectData.CustomData.Spotlight = EntityPtr(spotlight)
+	end
 end
 
 SEL.Callbacks.AddCallback(SEL.Callbacks.ID.POST_ADD_ENTITY_STATUS_EFFECT,
@@ -270,7 +272,6 @@ end
 ---@param player EntityPlayer
 function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 	local room = Mod.Room()
-	local failedToRapture = true
 	local shouldGrantMantle = Isaac.RunCallback(Mod.ModCallbacks.KTTK_GRANT_HOLY_MANTLE)
 
 	if KEYS_TO_THE_KINGDOM:DenyHisOfferings(player) then
@@ -295,21 +296,14 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 					return
 				end
 				local raptureCountdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, npc)
-				local addedStatus = SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil, { MaxCountdown = raptureCountdown })
-				if addedStatus then
-					failedToRapture = false
-				end
+				SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil, { MaxCountdown = raptureCountdown })
 			elseif canSpare and npc:Exists() then
-				failedToRapture = false
 				KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
 				if npc.SpawnerType == EntityType.ENTITY_NULL then
 					KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, 1, true)
 				end
 			end
 		end, nil, nil, nil, { Inverse = true })
-	end
-	if failedToRapture then
-		Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
 	end
 	return true
 end
@@ -395,12 +389,16 @@ end
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 	if not PlayerManager.AnyoneHasCollectible(KEYS_TO_THE_KINGDOM.ID) or not KEYS_TO_THE_KINGDOM:CanSpare(npc, true) then return end
+
 	Mod.Foreach.Player(function(player)
 		local slots = Mod:GetActiveItemCharges(player, KEYS_TO_THE_KINGDOM.ID)
 		if #slots == 0 then return end
 		for _, slotData in ipairs(slots) do
-			if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES then
-				if npc:IsBoss() and not (Mod:GetData(npc) and Mod:GetData(npc).Raptured) then
+			if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES
+				and not npc.SpawnerEntity
+			then
+				local data = Mod:TryGetData(npc)
+				if npc:IsBoss() and not (data and data.Raptured) then
 					KEYS_TO_THE_KINGDOM:SpawnBossSoulCharge(npc, player)
 				else
 					KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(npc, player)
@@ -633,7 +631,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 		Mod:GetData(effect).RaptureCloud = true
 		effect.Color = Color(1, 1, 1, 1, 0.5, 0.5, 0.5)
 		effect:SetTimeout(30)
-		effect.PositionOffset = Vector(Mod:RandomNum(-npc.Size / 2, npc.Size / 2), Mod:RandomNum(-npc.Size, 0))
+		effect.PositionOffset = Vector(Mod:RandomNum(floor(-npc.Size / 2), floor(npc.Size / 2)), Mod:RandomNum(floor(-npc.Size), 0))
 	end
 
 	local spotlight = tryGetSpotlight(statusData)

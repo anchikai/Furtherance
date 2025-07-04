@@ -642,7 +642,7 @@ local function InitFunctions()
 			end
 		end
 
-		if ent:IsBoss() and not statusConfig.CustomTargetCheck then
+		if ent:IsBoss() and not statusConfig.CustomTargetCheck and ent.Type ~= EntityType.ENTITY_DUMMY then
 			StatusEffectLibrary.Utils.DebugLog(identifier, "Entity is a boss. Starting status effect cooldown.")
 			if REPENTOGON then
 				ent:SetBossStatusEffectCooldown(StatusEffectLibrary.BOSS_STATUS_EFFECT_COOLDOWN)
@@ -731,6 +731,9 @@ local function InitFunctions()
 	function StatusEffectLibrary:IsValidTarget(ent)
 		if not ent:ToNPC() and not ent:ToPlayer() then
 			return false
+		end
+		if ent.Type == EntityType.ENTITY_DUMMY then
+			return true
 		end
 		if ent:HasEntityFlags(EntityFlag.FLAG_NO_STATUS_EFFECTS)
 			or not ent:IsActiveEnemy(false)
@@ -891,6 +894,7 @@ local function InitFunctions()
 			and StatusEffectLibrary:HasAnyVanillaStatusEffect(npc, false, true)
 			and not REPENTOGON
 			and not data.BossStatusEffectCooldown
+			and npc.Type ~= EntityType.ENTITY_DUMMY
 		then
 			npc:GetData().BossStatusEffectCooldown = StatusEffectLibrary.BOSS_STATUS_EFFECT_COOLDOWN
 		end

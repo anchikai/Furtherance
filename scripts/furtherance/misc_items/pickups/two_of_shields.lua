@@ -4,7 +4,7 @@ local TWO_OF_SHIELDS = {}
 
 Furtherance.Card.TWO_OF_SHIELDS = TWO_OF_SHIELDS
 
-TWO_OF_SHIELDS.ID = Isaac.GetCardIdByName("Two of Shields")
+TWO_OF_SHIELDS.ID = Isaac.GetCardIdByName("2 of Shields")
 
 ---@param player EntityPlayer
 function TWO_OF_SHIELDS:UseAceOfShields(_, player, _)
