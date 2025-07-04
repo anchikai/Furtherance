@@ -7,7 +7,7 @@ return function(modifiers)
 		[Item.ALTERNATE_REALITY.ID] = {
 			Name = "Realidad Alternativa",
 			Description = {
-				"Transporta a ISaac a una Etapa Aleatoria con uan variante aleatoria",
+				"Transporta a Isaac a una Etapa Aleatoria con uan variante aleatoria",
 				"#Incluye todo piso desde el Sotano a El Vacio, Incluyendo el camino alternativo"
 			}
 		},
@@ -52,12 +52,12 @@ return function(modifiers)
 			}
 		},
 		[Item.BOOK_OF_AMBIT.ID] = {
-			Name = "Book of Ambit",
+			Name = "Libro de Ámbito",
 			Description = {
-				"{{Timer}} Receive for the room:",
-				"#↑ {{Range}} +5 Range",
-				"#↑ {{Shotspeed}} +1.5 Shot speed",
-				"# Piercing tears"
+				"{{Timer}} Recive por la habitacion:",
+				"#↑ {{Range}} +5 Rango",
+				"#↑ {{Shotspeed}} +1.5 Velocidad de Disparo",
+				"# Lagrimas perforantes"
 			}
 		},
 		[Item.BOOK_OF_BOOKS.ID] = {
@@ -113,7 +113,7 @@ return function(modifiers)
 		[Item.CARDIOMYOPATHY.ID] = {
 			Name = "Cardiomiopatía",
 			Description = {
-				"{{Timer}} Recjoer un corazon qeu otorga {{Heart}} Vida roja tiene probabilidad de otorgar invencibilidad por un segundo",
+				"{{Timer}} Recjoer un corazon que otorga {{Heart}} Vida roja tiene probabilidad de otorgar invencibilidad por un segundo",
 				"#La probabilidad es un 25% por cada medi ocorazon que otorgaria (e.g. Un corazon entero 50%)"
 			}
 		},
@@ -129,15 +129,15 @@ return function(modifiers)
 			Name = "Chiron?",
 			Description = {
 				--Book of Secrets description
-				"{{Timer}} Each floor, grants one of these effects for the floor:#{{Collectible54}} Treasure Map#{{Collectible21}} Compass#{{Collectible246}} Blue Map",
+				"{{Timer}} Cada piso, otorga uno de estos efectos por el piso:#{{Collectible54}} Mapa del Tesoro#{{Collectible21}} Compas#{{Collectible246}} Mapa Azul",
 				"#{{BossRoom}} Entering a boss room activates a random \"offensive\" book"
 			}
 		},
 		[Item.CHI_RHO.ID] = {
 			Name = "Chi Rho",
 			Description = {
-				"{{Collectible643}} 2% chance to fire a holy beam while shooting",
-				"#{{Luck}} 15% chance at 15 luck"
+				"{{Collectible643}} 2% de probablidad de disparo un rayo sagrado mientras disparas",
+				"#{{Luck}} 15% de probabilidad con 15 Suerte"
 			}
 		},
 		[Item.COLD_HEARTED.ID] = {
@@ -148,23 +148,23 @@ return function(modifiers)
 			}
 		},
 		[Item.COSMIC_OMNIBUS.ID] = {
-			Name = "Cosmic Omnibus",
+			Name = "Ómnibus cósmico",
 			Description = {
-				"Teleports Isaac to a random unvisited special room on the floor",
-				"#{{Planetarium}} If all special rooms on the floor have been visited, teleports Isaac to an extra Planetarium room",
-				"#Subsequent uses sends Isaac to a random special room on the floor"
+				"Transporta a isaac a uan habitacion especial sin explorar en el piso",
+				"#{{Planetarium}} Si se exploraron todas las habitaciones especiales teletransporta a isaac a un planetario adicional",
+				"#Usos posteriores teletransporta a Isaac a una habitacion especial al azar en el piso"
 			}
 		},
 		[Item.CRAB_LEGS.ID] = {
-			Name = "Crab Legs",
+			Name = "Patas de Cangrejo",
 			Description = {
-				"Walking in a perpendicular direction to the direction Isaac is shooting grants {{Speed}} +0.5 Speed"
+				"Caminar en una direcion perpendicular a la direcion en la que Isaac dispara otorga {{Speed}} +0.5 Velocidad"
 			}
 		},
 		[Item.D16.ID] = {
 			Name = "D16",
 			Description = {
-				"Rerolls all heart pickups in the room into other heart variants"
+				"Cambia todos los corazones en la habitacion a otras variantes de corazon"
 			}
 		},
 		[Item.D9.ID] = {
@@ -174,34 +174,34 @@ return function(modifiers)
 			}
 		},
 		[Item.EPITAPH.ID] = {
-			Name = "Epitaph",
+			Name = "Epitafio",
 			Description = {
-				"{{Collectible545}} 10% chance for dead enemies to revive upon room clear as a bone orbital or a skeletal companion",
-				"#Dying with this item will create a tombstone in a random room on the same floor Isaac died on for the next run",
-				"#{{Collectible}} Bombing the tombstone 3 times spawns {{Coin}} 3-5 coins, {{Key}} 2-3 keys, and the first and last passive items Isaac had in his inventory the previous run"
+				"{{Collectible545}} 10% de probabilidad de que los enemigos revivan como un orbvital de hueso o compañero esqueletico",
+				"#Morir con este onjetp creara una tumba en una habitacion al azar en el mismo piso en la proxima run",
+				"#{{Collectible}} Bombardear la tumba 3 veces Generara {{Coin}} 3-5 Monedas, {{Key}} 2-3 Llaves, El primer y ultimo objeto pasivo de la run anterior"
 			}
 		},
 		[Item.EXSANGUINATION.ID] = {
-			Name = "Exsanguination",
+			Name = "Desangramiento",
 			Description = {
-				"↑ Every heart pickup grants a permament {{Damage}} +0.05 Damage up",
-				"#Newly spawned hearts have a 50% chance to start flashing, disappearing after 2 seconds"
+				"↑ Todo corazon otorga una mejora de {{Damage}} +0.05 Daño permanente",
+				"#Los corazones generados tienen un 50% de probabilidad de parpadear y desaparecer tras 2 segundos"
 			}
 		},
 		[Item.FIRSTBORN_SON.ID] = {
-			Name = "Firstborn Son",
+			Name = "Primogénito",
 			Description = {
-				"{{Collectible634}} When in an uncleared room with enemies, will turn into a homing exploding ghost",
-				"#The ghost will target the enemy with the folowing priorities: Non-bosses over bosses > Highest health > Closest to the ghost ",
-				"#Will instantly kill the targeted enemy and does not damage other enemies. If a boss, deals 10% of their maximum health instead"
+				"{{Collectible634}} Mientras estas en una habitacion sin completar se volvera un fantasma detonador que persigue a enemigos",
+				"#Perseguira a los enemigos con las sigientes prioridades: No-jefes antes que jefes > Mayor Vida > El mas cercano al fantasma ",
+				"#Mata instantaneamente al enemigo perseguido y no dañara a otros, Si es un ejfe solo dañara un 10% de su vida maxima"
 			}
 		},
 		[Item.FLUX.ID] = {
-			Name = "Flux",
+			Name = "Flujo",
 			Description = {
-				"↑ Grants {{Range}} +9.75 Range and spectral tears",
-				"#Tears only move when Isaac moves",
-				"#Shoot tears in the opposite direction that mirror Isaac's movement"
+				"↑ Otorga {{Range}} +9.75 Rango y lagrimas espectrales",
+				"#Las lagrimas solo se mueven cuando se mueve Isaac",
+				"#Dispara lagrimas en la direcion opuesta que imitan el movimiento de Isaac",
 			}
 		},
 		[Item.GOLDEN_PORT.ID] = {
