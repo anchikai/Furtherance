@@ -34,6 +34,8 @@ local function entityReplacement(entType, variant, subtype, seed)
 		--Must match type
 		local isNullPickup = entType == EntityType.ENTITY_PICKUP and replacement_info.NewType == EntityType.ENTITY_PICKUP and variant == PickupVariant.PICKUP_NULL
 		if replacement_info.OldType[entType]
+			--One YouTuber somehow managed to make it nil idk man
+			and replacement_info.NewType and replacement_info.NewVariant
 			--Variant can match, or if replacing a pickup with a pickup, PickupVariant.PICKUP_NULL can be nearly any variant
 			and (replacement_info.OldVariant[variant] or isNullPickup)
 			--If no SubType specified, can only replace spawns that are "0" instead of set spawns. Otherwise, double check it matches variant or is the ANY pickup variant

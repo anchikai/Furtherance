@@ -30,6 +30,7 @@ Bug Fixes
 - Fixed enemies that spawned from other enemies not properly obeying the rules of which side of T. Peter's water they should be on
 - Fixed entities that are allowed on both sides of T. Peter's water unable to interact with entities on only one side
 - Fixed returning to the starting room after entering, room-flipping, and exiting an off-grid room, such as angel and devil rooms
+- Starting health and starting costumes now use the vanilla API instead of REPENTOGON due to a few reports of them not working, resulting in instant death/baldness
 
 v1.0
 Release!
