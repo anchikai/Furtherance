@@ -43,7 +43,7 @@ STATUS_EFFECTS.STRENGTH_FLAG = SEL.StatusFlag[STATUS_EFFECTS.STRENGTH_NAME]
 ---@param npc EntityNPC
 function STATUS_EFFECTS:RenderReflectiveStatusEffects(npc, offset)
 	if FLIP.PETER_EFFECTS_ACTIVE
-		and not FLIP:ShouldIgnoreEnemy(npc)
+		and not FLIP:ShouldIgnoreEntity(npc)
 		and Mod.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT
 	then
 		local data = Mod:GetData(npc)
@@ -85,7 +85,7 @@ SEL.Callbacks.AddCallback(SEL.Callbacks.ID.PRE_RENDER_STATUS_EFFECTS, STATUS_EFF
 function STATUS_EFFECTS:PreApplyStrength(ent)
 	if not (ent:IsActiveEnemy(false)
 			and not ent:IsInvincible()
-			and not FLIP:ShouldIgnoreEnemy(ent)
+			and not FLIP:ShouldIgnoreEntity(ent)
 			and ent:ToNPC()
 			and ent:ToNPC().CanShutDoors
 		)
@@ -129,7 +129,7 @@ function STATUS_EFFECTS:StrengthAndWeakness(npc)
 			end
 		end
 	end
-	if FLIP:ShouldIgnoreEnemy(npc) then
+	if FLIP:ShouldIgnoreEntity(npc) then
 		if FLIP:IsRoomEffectActive() and not npc:HasEntityFlags(EntityFlag.FLAG_WEAKNESS) then
 			npc:AddEntityFlags(EntityFlag.FLAG_WEAKNESS)
 		elseif not FLIP:IsRoomEffectActive() and npc:HasEntityFlags(EntityFlag.FLAG_WEAKNESS) then

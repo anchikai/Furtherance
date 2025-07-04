@@ -11,9 +11,16 @@ local FLIP_RENDERING = {}
 ---@param parent? Entity @Set to use this Entity for checking whether or not to be reflected, and to put the result onto `ent`
 function FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, parent)
 	local data = Mod:GetData(ent)
-	local flagCheckEnt = parent or ent
-	local enemy = FLIP:TryGetEnemy(flagCheckEnt)
-	local player = Mod:TryGetPlayer(flagCheckEnt)
+	local pData = parent and Mod:TryGetData(parent)
+	if pData and pData.PeterFlippedIgnoredRenderFlag then
+		data.PeterFlippedIgnoredRenderFlag = pData.PeterFlippedIgnoredRenderFlag
+		if pData.PeterFlipped then
+			data.PeterFlipped = pData.PeterFlipped
+		end
+		return
+	end
+	local enemy = FLIP:TryGetNPC(ent)
+	local player = Mod:TryGetPlayer(ent)
 
 	if player then
 		if PETER_B:IsPeterB(player) then
@@ -26,7 +33,7 @@ function FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, parent)
 			data.PeterFlippedIgnoredRenderFlag = flag
 			--ent:SetWaterClipFlags(flag)
 		end
-	elseif enemy and (not FLIP:ShouldIgnoreEnemy(enemy) or FLIP:ValidEnemyToFlip(ent)) then
+	elseif enemy and (not FLIP:ShouldIgnoreEntity(enemy) or FLIP:ValidEnemyToFlip(ent)) then
 		local isFlippedEnemy = FLIP:IsFlippedEnemy(enemy)
 		local flag = FLIP:GetIgnoredWaterClipFlag(not isFlippedEnemy)
 		if flag then
@@ -41,18 +48,6 @@ function FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, parent)
 end
 
 --#region Handle entity rendering via WaterClipFlags
-
----@param ent Entity
-function FLIP_RENDERING:FlipIfRelatedEntity(ent)
-	local parentData = ent.SpawnerEntity and Mod:TryGetData(ent.SpawnerEntity)
-	if parentData
-		and parentData.PeterFlippedIgnoredRenderFlag
-	then
-		FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, ent.SpawnerEntity)
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, FLIP_RENDERING.FlipIfRelatedEntity)
 
 function FLIP_RENDERING:UpdateReflections()
 	FLIP.PETER_EFFECTS_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
@@ -70,7 +65,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, FLIP_RENDERING.UpdateReflectio
 ---@param ent Entity
 function FLIP_RENDERING:Reflection(ent)
 	if FLIP.PETER_EFFECTS_ACTIVE then
-		FLIP_RENDERING:SetAppropriateWaterClipFlag(ent)
+		FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, ent.SpawnerEntity)
 	end
 end
 
@@ -154,7 +149,7 @@ function FLIP:MarkEnemyEffectOnInit(effect)
 		FLIP_RENDERING:SetAppropriateWaterClipFlag(effect, effect.SpawnerEntity)
 	else
 		for _, ent in ipairs(Isaac.GetRoomEntities()) do
-			if FLIP:TryGetEnemy(ent)
+			if FLIP:TryGetNPC(ent)
 				and effect.Position:DistanceSquared(ent.Position) <= 500
 				and Mod.Item.KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[effect.Variant]
 			then
@@ -395,8 +390,16 @@ Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_RENDER, FLIP_RENDERING.EntityRen
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_RENDER, FLIP_RENDERING.EntityRender)
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_RENDER, FLIP_RENDERING.EntityRender)
 
+function FLIP_RENDERING:ClearRenderListOnNewRoom()
+	renderlist = {}
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, FLIP_RENDERING.ClearRenderListOnNewRoom)
+
+
 local render = Sprite().Render
 Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function()
+	if Mod.Room():GetFrameCount() == 0 or HudHelper.ShouldHideHUD() then return end
 	for i = 1, #renderlist do
 		local sr = renderlist[i]
 		render(sr[1], sr[2])

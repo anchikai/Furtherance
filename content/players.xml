@@ -2,26 +2,26 @@
          portraitroot="gfx/ui/stage/"
          nameimageroot="gfx/ui/boss/">
 	<player name="Leah" skin="character_01_leah.png" costumeSuffix="leah" skinColor="-1" modcostume="1"
-		heartcontainers="4" redhearts="4" brokenhearts="1" coins="6"
+		hp="4" broken="1" coins="6"
 		firedelaymodifier="-0.29" damagemodifier="-0.36" rangemodifier="-2"
 		pocketActive="Heart Renovator"
 		nameimage="playername_leah.png" portrait="playerportrait_leah.png"
 		birthright="Loved once more" />
 	<player name="Leah" bSkinParent="Leah" skin="character_01_leahb.png" costumeSuffix="leah_b" skinColor="-1" modcostume="2"
-		heartcontainers="2" redhearts="2" brokenhearts="23" healthlimit="48"
+		hp="2" broken="23" healthlimit="48"
 		pocketActive="Shattered Heart"
 		nameimage="playername_leah.png" portrait="playerportrait_leah_b.png"
 		birthright="Taken for granted"
 		achievement="The Unloved" />
 
 	<player name="Peter" skin="character_02_peter.png" costumeSuffix="peter" skinColor="-1" modcostume="3"
-		heartcontainers="4" redhearts="4" soulhearts="2" keys="1"
+		hp="4" armor="2" keys="1"
 		speedmodifier="-0.25" firedelaymodifier="-0.5" rangemodifier="0.5"
 		pocketActive="Keys to the Kingdom"
 		nameimage="playername_peter.png" portrait="playerportrait_peter.png"
 		birthright="Mercy up" />
 	<player name="Peter" bSkinParent="Peter" skin="character_02_peterb.png" costumeSuffix="peter_b" skinColor="0" modcostume="4"
-		heartcontainers="6" redhearts="6"
+		hp="6"
 		luckmodifier="-1"
 		pocketActive="Muddled Cross"
 		nameimage="playername_peter.png" portrait="playerportrait_peter_b.png"
@@ -29,7 +29,7 @@
 		achievement="The Martyr" />
 
 	<player name="Miriam" skin="character_03_miriam.png" costumeSuffix="miriam" skinColor="-1" modcostume="5"
-		heartcontainers="4" redhearts="4" soulhearts="4"
+		hp="4" armor="4"
 		speedmodifier="0.25" damagemodifier="0.5"
 		pocketActive="Tambourine"
 		nameimage="playername_miriam.png" portrait="playerportrait_miriam.png"

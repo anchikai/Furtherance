@@ -32,7 +32,7 @@ local grassVariants = {
 function GRASS:OverrideDecoration()
 	if PlayerManager.AnyoneHasTrinket(GRASS.ID) then
 		local rng = RNG(Mod.Room():GetDecorationSeed())
-		Mod:ForEachGrid(function (gridEnt, gridIndex)
+		Mod.Foreach.Grid(function (gridEnt, gridIndex)
 			local sprite = gridEnt:GetSprite()
 			sprite:Load("gfx/grid/props_grass.anm2")
 			local anim = "Prop" .. grassVariants[rng:RandomInt(#grassVariants) + 1]

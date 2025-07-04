@@ -389,12 +389,13 @@ end
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 	if not PlayerManager.AnyoneHasCollectible(KEYS_TO_THE_KINGDOM.ID) or not KEYS_TO_THE_KINGDOM:CanSpare(npc, true) then return end
+
 	Mod.Foreach.Player(function(player)
 		local slots = Mod:GetActiveItemCharges(player, KEYS_TO_THE_KINGDOM.ID)
 		if #slots == 0 then return end
 		for _, slotData in ipairs(slots) do
 			if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES
-				and not StatusEffectLibrary.Utils.IsInParentChildChain(npc)
+				and not npc.SpawnerEntity
 			then
 				local data = Mod:TryGetData(npc)
 				if npc:IsBoss() and not (data and data.Raptured) then

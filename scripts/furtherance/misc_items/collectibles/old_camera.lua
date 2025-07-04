@@ -82,11 +82,11 @@ function OLD_CAMERA:OnPhotoUse(card, player, useFlags)
 	local power = OLD_CAMERA.GHOST_AMOUNT[card]
 	if not power then return end
 
-	for _ = 1, power do
+	Isaac.CreateTimer(function ()
 		local ghost = Mod.Spawn.Effect(EffectVariant.PURGATORY, 1, player.Position, Vector.Zero, player, player:GetCardRNG(card):Next())
 		ghost:GetSprite():SetLastFrame()
 		ghost:Update()
-	end
+	end, 5, power, false)
 end
 
 for _, card in ipairs(OLD_CAMERA.PHOTO_IDs) do

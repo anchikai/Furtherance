@@ -1992,10 +1992,9 @@ local function InitFunctions()
 				YPadding = 0,
 				Condition = function(player, playerHUDIndex)
 					return game:GetFrameCount() > 0
-						and EID.player
-						and EID.player.FrameCount > 0
 						and playerHUDIndex == 1
-						and not HudHelper.LastAppliedHUD[HudHelper.HUDType.EXTRA][1]
+						and (not HudHelper.LastAppliedHUD[HudHelper.HUDType.EXTRA][1]
+						or HudHelper.LastAppliedHUD[HudHelper.HUDType.EXTRA][1].Name == "EID")
 						and EID.PositionModifiers["HudHelper"]
 				end,
 				OnRender = function()
@@ -2009,9 +2008,7 @@ local function InitFunctions()
 				XPadding = 0,
 				YPadding = 0,
 				Condition = function(player, playerHUDIndex)
-					return game:GetFrameCount() > 0
-						and EID.player
-						and EID.player.FrameCount > 0
+					return EID.isDisplaying
 						and playerHUDIndex == 1
 						and HudHelper.LastAppliedHUD[HudHelper.HUDType.EXTRA][1]
 						and HudHelper.LastAppliedHUD[HudHelper.HUDType.EXTRA][1].Name ~= "Reset EID"

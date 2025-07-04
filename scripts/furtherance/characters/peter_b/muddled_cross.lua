@@ -12,8 +12,8 @@ MUDDLED_CROSS.SFX_FLIP = Isaac.GetSoundIdByName("Peter Flip")
 MUDDLED_CROSS.SFX_UNFLIP = Isaac.GetSoundIdByName("Peter Unflip")
 MUDDLED_CROSS.SFX_ROOM_FLIP = Isaac.GetSoundIdByName("Peter Room Flip")
 MUDDLED_CROSS.MAX_CHARGES = Mod.ItemConfig:GetCollectible(MUDDLED_CROSS.ID).MaxCharges
-MUDDLED_CROSS.CHARGE_FRACTION_PER_KILL = 6
-MUDDLED_CROSS.CHARGE_FRACTION_NOT_PETERB = 18
+MUDDLED_CROSS.CHARGE_FRACTION_PER_KILL = 30
+MUDDLED_CROSS.CHARGE_FRACTION_PER_SUBMERGE = 10
 
 MUDDLED_CROSS.PUDDLE = Isaac.GetEntityVariantByName("Muddled Cross Puddle")
 MUDDLED_CROSS.POOL_MASK_COLORIZE = Color(1, 1, 1, 0.1, 0, 0, 0, 1, 0, 0, 0)
@@ -25,6 +25,7 @@ MUDDLED_CROSS.TARGET_FLIP = 0
 MUDDLED_CROSS.FLIP_FACTOR = 0
 MUDDLED_CROSS.PAUSE_MENU_STOP_FLIP = false
 MUDDLED_CROSS.FLIP_X_SPEED = 0.15
+MUDDLED_CROSS.ENEMY_COOLDOWN_MAX = 30 * 30 --30 seconds max
 
 --#endregion
 
@@ -111,11 +112,14 @@ function MUDDLED_CROSS:OnUse(itemID, rng, player, flags)
 		end
 	end
 	if Mod.Character.PETER_B:IsPeterB(player) then
-		local extraCooldown = Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) and FIVE_SECONDS or 0
+		local extraCooldown = FIVE_SECONDS
 
-		Mod.Foreach.NPC(function (npc, index)
+		Mod.Foreach.NPC(function(npc, index)
 			if npc:IsActiveEnemy(false) and Mod:GetData(npc).PeterFlipped then
 				extraCooldown = extraCooldown + HALF_FIVE_SECONDS
+				if extraCooldown >= MUDDLED_CROSS.ENEMY_COOLDOWN_MAX then
+					return true
+				end
 			end
 		end)
 
@@ -140,12 +144,12 @@ Mod:AddCallback(ModCallbacks.MC_USE_ITEM, MUDDLED_CROSS.OnUse, MUDDLED_CROSS.ID)
 
 ---@param player EntityPlayer
 function MUDDLED_CROSS:OnRoomClear(player)
-	local slots = Mod:GetActiveItemCharges(player, MUDDLED_CROSS.ID)
+	--[[ local slots = Mod:GetActiveItemCharges(player, MUDDLED_CROSS.ID)
 	for _, slotData in ipairs(slots) do
 		if slotData.Charge < MUDDLED_CROSS.MAX_CHARGES then
 			player:FullCharge(slotData.Slot, true)
 		end
-	end
+	end ]]
 	if Mod.Character.PETER_B.FLIP:IsRoomEffectActive() then
 		Mod.Room():GetEffects():RemoveCollectibleEffect(MUDDLED_CROSS.ID, -1)
 	end
@@ -153,43 +157,47 @@ end
 
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR, CallbackPriority.LATE, MUDDLED_CROSS.OnRoomClear)
 
----@param player EntityPlayer
-function MUDDLED_CROSS:TimedRecharge(player)
-	local effects = Mod.Room():GetEffects()
-	if Mod.Room():GetAliveEnemiesCount() > 0
-		or effects:HasCollectibleEffect(MUDDLED_CROSS.ID)
-		or not Mod.Character.PETER_B:IsPeterB(player)
-	then
-		return
-	end
-	local slots = Mod:GetActiveItemSlots(player, MUDDLED_CROSS.ID)
-	for _, slot in ipairs(slots) do
-		if player:GetActiveCharge(slot) == MUDDLED_CROSS.MAX_CHARGES - 1 then
-			Mod.HUD:FlashChargeBar(player, slot)
-			Mod.SFXMan:Play(SoundEffect.SOUND_BEEP)
-		end
-		player:AddActiveCharge(1, slot, false, false, true)
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, MUDDLED_CROSS.TimedRecharge, Mod.PlayerType.PETER_B)
-
 local floor = math.floor
 
 ---@param player EntityPlayer
 function MUDDLED_CROSS:GetChargeFractionPerKill(player)
-	local charge = MUDDLED_CROSS.CHARGE_FRACTION_PER_KILL
-	if not Mod.Character.PETER_B:IsPeterB(player) then
-		charge = MUDDLED_CROSS.CHARGE_FRACTION_NOT_PETERB
-	end
+	local chargeFraction = MUDDLED_CROSS.CHARGE_FRACTION_PER_KILL
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_9_VOLT) then
-		CHARGE_FRACTION = CHARGE_FRACTION - 1
+		chargeFraction = chargeFraction - 3
 	end
 	if player:HasTrinket(TrinketType.TRINKET_AAA_BATTERY) then
-		CHARGE_FRACTION = CHARGE_FRACTION - 1
+		chargeFraction = chargeFraction - 3
 	end
-	return charge
+	return chargeFraction
 end
+
+---@param player EntityPlayer
+function MUDDLED_CROSS:GetChargeFractionPerSubmerge(player)
+	local chargeFraction = MUDDLED_CROSS.CHARGE_FRACTION_PER_SUBMERGE
+	if player:HasCollectible(CollectibleType.COLLECTIBLE_9_VOLT) then
+		chargeFraction = chargeFraction - 1
+	end
+	if player:HasTrinket(TrinketType.TRINKET_AAA_BATTERY) then
+		chargeFraction = chargeFraction - 1
+	end
+	return chargeFraction
+end
+
+---@param ent Entity
+---@param damage number
+---@param flags DamageFlag
+---@param source EntityRef
+function MUDDLED_CROSS:MuddledCrossDamageKillCredit(ent, damage, flags, source)
+	local player = Mod:TryGetPlayer(source)
+	if player
+		and player:HasCollectible(MUDDLED_CROSS.ID)
+		and not Mod.Character.PETER_B:IsPeterB(player)
+	then
+		Mod:GetData(ent).MuddledCrossKill = EntityPtr(player)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, MUDDLED_CROSS.MuddledCrossDamageKillCredit)
 
 ---@param ent Entity
 function MUDDLED_CROSS:ChargeOnEnemyDeath(ent)
@@ -197,11 +205,11 @@ function MUDDLED_CROSS:ChargeOnEnemyDeath(ent)
 	local effects = Mod.Room():GetEffects()
 	if Mod.Character.PETER_B.FLIP:IsRoomEffectActive() and effects:HasCollectibleEffect(MUDDLED_CROSS.ID) then
 		Mod:DelayOneFrame(function()
-			local aliveFlippedEnemies = Mod.Foreach.NPC(function (npc, index)
-				if GetPtrHash(npc) ~= GetPtrHash(ent) and Mod:GetData(npc).PeterFlipped or Mod.Character.PETER_B.FLIP:ShouldIgnoreEnemy(npc) then
+			local aliveFlippedEnemies = Mod.Foreach.NPC(function(npc, index)
+				if GetPtrHash(npc) ~= GetPtrHash(ent) and (Mod:GetData(npc).PeterFlipped or Mod.Character.PETER_B.FLIP:ShouldIgnoreEntity(npc)) then
 					return true
 				end
-			end, nil, nil, nil, {UseEnemySearchParams = true})
+			end, nil, nil, nil, { UseEnemySearchParams = true })
 
 			if not aliveFlippedEnemies then
 				effects:RemoveCollectibleEffect(MUDDLED_CROSS.ID, -1)
@@ -214,13 +222,31 @@ function MUDDLED_CROSS:ChargeOnEnemyDeath(ent)
 		then
 			return
 		end
-		Mod.Foreach.Player(function(player)
-			local slots = Mod:GetActiveItemSlots(player, MUDDLED_CROSS.ID)
-			local CHARGE_FRACTION = MUDDLED_CROSS:GetChargeFractionPerKill(player)
-			for _, slot in ipairs(slots) do
-				player:AddActiveCharge(floor(MUDDLED_CROSS.MAX_CHARGES / CHARGE_FRACTION), slot, false, false, true)
+		local data = Mod:TryGetData(ent)
+		if data
+			and data.MuddledCrossKill
+		then
+			---@type Entity
+			local ref = data.MuddledCrossKill.Ref
+			if ref then
+				local player = ref:ToPlayer()
+				---@cast player EntityPlayer
+
+				local slots = Mod:GetActiveItemCharges(player, Mod.Item.MUDDLED_CROSS.ID)
+				local maxCharge = Mod.Item.MUDDLED_CROSS.MAX_CHARGES
+				local CHARGE_FRACTION = Mod.Item.MUDDLED_CROSS:GetChargeFractionPerKill(player)
+				if player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY) then
+					maxCharge = maxCharge * 2
+				end
+				for _, slotData in ipairs(slots) do
+					if slotData.Charge < maxCharge then
+						player:AddActiveCharge(floor(Mod.Item.MUDDLED_CROSS.MAX_CHARGES / CHARGE_FRACTION), slotData
+							.Slot, false, false, true)
+						break
+					end
+				end
 			end
-		end)
+		end
 	end
 end
 

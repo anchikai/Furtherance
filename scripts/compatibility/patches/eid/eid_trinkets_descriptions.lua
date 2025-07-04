@@ -1,5 +1,6 @@
 local Mod = Furtherance
 local FR_EID = Mod.EID_Support
+local DD = FR_EID.DynamicDescriptions
 
 local modifiers = {
 	[Mod.Trinket.ALMAGEST_SCRAP.ID] = {
@@ -41,18 +42,49 @@ local modifiers = {
 		end,
 	}
 }
+
 local descriptions = {
 	en_us = Mod.Include("scripts.compatibility.patches.eid.eid_trinkets.trinkets_en_us")(modifiers),
 }
 
-local descData = {}
+local allDescData = {}
 for lang, desc in pairs(descriptions) do
 	for trinketID, data in pairs(desc) do
-		descData[trinketID] = descData[trinketID] or {}
+		allDescData[trinketID] = allDescData[trinketID] or {}
 		if modifiers[trinketID] then
-			Mod:AddToDictionary(descData[trinketID], modifiers[trinketID])
+			Mod:AddToDictionary(allDescData[trinketID], modifiers[trinketID])
 		end
-		descData[trinketID][lang] = data
+		allDescData[trinketID][lang] = data
+	end
+end
+
+for id, trinketDescData in pairs(allDescData) do
+	for language, descData in pairs(trinketDescData) do
+		if language:match('^_') then goto continue end -- skip helper private fields
+
+		local name = descData.Name
+		local description = descData.Description
+
+		if not DD:IsValidDescription(description) then
+			Mod:Log("Invalid trinket description for " .. name .. " (" .. id .. ")", "Language: " .. language)
+			goto continue
+		end
+
+		local minimized = DD:MakeMinimizedDescription(description)
+
+		if not DD:ContainsFunction(minimized) and not trinketDescData._AppendToEnd then
+			EID:addTrinket(id, table.concat(minimized, ""), name, language)
+		else
+			-- don't add descriptions for vanilla trinkets that already have one
+			if not EID.descriptions[language].trinkets[id] then
+				EID:addTrinket(id, "", name, language) -- description only contains name/language, the actual description is generated at runtime
+			end
+
+			DD:SetCallback(DD:CreateCallback(minimized, trinketDescData._AppendToEnd), EntityType.ENTITY_PICKUP,
+				PickupVariant.PICKUP_TRINKET, id, language)
+		end
+
+		::continue::
 	end
 end
 
@@ -66,5 +98,3 @@ EID:addGoldenTrinketTable(Mod.Trinket.GLITCHED_PENNY.ID, {t = {25}})
 EID:addGoldenTrinketTable(Mod.Trinket.ESCAPE_PLAN.ID, {t = {10}})
 EID:addGoldenTrinketTable(Mod.Trinket.CRINGE.ID, {t = {1}})
 EID:addGoldenTrinketTable(Mod.Trinket.ALTRUISM.ID, {t = {25}, mults = {1.5, 2}})
-
-return descData

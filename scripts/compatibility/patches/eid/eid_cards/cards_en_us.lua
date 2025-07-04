@@ -66,7 +66,7 @@ return function(modifiers)
 			}
 		},
 		[Mod.Card.TWO_OF_SHIELDS.ID] = {
-			Name = "Two of Shields",
+			Name = "2 of Shields",
 			Description = {
 				"{{Battery}} Doubles Isaac's active item charges",
 			}
@@ -159,7 +159,7 @@ return function(modifiers)
 			Name = "Possessed Photo",
 			Description = function()
 				return modifiers[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]]._modifier(Mod.Item.OLD_CAMERA.PHOTO_IDs[3],
-				"{{Collectible634}} Spawns %s Purgatory ghosts to immediately target enemies"
+					"{{Collectible634}} Spawns %s Purgatory ghosts to immediately target enemies"
 				)
 			end
 		}

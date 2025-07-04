@@ -371,11 +371,15 @@ end
 
 ---@param player EntityPlayer
 ---@param slot ActiveSlot
+---@return boolean
 function Furtherance:ActiveUsesCarBattery(player, slot)
-	return player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY)
-		or Epiphany and (
-			Epiphany.API.HasGoldenItem
-			and Epiphany.API:HasGoldenItem(player:GetActiveItem(slot), player, slot)
-			or Epiphany.API:IsGoldenItem(player:GetActiveItem(slot))
-		)
+	local useCarBattery = player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY)
+	if Epiphany then
+		if Epiphany.API.HasGoldenItem then
+			useCarBattery = useCarBattery or Epiphany.API:HasGoldenItem(player:GetActiveItem(slot), player, slot)
+		else
+			useCarBattery = useCarBattery or Epiphany.API:IsGoldenItem(player:GetActiveItem(slot))
+		end
+	end
+	return useCarBattery
 end

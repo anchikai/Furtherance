@@ -425,6 +425,12 @@ return function(modifiers)
 		[Item.MUDDLED_CROSS.ID] = {
 			Name = "Muddled Cross",
 			Description = {
+				function (descObj)
+					return modifiers[Item.MUDDLED_CROSS.ID]._modifier(descObj,
+					"{{Battery}} Must be charged by submerging enemies",
+					"{{Battery}} Must be charged by killing enemies"
+				)
+				end,
 				"Spawns a pool at the entrance of certain special rooms that reveal an alternate room",
 				"#On use, changes the current room into the previewed room",
 				"#{{TreasureRoom}} <-> {{RedTreasureRoom}}",
