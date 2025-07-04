@@ -126,7 +126,7 @@ return function(modifiers)
 			}
 		},
 		[Item.CHIRON.ID] = {
-			Name = "Chiron?",
+			Name = "Quirón?",
 			Description = {
 				--Book of Secrets description
 				"{{Timer}} Cada piso, otorga uno de estos efectos por el piso:#{{Collectible54}} Mapa del Tesoro#{{Collectible21}} Compas#{{Collectible246}} Mapa Azul",
@@ -205,101 +205,101 @@ return function(modifiers)
 			}
 		},
 		[Item.GOLDEN_PORT.ID] = {
-			Name = "Golden Port",
+			Name = "Puerto Dorado",
 			Description = {
-				"{{Battery}} Using an uncharged active fully recharges it at the cost of 5 cents",
-				"#Only works when the item has no charges"
+				"{{Battery}} Usar un objeeto activo sin cagar l ocargara compeltamente por 5 centimos",
+				"#Solo funciona cuando el objeto no tiene cargas"
 			}
 		},
 		[Item.HEART_EMBEDDED_COIN.ID] = {
-			Name = "Heart Embedded Coin",
+			Name = "Moneda con corazón incrustado",
 			Description = {
-				"{{Coin}} Picking up {{Heart}} Red Hearts while at full health gives that heart's worth in coins instead"
+				"{{Coin}} Recoger {{Heart}} Corazones rojos mientras tengas la vida completa dara el valor de ese corazon en monedas"
 			}
 		},
 		[Item.HEART_RENOVATOR.ID] = {
-			Name = "Heart Renovator",
+			Name = "Renueva Corazones",
 			Description = {
-				"Can pick up {{Heart}} Red Hearts while at full red health puts them in a special counter, up to 99 total health",
-				"#!!! Double tapping {{ButtonRT}} removes 2 from the counter and grants a {{BrokenHeart}} Broken Heart",
-				"#↑ Upon use, removes a Broken Heart and grants a permanent {{Damage}} +0.5 Damage up"
+				"Puedes recoger {{Heart}} Corazones rojos aun que tengas la vida maxima y los pondra en un contador especial que almacena hasta 99 de vida",
+				"#!!! Pulsar dos veces {{ButtonRT}} Elimina 2 del contador y otorga un {{BrokenHeart}} Corazon Roto",
+				"#↑ Al Usarlo, Elimina un corazon roto y otorga Permeantemente {{Damage}} +0.5 Daño"
 			}
 		},
 		[Item.IRON.ID] = {
-			Name = "Iron",
+			Name = "Plancha",
 			Description = {
 				"Orbital",
-				"#{{Collectible257}} Friendly tears hitting it will double in size and damage and burn enemeis"
+				"#{{Collectible257}} Lagrimas amigables duplicaran su tamaño y daño y quemaran enemigos"
 			}
 		},
 		[Item.ITCHING_POWDER.ID] = {
-			Name = "Itching Powder",
+			Name = "Polvo de picapica",
 			Description = {
-				"Taking damage will deal fake damage one second later"
+				"Recivir daño hara daño falso u nsegundo mas tarde"
 			}
 		},
 		[Item.JAR_OF_MANNA.ID] = {
-			Name = "Jar of Manna",
+			Name = "Jarra de Maná",
 			Description = {
-				"{{Battery}} Must be charged by Manna Orbs dropped from enemies, then:",
-				"#{{Collectible464}} Grants whatever Isaac needs the most",
-				"#{{Collectible644}} If Isaac is already satisfied in health and pickups, increases Isaac's lowest stat out of Speed, Fire rate, Damage, Range, Shot speed, and Luck"
+				"{{Battery}} Debe de cargarse con Orbes de Maná que son soltados por los enemigos Luego:",
+				"#{{Collectible464}} Otorga lo que Isaac mas necesita",
+				"#{{Collectible644}} Si Isaac ya esta satisfecho en Vida y Recolectables, Incrementa la estadistica mas baja de Velocidad, Lagrimas, Daño, Rango, Velocidad de disparo y Suerte"
 			}
 		},
 		[Item.JUNO.ID] = {
 			Name = "Juno?",
 			Description = {
-				"+2 {{SoulHeart}} Soul Hearts",
-				"#{{{Collectible722}} 3% chance to fire a tear that chains them in place for 2 seconds",
+				"+2 {{SoulHeart}} Corazones de Alma",
+				"#{{{Collectible722}} 3% de probabilidad de disparar uan lagrima que encadena a enemigos en el lugar por 2 segundos",
 				"#{{Luck}} 25% chance at 11 luck"
 			}
 		},
 		[Item.KARETH.ID] = {
 			Name = "Kareth",
 			Description = {
-				"!!! Replaces all pedestals with 1-3 trinkets dependent on the collectible's quality",
+				"!!! Remplaza todos los pedestales con entre 1 y 3 trinkets dependiendo de la calidad del objeto",
 				"#{{Quality0}}-{{Quality1}}: 1 trinket",
 				"#{{Quality2}}: 2 trinkets",
 				"#{{Quality3}}-{{Quality4}}: 3 trinkets"
 			}
 		},
 		[Item.KERATOCONUS.ID] = {
-			Name = "Keratoconus",
+			Name = "Queratocono",
 			Description = {
-				"↑ {{Range}} +2 Range",
-				"#↓ {{Shotspeed}} -0.15 Shot speed",
-				"#Enemies far away from Isaac will appear larger in size and become closer to their regular size when getting closer",
-				"#{{Slow}} Enemies are slowed depending on their distance from Isaac, farther away having a stronger effect"
+				"↑ {{Range}} +2 Rango",
+				"#↓ {{Shotspeed}} -0.15 Velocidad de Disparo",
+				"#Enemigos lejanos a Isaac pareceran mas grandes de lo normal y seran mas similares a su tamaño original cuando esten cerca de Isaac",
+				"#{{Slow}} Los enemigos seran relentizados dependiendo de su distancia a Isaac, Mas lejos significara un efecto mas fuerte"
 			}
 		},
 		[Item.KEYS_TO_THE_KINGDOM.ID] = { --123 filigree feather
-			Name = "Keys to the Kingdom",
+			Name = "Llaves al Reino",
 			Description = {
-				"#{{Timer}} Normal enemies will  be \"spared\", disappearing and granting a random stat up per enemy for the duration of the floor",
-				"#{{BossRoom}} Bosses will be spared after 30 seconds, granting 3 random stat ups",
-				"#{{Blank}} Getting hit or hurting the boss will add 1/3rd of the countdown back",
-				"#{{AngelRoom}} Instantly spares angels, dropping a {{Collectible238}}{{Collectible239}} key piece, or if Isaac has them already, a random {{ItemPoolAngel}}angel room item",
-				"#{{DevilRoom}} Removes all Devil Deals from the room. Grants a random permanent for each deal removed"
+				"#{{Timer}} Enemigps normales seran \"Perdonados\", desapareciendo y otorgando un aumento de estadisticas por el piso por cada enemigo perdonado",
+				"#{{BossRoom}} Jefes seran perdonados despues de 30 segundos otorgando 3 aumentos de estadisticas al azar",
+				"#{{Blank}} Recibir daño o hacer daño al jefe añadira un tercio del contador de nuevo",
+				"#{{AngelRoom}} Perdona instantaneamente a angeles, Soltando una {{Collectible238}}{{Collectible239}} pieza de llave, y si ya tiene ambas otorga un {{ItemPoolAngel}}Objeto de la habticaion angel",
+				"#{{DevilRoom}} Elimina todo pacto del diavlo de la habitacion, otorga un aumento de estadisticas permanente al azar por cada pacto eliminado"
 			}
 		},
 		[Item.KEY_ALT.ID] = {
-			Name = "Alt Key",
+			Name = "Tecla Alt",
 			Description = {
-				"Restarts the floor on a random variant of the alt path, or if on the alt path, a random variant of the normal path"
+				"Reinicia el piso con una variante del camino Alternativo y si ya estas en el camino alternativo en una variante del camino normal"
 			}
 		},
 		[Item.KEY_BACKSPACE.ID] = {
-			Name = "Backspace Key",
+			Name = "Tecla Retroceso",
 			Description = {
-				"!!! Removes 2 of Isaac's earliest passive items and brings him to the previous floor.",
-				"#The floor is newly generated but remains the same floor variant as when it was last visited",
-				"#!!! Can only be used up to 3 times before disappearing"
+				"!!! Borra los 2 ultimos objetos pasivos y lo trae a el piso anterior",
+				"#El piso es nuevamente generado pero mantiene la misma variante",
+				"#!!! Solo se puede usar hasta 3 veces antes de desaparecer"
 			}
 		},
 		[Item.KEY_C.ID] = {
-			Name = "C Key",
+			Name = "Tecla C",
 			Description = {
-				"{{Library}} Teleports Isaac to a Library with 5 books"
+				"{{Library}} Teletransporta a Isaac a una biblioteca con 5 libros",
 			}
 		},
 		[Item.KEY_CAPS.ID] = {
