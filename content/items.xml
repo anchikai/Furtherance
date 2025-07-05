@@ -26,7 +26,7 @@
 	<!-- Furtherance -->
 	<!-- Passive Items -->
 	<passive id="17" name="Tech IX" description="Experimental laser ring tears" gfx="tech_ix.png" cache="all" quality="4" craftquality="4" tags="tech offensive summonable" />
-	<passive id="18" name="Leaking Tank" description="I'm leaking?!" gfx="leaking_tank.png" quality="0" craftquality="0" tags="summonable" /> <!-- Concept by SybilScribble! -->
+	<passive id="18" name="Leaking Tank" description="I'm leaking?!" gfx="leaking_tank.png" quality="2" craftquality="2" tags="summonable" /> <!-- Concept by SybilScribble! -->
 	<passive id="19" name="Unstable Core" description="Shockingly active" gfx="unstable_core.png" quality="0" craftquality="0" tags="summonable" /> <!-- Concept by SybilScribble! -->
 	<passive id="20" name="Technology -1" description="Underflow shots" gfx="technology_-1.png" quality="3" craftquality="3" tags="tech offensive summonable" />
 	<passive id="28" name="ZZZZoptionsZZZZ" description="ZZZZmZZZZoZZZZrZZZZeZZZZ" gfx="ZZZZoptionsZZZZ.PNG" quality="0" craftquality="0" tags="offensive" /> <!-- Concept by Joply! -->
@@ -78,7 +78,7 @@
 	<active id="44" name="Pillar of Clouds" description="The path is clouded" gfx="pillar_of_clouds.png" achievement="Pillar of Clouds" cache="flying" maxcharges="6" cooldown="300" persistent="true" quality="3" craftquality="3" tags="" />
 	<active id="48" name="Book of Guidance" description="The exodus ends" gfx="book_of_guidance.png" achievement="Book of Guidance" maxcharges="12" quality="3" craftquality="3" tags="book offensive" />
 	<active id="49" name="Jar of Manna" description="Fill with faith" gfx="jar_of_manna.png" achievement="Jar of Manna" maxcharges="20" chargetype="special" quality="2" craftquality="2" initcharge="0" tags="nocantrip offensive" />
-	<active id="50" name="Tambourine" description="It's rattling!" gfx="tambourine.png" achievement="Tambourine" chargetype="timed" maxcharges="300" quality="0" craftquality="0" tags="offensive" />
+	<active id="50" name="Tambourine" description="It's rattling!" gfx="tambourine.png" achievement="Tambourine" chargetype="timed" maxcharges="300" quality="1" craftquality="1" tags="offensive" />
 	<active id="51" name="The Dreidel" description="Reroll the elements" gfx="the_dreidel.png" achievement="The Dreidel" maxcharges="6" quality="3" craftquality="3" tags="offensive" />
 	<active id="52" name="Apocalypse" maxcharges="0" description="In the End" gfx="apocalypse.png" achievement="Apocalypse" cache="damage firedelay range shotspeed speed luck" shopprice="30" devilprice="2" quality="3" craftquality="3" tags="offensive nocantrip" customtag="nometronome" />
 	<active id="55" name="Old Camera" description="Paranormal photos" gfx="old_camera.png" maxcharges="6" quality="3" craftquality="3" />
