@@ -2,7 +2,7 @@
 _G.Furtherance = RegisterMod("Furtherance", 1)
 local Mod = Furtherance
 
-Furtherance.Version = "INDEV_REWRITE"
+Furtherance.Version = "1.1"
 
 Furtherance.SaveManager = include("scripts.tools.save_manager")
 Furtherance.SaveManager.Init(Furtherance)
@@ -251,6 +251,16 @@ function Furtherance:RunIDCheck()
 		print("No -1 IDs found!")
 	end
 end
+
+local onlyOnce = false
+
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
+	if Mod.Game:GetFrameCount() > 0 and onlyOnce == false then
+		onlyOnce = true
+		Mod.SaveManager.GetRunSave().EpicSauce = true
+		print("epic'd the sauce")
+	end
+end)
 
 --!End of file
 
