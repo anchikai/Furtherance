@@ -19,6 +19,7 @@ Gameplay Changes
 - Pressure Plates can now be interacted with on both sides of T. Peter's water
 - T. Peter's enemy flip no longer instantly flips back upon killing an enemy if there are enemies in the room that are normally available on both ends of the reflection, such as any bosses
 - T. Peter's enemy flip destroys all projectiles in the room instead of in a small radius around each player
+- Stoneys are now present on both sides of T. Peter's reflection
 - Anything submerged in T. Peter's water no longer takes damage from spikes, including T. Peter himself
 - For non-T. Peter players, Muddled Cross is no longer charged across all players and all active slots simultaneously with every kill. They now only charge one Muddled Cross to the player that dealt the killing blow to the enemy.
 - For non-T. Peter characters, increased number of enemies required to kill to recharge Muddled Cross from 18 to 30

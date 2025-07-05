@@ -112,7 +112,7 @@ function MUDDLED_CROSS:OnUse(itemID, rng, player, flags)
 		end
 	end
 	if Mod.Character.PETER_B:IsPeterB(player) then
-		local extraCooldown = FIVE_SECONDS
+		local extraCooldown = Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) and FIVE_SECONDS or 0
 
 		Mod.Foreach.NPC(function(npc, index)
 			if npc:IsActiveEnemy(false) and Mod:GetData(npc).PeterFlipped then
