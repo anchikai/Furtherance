@@ -394,11 +394,12 @@ function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 		local slots = Mod:GetActiveItemCharges(player, KEYS_TO_THE_KINGDOM.ID)
 		if #slots == 0 then return end
 		for _, slotData in ipairs(slots) do
+			local data = Mod:TryGetData(npc)
 			if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES
 				and not npc.SpawnerEntity
+				and not (data and data.Raptured)
 			then
-				local data = Mod:TryGetData(npc)
-				if npc:IsBoss() and not (data and data.Raptured) then
+				if npc:IsBoss() then
 					KEYS_TO_THE_KINGDOM:SpawnBossSoulCharge(npc, player)
 				else
 					KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(npc, player)
