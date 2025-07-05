@@ -252,16 +252,6 @@ function Furtherance:RunIDCheck()
 	end
 end
 
-local onlyOnce = false
-
-Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
-	if Mod.Game:GetFrameCount() > 0 and onlyOnce == false then
-		onlyOnce = true
-		Mod.SaveManager.GetRunSave().EpicSauce = true
-		print("epic'd the sauce")
-	end
-end)
-
 --!End of file
 
 Mod.Include("scripts.compatibility.patches.eid.eid_support")
