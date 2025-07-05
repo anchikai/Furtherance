@@ -17,6 +17,7 @@ function TECH_IX:EvaluteCache(player, cacheFlag)
 		Mod:DelayOneFrame(function()
 			local weapon = player:GetWeapon(1)
 			local weaponType = weapon and weapon:GetWeaponType()
+
 			if weapon
 				and (
 					weaponType == WeaponType.WEAPON_BRIMSTONE
@@ -26,13 +27,8 @@ function TECH_IX:EvaluteCache(player, cacheFlag)
 				and not Mod:HasBitFlags(weapon:GetModifiers(), WeaponModifier.LUDOVICO_TECHNIQUE)
 			then
 				player:SetWeapon(Isaac.CreateWeapon(WeaponType.WEAPON_TEARS, player), 1)
-				local modifiers = weapon:GetModifiers()
-				if not Mod:HasBitFlags(modifiers, WeaponModifier.BRIMSTONE) then
-					weapon:SetModifiers(modifiers | WeaponModifier.BRIMSTONE)
-				end
 			elseif weapon and weaponType == WeaponType.WEAPON_LUDOVICO_TECHNIQUE then
 				local newWeapon = Isaac.CreateWeapon(WeaponType.WEAPON_LASER, player)
-				newWeapon:SetModifiers(weapon:GetModifiers() | WeaponModifier.LUDOVICO_TECHNIQUE)
 				player:SetWeapon(newWeapon, 1)
 			end
 		end)
@@ -47,25 +43,79 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, TECH_IX.EvaluteCache)
 
+---@param player EntityPlayer
+---@param tear EntityTear | EntityBomb
+---@param vel Vector
+function TECH_IX:FireTechIXRing(player, tear, vel)
+	local sizeMult = 1.5
+	local damageMult = 0.66
+	if player:HasCollectible(CollectibleType.COLLECTIBLE_POLYPHEMUS) or tear:HasTearFlags(TearFlags.TEAR_BURSTSPLIT) then
+		sizeMult = sizeMult + 2
+	end
+	if player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_X) then
+		sizeMult = sizeMult + 2
+		damageMult = 1
+	end
+	if player:HasCollectible(Mod.Item.VESTA.ID) then
+		sizeMult = 1
+	end
+	local laser = player:FireTechXLaser(tear.Position, vel, tear.Size * sizeMult, player, damageMult)
+	Mod:GetData(laser).TechIXRing = true
+	return laser
+end
+
 ---@param tear EntityTear
 function TECH_IX:PostFireTear(tear)
 	local player = Mod:TryGetPlayer(tear, true)
 	if player and player:HasCollectible(TECH_IX.ID) then
-		local sizeMult = 1.5
-		if player:HasCollectible(CollectibleType.COLLECTIBLE_POLYPHEMUS) or tear:HasTearFlags(TearFlags.TEAR_BURSTSPLIT) then
-			sizeMult = sizeMult + 1
+		if tear:HasTearFlags(TearFlags.TEAR_FETUS) then
+			if tear:HasTearFlags(TearFlags.TEAR_FETUS_BRIMSTONE) then
+				tear:ClearTearFlags(TearFlags.TEAR_FETUS_BRIMSTONE)
+			end
+			if tear:HasTearFlags(TearFlags.TEAR_FETUS_TECH) then
+				tear:ClearTearFlags(TearFlags.TEAR_FETUS_TECH)
+			end
+			return
 		end
-		if player:HasCollectible(Mod.Item.VESTA.ID) then
-			sizeMult = 1
-		end
-		player:FireTechXLaser(tear.Position, tear.Velocity, tear.Size * sizeMult, player, 0.66)
+		TECH_IX:FireTechIXRing(player, tear, tear.Velocity)
 		tear:Remove()
 	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, TECH_IX.PostFireTear)
-Mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, TECH_IX.PostFireTear, TearVariant.SWORD_BEAM)
-Mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, TECH_IX.PostFireTear, TearVariant.TECH_SWORD_BEAM)
+
+---@param bomb EntityBomb
+function TECH_IX:PostFireBomb(bomb)
+	local player = Mod:TryGetPlayer(bomb, true)
+	if player and player:HasCollectible(TECH_IX.ID) and not player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_X) then
+		local laser = TECH_IX:FireTechIXRing(player, bomb, Vector.Zero)
+		laser.Parent = bomb
+		laser.SubType = LaserSubType.LASER_SUBTYPE_RING_FOLLOW_PARENT
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BOMB, TECH_IX.PostFireBomb)
+
+---@param tear EntityTear
+function TECH_IX:FetusFireTechIX(tear)
+	local player = Mod:TryGetPlayer(tear, true)
+	if player and player:HasCollectible(TECH_IX.ID)
+		and not (
+			tear:HasTearFlags(TearFlags.TEAR_FETUS_SWORD)
+			or tear:HasTearFlags(TearFlags.TEAR_FETUS_BONE)
+			or tear:HasTearFlags(TearFlags.TEAR_FETUS_BOMBER) --Unused?
+			or player:HasCollectible(CollectibleType.COLLECTIBLE_DR_FETUS)
+		)
+		and tear.FrameCount % 30 == 0
+	then
+		local enemy = Mod:GetClosestEnemy(tear.Position, 160)
+		if enemy then
+			TECH_IX:FireTechIXRing(player, tear, (enemy.Position - tear.Position):Resized(player.ShotSpeed * 10))
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, TECH_IX.FetusFireTechIX, TearVariant.FETUS)
 
 ---@param tear EntityTear
 function TECH_IX:LudoTear(tear)
@@ -81,7 +131,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, TECH_IX.LudoTear)
 
 function TECH_IX:LessDeafeningLasers(id, volume, framedelay, loop, pitch, pan)
 	if PlayerManager.AnyoneHasCollectible(TECH_IX.ID) then
-		return {id, volume / 2.5, framedelay, loop, pitch, pan}
+		return { id, volume / 2.5, framedelay, loop, pitch, pan }
 	end
 end
 

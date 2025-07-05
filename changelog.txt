@@ -6,9 +6,10 @@ General Adjustments
 - "Two of Shields" renamed to "2 of Shields"
 - Removed error buzz when Keys to the Kingdom fails to spare any enemies in the room
 - Spotlights that appear when using Keys to the Kingdom on bosses no longer appear on every segment of a segmented enemy (Larry Jr., Chub, etc)
+- Turned off debug text and changed "INDEV" version string to proper version numbering
 
 Gameplay Changes
-- Tech IX, when paired with Technology or Tech X, now share the same synergy as Tech IX + Brimstone
+- Added numerous synergies for Tech IX and other weapon-changing items
 - Old Camera's photo pickups spawn Purgatory ghosts on a brief delay rather than all at the same time
 - Enemies spawned from other enemies no longer grant soul charges to Keys of the Kingdom
 - For T. Peter, removed all previous methods of recharging Muddled Cross (room clear, timed recharge in clear room, killing enemies). They are instead gained from submerging 10 enemies, 10th of a charge per enemies. This can be reduced by AAA Battery and 9 Volt
@@ -32,6 +33,10 @@ Bug Fixes
 - Fixed returning to the starting room after entering, room-flipping, and exiting an off-grid room, such as angel and devil rooms
 - Starting health and starting costumes now use the vanilla API instead of REPENTOGON due to a few reports of them not working, resulting in instant death/baldness
 - Fixed The Forgotten gaining The Soul's soul hearts when swapping between the two forms
+- *Should* have fixed Glowing Hourglass not reverting internal save data (not achievements)
+
+EID
+- Added a missing word on KTTK's description to clarify removing devil deals grants a permanent stat
 
 v1.0
 Release!
