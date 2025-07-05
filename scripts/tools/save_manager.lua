@@ -809,6 +809,7 @@ end
 
 ---Gets a unique string as an identifier for the pickup when outside of the room it's present in.
 ---@param pickup EntityPickup
+---@return string, string? @Returns a second string for the ListIndex the pickup index was found in if the Myosotis check is active
 function SaveManager.Utility.GetPickupIndex(pickup)
 	local index = table.concat(
 		{ "PICKUP_ROOMDATA",
@@ -821,21 +822,26 @@ function SaveManager.Utility.GetPickupIndex(pickup)
 		--Even with dupe initseeds pickups spawning, it'll go through and init data for each one
 		SaveManager.Utility.DebugLog("Data active for a transferred pickup. Attempting to find data...")
 		local targetTable = myosotisCheck and hourglassBackup[lastUsedHourglassSlot].pickupRoom or dataCache.game.movingBox
-		if myosotisCheck then
-			local listIndex = SaveManager.Utility.GetListIndex()
-			if targetTable[listIndex] then
-				targetTable = targetTable[listIndex]
-			end
-		end
-		for backupIndex, _ in pairs(targetTable) do
+		local function tryFindPickupData(tableToLoop)
+			for backupIndex, _ in pairs(tableToLoop) do
 			local initSeed = pickup.InitSeed
 
-			if string.sub(backupIndex, -string.len(tostring(initSeed)), -1) == tostring(initSeed) then
-				index = backupIndex
-				SaveManager.Utility.DebugLog("Stored data found for",
-					SaveManager.Utility.GetSaveIndex(pickup) .. ".")
-				break
+				if string.sub(backupIndex, -string.len(tostring(initSeed)), -1) == tostring(initSeed) then
+					index = backupIndex
+					SaveManager.Utility.DebugLog("Stored data found for", SaveManager.Utility.GetSaveIndex(pickup) .. ".")
+					return true
+				end
 			end
+		end
+		if myosotisCheck then
+			for listIndexFound, dataTable in pairs(targetTable) do
+				local foundPickup = tryFindPickupData(dataTable)
+				if foundPickup then
+					return index, listIndexFound
+				end
+			end
+		else
+			tryFindPickupData(targetTable)
 		end
 	end
 	return index
@@ -848,11 +854,11 @@ end
 ---@param pickup EntityPickup
 ---@return table?, string
 function SaveManager.Utility.GetPickupData(pickup)
-	local pickupIndex = SaveManager.Utility.GetPickupIndex(pickup)
+	local pickupIndex, myosotisIndex = SaveManager.Utility.GetPickupIndex(pickup)
 	local listIndex = SaveManager.Utility.GetListIndex()
 	local pickupDataRoot = dataCache.game.pickupRoom[listIndex]
 	if myosotisCheck then
-		pickupDataRoot = hourglassBackup[lastUsedHourglassSlot].pickupRoom[listIndex]
+		pickupDataRoot = hourglassBackup[lastUsedHourglassSlot].pickupRoom[myosotisIndex]
 	elseif movingBoxCheck then
 		pickupDataRoot = dataCache.game.movingBox
 	end
@@ -946,9 +952,7 @@ local function populatePickupData(pickup)
 	end
 	if pickupData then
 		dataCache.game.room[listIndex][saveIndex] = pickupData
-		SaveManager.Utility.DebugLog("Successfully populated pickup data of index", saveIndex,
-			"in ListIndex",
-			listIndex)
+		SaveManager.Utility.DebugLog("Successfully populated pickup data of index", saveIndex, "in ListIndex", listIndex)
 		if movingBoxCheck then
 			dataCache.game.movingBox[pickupIndex] = nil
 		elseif dataCache.game.pickupRoom[listIndex] then
