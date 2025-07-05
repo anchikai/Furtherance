@@ -3,7 +3,7 @@ v1.1.0
 I took some time to gather bug reports and evaluate the state of the characters, namely Peter and Tainted Peter. Thank you everyone for playing the mod!
 
 General Adjustments
-- "Two of Shields" renamed to "2 of Shields"
+- Renamed "Two of Shields" to "2 of Shields"
 - Removed error buzz when Keys to the Kingdom fails to spare any enemies in the room
 - Spotlights that appear when using Keys to the Kingdom on bosses no longer appear on every segment of a segmented enemy (Larry Jr., Chub, etc)
 - Turned off debug text and changed "INDEV" version string to proper version numbering
