@@ -28,11 +28,11 @@ end
 ---@param amount integer
 ---@param isBlended? boolean
 function HEART_RENOVATOR:GetOverflowAmount(player, amount, isBlended)
-	local maxHearts = player:GetEffectiveMaxHearts()
-	local emptyHealth = maxHearts - player:GetHearts() - (player:GetRottenHearts() * 2)
+	local maxHearts = Mod:GetPlayerRealContainersCount(player, true)
+	local emptyHealth = maxHearts - Mod:GetPlayerRealRedHeartsCount(player, true)
 
 	if emptyHealth < amount
-		and (not isBlended or maxHearts + player:GetSoulHearts() == player:GetHeartLimit())
+		and (not isBlended or maxHearts + Mod:GetPlayerRealSoulHeartsCount(player) + Mod:GetPlayerRealBlackHeartsCount(player) == CustomHealthAPI.Helper.GetTrueHeartLimit(player))
 	then
 		amount = amount - emptyHealth
 		return true, amount
@@ -182,9 +182,8 @@ function HEART_RENOVATOR:AddExtraRedHealth(player, amount)
 
 		if willOverflow then
 			--Situations that would induce a full heal push an amount of 99.
-			--Just to be safe, anything at or past the regular expected max health should be declined.
 			if amount > 48 then
-				return
+				newAmount = player:GetHearts() + player:GetRottenHearts() * 2
 			end
 			HEART_RENOVATOR:AddToCounter(player, newAmount)
 		end

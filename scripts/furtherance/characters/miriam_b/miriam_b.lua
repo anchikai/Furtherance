@@ -48,6 +48,7 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, MIRIAM_B.OnPlayerInit)
 
+---@param player EntityPlayer
 function MIRIAM_B:NoSoulHearts(player)
 	if MIRIAM_B:IsMiriamB(player) then
 		return 0
