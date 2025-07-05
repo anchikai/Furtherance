@@ -16,3 +16,11 @@ Furtherance.BloodClotSubtype = {
 	BONE = 5,
 	ROTTEN = 6
 }
+
+Furtherance.DisplayFlags = {
+	INVISIBLE = 1 << -1,
+	VISIBLE = 1 << 0,
+	ROOM_SHADOW = 1 << 1,
+	SHOW_ICON = 1 << 2,
+	VISIBLE_WITH_ICON = 1 << 0 | 1 << 2
+}

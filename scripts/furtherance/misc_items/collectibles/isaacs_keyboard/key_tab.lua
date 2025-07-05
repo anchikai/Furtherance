@@ -19,10 +19,11 @@ function TAB_KEY:OnUse(_, _, player)
 		for i = 1, rooms.Size - 1 do
 			local roomDesc = rooms:Get(i)
 			if roomDesc.Data.Type == RoomType.ROOM_ULTRASECRET then
-				roomDesc.DisplayFlags = 1 << 2
+				roomDesc.DisplayFlags = Mod.DisplayFlags.VISIBLE_WITH_ICON
 				break
 			end
 		end
+		Mod.Level():UpdateVisibility()
 		return true
 	else
 		funny = true
