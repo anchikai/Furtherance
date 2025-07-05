@@ -231,10 +231,11 @@ function KEYS_TO_THE_KINGDOM:RaptureEnemy(ent)
 	while currentEnt and not loopedEntities[GetPtrHash(currentEnt)] and SEL.Utils.IsInParentChildChain(currentEnt) do
 		local child = currentEnt.Child
 		currentEnt:Remove()
+		loopedEntities[GetPtrHash(currentEnt)] = true
 		currentEnt = child
 	end
 	if ent:IsBoss() then
-		Mod:GetData(ent).Raptured = true
+		Mod:GetData(parent).Raptured = true
 		KEYS_TO_THE_KINGDOM:RemoveBoss(parent)
 	else
 		parent:Remove()
@@ -626,13 +627,14 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	Mod.SFXMan:Play(SoundEffect.SOUND_ANGEL_WING, 2, 2, false, 0.75)
 
 	KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
+	local parent = SEL.Utils.GetLastParent(npc)
 
 	for _ = 1, 15 do
-		local effect = Mod.Spawn.Effect(EffectVariant.DUST_CLOUD, 0, npc.Position, RandomVector():Resized(5))
+		local effect = Mod.Spawn.Effect(EffectVariant.DUST_CLOUD, 0, parent.Position, RandomVector():Resized(5))
 		Mod:GetData(effect).RaptureCloud = true
 		effect.Color = Color(1, 1, 1, 1, 0.5, 0.5, 0.5)
 		effect:SetTimeout(30)
-		effect.PositionOffset = Vector(Mod:RandomNum(floor(-npc.Size / 2), floor(npc.Size / 2)), Mod:RandomNum(floor(-npc.Size), 0))
+		effect.PositionOffset = Vector(Mod:RandomNum(floor(-parent.Size / 2), floor(parent.Size / 2)), Mod:RandomNum(floor(-parent.Size), 0))
 	end
 
 	local spotlight = tryGetSpotlight(statusData)
