@@ -43,23 +43,31 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, TECH_IX.EvaluteCache)
 
----@param player EntityPlayer
----@param tear EntityTear | EntityBomb
+---@param ent Entity
+---@param pos Vector
+---@param size number
 ---@param vel Vector
-function TECH_IX:FireTechIXRing(player, tear, vel)
+function TECH_IX:FireTechIXRing(ent, pos, size, vel)
+	local owner = Mod:TryGetPlayer(ent, true, true)
+	if not owner then return end
 	local sizeMult = 1.5
 	local damageMult = 0.66
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_POLYPHEMUS) or tear:HasTearFlags(TearFlags.TEAR_BURSTSPLIT) then
+	if owner:HasCollectible(CollectibleType.COLLECTIBLE_POLYPHEMUS) then
 		sizeMult = sizeMult + 2
 	end
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_X) then
-		sizeMult = sizeMult + 2
-		damageMult = 1
+	local weapon = owner:GetWeapon(1)
+	if weapon and Mod:HasBitFlags(weapon:GetModifiers(), WeaponModifier.CHOCOLATE_MILK) then
+		local charge = weapon:GetCharge()
+		damageMult = 0.1 * charge
 	end
-	if player:HasCollectible(Mod.Item.VESTA.ID) then
+	if owner:HasCollectible(CollectibleType.COLLECTIBLE_TECH_X) then
+		sizeMult = sizeMult + 2
+		damageMult = damageMult * 1.5
+	end
+	if owner:HasCollectible(Mod.Item.VESTA.ID) then
 		sizeMult = 1
 	end
-	local laser = player:FireTechXLaser(tear.Position, vel, tear.Size * sizeMult, player, damageMult)
+	local laser = owner:FireTechXLaser(pos, vel, size * sizeMult, owner, damageMult * Mod:GetWeaponOwnerDamageMult(owner))
 	Mod:GetData(laser).TechIXRing = true
 	return laser
 end
@@ -77,7 +85,7 @@ function TECH_IX:PostFireTear(tear)
 			end
 			return
 		end
-		TECH_IX:FireTechIXRing(player, tear, tear.Velocity)
+		TECH_IX:FireTechIXRing(player, tear.Position, tear.Size, tear.Velocity)
 		tear:Remove()
 	end
 end
@@ -88,7 +96,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, TECH_IX.PostFireTear)
 function TECH_IX:PostFireBomb(bomb)
 	local player = Mod:TryGetPlayer(bomb, true)
 	if player and player:HasCollectible(TECH_IX.ID) and not player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_X) then
-		local laser = TECH_IX:FireTechIXRing(player, bomb, Vector.Zero)
+		local laser = TECH_IX:FireTechIXRing(player, bomb.Position, bomb.Size, Vector.Zero)
 		laser.Parent = bomb
 		laser.SubType = LaserSubType.LASER_SUBTYPE_RING_FOLLOW_PARENT
 	end
@@ -110,7 +118,7 @@ function TECH_IX:FetusFireTechIX(tear)
 	then
 		local enemy = Mod:GetClosestEnemy(tear.Position, 160)
 		if enemy then
-			TECH_IX:FireTechIXRing(player, tear, (enemy.Position - tear.Position):Resized(player.ShotSpeed * 10))
+			TECH_IX:FireTechIXRing(player, tear.Position, tear.Size, (enemy.Position - tear.Position):Resized(player.ShotSpeed * 10))
 		end
 	end
 end

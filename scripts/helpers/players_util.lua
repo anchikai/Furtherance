@@ -2,8 +2,10 @@
 ---Will return if its a player, the player's familiar, or loop again if it has a SpawnerEntity
 ---@param ent Entity | EntityRef | EntityPtr
 ---@param weaponOwner? boolean #If specified, and it finds a familiar, will only pass the player if that familiar is a weapon-copying familiar
+---@param weaponFamiliar? nil #If this and `weaponOwner` are true, will return the familiar instead of the player
 ---@return EntityPlayer?
-function Furtherance:TryGetPlayer(ent, weaponOwner)
+---@overload fun(self: ModReference, ent: Entity | EntityRef | EntityPtr, weaponOwner?: boolean, weaponFamiliar?: boolean): EntityPlayer | EntityFamiliar | nil
+function Furtherance:TryGetPlayer(ent, weaponOwner, weaponFamiliar)
 	if not ent then return end
 	if string.match(getmetatable(ent).__type, "EntityPtr") then
 		if ent.Ref then
@@ -16,8 +18,13 @@ function Furtherance:TryGetPlayer(ent, weaponOwner)
 	elseif ent:ToPlayer() then
 		return ent:ToPlayer()
 	elseif ent:ToFamiliar() and ent:ToFamiliar().Player then
-		if weaponOwner then
-			return ent:ToFamiliar():GetWeapon() and ent:ToFamiliar().Player
+		if weaponOwner and ent:ToFamiliar():GetWeapon() then
+			local familiar = ent:ToFamiliar()
+			if weaponFamiliar then
+				return familiar
+			elseif familiar then
+				return familiar.Player
+			end
 		else
 			return ent:ToFamiliar().Player
 		end

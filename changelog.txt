@@ -7,6 +7,9 @@ General Adjustments
 - Removed error buzz when Keys to the Kingdom fails to spare any enemies in the room
 - Spotlights that appear when using Keys to the Kingdom on bosses no longer appear on every segment of a segmented enemy (Larry Jr., Chub, etc)
 - Turned off debug text and changed "INDEV" version string to proper version numbering
+- Rotten Apple's Damage Up changed to +1 (from +2)
+- Leaking Tank Q0 -> Q2
+- Tambourine Q0 -> Q1
 
 Gameplay Changes
 - Added numerous synergies for Tech IX and other weapon-changing items
@@ -34,6 +37,7 @@ Bug Fixes
 - Starting health and starting costumes now use the vanilla API instead of REPENTOGON due to a few reports of them not working, resulting in instant death/baldness
 - Fixed The Forgotten gaining The Soul's soul hearts when swapping between the two forms
 - *Should* have fixed Glowing Hourglass not reverting internal save data (not achievements)
+- Fixed Heart Embedded Coin not showing up in the Treasure room pool in all modes
 
 EID
 - Added a missing word on KTTK's description to clarify removing devil deals grants a permanent stat
