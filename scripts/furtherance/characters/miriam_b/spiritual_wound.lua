@@ -113,9 +113,13 @@ function SPIRITUAL_WOUND:HandleFiringSFX(player)
 	then
 		if not data.FiringSpiritualWound then
 			data.FiringSpiritualWound = true
-			SPIRITUAL_WOUND.IS_FIRING = true
-			local startSFX = SPIRITUAL_WOUND:GetAttackInitSound(player)
-			Mod.SFXMan:Play(startSFX)
+			Isaac.CreateTimer(function ()
+				if player:GetFireDirection() ~= Direction.NO_DIRECTION then
+					SPIRITUAL_WOUND.IS_FIRING = true
+					local startSFX = SPIRITUAL_WOUND:GetAttackInitSound(player)
+					Mod.SFXMan:Play(startSFX)
+				end
+			end, 2, 1, true)
 		end
 		if SPIRITUAL_WOUND.IS_FIRING then
 			local loopSFX = SPIRITUAL_WOUND:GetAttackLoopSound(player)

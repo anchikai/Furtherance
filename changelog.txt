@@ -9,6 +9,7 @@ General Adjustments
 - Turned off debug text and changed "INDEV" version string to proper version numbering
 - Leaking Tank Q0 -> Q2
 - Tambourine Q0 -> Q1
+- Spiritual Wound's (T. Miriam's attack) attacking SFX will no longer play if you tap the attack buttons and do not continue firing
 
 Gameplay Changes
 - Added numerous synergies for Tech IX with other weapon-changing items
@@ -50,6 +51,7 @@ Bug Fixes
 EID Fixes
 - Added a missing word on Keys to the Kingdom's description to clarify removing devil deals grants a permanent stat
 - Fixed E Key's EID entry having a missing texture markup. Now has a Giga Bomb icon as intended
+- Adjusted T. Miriam's EID entry to make note of damage scaling with range
 
 Still figuring out:
 - Potential incompatibility with Lazy Mattpack, causing crashes to occur

@@ -56,8 +56,10 @@ return function(modifiers)
 			Name = "Tainted Miriam",
 			Description = {
 				"{{BoneHeart}} Heart containers converted to Bone Hearts",
-				"#{{SoulHeart}} Can't use Soul Hearts as health",
-				"#Spiritual Wound: Rapidly fire a wide arc of short homing lasers. Has a small delay to how often it damages an enemy",
+				"#{{SoulHeart}} Can't have Soul Hearts",
+				"#Spiritual Wound: Rapidly fire a wide arc of short homing lasers.",
+				"#{{ArrowDown}} Has a small delay to how often it damages an enemy",
+				"#{{ArrowDown}} Damage dealt decreases with distance",
 				"#{{Fear}} Fear aura that increases in size with {{Heart}} Red Hearts",
 				"#{{HealingRed}} Heal a Half Red Heart after dealing enough damage",
 			}
