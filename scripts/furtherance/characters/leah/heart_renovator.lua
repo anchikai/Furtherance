@@ -16,6 +16,11 @@ local counter = Sprite("gfx/ui/hudpickups.anm2", true)
 counter:SetFrame("Idle", 15)
 HEART_RENOVATOR.CounterSprite = counter
 
+Mod.SaveManager.Utility.AddDefaultRunData(Mod.SaveManager.DefaultSaveKeys.PLAYER, {
+	HeartRenovatorCounter = 0,
+	HeartRenovatorDamage = 0
+})
+
 --#endregion
 
 --#region Helpers
@@ -85,7 +90,7 @@ function HEART_RENOVATOR:OnUse(_, _, player, flags)
 		Mod.SFXMan:Play(SoundEffect.SOUND_HEARTBEAT)
 		player:AddBrokenHearts(-1)
 		local player_run_save = Mod:RunSave(player)
-		player_run_save.HeartRenovatorDamage = (player_run_save.HeartRenovatorDamage or 0) + 1
+		player_run_save.HeartRenovatorDamage = player_run_save.HeartRenovatorDamage + 1
 	end
 	return true
 end
@@ -207,7 +212,6 @@ HudHelper.RegisterHUDElement({
 	end,
 	OnRender = function(player, _, _, position)
 		local player_run_save = Mod:RunSave(player)
-		player_run_save.HeartRenovatorCounter = player_run_save.HeartRenovatorCounter or 0
 		local heartCounter = player_run_save.HeartRenovatorCounter
 		local maxCounter = HEART_RENOVATOR:GetMaxHeartCounter(player)
 		local formatLength = "%0" .. string.len(tostring(maxCounter)) .. "d"
