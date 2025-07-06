@@ -53,11 +53,15 @@ KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS = Mod:Set({
 	EffectVariant.POOP_EXPLOSION,
 	EffectVariant.BIG_ROCK_EXPLOSION,
 	EffectVariant.BLOOD_EXPLOSION,
+	EffectVariant.LARGE_BLOOD_EXPLOSION,
 	EffectVariant.BLOOD_GUSH,
 	EffectVariant.BLOOD_PARTICLE,
 	EffectVariant.BLOOD_SPLAT,
 	EffectVariant.DUST_CLOUD,
-	EffectVariant.FART
+	EffectVariant.FART,
+	EffectVariant.WORM,
+	EffectVariant.POOF02,
+	EffectVariant.POOF04
 })
 KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS = {
 	SoundEffect.SOUND_ROCKET_BLAST_DEATH,
@@ -181,6 +185,7 @@ local function cease(npc)
 		function(effect, index)
 			if KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[effect.Variant]
 				and (not Mod:TryGetData(effect) or not Mod:GetData(effect).RaptureCloud)
+				and effect.FrameCount <= 2
 			then
 				effect:Remove()
 			end
@@ -194,6 +199,20 @@ local function cease(npc)
 		end
 	end, nil, nil, { Inverse = true })
 	Mod.SFXMan:StopLoopingSounds()
+	Mod.Foreach.NPCInRadius(npc.Position, npc.Size + 40, function(_npc, index)
+		if _npc.FrameCount <= 2
+			and not _npc:IsDead()
+			and GetPtrHash(npc) ~= GetPtrHash(_npc)
+		then
+			if _npc:IsBoss() then
+				KEYS_TO_THE_KINGDOM:RemoveBoss(_npc)
+			else
+				npc:Remove()
+			end
+		end
+	end)
+	npc:GetSprite():SetLastFrame()
+	npc:Update()
 end
 
 ---Cannot remove a boss outright as it can cause unintended effects, such as the room continuing to play the boss fight music
@@ -205,11 +224,8 @@ function KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
 	npc:Kill()
 	npc:ToNPC().State = NpcState.STATE_DEATH
 	npc:Update()
-	npc:GetSprite():SetLastFrame()
-	npc:Update()
 	cease(npc)
 	Mod:DelayOneFrame(function()
-		npc:GetSprite():SetLastFrame()
 		cease(npc)
 		if not npc:IsDead() then
 			npc.Visible = true

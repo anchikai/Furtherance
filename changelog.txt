@@ -29,6 +29,7 @@ Gameplay Changes
 - Removed from Gold Chest Item Pool: Wine Bottle, Iron
 - Added to Beggar Pool: Box of Belongings
 - Added to Treasure Pool in both modes: Heart Embedded Coin. This was intended from the start but was spelled incorrectly in the xml file
+- Spared bosses should no longer spawn any extra enemies they would on death. This is prominent for splitting bosses like Fistula, Envy, and Matriarch
 
 Bug Fixes
 - Fixed Peter's soul hearts being absorbed into Keys to the Kingdom when continuing a run if not fully charged
