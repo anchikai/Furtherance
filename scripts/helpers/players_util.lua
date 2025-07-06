@@ -2,8 +2,10 @@
 ---Will return if its a player, the player's familiar, or loop again if it has a SpawnerEntity
 ---@param ent Entity | EntityRef | EntityPtr
 ---@param weaponOwner? boolean #If specified, and it finds a familiar, will only pass the player if that familiar is a weapon-copying familiar
+---@param weaponFamiliar? nil #If this and `weaponOwner` are true, will return the familiar instead of the player
 ---@return EntityPlayer?
-function Furtherance:TryGetPlayer(ent, weaponOwner)
+---@overload fun(self: ModReference, ent: Entity | EntityRef | EntityPtr, weaponOwner?: boolean, weaponFamiliar?: boolean): EntityPlayer | EntityFamiliar | nil
+function Furtherance:TryGetPlayer(ent, weaponOwner, weaponFamiliar)
 	if not ent then return end
 	if string.match(getmetatable(ent).__type, "EntityPtr") then
 		if ent.Ref then
@@ -16,8 +18,13 @@ function Furtherance:TryGetPlayer(ent, weaponOwner)
 	elseif ent:ToPlayer() then
 		return ent:ToPlayer()
 	elseif ent:ToFamiliar() and ent:ToFamiliar().Player then
-		if weaponOwner then
-			return ent:ToFamiliar():GetWeapon() and ent:ToFamiliar().Player
+		if weaponOwner and ent:ToFamiliar():GetWeapon() then
+			local familiar = ent:ToFamiliar()
+			if weaponFamiliar then
+				return familiar
+			elseif familiar then
+				return familiar.Player
+			end
 		else
 			return ent:ToFamiliar().Player
 		end
@@ -73,11 +80,55 @@ function Furtherance:IsNotUsingMoveControls(player)
 	end
 end
 
----Credit to Epiphany
----Returns the actual amount of soul hearts the player has, subtracting black hearts.
+-- Returns the actual amount of red hearts the player has, subtracting bone hearts unless allowed.
 ---@param player EntityPlayer
+---@param allowBone? boolean
+---@param ignoreMods? boolean
 ---@function
-function Furtherance:GetTrueSoulHearts(player)
+function Furtherance:GetPlayerRealContainersCount(player, allowBone, ignoreMods)
+	local hearts = player:GetEffectiveMaxHearts()
+	if not ignoreMods and CustomHealthAPI then --Some modded hearts use red hearts behind the actual one.
+		hearts = CustomHealthAPI.Library.GetHPOfKey(player, "EMPTY_HEART", false, true)
+		if allowBone then
+			hearts = hearts + CustomHealthAPI.Library.GetHPOfKey(player, "BONE_HEART", false, true) * 2
+		end
+	end
+	if not allowBone and not CustomHealthAPI then
+		hearts = hearts - player:GetBoneHearts() * 2
+	end
+
+	return player:GetEffectiveMaxHearts()
+end
+
+-- Returns the actual amount of red hearts the player has, subtracting rotten hearts unless allowed.
+---@param player EntityPlayer
+---@param allowRotten? boolean
+---@param ignoreMods? boolean
+---@function
+function Furtherance:GetPlayerRealRedHeartsCount(player, allowRotten, ignoreMods)
+	local hearts = player:GetHearts()
+	if not ignoreMods and CustomHealthAPI then --Some modded hearts use red hearts behind the actual one.
+		hearts = CustomHealthAPI.Library.GetHPOfKey(player, "RED_HEART", false, true)
+		if allowRotten then
+			hearts = hearts + CustomHealthAPI.Library.GetHPOfKey(player, "ROTTEN_HEART", false, true) * 2
+		end
+	end
+	if not allowRotten and not CustomHealthAPI then
+		hearts = hearts - player:GetRottenHearts() * 2
+	end
+
+	return hearts
+end
+
+-- Returns the actual amount of soul hearts the player has, subtracting black hearts.
+---@param player EntityPlayer
+---@param ignoreMods? boolean
+---@function
+function Furtherance:GetPlayerRealSoulHeartsCount(player, ignoreMods)
+	if not ignoreMods and CustomHealthAPI then --Some modded hearts use soul hearts behind the actual one.
+		return CustomHealthAPI.Library.GetHPOfKey(player, "SOUL_HEART", false, false)
+	end
+
 	local blackCount = 0
 	local soulHearts = player:GetSoulHearts()
 	local blackMask = player:GetBlackHearts()
@@ -92,11 +143,15 @@ function Furtherance:GetTrueSoulHearts(player)
 	return soulHearts - blackCount
 end
 
----Credit to Epiphany
----Returns the actual amount of black hearts the player has.
+-- Returns the actual amount of black hearts the player has.
 ---@param player EntityPlayer
+---@param ignoreMods? boolean
 ---@function
-function Furtherance:GetTrueBlackHearts(player)
+function Furtherance:GetPlayerRealBlackHeartsCount(player, ignoreMods)
+	if not ignoreMods and CustomHealthAPI then --Some modded hearts use black hearts behind the actual one (?
+		return CustomHealthAPI.Library.GetHPOfKey(player, "BLACK_HEART", false, false)
+	end
+
 	local blackCount = 0
 	local soulHearts = player:GetSoulHearts()
 	local blackMask = player:GetBlackHearts()

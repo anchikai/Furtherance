@@ -3,34 +3,55 @@ v1.1.0
 I took some time to gather bug reports and evaluate the state of the characters, namely Peter and Tainted Peter. Thank you everyone for playing the mod!
 
 General Adjustments
-- "Two of Shields" renamed to "2 of Shields"
+- Renamed "Two of Shields" to "2 of Shields"
 - Removed error buzz when Keys to the Kingdom fails to spare any enemies in the room
 - Spotlights that appear when using Keys to the Kingdom on bosses no longer appear on every segment of a segmented enemy (Larry Jr., Chub, etc)
+- Turned off debug text and changed "INDEV" version string to proper version numbering
+- Leaking Tank Q0 -> Q2
+- Tambourine Q0 -> Q1
 
 Gameplay Changes
-- Tech IX, when paired with Technology or Tech X, now share the same synergy as Tech IX + Brimstone
+- Added numerous synergies for Tech IX with other weapon-changing items
 - Old Camera's photo pickups spawn Purgatory ghosts on a brief delay rather than all at the same time
-- Enemies spawned from other enemies no longer grant soul charges to Keys of the Kingdom
+- Enemies spawned from other enemies can no longer grant soul charges to Keys of the Kingdom
 - For T. Peter, removed all previous methods of recharging Muddled Cross (room clear, timed recharge in clear room, killing enemies). They are instead gained from submerging 10 enemies, 10th of a charge per enemies. This can be reduced by AAA Battery and 9 Volt
 - For T. Peter's enemy flip, the extra duration gained from the amount of submerged enemies is capped at a total of 30 seconds. Car Battery allows this to extend up to a full minute
 - Pressure Plates can now be interacted with on both sides of T. Peter's water
 - T. Peter's enemy flip no longer instantly flips back upon killing an enemy if there are enemies in the room that are normally available on both ends of the reflection, such as any bosses
 - T. Peter's enemy flip destroys all projectiles in the room instead of in a small radius around each player
-- Anything submerged in T. Peter's water no longer takes damage from spikes
+- Stoneys are now present on both sides of T. Peter's reflection
+- Anything submerged in T. Peter's water no longer takes damage from spikes, including T. Peter himself
 - For non-T. Peter players, Muddled Cross is no longer charged across all players and all active slots simultaneously with every kill. They now only charge one Muddled Cross to the player that dealt the killing blow to the enemy.
 - For non-T. Peter characters, increased number of enemies required to kill to recharge Muddled Cross from 18 to 30
+- Full heals such as XIX - The Sun and Rainbow Poops no longer bump Heart Renovator's counter to 99. This was unintentional, but now instead add the same amount of red hearts you had before the full heal
+- Peter can now gain charges from collecting black/soul hearts directly
+- Rotten Apple's Damage Up changed to +1 (from +2)
+- Removed from Gold Chest Item Pool: Wine Bottle, Iron
+- Added to Beggar Pool: Box of Belongings
+- Added to Treasure Pool in both modes: Heart Embedded Coin. This was intended from the start but was spelled incorrectly in the xml file
+- Spared bosses should no longer spawn any extra enemies they would on death. This is prominent for splitting bosses like Fistula, Envy, and Matriarch
 
 Bug Fixes
 - Fixed Peter's soul hearts being absorbed into Keys to the Kingdom when continuing a run if not fully charged
-- Fixed Keys to the Kingdom returning an error when attempting to spawn dust clouds for bosses with an odd-numbered hitbox size
-- Fixed E Key's EID entry having a missing texture markup. Now has a Giga Bomb icon as intended
+- Fixed Keys to the Kingdom returning an error when attempting to spawn dust clouds for bosses with an odd-numbered hitsphere size
 - Fixed an error with T. Peter if you had a costume on that overrode your default hair costume
 - Fixed Muddled Cross constantly making beeping noises while fully charged in uncleared rooms
-- Fixed full heals such as XIX - The Sun completely filling the Heart Renovator heart counter
 - Fixed enemies that spawned from other enemies not properly obeying the rules of which side of T. Peter's water they should be on
 - Fixed entities that are allowed on both sides of T. Peter's water unable to interact with entities on only one side
 - Fixed returning to the starting room after entering, room-flipping, and exiting an off-grid room, such as angel and devil rooms
 - Starting health and starting costumes now use the vanilla API instead of REPENTOGON due to a few reports of them not working, resulting in instant death/baldness
+- Fixed The Forgotten gaining The Soul's soul hearts when swapping between the two forms
+- *Should* have fixed Glowing Hourglass not reverting internal save data (not achievements)
+- Fixed soul orbs for Keys to the Kingdom still spawning when sparing segmented bosses (Larry Jr., Chub, etc)
+- Removed rooms with unused enemies
+- Fixed Moon Heart, Tab Key, and Soul of Peter not properly updating the visibility of specific rooms immediately upon use
+
+EID Fixes
+- Added a missing word on KTTK's description to clarify removing devil deals grants a permanent stat
+- Fixed E Key's EID entry having a missing texture markup. Now has a Giga Bomb icon as intended
+
+Still figuring out:
+- Potential incompatibility with Lazy Mattpack, causing crashes to occur
 
 v1.0
 Release!

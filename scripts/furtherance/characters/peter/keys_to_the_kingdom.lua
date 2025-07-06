@@ -4,6 +4,12 @@ local SEL = StatusEffectLibrary
 local PETER = Mod.Character.PETER
 local floor = math.floor
 
+--TODO: When an enemy spawns, put their EntityType into a queue. Next frame, assuming they spawn simultaneously, search for all entities of that type and single out their parents.
+--TODO: Once the parent is identified, assign a group number if not already present. Assign that group number to the rest of the chain.
+--TODO: Whenever an enemy dies, if they're part of a group, check for any entities with the same group number. If none exist, spawn the boss soul.
+
+--TODO: When a boss is spared, during one of the 1-frame-delay checks, if there are any newly spawned bosses, initiate the same boss-death removal. Surely this doesn't break anything.
+
 local KEYS_TO_THE_KINGDOM = {}
 
 Furtherance.Item.KEYS_TO_THE_KINGDOM = KEYS_TO_THE_KINGDOM
@@ -47,11 +53,15 @@ KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS = Mod:Set({
 	EffectVariant.POOP_EXPLOSION,
 	EffectVariant.BIG_ROCK_EXPLOSION,
 	EffectVariant.BLOOD_EXPLOSION,
+	EffectVariant.LARGE_BLOOD_EXPLOSION,
 	EffectVariant.BLOOD_GUSH,
 	EffectVariant.BLOOD_PARTICLE,
 	EffectVariant.BLOOD_SPLAT,
 	EffectVariant.DUST_CLOUD,
-	EffectVariant.FART
+	EffectVariant.FART,
+	EffectVariant.WORM,
+	EffectVariant.POOF02,
+	EffectVariant.POOF04
 })
 KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS = {
 	SoundEffect.SOUND_ROCKET_BLAST_DEATH,
@@ -175,6 +185,7 @@ local function cease(npc)
 		function(effect, index)
 			if KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[effect.Variant]
 				and (not Mod:TryGetData(effect) or not Mod:GetData(effect).RaptureCloud)
+				and effect.FrameCount <= 2
 			then
 				effect:Remove()
 			end
@@ -188,6 +199,20 @@ local function cease(npc)
 		end
 	end, nil, nil, { Inverse = true })
 	Mod.SFXMan:StopLoopingSounds()
+	Mod.Foreach.NPCInRadius(npc.Position, npc.Size + 40, function(_npc, index)
+		if _npc.FrameCount <= 2
+			and not _npc:IsDead()
+			and GetPtrHash(npc) ~= GetPtrHash(_npc)
+		then
+			if _npc:IsBoss() then
+				KEYS_TO_THE_KINGDOM:RemoveBoss(_npc)
+			else
+				npc:Remove()
+			end
+		end
+	end)
+	npc:GetSprite():SetLastFrame()
+	npc:Update()
 end
 
 ---Cannot remove a boss outright as it can cause unintended effects, such as the room continuing to play the boss fight music
@@ -199,11 +224,8 @@ function KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
 	npc:Kill()
 	npc:ToNPC().State = NpcState.STATE_DEATH
 	npc:Update()
-	npc:GetSprite():SetLastFrame()
-	npc:Update()
 	cease(npc)
 	Mod:DelayOneFrame(function()
-		npc:GetSprite():SetLastFrame()
 		cease(npc)
 		if not npc:IsDead() then
 			npc.Visible = true
@@ -231,10 +253,11 @@ function KEYS_TO_THE_KINGDOM:RaptureEnemy(ent)
 	while currentEnt and not loopedEntities[GetPtrHash(currentEnt)] and SEL.Utils.IsInParentChildChain(currentEnt) do
 		local child = currentEnt.Child
 		currentEnt:Remove()
+		loopedEntities[GetPtrHash(currentEnt)] = true
 		currentEnt = child
 	end
 	if ent:IsBoss() then
-		Mod:GetData(ent).Raptured = true
+		Mod:GetData(parent).Raptured = true
 		KEYS_TO_THE_KINGDOM:RemoveBoss(parent)
 	else
 		parent:Remove()
@@ -394,11 +417,12 @@ function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 		local slots = Mod:GetActiveItemCharges(player, KEYS_TO_THE_KINGDOM.ID)
 		if #slots == 0 then return end
 		for _, slotData in ipairs(slots) do
+			local data = Mod:TryGetData(npc)
 			if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES
 				and not npc.SpawnerEntity
+				and not (data and data.Raptured)
 			then
-				local data = Mod:TryGetData(npc)
-				if npc:IsBoss() and not (data and data.Raptured) then
+				if npc:IsBoss() then
 					KEYS_TO_THE_KINGDOM:SpawnBossSoulCharge(npc, player)
 				else
 					KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(npc, player)
@@ -625,13 +649,14 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	Mod.SFXMan:Play(SoundEffect.SOUND_ANGEL_WING, 2, 2, false, 0.75)
 
 	KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
+	local parent = SEL.Utils.GetLastParent(npc)
 
 	for _ = 1, 15 do
-		local effect = Mod.Spawn.Effect(EffectVariant.DUST_CLOUD, 0, npc.Position, RandomVector():Resized(5))
+		local effect = Mod.Spawn.Effect(EffectVariant.DUST_CLOUD, 0, parent.Position, RandomVector():Resized(5))
 		Mod:GetData(effect).RaptureCloud = true
 		effect.Color = Color(1, 1, 1, 1, 0.5, 0.5, 0.5)
 		effect:SetTimeout(30)
-		effect.PositionOffset = Vector(Mod:RandomNum(floor(-npc.Size / 2), floor(npc.Size / 2)), Mod:RandomNum(floor(-npc.Size), 0))
+		effect.PositionOffset = Vector(Mod:RandomNum(floor(-parent.Size / 2), floor(parent.Size / 2)), Mod:RandomNum(floor(-parent.Size), 0))
 	end
 
 	local spotlight = tryGetSpotlight(statusData)

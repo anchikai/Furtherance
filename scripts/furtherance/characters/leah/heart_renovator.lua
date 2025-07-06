@@ -16,6 +16,11 @@ local counter = Sprite("gfx/ui/hudpickups.anm2", true)
 counter:SetFrame("Idle", 15)
 HEART_RENOVATOR.CounterSprite = counter
 
+Mod.SaveManager.Utility.AddDefaultRunData(Mod.SaveManager.DefaultSaveKeys.PLAYER, {
+	HeartRenovatorCounter = 0,
+	HeartRenovatorDamage = 0
+})
+
 --#endregion
 
 --#region Helpers
@@ -28,11 +33,11 @@ end
 ---@param amount integer
 ---@param isBlended? boolean
 function HEART_RENOVATOR:GetOverflowAmount(player, amount, isBlended)
-	local maxHearts = player:GetEffectiveMaxHearts()
-	local emptyHealth = maxHearts - player:GetHearts() - (player:GetRottenHearts() * 2)
+	local maxHearts = Mod:GetPlayerRealContainersCount(player, true)
+	local emptyHealth = maxHearts - Mod:GetPlayerRealRedHeartsCount(player, true)
 
 	if emptyHealth < amount
-		and (not isBlended or maxHearts + player:GetSoulHearts() == player:GetHeartLimit())
+		and (not isBlended or maxHearts + Mod:GetPlayerRealSoulHeartsCount(player) + Mod:GetPlayerRealBlackHeartsCount(player) == CustomHealthAPI.Helper.GetTrueHeartLimit(player))
 	then
 		amount = amount - emptyHealth
 		return true, amount
@@ -85,7 +90,7 @@ function HEART_RENOVATOR:OnUse(_, _, player, flags)
 		Mod.SFXMan:Play(SoundEffect.SOUND_HEARTBEAT)
 		player:AddBrokenHearts(-1)
 		local player_run_save = Mod:RunSave(player)
-		player_run_save.HeartRenovatorDamage = (player_run_save.HeartRenovatorDamage or 0) + 1
+		player_run_save.HeartRenovatorDamage = player_run_save.HeartRenovatorDamage + 1
 	end
 	return true
 end
@@ -182,9 +187,8 @@ function HEART_RENOVATOR:AddExtraRedHealth(player, amount)
 
 		if willOverflow then
 			--Situations that would induce a full heal push an amount of 99.
-			--Just to be safe, anything at or past the regular expected max health should be declined.
 			if amount > 48 then
-				return
+				newAmount = player:GetHearts() + player:GetRottenHearts() * 2
 			end
 			HEART_RENOVATOR:AddToCounter(player, newAmount)
 		end
@@ -208,7 +212,6 @@ HudHelper.RegisterHUDElement({
 	end,
 	OnRender = function(player, _, _, position)
 		local player_run_save = Mod:RunSave(player)
-		player_run_save.HeartRenovatorCounter = player_run_save.HeartRenovatorCounter or 0
 		local heartCounter = player_run_save.HeartRenovatorCounter
 		local maxCounter = HEART_RENOVATOR:GetMaxHeartCounter(player)
 		local formatLength = "%0" .. string.len(tostring(maxCounter)) .. "d"

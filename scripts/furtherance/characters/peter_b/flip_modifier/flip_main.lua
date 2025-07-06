@@ -31,6 +31,7 @@ FLIP.BLACKLISTED_ENTITIES = Mod:Set({
 	tostring(EntityType.ENTITY_WRAITH) .. ".0.0",
 	tostring(EntityType.ENTITY_GAPING_MAW) .. ".0.0",
 	tostring(EntityType.ENTITY_BROKEN_GAPING_MAW) .. ".0.0",
+	tostring(EntityType.ENTITY_STONEY) .. ".0.0",
 	tostring(EntityType.ENTITY_FIREPLACE) .. ".4.0" --White Fireplace
 })
 --Not an enemy but should only be interactable on the above world

@@ -40,9 +40,9 @@ function MOON_HEART:GetMoonHearts(player)
 		if player:GetSubPlayer() == nil then
 			return 0
 		end
-		return CustomHealthAPI.Library.GetHPOfKey(player:GetSubPlayer(), MOON_HEART.KEY)
+		return CustomHealthAPI.Library.GetHPOfKey(player:GetSubPlayer(), MOON_HEART.KEY, nil, nil, true)
 	end
-	return CustomHealthAPI.Library.GetHPOfKey(player, MOON_HEART.KEY)
+	return CustomHealthAPI.Library.GetHPOfKey(player, MOON_HEART.KEY, nil, nil, true)
 end
 
 CustomHealthAPI.Library.RegisterSoulHealth(MOON_HEART.KEY, {
@@ -228,7 +228,8 @@ local function ShowSecretRoom(rooms)
 	end
 	local idx = Mod.GENERIC_RNG:RandomInt(#rooms) + 1
 	local room = rooms[idx]
-	room.DisplayFlags = room.DisplayFlags | 6
+	room.DisplayFlags = Mod.DisplayFlags.VISIBLE_WITH_ICON
+	Mod.Level():UpdateVisibility()
 	return true
 end
 
@@ -238,18 +239,21 @@ CustomHealthAPI.Library.AddCallback(
 	0,
 	function(player, flags, key, hpDamaged, wasDepleted, wasLastDamaged)
 		if key == MOON_HEART.KEY then
+
 			if wasDepleted then
 				local secretRooms = Mod:GetAllRooms(function(room)
 					---@cast room RoomDescriptor
 					local roomData = room.Data
-					return roomData.Type == RoomType.ROOM_SECRET and not Mod:HasBitFlags(room.DisplayFlags, 1 << 2)
+
+					return roomData.Type == RoomType.ROOM_SECRET and not Mod:HasBitFlags(room.DisplayFlags, Mod.DisplayFlags.VISIBLE)
 				end)
+
 				if not ShowSecretRoom(secretRooms) then
 					local superSecretRooms = Mod:GetAllRooms(function(room)
 						---@cast room RoomDescriptor
 						local roomData = room.Data
 						return roomData.Type == RoomType.ROOM_SUPERSECRET
-							and not Mod:HasBitFlags(room.DisplayFlags, 1 << 2)
+							and not Mod:HasBitFlags(room.DisplayFlags, Mod.DisplayFlags.VISIBLE)
 					end)
 					ShowSecretRoom(superSecretRooms)
 				end

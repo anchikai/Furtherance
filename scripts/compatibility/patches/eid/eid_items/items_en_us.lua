@@ -279,7 +279,7 @@ return function(modifiers)
 				"#{{BossRoom}} Bosses will be spared after 30 seconds, granting 3 random stat ups",
 				"#{{Blank}} Getting hit or hurting the boss will add 1/3rd of the countdown back",
 				"#{{AngelRoom}} Instantly spares angels, dropping a {{Collectible238}}{{Collectible239}} key piece, or if Isaac has them already, a random {{ItemPoolAngel}}angel room item",
-				"#{{DevilRoom}} Removes all Devil Deals from the room. Grants a random permanent for each deal removed"
+				"#{{DevilRoom}} Removes all Devil Deals from the room. Grants a random permanent stat for each deal removed"
 			}
 		},
 		[Item.KEY_ALT.ID] = {
@@ -662,7 +662,8 @@ return function(modifiers)
 			Name = "Tech IX",
 			Description = {
 				"↓ -5 Fire rate",
-				"#{{Collectible395}} Isaac's tears are replaced with small green piercing and spectral technology rings"
+				"#{{Collectible395}} Isaac's tears are replaced with small green piercing and spectral technology rings",
+				"#Rings deal 66% of Isaac's damage"
 			}
 		},
 		[Item.THE_DREIDEL.ID] = {
