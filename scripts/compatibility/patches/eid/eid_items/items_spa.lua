@@ -3,305 +3,296 @@ local FR_EID = Mod.EID_Support
 local Item = Mod.Item
 
 return function(modifiers)
-	return {
-		[Item.ALTERNATE_REALITY.ID] = {
-			Name = "Realidad Alternativa",
-			Description = {
-				"Transporta a Isaac a una Etapa Aleatoria con uan variante aleatoria",
-				"#Incluye todo piso desde el Sotano a El Vacio, Incluyendo el camino alternativo"
-			}
-		},
-		[Item.APOCALYPSE.ID] = {
-			Name = "Apocalipsis",
-			Description = {
-				"!!! Borra todo objeto pasivo y otorga 2 aumentos de estadisticas de los sigientes por cada objeto borrado:",
-				"#{{Speed}} +0.05 Velocidad",
-				"#{{Tears}} -0.5 Tear delay",
-				"#{{Damage}} +1 Daño",
-				"#{{Range}} +0.3 Rango",
-				"#{{Shotspeed}} +0.1 Velocidad de Disparo",
-				"#{{Luck}} +1 Suerte"
-			}
-		},
-		[Item.ASTRAGALI.ID] = {
-			Name = "Astragali",
-			Description = {
-				"Cambia los cofres en la habitacion por otras variantes de cofres"
-			}
-		},
-		[Item.BEGINNERS_LUCK.ID] = {
-			Name = "Suerte del Principiante",
-			Description = {
-				"↑ {{Luck}} +10 Suerte",
-				"#Por cada habitacion sinb explorar en la que entre Isaac, {{Luck}} -1 Suerte hasta que se cancele la suerte dada por este objeto",
-				"#Se reinicia al entrar a un nuevo piso"
-			}
-		},
-		[Item.BINDS_OF_DEVOTION.ID] = {
-			Name = "Vínculos de devoción",
-			Description = {
-				"{{Player19}} Genera a jacob como segundo jugador sin Esau",
-				"#Cuando muere jacob elimina Vinculos de devoción y cualquier objeto que tenga",
-			}
-		},
-		[Item.BLOOD_CYST.ID] = {
-			Name = "Quiste de sangre",
-			Description = {
-				"Genera un quiste de sangre en un lugar al azar de una habitacion sin explorar",
-				"#Dañarlo hara que explote, haciendo que genere una fuente de 20 lagrimas"
-			}
-		},
-		[Item.BOOK_OF_AMBIT.ID] = {
-			Name = "Libro de Ámbito",
-			Description = {
-				"{{Timer}} Recive por la habitacion:",
-				"#↑ {{Range}} +5 Rango",
-				"#↑ {{Shotspeed}} +1.5 Velocidad de Disparo",
-				"# Lagrimas perforantes"
-			}
-		},
-		[Item.BOOK_OF_BOOKS.ID] = {
-			Name = "Libro de Libros",
-			Description = {
-				"Usa el efecto de un libro aleatorio"
-			}
-		},
-		[Item.BOOK_OF_GUIDANCE.ID] = {
-			Name = "Libro de la Orientación",
-			Description = {
-				"{{Collectible175}} Por el resto del piso, Todas las puertas estan desbloqueadas como si se usase la Llave de papa"
-			}
-		},
-		[Item.BOOK_OF_LEVITICUS.ID] = {
-			Name = "Libro de Levítico",
-			Description = {
-				function(descObj)
-					return modifiers[Item.BOOK_OF_LEVITICUS.ID]._modifier(descObj)
-				end
-			}
-		},
-		[Item.BOOK_OF_SWIFTNESS.ID] = {
-			Name = "Libro de la Rapidez",
-			Description = {
-				function(descObj)
-					return modifiers[Item.BOOK_OF_SWIFTNESS.ID]._modifier(descObj)
-				end
-			}
-		},
-		[Item.BRUNCH.ID] = {
-			Name = "Brunch",
-			Description = {
-				"↑ {{Heart}} +2 Contenedores de Corazon Vacios",
-				"#{{HealingRed}} Cura 4 Corazones Rojos",
-				"#↑ {{Shotspeed}} +0.16 Velocidad de Disparo",
-			}
-		},
-		[Item.BUTTERFLY.ID] = {
-			Name = "Mariposa",
-			Description = {
-				"Recibir daño hace que Isaac dispare lagrimas de 50% de su daño en direcciones aleatorias por 1 segundo"
-			}
-		},
-		[Item.CADUCEUS_STAFF.ID] = {
-			Name = "Baston del Caduceo",
-			Description = {
-				"5% de probabilidad de que el daño recibido no te quite vida y en vez te otorgue un {{Heart}} Corazon Rojo, {{SoulHeart}} Corazon De Alma, o medio de cada dependiendo de la vida de Isaac",
-				"#Si el efecto no se activo se duplica la probabilidad de que se active en el futuro",
-				"#La Probabilidad se reinicia a 5% cuando se activa el efecto"
-			}
-		},
-		[Item.CARDIOMYOPATHY.ID] = {
-			Name = "Cardiomiopatía",
-			Description = {
-				"{{Timer}} Recjoer un corazon que otorga {{Heart}} Vida roja tiene probabilidad de otorgar invencibilidad por un segundo",
-				"#La probabilidad es un 25% por cada medi ocorazon que otorgaria (e.g. Un corazon entero 50%)"
-			}
-		},
-		[Item.CERES.ID] = {
-			Name = "Ceres?",
-			Description = {
-				"5% de probabilidad de disparar una lagriam verde que hace que el enemigo deje liquido verde por 3 segundos",
-				"#{{Luck}} 50% de probabilidad con 9 Suerte",
-				"#Hace 30 de daño por segundo a otros enemigos que toquen el liquido",
-			}
-		},
-		[Item.CHIRON.ID] = {
-			Name = "Quirón?",
-			Description = {
-				--Book of Secrets description
-				"{{Timer}} Cada piso, otorga uno de estos efectos por el piso:#{{Collectible54}} Mapa del Tesoro#{{Collectible21}} Compas#{{Collectible246}} Mapa Azul",
-				"#{{BossRoom}} Entering a boss room activates a random \"offensive\" book"
-			}
-		},
-		[Item.CHI_RHO.ID] = {
-			Name = "Chi Rho",
-			Description = {
-				"{{Collectible643}} 2% de probablidad de disparo un rayo sagrado mientras disparas",
-				"#{{Luck}} 15% de probabilidad con 15 Suerte"
-			}
-		},
-		[Item.COLD_HEARTED.ID] = {
-			Name = "De Corazón frío",
-			Description = {
-				"{{Freezing}} Tocar enemigos los congela",
-				"#{{Slow}} Tocar Jefes los realentiza por 5 segundos"
-			}
-		},
-		[Item.COSMIC_OMNIBUS.ID] = {
-			Name = "Ómnibus cósmico",
-			Description = {
-				"Transporta a isaac a uan habitacion especial sin explorar en el piso",
-				"#{{Planetarium}} Si se exploraron todas las habitaciones especiales teletransporta a isaac a un planetario adicional",
-				"#Usos posteriores teletransporta a Isaac a una habitacion especial al azar en el piso"
-			}
-		},
-		[Item.CRAB_LEGS.ID] = {
-			Name = "Patas de Cangrejo",
-			Description = {
-				"Caminar en una direcion perpendicular a la direcion en la que Isaac dispara otorga {{Speed}} +0.5 Velocidad"
-			}
-		},
-		[Item.D16.ID] = {
-			Name = "D16",
-			Description = {
-				"Cambia todos los corazones en la habitacion a otras variantes de corazon"
-			}
-		},
-		[Item.D9.ID] = {
-			Name = "D9",
-			Description = {
-				"Cambia todos los trinkets en la habitacion por otros"
-			}
-		},
-		[Item.EPITAPH.ID] = {
-			Name = "Epitafio",
-			Description = {
-				"{{Collectible545}} 10% de probabilidad de que los enemigos revivan como un orbvital de hueso o compañero esqueletico",
-				"#Morir con este onjetp creara una tumba en una habitacion al azar en el mismo piso en la proxima run",
-				"#{{Collectible}} Bombardear la tumba 3 veces Generara {{Coin}} 3-5 Monedas, {{Key}} 2-3 Llaves, El primer y ultimo objeto pasivo de la run anterior"
-			}
-		},
-		[Item.EXSANGUINATION.ID] = {
-			Name = "Desangramiento",
-			Description = {
-				"↑ Todo corazon otorga una mejora de {{Damage}} +0.05 Daño permanente",
-				"#Los corazones generados tienen un 50% de probabilidad de parpadear y desaparecer tras 2 segundos"
-			}
-		},
-		[Item.FIRSTBORN_SON.ID] = {
-			Name = "Primogénito",
-			Description = {
-				"{{Collectible634}} Mientras estas en una habitacion sin completar se volvera un fantasma detonador que persigue a enemigos",
-				"#Perseguira a los enemigos con las sigientes prioridades: No-jefes antes que jefes > Mayor Vida > El mas cercano al fantasma ",
-				"#Mata instantaneamente al enemigo perseguido y no dañara a otros, Si es un ejfe solo dañara un 10% de su vida maxima"
-			}
-		},
-		[Item.FLUX.ID] = {
-			Name = "Flujo",
-			Description = {
-				"↑ Otorga {{Range}} +9.75 Rango y lagrimas espectrales",
-				"#Las lagrimas solo se mueven cuando se mueve Isaac",
-				"#Dispara lagrimas en la direcion opuesta que imitan el movimiento de Isaac",
-			}
-		},
-		[Item.GOLDEN_PORT.ID] = {
-			Name = "Puerto Dorado",
-			Description = {
-				"{{Battery}} Usar un objeeto activo sin cagar l ocargara compeltamente por 5 centimos",
-				"#Solo funciona cuando el objeto no tiene cargas"
-			}
-		},
-		[Item.HEART_EMBEDDED_COIN.ID] = {
-			Name = "Moneda con corazón incrustado",
-			Description = {
-				"{{Coin}} Recoger {{Heart}} Corazones rojos mientras tengas la vida completa dara el valor de ese corazon en monedas"
-			}
-		},
-		[Item.HEART_RENOVATOR.ID] = {
-			Name = "Renueva Corazones",
-			Description = {
-				"Puedes recoger {{Heart}} Corazones rojos aun que tengas la vida maxima y los pondra en un contador especial que almacena hasta 99 de vida",
-				"#!!! Pulsar dos veces {{ButtonRT}} Elimina 2 del contador y otorga un {{BrokenHeart}} Corazon Roto",
-				"#↑ Al Usarlo, Elimina un corazon roto y otorga Permeantemente {{Damage}} +0.5 Daño"
-			}
-		},
-		[Item.IRON.ID] = {
-			Name = "Plancha",
-			Description = {
-				"Orbital",
-				"#{{Collectible257}} Lagrimas amigables duplicaran su tamaño y daño y quemaran enemigos"
-			}
-		},
-		[Item.ITCHING_POWDER.ID] = {
-			Name = "Polvo de picapica",
-			Description = {
-				"Recivir daño hara daño falso u nsegundo mas tarde"
-			}
-		},
-		[Item.JAR_OF_MANNA.ID] = {
-			Name = "Jarra de Maná",
-			Description = {
-				"{{Battery}} Debe de cargarse con Orbes de Maná que son soltados por los enemigos Luego:",
-				"#{{Collectible464}} Otorga lo que Isaac mas necesita",
-				"#{{Collectible644}} Si Isaac ya esta satisfecho en Vida y Recolectables, Incrementa la estadistica mas baja de Velocidad, Lagrimas, Daño, Rango, Velocidad de disparo y Suerte"
-			}
-		},
-		[Item.JUNO.ID] = {
-			Name = "Juno?",
-			Description = {
-				"+2 {{SoulHeart}} Corazones de Alma",
-				"#{{{Collectible722}} 3% de probabilidad de disparar uan lagrima que encadena a enemigos en el lugar por 2 segundos",
-				"#{{Luck}} 25% chance at 11 luck"
-			}
-		},
-		[Item.KARETH.ID] = {
-			Name = "Kareth",
-			Description = {
-				"!!! Remplaza todos los pedestales con entre 1 y 3 trinkets dependiendo de la calidad del objeto",
-				"#{{Quality0}}-{{Quality1}}: 1 trinket",
-				"#{{Quality2}}: 2 trinkets",
-				"#{{Quality3}}-{{Quality4}}: 3 trinkets"
-			}
-		},
-		[Item.KERATOCONUS.ID] = {
-			Name = "Queratocono",
-			Description = {
-				"↑ {{Range}} +2 Rango",
-				"#↓ {{Shotspeed}} -0.15 Velocidad de Disparo",
-				"#Enemigos lejanos a Isaac pareceran mas grandes de lo normal y seran mas similares a su tamaño original cuando esten cerca de Isaac",
-				"#{{Slow}} Los enemigos seran relentizados dependiendo de su distancia a Isaac, Mas lejos significara un efecto mas fuerte"
-			}
-		},
-		[Item.KEYS_TO_THE_KINGDOM.ID] = { --123 filigree feather
-			Name = "Llaves al Reino",
-			Description = {
-				"#{{Timer}} Enemigps normales seran \"Perdonados\", desapareciendo y otorgando un aumento de estadisticas por el piso por cada enemigo perdonado",
-				"#{{BossRoom}} Jefes seran perdonados despues de 30 segundos otorgando 3 aumentos de estadisticas al azar",
-				"#{{Blank}} Recibir daño o hacer daño al jefe añadira un tercio del contador de nuevo",
-				"#{{AngelRoom}} Perdona instantaneamente a angeles, Soltando una {{Collectible238}}{{Collectible239}} pieza de llave, y si ya tiene ambas otorga un {{ItemPoolAngel}}Objeto de la habticaion angel",
-				"#{{DevilRoom}} Elimina todo pacto del diavlo de la habitacion, otorga un aumento de estadisticas permanente al azar por cada pacto eliminado"
-			}
-		},
-		[Item.KEY_ALT.ID] = {
-			Name = "Tecla Alt",
-			Description = {
-				"Reinicia el piso con una variante del camino Alternativo y si ya estas en el camino alternativo en una variante del camino normal"
-			}
-		},
-		[Item.KEY_BACKSPACE.ID] = {
-			Name = "Tecla Retroceso",
-			Description = {
-				"!!! Borra los 2 ultimos objetos pasivos y lo trae a el piso anterior",
-				"#El piso es nuevamente generado pero mantiene la misma variante",
-				"#!!! Solo se puede usar hasta 3 veces antes de desaparecer"
-			}
-		},
-		[Item.KEY_C.ID] = {
-			Name = "Tecla C",
-			Description = {
-				"{{Library}} Teletransporta a Isaac a una biblioteca con 5 libros",
-			}
-		},
+    return {
+        [Item.ALTERNATE_REALITY.ID] = {
+            Name = "Realidad Alternativa",
+            Description = {
+                "Transporta a Isaac a una etapa aleatoria con una variante aleatoria",
+                "#Incluye todo piso desde el Sótano hasta El Vacío, incluyendo el camino alternativo"
+            }
+        },
+        [Item.APOCALYPSE.ID] = {
+            Name = "Apocalipsis",
+            Description = {
+                "!!! Borra todo objeto pasivo y otorga 2 aumentos de estadísticas de los siguientes por cada objeto borrado:",
+                "#{{Speed}} +0.05 Velocidad",
+                "#{{Tears}} -0.5 Retraso de lágrima",
+                "#{{Damage}} +1 Daño",
+                "#{{Range}} +0.3 Rango",
+                "#{{Shotspeed}} +0.1 Velocidad de disparo",
+                "#{{Luck}} +1 Suerte"
+            }
+        },
+        [Item.ASTRAGALI.ID] = {
+            Name = "Astrágalos",
+            Description = {
+                "Cambia los cofres en la habitación por otras variantes de cofres"
+            }
+        },
+        [Item.BEGINNERS_LUCK.ID] = {
+            Name = "Suerte del Principiante",
+            Description = {
+                "↑ {{Luck}} +10 Suerte",
+                "#Por cada habitación sin explorar en la que entre Isaac, {{Luck}} -1 Suerte hasta que se cancele la suerte dada por este objeto",
+                "#Se reinicia al entrar a un nuevo piso"
+            }
+        },
+        [Item.BINDS_OF_DEVOTION.ID] = {
+            Name = "Vínculos de Devoción",
+            Description = {
+                "{{Player19}} Genera a Jacob como segundo jugador sin Esau",
+                "#Cuando muere Jacob elimina Vínculos de Devoción y cualquier objeto que tenga"
+            }
+        },
+        [Item.BLOOD_CYST.ID] = {
+            Name = "Quiste de Sangre",
+            Description = {
+                "Genera un quiste de sangre en un lugar al azar de una habitación sin explorar",
+                "#Dañarlo hará que explote, generando una fuente de 20 lágrimas"
+            }
+        },
+        [Item.BOOK_OF_AMBIT.ID] = {
+            Name = "Libro de Ámbito",
+            Description = {
+                "{{Timer}} Recibe por la habitación:",
+                "#↑ {{Range}} +5 Rango",
+                "#↑ {{Shotspeed}} +1.5 Velocidad de disparo",
+                "#Lágrimas perforantes"
+            }
+        },
+        [Item.BOOK_OF_BOOKS.ID] = {
+            Name = "Libro de Libros",
+            Description = {
+                "Usa el efecto de un libro aleatorio"
+            }
+        },
+        [Item.BOOK_OF_GUIDANCE.ID] = {
+            Name = "Libro de la Orientación",
+            Description = {
+                "{{Collectible175}} Por el resto del piso, todas las puertas están desbloqueadas como si se usara la Llave de Papá"
+            }
+        },
+        [Item.BOOK_OF_LEVITICUS.ID] = {
+            Name = "Libro de Levítico",
+            Description = {
+                function(descObj)
+                    return modifiers[Item.BOOK_OF_LEVITICUS.ID]._modifier(descObj)
+                end
+            }
+        },
+        [Item.BOOK_OF_SWIFTNESS.ID] = {
+            Name = "Libro de la Rapidez",
+            Description = {
+                function(descObj)
+                    return modifiers[Item.BOOK_OF_SWIFTNESS.ID]._modifier(descObj)
+                end
+            }
+        },
+        [Item.BRUNCH.ID] = {
+            Name = "Brunch",
+            Description = {
+                "↑ {{Heart}} +2 Contenedores de corazón vacíos",
+                "#{{HealingRed}} Cura 4 corazones rojos",
+                "#↑ {{Shotspeed}} +0.16 Velocidad de disparo"
+            }
+        },
+        [Item.BUTTERFLY.ID] = {
+            Name = "Mariposa",
+            Description = {
+                "Recibir daño hace que Isaac dispare lágrimas del 50% de su daño en direcciones aleatorias por 1 segundo"
+            }
+        },
+        [Item.CADUCEUS_STAFF.ID] = {
+            Name = "Bastón del Caduceo",
+            Description = {
+                "5% de probabilidad de que el daño recibido no te quite vida y en vez te otorgue un {{Heart}} Corazón Rojo, {{SoulHeart}} Corazón de Alma, o medio de cada uno dependiendo de la vida de Isaac",
+                "#Si el efecto no se activó, se duplica la probabilidad de que se active en el futuro",
+                "#La probabilidad se reinicia a 5% cuando se activa el efecto"
+            }
+        },
+        [Item.CARDIOMYOPATHY.ID] = {
+            Name = "Cardiomiopatía",
+            Description = {
+                "{{Timer}} Recoger un corazón que otorga {{Heart}} vida roja tiene probabilidad de otorgar invencibilidad por un segundo",
+                "#La probabilidad es un 25% por cada medio corazón que otorgaría (ej. un corazón entero 50%)"
+            }
+        },
+        [Item.CERES.ID] = {
+            Name = "¿Ceres?",
+            Description = {
+                "5% de probabilidad de disparar una lágrima verde que hace que el enemigo deje fluido verde por 3 segundos",
+                "#{{Luck}} 50% de probabilidad con 9 de Suerte",
+                "#Hace 30 de daño por segundo a otros enemigos que toquen el fluido"
+            }
+        },
+        [Item.CHIRON.ID] = {
+            Name = "¿Quirón?",
+            Description = {
+                "{{Timer}} Cada piso, otorga uno de estos efectos por el piso: #{{Collectible54}} Mapa del Tesoro #{{Collectible21}} Compás #{{Collectible246}} Mapa Azul",
+                "#{{BossRoom}} Entrar a una sala de jefe activa un libro \"ofensivo\" aleatorio"
+            }
+        },
+        [Item.CHI_RHO.ID] = {
+            Name = "Chi Rho",
+            Description = {
+                "{{Collectible643}} 2% de probabilidad de disparar un rayo sagrado mientras disparas",
+                "#{{Luck}} 15% de probabilidad con 15 de Suerte"
+            }
+        },
+        [Item.COLD_HEARTED.ID] = {
+            Name = "De Corazón Frío",
+            Description = {
+                "{{Freezing}} Tocar enemigos los congela",
+                "#{{Slow}} Tocar jefes los ralentiza por 5 segundos"
+            }
+        },
+        [Item.COSMIC_OMNIBUS.ID] = {
+            Name = "Ómnibus Cósmico",
+            Description = {
+                "Transporta a Isaac a una habitación especial sin explorar en el piso",
+                "#{{Planetarium}} Si se exploraron todas las habitaciones especiales, teletransporta a Isaac a un planetario adicional",
+                "#Usos posteriores teletransportan a Isaac a una habitación especial al azar en el piso"
+            }
+        },
+        [Item.CRAB_LEGS.ID] = {
+            Name = "Patas de Cangrejo",
+            Description = {
+                "Caminar en una dirección perpendicular a la dirección en la que Isaac dispara otorga {{Speed}} +0.5 Velocidad"
+            }
+        },
+        [Item.D16.ID] = {
+            Name = "D16",
+            Description = {
+                "Cambia todos los corazones en la habitación a otras variantes de corazón"
+            }
+        },
+        [Item.D9.ID] = {
+            Name = "D9",
+            Description = {
+                "Cambia todos los trinkets en la habitación por otros"
+            }
+        },
+        [Item.EPITAPH.ID] = {
+            Name = "Epitafio",
+            Description = {
+                "{{Collectible545}} 10% de probabilidad de que los enemigos revivan como un orbital de hueso o compañero esquelético",
+                "#Morir con este objeto creará una tumba en una habitación al azar en el mismo piso en la próxima run",
+                "#{{Collectible}} Bombardear la tumba 3 veces generará {{Coin}} 3-5 Monedas, {{Key}} 2-3 Llaves, el primer y último objeto pasivo de la run anterior"
+            }
+        },
+        [Item.EXSANGUINATION.ID] = {
+            Name = "Desangramiento",
+            Description = {
+                "↑ Todo corazón otorga una mejora de {{Damage}} +0.05 Daño permanente",
+                "#Los corazones generados tienen un 50% de probabilidad de parpadear y desaparecer tras 2 segundos"
+            }
+        },
+        [Item.FIRSTBORN_SON.ID] = {
+            Name = "Primogénito",
+            Description = {
+                "{{Collectible634}} Mientras estés en una habitación sin completar se volverá un fantasma detonador que persigue a enemigos",
+                "#Perseguirá a los enemigos con las siguientes prioridades: No-jefes antes que jefes > Mayor vida > El más cercano al fantasma",
+                "#Mata instantáneamente al enemigo perseguido y no dañará a otros. Si es un jefe solo dañará un 10% de su vida máxima"
+            }
+        },
+        [Item.FLUX.ID] = {
+            Name = "Flujo",
+            Description = {
+                "↑ Otorga {{Range}} +9.75 Rango y lágrimas espectrales",
+                "#Las lágrimas solo se mueven cuando se mueve Isaac",
+                "#Dispara lágrimas en la dirección opuesta que imitan el movimiento de Isaac"
+            }
+        },
+        [Item.GOLDEN_PORT.ID] = {
+            Name = "Puerto Dorado",
+            Description = {
+                "{{Battery}} Usar un objeto activo sin cargar lo cargará completamente por 5 centavos",
+                "#Solo funciona cuando el objeto no tiene cargas"
+            }
+        },
+        [Item.HEART_EMBEDDED_COIN.ID] = {
+            Name = "Moneda con Corazón Incrustado",
+            Description = {
+                "{{Coin}} Recoger {{Heart}} corazones rojos mientras tengas la vida completa dará el valor de ese corazón en monedas"
+            }
+        },
+        [Item.HEART_RENOVATOR.ID] = {
+            Name = "Renueva Corazones",
+            Description = {
+                "Puedes recoger {{Heart}} corazones rojos aunque tengas la vida máxima y los pondrá en un contador especial que almacena hasta 99 de vida",
+                "#!!! Pulsar dos veces {{ButtonRT}} elimina 2 del contador y otorga un {{BrokenHeart}} corazón roto",
+                "#↑ Al usarlo, elimina un corazón roto y otorga permanentemente {{Damage}} +0.5 Daño"
+            }
+        },
+        [Item.IRON.ID] = {
+            Name = "Plancha",
+            Description = {
+                "Orbital",
+                "#{{Collectible257}} Las lágrimas amigables duplicarán su tamaño y daño y quemarán enemigos"
+            }
+        },
+        [Item.ITCHING_POWDER.ID] = {
+            Name = "Polvo de Picapica",
+            Description = {
+                "Recibir daño hará daño falso un segundo más tarde"
+            }
+        },
+        [Item.JAR_OF_MANNA.ID] = {
+            Name = "Jarra de Maná",
+            Description = {
+                "{{Battery}} Debe cargarse con orbes de maná que son soltados por los enemigos. Luego:",
+                "#{{Collectible464}} Otorga lo que Isaac más necesita",
+                "#{{Collectible644}} Si Isaac ya está satisfecho en vida y recolectables, incrementa la estadística más baja de velocidad, lágrimas, daño, rango, velocidad de disparo y suerte"
+            }
+        },
+        [Item.JUNO.ID] = {
+            Name = "¿Juno?",
+            Description = {
+                "+2 {{SoulHeart}} Corazones de Alma",
+                "#{{Collectible722}} 3% de probabilidad de disparar una lágrima que encadena a enemigos en el lugar por 2 segundos",
+                "#{{Luck}} 25% de probabilidad con 11 de suerte"
+            }
+        },
+        [Item.KARETH.ID] = {
+            Name = "Kareth",
+            Description = {
+                "!!! Reemplaza todos los pedestales con entre 1 y 3 trinkets dependiendo de la calidad del objeto",
+                "#{{Quality0}}-{{Quality1}}: 1 trinket",
+                "#{{Quality2}}: 2 trinkets",
+                "#{{Quality3}}-{{Quality4}}: 3 trinkets"
+            }
+        },
+        [Item.KEYS_TO_THE_KINGDOM.ID] = {
+            Name = "Llaves al Reino",
+            Description = {
+                "#{{Timer}} Enemigos normales serán \"Perdonados\", desapareciendo y otorgando un aumento de estadísticas por el piso por cada enemigo perdonado",
+                "#{{BossRoom}} Jefes serán perdonados después de 30 segundos otorgando 3 aumentos de estadísticas al azar",
+                "#{{Blank}} Recibir daño o hacer daño al jefe añadirá un tercio del contador de nuevo",
+                "#{{AngelRoom}} Perdona instantáneamente a ángeles, soltando una {{Collectible238}}{{Collectible239}} pieza de llave, y si ya tiene ambas otorga un {{ItemPoolAngel}} objeto de la habitación ángel",
+                "#{{DevilRoom}} Elimina todo pacto del diablo de la habitación, otorga un aumento de estadísticas permanente al azar por cada pacto eliminado"
+            }
+        },
+        [Item.KEY_ALT.ID] = {
+            Name = "Tecla Alt",
+            Description = {
+                "Reinicia el piso con una variante del camino alternativo y si ya estás en el camino alternativo en una variante del camino normal"
+            }
+        },
+        [Item.KEY_BACKSPACE.ID] = {
+            Name = "Tecla Retroceso",
+            Description = {
+                "!!! Borra los 2 últimos objetos pasivos y lo trae al piso anterior",
+                "#El piso es nuevamente generado pero mantiene la misma variante",
+                "#!!! Solo se puede usar hasta 3 veces antes de desaparecer"
+            }
+        },
+        [Item.KEY_C.ID] = {
+            Name = "Tecla C",
+            Description = {
+                "{{Library}} Teletransporta a Isaac a una biblioteca con 5 libros"
+            }
+        },
+
 		[Item.KEY_CAPS.ID] = {
 			Name = "Caps Key",
 			Description = {
