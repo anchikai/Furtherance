@@ -26,6 +26,9 @@ Gameplay Changes
 - Full heals such as XIX - The Sun and Rainbow Poops no longer bump Heart Renovator's counter to 99. This was unintentional, but now instead add the same amount of red hearts you had before the full heal
 - Peter can now gain charges from collecting black/soul hearts directly
 - Rotten Apple's Damage Up changed to +1 (from +2)
+- Removed from Gold Chest Item Pool: Wine Bottle, Iron
+- Added to Beggar Pool: Box of Belongings
+- Added to Treasure Pool in both modes: Heart Embedded Coin. This was intended from the start but was spelled incorrectly in the xml file
 
 Bug Fixes
 - Fixed Peter's soul hearts being absorbed into Keys to the Kingdom when continuing a run if not fully charged
@@ -38,7 +41,6 @@ Bug Fixes
 - Starting health and starting costumes now use the vanilla API instead of REPENTOGON due to a few reports of them not working, resulting in instant death/baldness
 - Fixed The Forgotten gaining The Soul's soul hearts when swapping between the two forms
 - *Should* have fixed Glowing Hourglass not reverting internal save data (not achievements)
-- Fixed Heart Embedded Coin not showing up in the Treasure room pool in all modes
 - Fixed soul orbs for Keys to the Kingdom still spawning when sparing segmented bosses (Larry Jr., Chub, etc)
 - Removed rooms with unused enemies
 - Fixed Moon Heart, Tab Key, and Soul of Peter not properly updating the visibility of specific rooms immediately upon use
@@ -46,6 +48,9 @@ Bug Fixes
 EID Fixes
 - Added a missing word on KTTK's description to clarify removing devil deals grants a permanent stat
 - Fixed E Key's EID entry having a missing texture markup. Now has a Giga Bomb icon as intended
+
+Still figuring out:
+- Potential incompatibility with Lazy Mattpack, causing crashes to occur
 
 v1.0
 Release!
