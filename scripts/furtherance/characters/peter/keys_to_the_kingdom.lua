@@ -4,12 +4,6 @@ local SEL = StatusEffectLibrary
 local PETER = Mod.Character.PETER
 local floor = math.floor
 
---TODO: When an enemy spawns, put their EntityType into a queue. Next frame, assuming they spawn simultaneously, search for all entities of that type and single out their parents.
---TODO: Once the parent is identified, assign a group number if not already present. Assign that group number to the rest of the chain.
---TODO: Whenever an enemy dies, if they're part of a group, check for any entities with the same group number. If none exist, spawn the boss soul.
-
---TODO: When a boss is spared, during one of the 1-frame-delay checks, if there are any newly spawned bosses, initiate the same boss-death removal. Surely this doesn't break anything.
-
 local KEYS_TO_THE_KINGDOM = {}
 
 Furtherance.Item.KEYS_TO_THE_KINGDOM = KEYS_TO_THE_KINGDOM
@@ -27,6 +21,9 @@ KEYS_TO_THE_KINGDOM.SPOTLIGHT = 200
 
 local raptureHits = 0
 local raptureHitCooldown = 0
+local bossQueue = {}
+---@type {[integer]: EntityPtr[]}
+local activeGroupIdx = {}
 
 KEYS_TO_THE_KINGDOM.STORY_BOSS_IDS = Mod:Set({
 	BossType.MOM,
@@ -218,7 +215,7 @@ end
 ---Cannot remove a boss outright as it can cause unintended effects, such as the room continuing to play the boss fight music
 ---@param npc Entity
 function KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
-	--Does just about nothing anyways
+	Mod:GetData(npc).Raptured = true
 	npc:AddEntityFlags(EntityFlag.FLAG_NO_BLOOD_SPLASH)
 	npc:ClearEntityFlags(EntityFlag.FLAG_EXTRA_GORE)
 	npc:Kill()
@@ -256,8 +253,8 @@ function KEYS_TO_THE_KINGDOM:RaptureEnemy(ent)
 		loopedEntities[GetPtrHash(currentEnt)] = true
 		currentEnt = child
 	end
+
 	if ent:IsBoss() then
-		Mod:GetData(parent).Raptured = true
 		KEYS_TO_THE_KINGDOM:RemoveBoss(parent)
 	else
 		parent:Remove()
@@ -413,24 +410,43 @@ end
 function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 	if not PlayerManager.AnyoneHasCollectible(KEYS_TO_THE_KINGDOM.ID) or not KEYS_TO_THE_KINGDOM:CanSpare(npc, true) then return end
 
-	Mod.Foreach.Player(function(player)
-		local slots = Mod:GetActiveItemCharges(player, KEYS_TO_THE_KINGDOM.ID)
-		if #slots == 0 then return end
-		for _, slotData in ipairs(slots) do
-			local data = Mod:TryGetData(npc)
-			if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES
-				and not npc.SpawnerEntity
-				and not (data and data.Raptured)
-			then
-				if npc:IsBoss() then
-					KEYS_TO_THE_KINGDOM:SpawnBossSoulCharge(npc, player)
-				else
-					KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(npc, player)
+	local data = Mod:TryGetData(npc)
+	if data and data.KTTKGroupIdx and not data.Raptured then
+		Mod:DelayOneFrame(function ()
+			local group = activeGroupIdx[data.KTTKGroupIdx]
+			if group then
+				for i = #group, 1, -1 do
+					local ptr = group[i]
+					if ptr and (not ptr.Ref or GetPtrHash(npc) == GetPtrHash(ptr.Ref)) then
+						table.remove(group, i)
+					end
 				end
-				break
+				print("size of group", data.KTTKGroupIdx, "is", #group)
+				if #group > 0 then
+					return
+				else
+					activeGroupIdx[data.KTTKGroupIdx] = nil
+				end
+			else
+				return
 			end
-		end
-	end)
+
+			Mod.Foreach.Player(function(player)
+				local slots = Mod:GetActiveItemCharges(player, KEYS_TO_THE_KINGDOM.ID)
+				if #slots == 0 then return end
+				for _, slotData in ipairs(slots) do
+					if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES then
+						if npc:IsBoss() then
+							KEYS_TO_THE_KINGDOM:SpawnBossSoulCharge(npc, player)
+						elseif not npc.SpawnerEntity then
+							KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(npc, player)
+						end
+						break
+					end
+				end
+			end)
+		end)
+	end
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, KEYS_TO_THE_KINGDOM.OnDeath)
@@ -609,6 +625,75 @@ Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, KEYS_TO_THE_KINGDOM.OnEffectIn
 --#region Sparing bosses
 
 ---@param npc EntityNPC
+function KEYS_TO_THE_KINGDOM:QueueBossOnInit(npc)
+	if npc:IsBoss() and KEYS_TO_THE_KINGDOM:CanSpare(npc, true) then
+		if npc.SpawnerEntity then
+			local data = Mod:TryGetData(npc.SpawnerEntity)
+			if data and data.KTTKGroupIdx and activeGroupIdx[data.KTTKGroupIdx] then
+				Mod:GetData(npc).KTTKGroupIdx = data.KTTKGroupIdx
+				Mod.Insert(activeGroupIdx[data.KTTKGroupIdx], EntityPtr(npc))
+			end
+			return
+		end
+		if not bossQueue[npc.Type] then
+			bossQueue[npc.Type] = true
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, KEYS_TO_THE_KINGDOM.QueueBossOnInit)
+
+function KEYS_TO_THE_KINGDOM:AssignGroupIdxOnUpdate()
+	for entType in pairs(bossQueue) do
+		Mod.Foreach.NPC(function (npc, index)
+			local parent = SEL.Utils.GetLastParent(npc)
+			local data = Mod:GetData(parent)
+			if data.KTTKGroupIdx then
+				return
+			end
+			local parentGroupIdx = #activeGroupIdx + 1
+			data.KTTKGroupIdx = parentGroupIdx
+			activeGroupIdx[parentGroupIdx] = {
+				EntityPtr(npc)
+			}
+			local currentEnt = parent.Child
+			local childData = Mod:GetData(currentEnt)
+			--Clear up segmented enemies
+			while currentEnt
+				and SEL.Utils.IsInParentChildChain(currentEnt)
+				and not Mod:GetData(currentEnt).KTTKGroupIdx
+			do
+				local child = currentEnt.Child
+				childData.KTTKGroupIdx = parentGroupIdx
+				Mod.Insert(activeGroupIdx[parentGroupIdx], EntityPtr(currentEnt))
+				currentEnt = child
+				childData = Mod:GetData(currentEnt)
+			end
+		end, entType, nil, nil)
+		bossQueue[entType] = nil
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, KEYS_TO_THE_KINGDOM.AssignGroupIdxOnUpdate)
+
+---@param npc EntityNPC
+function KEYS_TO_THE_KINGDOM:DebugRenderGroupIdx(npc, offset)
+	local data = Mod:TryGetData(npc)
+	if data and data.KTTKGroupIdx then
+		local renderPos = Mod:GetEntityRenderPosition(npc, offset)
+		Isaac.RenderText(data.KTTKGroupIdx, renderPos.X, renderPos.Y - 30, 1, 1, 1, 1)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_NPC_RENDER, KEYS_TO_THE_KINGDOM.DebugRenderGroupIdx)
+
+function KEYS_TO_THE_KINGDOM:ResetGroupIdx()
+	activeGroupIdx = {}
+end
+
+Mod:AddCallback(ModCallbacks.MC_PRE_ROOM_EXIT, KEYS_TO_THE_KINGDOM.ResetGroupIdx)
+
+---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:RaptureBossUpdate(npc)
 	local statusData = SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 	---@cast statusData StatusEffectData
@@ -744,11 +829,12 @@ function KEYS_TO_THE_KINGDOM:SkillIssue(player)
 	end
 end
 
-function KEYS_TO_THE_KINGDOM:ResetRaptureHits()
+function KEYS_TO_THE_KINGDOM:ResetValues()
 	raptureHits = 0
+	activeGroupIdx = {}
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, KEYS_TO_THE_KINGDOM.ResetRaptureHits)
+Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, KEYS_TO_THE_KINGDOM.ResetValues)
 
 ---@param ent Entity
 ---@param source EntityRef
@@ -857,7 +943,6 @@ function KEYS_TO_THE_KINGDOM:ReverseAppear(npc)
 		sprite:SetFrame(previousFrame)
 		if previousFrame <= 0 then
 			Mod.SFXMan:Play(SoundEffect.SOUND_HOLY)
-			Mod:GetData(npc).Raptured = true
 			sprite.PlaybackSpeed = 1
 			KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
 		end
