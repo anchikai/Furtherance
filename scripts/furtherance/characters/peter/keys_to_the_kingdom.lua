@@ -4,6 +4,12 @@ local SEL = StatusEffectLibrary
 local PETER = Mod.Character.PETER
 local floor = math.floor
 
+--TODO: When an enemy spawns, put their EntityType into a queue. Next frame, assuming they spawn simultaneously, search for all entities of that type and single out their parents.
+--TODO: Once the parent is identified, assign a group number if not already present. Assign that group number to the rest of the chain.
+--TODO: Whenever an enemy dies, if they're part of a group, check for any entities with the same group number. If none exist, spawn the boss soul.
+
+--TODO: When a boss is spared, during one of the 1-frame-delay checks, if there are any newly spawned bosses, initiate the same boss-death removal. Surely this doesn't break anything.
+
 local KEYS_TO_THE_KINGDOM = {}
 
 Furtherance.Item.KEYS_TO_THE_KINGDOM = KEYS_TO_THE_KINGDOM
