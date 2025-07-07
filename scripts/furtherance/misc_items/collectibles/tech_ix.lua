@@ -68,7 +68,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, TECH_IX.Reeval
 ---@param size number
 ---@param vel Vector
 function TECH_IX:FireTechIXRing(ent, pos, size, vel)
-	local owner = Mod:TryGetPlayer(ent, true, true)
+	local owner = Mod:TryGetOwner(ent)
 	if not owner then return end
 	local sizeMult = 1.5
 	local damageMult = 0.66

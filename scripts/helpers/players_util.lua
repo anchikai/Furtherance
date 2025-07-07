@@ -2,9 +2,8 @@
 ---Will return if its a player, the player's familiar, or loop again if it has a SpawnerEntity
 ---@param ent Entity | EntityRef | EntityPtr
 ---@param weaponOwner? boolean #If specified, and it finds a familiar, will only pass the player if that familiar is a weapon-copying familiar
----@param weaponFamiliar? nil #If this and `weaponOwner` are true, will return the familiar instead of the player
+---@param weaponFamiliar? boolean #If this and `weaponOwner` are true, will return the familiar instead of the player. Recommended to use TryGetOwner instead of a Player|Famliiar return
 ---@return EntityPlayer?
----@overload fun(self: ModReference, ent: Entity | EntityRef | EntityPtr, weaponOwner?: boolean, weaponFamiliar?: boolean): EntityPlayer | EntityFamiliar | nil
 function Furtherance:TryGetPlayer(ent, weaponOwner, weaponFamiliar)
 	if not ent then return end
 	if string.match(getmetatable(ent).__type, "EntityPtr") then
@@ -21,6 +20,7 @@ function Furtherance:TryGetPlayer(ent, weaponOwner, weaponFamiliar)
 		if weaponOwner and ent:ToFamiliar():GetWeapon() then
 			local familiar = ent:ToFamiliar()
 			if weaponFamiliar then
+				---@diagnostic disable-next-line: return-type-mismatch
 				return familiar
 			elseif familiar then
 				return familiar.Player
@@ -33,24 +33,12 @@ function Furtherance:TryGetPlayer(ent, weaponOwner, weaponFamiliar)
 	end
 end
 
----I ideally want to deprecate this function because it just feels weird to compare colors when there are other options.
----Function to compare two colours and get if they are the same one
---[[ ---@param col1 Color
----@param col2 Color
----@return boolean|nil
-function Furtherance:CompareColors(col1, col2)
-	if col1 and col2 then
-		return col1.R == col2.R
-			and col1.G == col2.G
-			and col1.B == col2.B
-			and col1.A == col2.A
-			and col1.RO == col2.RO
-			and col1.GO == col2.GO
-			and col1.BO == col2.BO
-	else
-		return nil
-	end
-end ]]
+---TryGetPlayer, but only returns a player or familiar if it has a Weapon object attached to them
+---@param ent Entity | EntityRef | EntityPtr
+---@return EntityPlayer | EntityFamiliar?
+function Furtherance:TryGetOwner(ent)
+	return Furtherance:TryGetPlayer(ent, true, true)
+end
 
 ---@param player EntityPlayer
 ---@return boolean canControl

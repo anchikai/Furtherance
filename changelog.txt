@@ -61,6 +61,8 @@ EID Fixes
 
 Still figuring out:
 - Potential incompatibility with Lazy Mattpack, causing crashes to occur
+- Having damage up items work properly with damage multipliers
+- Tear modifiers being removed when the entity involved is split (Angelic Prism, Multidimensional Baby)
 
 v1.0
 Release!
