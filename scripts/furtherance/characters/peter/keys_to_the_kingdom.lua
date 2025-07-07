@@ -684,7 +684,7 @@ function KEYS_TO_THE_KINGDOM:DebugRenderGroupIdx(npc, offset)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_NPC_RENDER, KEYS_TO_THE_KINGDOM.DebugRenderGroupIdx)
+--Mod:AddCallback(ModCallbacks.MC_POST_NPC_RENDER, KEYS_TO_THE_KINGDOM.DebugRenderGroupIdx)
 
 function KEYS_TO_THE_KINGDOM:ResetGroupIdx()
 	activeGroupIdx = {}
