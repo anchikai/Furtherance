@@ -5,6 +5,7 @@ local MOON_HEART = {}
 Furtherance.Pickup.MOON_HEART = MOON_HEART
 
 MOON_HEART.ID = Isaac.GetEntitySubTypeByName("Moon Heart")
+MOON_HEART.ID_HALF = Isaac.GetEntitySubTypeByName("Half Moon Heart")
 MOON_HEART.KEY = "HEART_MOON"
 MOON_HEART.PICKUP_SFX = Isaac.GetSoundIdByName("Moon Heart Pickup")
 
@@ -57,6 +58,7 @@ CustomHealthAPI.Library.RegisterSoulHealth(MOON_HEART.KEY, {
 	MaxHP = 2,
 	PrioritizeHealing = true,
 	PickupEntities = {
+		{ ID = EntityType.ENTITY_PICKUP, Var = PickupVariant.PICKUP_HEART, Sub = MOON_HEART.ID_HALF },
 		{ ID = EntityType.ENTITY_PICKUP, Var = PickupVariant.PICKUP_HEART, Sub = MOON_HEART.ID },
 	},
 	SumptoriumSubType = 55,
@@ -94,7 +96,8 @@ Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, MOON_HEART.AddExtraLuna)
 ---@param pickup EntityPickup
 ---@param collider Entity
 function MOON_HEART:CollectMoonHeart(pickup, collider)
-	if pickup.SubType ~= MOON_HEART.ID then
+	print(pickup.SubType, MOON_HEART.ID_HALF)
+	if pickup.SubType ~= MOON_HEART.ID and pickup.SubType ~= MOON_HEART.ID_HALF then
 		return
 	end
 	local player = collider:ToPlayer()
@@ -111,10 +114,13 @@ function MOON_HEART:CollectMoonHeart(pickup, collider)
 				Mod.SFXMan:Play(MOON_HEART.PICKUP_SFX, 1, 0, false)
 				pickup:Die()
 			end
-			MOON_HEART:AddMoonHearts(player, 2)
-
+			local heartWorth = pickup.SubType == MOON_HEART.ID and 2 or 1
+			MOON_HEART:AddMoonHearts(player, heartWorth)
+			CustomHealthAPI.Library.IncrementImmaculateConception(player, 1, pickup.InitSeed)
+			CustomHealthAPI.Library.AddSoulLocketBonus(player, heartWorth, pickup.InitSeed)
 			pickup.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
 			pickup.Friction = 0
+
 			if pickup.OptionsPickupIndex > 0 then
 				Mod:KillChoice(pickup)
 			end

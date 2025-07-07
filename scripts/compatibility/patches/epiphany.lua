@@ -64,7 +64,10 @@ local function epiphanyPatch()
 		{ V = Mod.Card.REVERSE_CHARITY.ID }
 	)
 
-	api:AddHeartsToHeartGroup("Soul", { V = Mod.Pickup.MOON_HEART.ID })
+	api:AddHeartsToHeartGroup("Soul",
+		{ V = Mod.Pickup.MOON_HEART.ID },
+		{ V = Mod.Pickup.MOON_HEART.ID_HALF }
+	)
 
 	api:AddSlotsToSlotGroup("Beggars", { V = Mod.Slot.ESCORT_BEGGAR.SLOT })
 	api:AddSlotsToSlotGroup("SpecialBeggars", { V = Mod.Slot.ESCORT_BEGGAR.SLOT })
