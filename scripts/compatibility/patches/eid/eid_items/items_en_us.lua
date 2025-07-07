@@ -250,7 +250,7 @@ return function(modifiers)
 			Name = "Juno?",
 			Description = {
 				"+2 {{SoulHeart}} Soul Hearts",
-				"#{{{Collectible722}} 3% chance to fire a tear that chains them in place for 2 seconds",
+				"#{{Collectible722}} 3% chance to fire a tear that chains them in place for 2 seconds",
 				"#{{Luck}} 25% chance at 11 luck"
 			}
 		},
