@@ -68,6 +68,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
 end)
 
 function ALMAGEST_SCRAP:PreEnterPlanetarium(newIndex)
+	if Mod.Game:GetFrameCount() == 0 then return end
 	local level = Mod.Level()
 	local roomDesc = level:GetRoomByIdx(newIndex)
 	if ALMAGEST_SCRAP:ShouldUpdateTreasureRoom()

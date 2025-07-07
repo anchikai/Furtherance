@@ -62,6 +62,7 @@ EID Fixes
 
 Mod Compatibility
 - Added Library Expanded compatibility. Currently just adds Weird Book sprites to all of Furtherance's books and a TBOATB EID entry to Book of Books. Sprite edits by explodingturtle
+- Fixed a crash that happened on run start to some users with Furtherance + Custom Stage API
 
 API Changes
 - IsaacSaveManager updated to v2.3
