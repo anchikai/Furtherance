@@ -315,10 +315,6 @@ for _, category in ipairs(eidCategory) do
 	Mod.Include("scripts.compatibility.patches.eid.eid_" .. category .. "_descriptions")
 end
 
-
-
-
-
 EID:addDescriptionModifier(
 	"Furtherance Dynamic Description Manager",
 	-- condition
