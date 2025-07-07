@@ -37,6 +37,7 @@ Gameplay Changes
 - Rotten Apple's Damage Up changed to +1 (from +2)
 - Spared bosses should no longer spawn any extra enemies they would on death. This is prominent for splitting bosses (Fistula, Envy, Matriarch, etc)
 - Segmented and splitting bosses while having Keys to the Kingdom should no longer drop charges on death of each segment/piece, instead respecting that each individual boss, upon death of all segments/split parts, should only drop one boss soul charge
+- Removed stats not able to be gained when sparing enemies that spawned from other enemies
 
 Bug Fixes
 - Fixed Peter's soul hearts being absorbed into Keys to the Kingdom when continuing a run if not fully charged

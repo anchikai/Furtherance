@@ -319,9 +319,7 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 				SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil, { MaxCountdown = raptureCountdown })
 			elseif canSpare and npc:Exists() then
 				KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
-				if npc.SpawnerType == EntityType.ENTITY_NULL then
-					KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, 1, true)
-				end
+				KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, 1, true)
 			end
 		end, nil, nil, nil, { Inverse = true })
 	end
