@@ -59,6 +59,9 @@ EID Fixes
 - Fixed E Key's and Juno's EID entries having a missing texture markup
 - Adjusted T. Miriam's EID entry to make note of damage scaling with range
 
+API Changes
+- IsaacSaveManager updated to v2.3
+
 Still figuring out:
 - Potential incompatibility with Lazy Mattpack, causing crashes to occur
 - Having damage up items work properly with damage multipliers
