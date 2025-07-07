@@ -54,7 +54,7 @@ local weaponOverridingItems = {
 ---@param player EntityPlayer
 function TECH_IX:ReevaluateWeaponOnRemove(player)
 	for _, itemID in ipairs(weaponOverridingItems) do
-		if player:HasCollectible(itemID) then
+		if player:HasCollectible(itemID) and not player:IsCollectibleBlocked(itemID) then
 			player:BlockCollectible(itemID)
 			player:UnblockCollectible(itemID)
 		end
