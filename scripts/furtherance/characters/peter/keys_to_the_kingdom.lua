@@ -411,24 +411,25 @@ function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 	if not PlayerManager.AnyoneHasCollectible(KEYS_TO_THE_KINGDOM.ID) or not KEYS_TO_THE_KINGDOM:CanSpare(npc, true) then return end
 
 	local data = Mod:TryGetData(npc)
-	if data and data.KTTKGroupIdx and not data.Raptured then
+	if not (data and data.Raptured) then
 		Mod:DelayOneFrame(function ()
-			local group = activeGroupIdx[data.KTTKGroupIdx]
-			if group then
-				for i = #group, 1, -1 do
-					local ptr = group[i]
-					if ptr and (not ptr.Ref or GetPtrHash(npc) == GetPtrHash(ptr.Ref)) then
-						table.remove(group, i)
+			if data and data.KTTKGroupIdx then
+				local group = activeGroupIdx[data.KTTKGroupIdx]
+				if group then
+					for i = #group, 1, -1 do
+						local ptr = group[i]
+						if ptr and (not ptr.Ref or GetPtrHash(npc) == GetPtrHash(ptr.Ref)) then
+							table.remove(group, i)
+						end
 					end
-				end
-				print("size of group", data.KTTKGroupIdx, "is", #group)
-				if #group > 0 then
-					return
+					if #group > 0 then
+						return
+					else
+						activeGroupIdx[data.KTTKGroupIdx] = nil
+					end
 				else
-					activeGroupIdx[data.KTTKGroupIdx] = nil
+					return
 				end
-			else
-				return
 			end
 
 			Mod.Foreach.Player(function(player)
