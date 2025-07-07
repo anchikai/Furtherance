@@ -43,6 +43,26 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, TECH_IX.EvaluteCache)
 
+local weaponOverridingItems = {
+	CollectibleType.COLLECTIBLE_LUDOVICO_TECHNIQUE,
+	CollectibleType.COLLECTIBLE_TECHNOLOGY,
+	CollectibleType.COLLECTIBLE_BRIMSTONE,
+	CollectibleType.COLLECTIBLE_TECH_X
+}
+
+---A weapon cache doesn't actually re-evaluate your weapon...for some reason. This tricks the game into doing so.
+---@param player EntityPlayer
+function TECH_IX:ReevaluateWeaponOnRemove(player)
+	for _, itemID in ipairs(weaponOverridingItems) do
+		if player:HasCollectible(itemID) then
+			player:BlockCollectible(itemID)
+			player:UnblockCollectible(itemID)
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, TECH_IX.ReevaluateWeaponOnRemove, TECH_IX.ID)
+
 ---@param ent Entity
 ---@param pos Vector
 ---@param size number

@@ -10,6 +10,14 @@ General Adjustments
 - Leaking Tank Q0 -> Q2
 - Tambourine Q0 -> Q1
 - Spiritual Wound's (T. Miriam's attack) attacking SFX will no longer play if you tap the attack buttons and do not continue firing
+- Removed from Gold Chest Item Pool: Wine Bottle, Iron
+- Removed from Greed Mode pools: Pharaoh Cat
+- Added to Beggar Pool: Box of Belongings
+- Added to Treasure Pool in both modes: Heart Embedded Coin. This was intended from the start but was spelled incorrectly in the xml file
+- Added to Secret pool in both modes: Pillar of Clouds
+- Removed from Greed Mode Treasure pool: Pillar of Clouds
+- Blacklisted from Greed Mode: Backspace Key, Enter Key, Grass, Escape Plan, Dungeon Key
+- F4 Key + Alt Key synergy will no longer activate in Greed Mode
 
 Gameplay Changes
 - Added numerous synergies for Tech IX with other weapon-changing items
@@ -27,9 +35,6 @@ Gameplay Changes
 - Full heals such as XIX - The Sun and Rainbow Poops no longer bump Heart Renovator's counter to 99. This was unintentional, but now instead add the same amount of red hearts you had before the full heal
 - Peter can now gain charges from collecting black/soul hearts directly
 - Rotten Apple's Damage Up changed to +1 (from +2)
-- Removed from Gold Chest Item Pool: Wine Bottle, Iron
-- Added to Beggar Pool: Box of Belongings
-- Added to Treasure Pool in both modes: Heart Embedded Coin. This was intended from the start but was spelled incorrectly in the xml file
 - Spared bosses should no longer spawn any extra enemies they would on death. This is prominent for splitting bosses (Fistula, Envy, Matriarch, etc)
 - Segmented and splitting bosses while having Keys to the Kingdom should no longer drop charges on death of each segment/piece, instead respecting that each individual boss, upon death of all segments/split parts, should only drop one boss soul charge
 
@@ -47,6 +52,7 @@ Bug Fixes
 - Fixed soul orbs for Keys to the Kingdom still spawning when sparing segmented bosses (Larry Jr., Chub, etc)
 - Removed rooms with unused enemies
 - Fixed Moon Heart, Tab Key, and Soul of Peter not properly updating the visibility of specific rooms immediately upon use
+- Fixed having Tech IX removed while having special synergies (Brimstone, Ludovico Technique) not update what you should be firing (Brimstone shooting tears, Ludo still having a Tech Ludo ring)
 
 EID Fixes
 - Added a missing word on Keys to the Kingdom's description to clarify removing devil deals grants a permanent stat
