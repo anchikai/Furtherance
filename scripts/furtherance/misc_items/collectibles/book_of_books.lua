@@ -7,6 +7,10 @@ Furtherance.Item.BOOK_OF_BOOKS = BOOK_OF_BOOKS
 BOOK_OF_BOOKS.ID = Isaac.GetItemIdByName("Book of Books")
 BOOK_OF_BOOKS.GIANTBOOK = Isaac.GetGiantBookIdByName("Book of Books")
 
+BOOK_OF_BOOKS.BLACKLIST = Mod:Set({
+	BOOK_OF_BOOKS.ID
+})
+
 ---@param rng RNG
 ---@param player EntityPlayer
 function BOOK_OF_BOOKS:OnUse(_, rng, player)
@@ -15,7 +19,7 @@ function BOOK_OF_BOOKS:OnUse(_, rng, player)
 	for _, itemConfig in ipairs(bookItemConfigs) do
 		if itemConfig.Type == ItemType.ITEM_ACTIVE
 			and not itemConfig:HasTags(ItemConfig.TAG_QUEST)
-			and itemConfig.ID ~= BOOK_OF_BOOKS.ID
+			and not BOOK_OF_BOOKS.BLACKLIST[itemConfig.ID]
 			and Mod.PersistGameData:Unlocked(itemConfig.AchievementID)
 		then
 			Mod.Insert(bookItemIDs, itemConfig.ID)

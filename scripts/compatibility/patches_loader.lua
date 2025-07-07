@@ -35,7 +35,6 @@ function loader:ApplyPatches()
 		if modExists and not patch.Loaded then
 			patch.PatchFunc()
 			patch.Loaded = true
-
 			Mod:DebugLog(table.concat({ "Loaded", patch.ModName, "patch" }, " "))
 		end
 	end
@@ -64,7 +63,8 @@ local patches = {
 	"retribution",
 	"sheriff",
 	"stageapi",
-	"tainted_treasures"
+	"tainted_treasures",
+	"library_expanded"
 }
 
 for _, fileName in ipairs(patches) do

@@ -59,6 +59,9 @@ EID Fixes
 - Fixed E Key's and Juno's EID entries having a missing texture markup
 - Adjusted T. Miriam's EID entry to make note of damage scaling with range
 
+Mod Compatibility
+- Added Library Expanded compatibility. Currently just adds Weird Book sprites to all of Furtherance's books and a TBOATB EID entry to Book of Books. Sprite edits by explodingturtle
+
 API Changes
 - IsaacSaveManager updated to v2.3
 
