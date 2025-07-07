@@ -7,14 +7,11 @@ local modifiers = {
 		[PickupVariant.PICKUP_HEART] = {
 			[Mod.Pickup.MOON_HEART.ID] = {
 				---@param descObj EID_DescObj
-				---@param noLuna string
 				---@param hasLuna string
-				_modifier = function(descObj, noLuna, hasLuna)
+				_modifier = function(descObj, hasLuna)
 					local player = FR_EID:ClosestPlayerTo(descObj.Entity)
 					if player:HasCollectible(CollectibleType.COLLECTIBLE_LUNA) then
 						return hasLuna
-					else
-						return noLuna
 					end
 				end,
 			}
@@ -72,6 +69,8 @@ for lang, desc in pairs(descriptions) do
 		end
 	end
 end
+
+allDescData[EntityType.ENTITY_PICKUP][PickupVariant.PICKUP_HEART][Mod.Pickup.MOON_HEART.ID_HALF] = allDescData[EntityType.ENTITY_PICKUP][PickupVariant.PICKUP_HEART][Mod.Pickup.MOON_HEART.ID]
 
 for id, variantDescData in pairs(allDescData) do
 	for variant, subtypeDescData in pairs(variantDescData) do

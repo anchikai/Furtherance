@@ -26,14 +26,14 @@ return function(modifiers)
 					Name = "Moon Heart {{MoonHeart}}",
 					Description = {
 						"{{SoulHeart}} Functions like a Soul Heart",
-						"#{{SecretRoom}} Secret and Super Secret Rooms will contain a {{Collectible589}} Luna light beam",
+						"#{{SecretRoom}} For each Moon Heart any player has, a Secret and Super Secret Room will contain a {{Collectible589}} Luna light beam",
 						"#The first light gives Isaac +1 Fire rate, and all subsequent ones give +0.5 Fire rate",
+						"#Reveals the Secret or Super Secret room once depleted",
 						function(descObj)
 							return modifiers[5][10][Mod.Pickup.MOON_HEART.ID]._modifier(descObj,
-								"#The number of Luna beams available is equivalent to the amount of Moon Hearts available across all players (e.g. 1 Moon Heart = Can only find 1 beam on the floor)",
 								"#{{Collectible589}} Grants an additional {{Tears}} +0.5 Fire rate for every Moon Heart Isaac has when interacting with a Luna beam"
 							)
-						end
+						end,
 					}
 				},
 			},
