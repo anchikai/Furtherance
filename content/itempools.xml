@@ -7,7 +7,6 @@
 		<Item Name="Book of Swiftness" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Book of Ambit" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Crab Legs" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Pharaoh Cat" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Lil Poofer" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Heart Embedded Coin" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Mandrake" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -105,6 +104,7 @@
 		<Item Name="Epitaph" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Old Camera" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Servitude" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Pillar of Clouds" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
     </Pool>
 	<Pool Name="library">
 		<Item Name="Book of Swiftness" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -167,7 +167,6 @@
 		<Item Name="Pharaoh Cat" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Lil Poofer" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Heart Embedded Coin" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Pillar of Clouds" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Firstborn Son" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Quarantine" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Book of Guidance" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -209,7 +208,6 @@
 		<Item Name="Shattered Heart" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Pillar of Fire" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Tambourine" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-		<Item Name="Pharaoh Cat" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Lil Poofer" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Mandrake" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Flux" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
@@ -281,6 +279,7 @@
 		<Item Name="Epitaph" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Old Camera" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Servitude" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Pillar of Clouds" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 	<Pool Name="craneGame">
 		<Item Name="Polydipsia" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>

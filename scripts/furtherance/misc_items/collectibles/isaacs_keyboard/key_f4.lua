@@ -173,7 +173,7 @@ end
 function F4_KEY:OnUse(_, rng, player)
 	if not player:HasCollectible(Mod.Item.KEY_ALT.ID) then
 		return F4_KEY:OnRegularUse(player, rng)
-	else
+	elseif not Mod.Game:IsGreedMode() then
 		local roomType = Mod.Room():GetType()
 		if roomType ~= RoomType.ROOM_BOSS then
 			local slots = Mod:GetActiveItemSlots(player, Mod.Item.KEY_ALT.ID)
