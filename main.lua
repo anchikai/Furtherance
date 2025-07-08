@@ -258,9 +258,9 @@ Mod.Include("scripts.compatibility.patches.eid.eid_support")
 Mod.Include("scripts.compatibility.patches_loader")
 
 if Mod.FileLoadError then
-	Mod:Log("Mod failed to load! Report this to a coder in the dev server!")
+	Mod:Log("Mod failed to load! Report this to Benny in the dev server!")
 elseif Mod.InvalidPathError then
-	Mod:Log("One or more files were unable to be loaded. Report this to a coder in the dev server!")
+	Mod:Log("One or more files were unable to be loaded. Report this to Benny in the dev server!")
 else
 	Mod:Log("v" .. Mod.Version .. " successfully loaded!")
 end

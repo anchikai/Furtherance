@@ -76,6 +76,9 @@ KEYS_TO_THE_KINGDOM.MINIBOSS = Mod:Set({
 	tostring(EntityType.ENTITY_GLUTTONY) .. ".0.0",
 	tostring(EntityType.ENTITY_GREED) .. ".0.0",
 	tostring(EntityType.ENTITY_ENVY) .. ".0.0",
+	tostring(EntityType.ENTITY_ENVY) .. ".10.0",
+	tostring(EntityType.ENTITY_ENVY) .. ".20.0",
+	tostring(EntityType.ENTITY_ENVY) .. ".30.0",
 	tostring(EntityType.ENTITY_PRIDE) .. ".0.0",
 })
 KEYS_TO_THE_KINGDOM.ENTITY_BLACKLIST = {}
@@ -93,12 +96,12 @@ KEYS_TO_THE_KINGDOM.SPARE_TIMER = {
 }
 
 KEYS_TO_THE_KINGDOM.StatTable = {
-	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.25,                       TempBuff = 0.1 },
-	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = -0.25,                  TempBuff = -0.1 }, -- MaxFireDelay buffs should be negative!
-	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.5 * Mod.RANGE_BASE_MULT, TempBuff = 0.1 * Mod.RANGE_BASE_MULT },
-	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.125,                     TempBuff = 0.025 },
+	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.5,                       TempBuff = 0.25 },
+	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = -0.5,                  TempBuff = -0.25 }, -- MaxFireDelay buffs should be negative!
+	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.5 * Mod.RANGE_BASE_MULT, TempBuff = 0.25 * Mod.RANGE_BASE_MULT },
+	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.25,                     TempBuff = 0.025 },
 	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.2,                       TempBuff = 0.1 },
-	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5,                       TempBuff = 0.1 }
+	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5,                       TempBuff = 0.25 }
 }
 
 local identifier = "FR_RAPTURE"
@@ -177,6 +180,7 @@ function KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, ent)
 	return raptureCountdown
 end
 
+---@param npc Entity
 local function cease(npc)
 	Mod.Foreach.EffectInRadius(npc.Position, npc.Size + 40,
 		function(effect, index)
@@ -209,7 +213,6 @@ local function cease(npc)
 		end
 	end)
 	npc:GetSprite():SetLastFrame()
-	npc:Update()
 end
 
 ---Cannot remove a boss outright as it can cause unintended effects, such as the room continuing to play the boss fight music
@@ -219,8 +222,6 @@ function KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
 	npc:AddEntityFlags(EntityFlag.FLAG_NO_BLOOD_SPLASH)
 	npc:ClearEntityFlags(EntityFlag.FLAG_EXTRA_GORE)
 	npc:Kill()
-	npc:ToNPC().State = NpcState.STATE_DEATH
-	npc:Update()
 	cease(npc)
 	Mod:DelayOneFrame(function()
 		cease(npc)
@@ -249,7 +250,7 @@ function KEYS_TO_THE_KINGDOM:RaptureEnemy(ent)
 	--Clear up segmented enemies
 	while currentEnt and not loopedEntities[GetPtrHash(currentEnt)] and SEL.Utils.IsInParentChildChain(currentEnt) do
 		local child = currentEnt.Child
-		currentEnt:Remove()
+		KEYS_TO_THE_KINGDOM:RemoveBoss(currentEnt)
 		loopedEntities[GetPtrHash(currentEnt)] = true
 		currentEnt = child
 	end
@@ -301,6 +302,7 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 	elseif KEYS_TO_THE_KINGDOM.STORY_BOSS_IDS[room:GetBossID()]
 		or room:GetType() == RoomType.ROOM_BOSSRUSH
 		or room:GetType() == RoomType.ROOM_CHALLENGE
+		or Mod.Level():GetStage() == LevelStage.STAGE8
 		or shouldGrantMantle
 	then
 		player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_HOLY_MANTLE, true)

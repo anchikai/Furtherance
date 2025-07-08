@@ -84,6 +84,15 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, postBombExplode)
 
+---@param effect EntityEffect
+local function bombExplosionBestFriend(_, effect)
+	if effect.SpawnerEntity and effect.SpawnerType == EntityType.ENTITY_BOMB and effect.SpawnerVariant == BombVariant.BOMB_DECOY then
+		Isaac.RunCallback(Mod.ModCallbacks.POST_BOMB_EXPLODE, effect.SpawnerEntity)
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, bombExplosionBestFriend, EffectVariant.BOMB_EXPLOSION)
+
 local function postEpicFetusExplode(_, effect)
 	if effect.Variant == EffectVariant.ROCKET and effect.PositionOffset.Y == 0 then
 		Isaac.RunCallback(Mod.ModCallbacks.POST_ROCKET_EXPLODE, effect:ToEffect())

@@ -275,11 +275,11 @@ return function(modifiers)
 		[Item.KEYS_TO_THE_KINGDOM.ID] = { --123 filigree feather
 			Name = "Keys to the Kingdom",
 			Description = {
-				"#{{Timer}} Normal enemies will  be \"spared\", disappearing and granting a random stat up per enemy for the duration of the floor",
-				"#{{BossRoom}} Bosses will be spared after 30 seconds, granting 3 random stat ups",
-				"#{{Blank}} Getting hit or hurting the boss will add 1/3rd of the countdown back",
+				"#{{Timer}} Each normal enemy is removed and grants a random temporary stat up for the remainder of the floor",
+				"#{{BossRoom}} Bosses are spared after 30 seconds, granting 3 random permanent stat ups",
+				"#Getting hit or hurting the boss will add 1/3rd of the countdown back",
 				"#{{AngelRoom}} Instantly spares angels, dropping a {{Collectible238}}{{Collectible239}} key piece, or if Isaac has them already, a random {{ItemPoolAngel}}angel room item",
-				"#{{DevilRoom}} Removes all Devil Deals from the room. Grants a random permanent stat for each deal removed"
+				"#{{DevilRoom}} Each Devil Deal in the room is removed and grants a random permanent stat up"
 			}
 		},
 		[Item.KEY_ALT.ID] = {

@@ -115,9 +115,10 @@ end
 function FLIP_RENDERING:TearSplash(tearOrProj)
 	if not FLIP.PETER_EFFECTS_ACTIVE then return end
 	local renderFlag = Mod:GetData(tearOrProj).PeterFlippedIgnoredRenderFlag
+	if not renderFlag then return end
 
 	Mod.Foreach.EffectInRadius(tearOrProj.Position, 1, function(effect)
-		if FLIP.TEAR_DEATH_EFFECTS[effect.Variant] then
+		if FLIP.TEAR_DEATH_EFFECTS[effect.Variant] or effect.SpawnerEntity and GetPtrHash(effect.SpawnerEntity) == GetPtrHash(tearOrProj) then
 			Mod:GetData(effect).PeterFlippedIgnoredRenderFlag = renderFlag
 		end
 	end)
@@ -129,6 +130,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_DEATH, FLIP_RENDERING.TearSplash
 function FLIP_RENDERING:PostBombExplode(bomb)
 	if not FLIP.PETER_EFFECTS_ACTIVE then return end
 	local renderFlag = Mod:GetData(bomb).PeterFlippedIgnoredRenderFlag
+	if not renderFlag then return end
 
 	Mod.Foreach.EffectInRadius(bomb.Position, 1, function(effect)
 		if FLIP.TEAR_DEATH_EFFECTS[effect.Variant] then

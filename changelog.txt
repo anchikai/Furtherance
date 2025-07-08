@@ -38,6 +38,8 @@ Gameplay Changes
 - Spared bosses should no longer spawn any extra enemies they would on death. This is prominent for splitting bosses (Fistula, Envy, Matriarch, etc)
 - Segmented and splitting bosses while having Keys to the Kingdom should no longer drop charges on death of each segment/piece, instead respecting that each individual boss, upon death of all segments/split parts, should only drop one boss soul charge
 - Removed stats not able to be gained when sparing enemies that spawned from other enemies
+- Moon Hearts are now compatible with Soul Locket and Immaculate Conception
+- Added a Half Moon Heart. These do not spawn naturally and are primarily for interactions with other effects that spawn a half heart variant, such as "0 - The Fool?"
 
 Bug Fixes
 - Fixed Peter's soul hearts being absorbed into Keys to the Kingdom when continuing a run if not fully charged
@@ -54,11 +56,16 @@ Bug Fixes
 - Removed rooms with unused enemies
 - Fixed Moon Heart, Tab Key, and Soul of Peter not properly updating the visibility of specific rooms immediately upon use
 - Fixed having Tech IX removed while having special synergies (Brimstone, Ludovico Technique) not update what you should be firing (Brimstone shooting tears, Ludo still having a Tech Ludo ring)
+- Fixed tears explosions left by tears being visible on both sides of T. Peter's water
+- Fix softlock with Gemini and Steven when sparing them with Keys to the Kingdom
+- Fixed Keys to the Kingdom able to spare in the Dogma/Beast fight. Should grant a Holy Mantle
+- Fixed split pieces of Envy not being counted as minibosses
 
 EID Fixes
-- Added a missing word on Keys to the Kingdom's description to clarify removing devil deals grants a permanent stat
+- Adjusted Keys to the Kingdom's description to slightly reduce wording and clarify removing devil deals grants a permanent stat
 - Fixed E Key's and Juno's EID entries having a missing texture markup
 - Adjusted T. Miriam's EID entry to make note of damage scaling with range
+- Adjusted Moon Heart's EID entry for less wording and adding mention of effect upon heart depletion
 
 Mod Compatibility
 - Added Library Expanded compatibility. Currently just adds Weird Book sprites to all of Furtherance's books and a TBOATB EID entry to Book of Books. Sprite edits by explodingturtle

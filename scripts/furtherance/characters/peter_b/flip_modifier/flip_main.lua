@@ -21,7 +21,8 @@ FLIP.TEAR_DEATH_EFFECTS = Mod:Set({
 	EffectVariant.TEAR_POOF_VERYSMALL,
 	EffectVariant.BOMB_EXPLOSION,
 	EffectVariant.BLOOD_EXPLOSION,
-	EffectVariant.BULLET_POOF
+	EffectVariant.BULLET_POOF,
+	EffectVariant.BOMB_EXPLOSION
 })
 FLIP.BLACKLISTED_EFFECTS = Mod:Set({
 	EffectVariant.PURGATORY
