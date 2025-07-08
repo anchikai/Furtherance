@@ -98,12 +98,12 @@ KEYS_TO_THE_KINGDOM.SPARE_TIMER = {
 }
 
 KEYS_TO_THE_KINGDOM.StatTable = {
-	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.5,                       	TempBuff = 0.25 },
-	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = 0.25,                 		TempBuff = 0.1 },
-	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.5 * Mod.RANGE_BASE_MULT, 	TempBuff = 0.25 * Mod.RANGE_BASE_MULT },
-	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.2,                     		TempBuff = 0.05 },
-	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.2,                       	TempBuff = 0.1 },
-	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5,                       	TempBuff = 0.25 }
+	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.5,                       TempBuff = 0.25 },
+	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = 0.25,                      TempBuff = 0.1 },
+	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.5 * Mod.RANGE_BASE_MULT, TempBuff = 0.25 * Mod.RANGE_BASE_MULT },
+	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.2,                       TempBuff = 0.05 },
+	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.2,                       TempBuff = 0.1 },
+	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5,                       TempBuff = 0.25 }
 }
 
 local identifier = "FR_RAPTURE"
@@ -153,7 +153,8 @@ SEL.Callbacks.AddCallback(SEL.Callbacks.ID.PRE_ADD_ENTITY_STATUS_EFFECT,
 
 function KEYS_TO_THE_KINGDOM:OnStatusEffectAdd(ent, _, statusEffectData)
 	if GetPtrHash(ent) == GetPtrHash(StatusEffectLibrary.Utils.GetLastParent(ent)) then
-		local spotlight = Mod.Spawn.Effect(KEYS_TO_THE_KINGDOM.EFFECT, KEYS_TO_THE_KINGDOM.SPOTLIGHT, ent.Position, nil, ent)
+		local spotlight = Mod.Spawn.Effect(KEYS_TO_THE_KINGDOM.EFFECT, KEYS_TO_THE_KINGDOM.SPOTLIGHT, ent.Position, nil,
+			ent)
 		spotlight.Parent = ent
 		spotlight:FollowParent(ent)
 		spotlight:GetSprite().Scale = Vector(1.25, 1.25)
@@ -184,6 +185,17 @@ function KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, ent)
 		raptureCountdown = raptureCountdown * 0.5
 	end
 	return raptureCountdown
+end
+
+function KEYS_TO_THE_KINGDOM:ShouldHaveMantleBehavior()
+	local room = Mod.Room()
+	local shouldGrantMantle = Isaac.RunCallback(Mod.ModCallbacks.KTTK_GRANT_HOLY_MANTLE)
+
+	return KEYS_TO_THE_KINGDOM.STORY_BOSS_IDS[room:GetBossID()]
+		or room:GetType() == RoomType.ROOM_BOSSRUSH
+		or room:GetType() == RoomType.ROOM_CHALLENGE
+		or Mod.Level():GetStage() == LevelStage.STAGE8
+		or shouldGrantMantle
 end
 
 ---@param npc Entity
@@ -307,18 +319,12 @@ end
 ---@param player EntityPlayer
 function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 	local room = Mod.Room()
-	local shouldGrantMantle = Isaac.RunCallback(Mod.ModCallbacks.KTTK_GRANT_HOLY_MANTLE)
 
 	if KEYS_TO_THE_KINGDOM:DenyHisOfferings(player) then
 		return true
 	elseif room:GetAliveEnemiesCount() == 0 then
 		return { Discharge = false, ShowAnim = false, Remove = false }
-	elseif KEYS_TO_THE_KINGDOM.STORY_BOSS_IDS[room:GetBossID()]
-		or room:GetType() == RoomType.ROOM_BOSSRUSH
-		or room:GetType() == RoomType.ROOM_CHALLENGE
-		or Mod.Level():GetStage() == LevelStage.STAGE8
-		or shouldGrantMantle
-	then
+	elseif KEYS_TO_THE_KINGDOM:ShouldHaveMantleBehavior() then
 		player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_HOLY_MANTLE, true)
 		return true
 	else
@@ -327,12 +333,14 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 			npc = SEL.Utils.GetLastParent(npc)
 			local canSpare = KEYS_TO_THE_KINGDOM:CanSpare(npc)
 			if canSpare and npc:IsBoss() and npc then
-				local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.PRE_START_RAPTURE_BOSS, npc.Type, npc, player, rng, flags, slot)
+				local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.PRE_START_RAPTURE_BOSS, npc.Type, npc, player,
+					rng, flags, slot)
 				if result then
 					return
 				end
 				local raptureCountdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, npc)
-				SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil, { MaxCountdown = raptureCountdown })
+				SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil,
+					{ MaxCountdown = raptureCountdown })
 			elseif canSpare and npc:Exists() then
 				KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
 				KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, 1, true)
@@ -430,11 +438,16 @@ end
 
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:OnDeath(npc)
-	if not PlayerManager.AnyoneHasCollectible(KEYS_TO_THE_KINGDOM.ID) or not KEYS_TO_THE_KINGDOM:CanSpare(npc, true) then return end
+	if not PlayerManager.AnyoneHasCollectible(KEYS_TO_THE_KINGDOM.ID)
+		or not KEYS_TO_THE_KINGDOM:CanSpare(npc, true)
+		or KEYS_TO_THE_KINGDOM:ShouldHaveMantleBehavior()
+	then
+		return
+	end
 
 	local data = Mod:TryGetData(npc)
 	if not (data and data.Raptured) then
-		Mod:DelayOneFrame(function ()
+		Mod:DelayOneFrame(function()
 			if data and data.KTTKGroupIdx then
 				local group = activeGroupIdx[data.KTTKGroupIdx]
 				if group then
@@ -461,7 +474,7 @@ function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 					if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES then
 						if npc:IsBoss() then
 							KEYS_TO_THE_KINGDOM:SpawnBossSoulCharge(npc, player)
-						elseif not npc.SpawnerEntity then
+						elseif npc.SpawnerType == 0 then
 							KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(npc, player)
 						end
 						break
@@ -670,7 +683,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, KEYS_TO_THE_KINGDOM.QueueBossOnIn
 
 function KEYS_TO_THE_KINGDOM:AssignGroupIdxOnUpdate()
 	for entType in pairs(bossQueue) do
-		Mod.Foreach.NPC(function (npc, index)
+		Mod.Foreach.NPC(function(npc, index)
 			local parent = SEL.Utils.GetLastParent(npc)
 			local data = Mod:GetData(parent)
 			if data.KTTKGroupIdx then
@@ -773,7 +786,8 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 		Mod:GetData(effect).RaptureCloud = true
 		effect.Color = Color(1, 1, 1, 1, 0.5, 0.5, 0.5)
 		effect:SetTimeout(30)
-		effect.PositionOffset = Vector(Mod:RandomNum(floor(-parent.Size / 2), floor(parent.Size / 2)), Mod:RandomNum(floor(-parent.Size), 0))
+		effect.PositionOffset = Vector(Mod:RandomNum(floor(-parent.Size / 2), floor(parent.Size / 2)),
+			Mod:RandomNum(floor(-parent.Size), 0))
 	end
 
 	local spotlight = tryGetSpotlight(statusData)
@@ -812,7 +826,8 @@ SEL.Callbacks.AddCallback(SEL.Callbacks.ID.PRE_REMOVE_ENTITY_STATUS_EFFECT, KEYS
 function KEYS_TO_THE_KINGDOM:GrantStatsOnBossClear(player)
 	local data = Mod:GetData(player)
 	if data.BossClearRaptureStats then
-		KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), data.BossClearRaptureStats, false)
+		KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID),
+			data.BossClearRaptureStats, false)
 		Mod:DebugLog("Added", data.BossClearRaptureStats, "spare stats to player")
 		data.BossClearRaptureStats = nil
 		data.BossClearRaptureHasBoss = nil
@@ -820,9 +835,10 @@ function KEYS_TO_THE_KINGDOM:GrantStatsOnBossClear(player)
 	end
 end
 
-Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR, CallbackPriority.LATE, KEYS_TO_THE_KINGDOM.GrantStatsOnBossClear)
+Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR, CallbackPriority.LATE,
+	KEYS_TO_THE_KINGDOM.GrantStatsOnBossClear)
 Mod:AddPriorityCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, CallbackPriority.EARLY, function()
-	Mod.Foreach.Player(function (player, index)
+	Mod.Foreach.Player(function(player, index)
 		KEYS_TO_THE_KINGDOM:GrantStatsOnBossClear(player)
 	end)
 end)
@@ -834,7 +850,7 @@ function KEYS_TO_THE_KINGDOM:SkillIssue(player)
 	Mod:DebugLog("Rapture Hits:", raptureHits)
 	if raptureHits < KEYS_TO_THE_KINGDOM.BOSS_FORGIVE_ATTEMPTS then
 		raptureHitCooldown = KEYS_TO_THE_KINGDOM.BOSS_FORGIVE_COOLDOWN
-		Mod.Foreach.NPC(function (npc, index)
+		Mod.Foreach.NPC(function(npc, index)
 			local statusData = SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 			if statusData then
 				local maxCountdown = KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, npc)
@@ -848,7 +864,7 @@ function KEYS_TO_THE_KINGDOM:SkillIssue(player)
 		end)
 		Mod.SFXMan:Play(SoundEffect.SOUND_THUMBS_DOWN)
 	else
-		Mod.Foreach.NPC(function (npc, index)
+		Mod.Foreach.NPC(function(npc, index)
 			local statusData = SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 			if statusData then
 				statusData.CustomData.FailedRapture = true
@@ -885,7 +901,8 @@ function KEYS_TO_THE_KINGDOM:RapturePenaltyOnTakeDamage(ent, _, _, source, _)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.RapturePenaltyOnTakeDamage, EntityType.ENTITY_PLAYER)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.RapturePenaltyOnTakeDamage,
+	EntityType.ENTITY_PLAYER)
 
 --#endregion
 
@@ -933,7 +950,8 @@ function KEYS_TO_THE_KINGDOM:RapturePenaltyInGideonRoom(ent, _, _, source, _)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.RapturePenaltyInGideonRoom, EntityType.ENTITY_PLAYER)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.RapturePenaltyInGideonRoom,
+	EntityType.ENTITY_PLAYER)
 
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:SpecialGideonInteraction(npc)
@@ -943,7 +961,8 @@ function KEYS_TO_THE_KINGDOM:SpecialGideonInteraction(npc)
 	return true
 end
 
-Mod:AddCallback(Mod.ModCallbacks.PRE_RAPTURE_BOSS_KILL, KEYS_TO_THE_KINGDOM.SpecialGideonInteraction, EntityType.ENTITY_GIDEON)
+Mod:AddCallback(Mod.ModCallbacks.PRE_RAPTURE_BOSS_KILL, KEYS_TO_THE_KINGDOM.SpecialGideonInteraction,
+	EntityType.ENTITY_GIDEON)
 
 --#endregion
 
@@ -976,7 +995,8 @@ function KEYS_TO_THE_KINGDOM:PostKrampusRapture(npc)
 	end, PickupVariant.PICKUP_COLLECTIBLE)
 end
 
-Mod:AddCallback(Mod.ModCallbacks.POST_RAPTURE_BOSS_DEATH, KEYS_TO_THE_KINGDOM.PostKrampusRapture, EntityType.ENTITY_FALLEN)
+Mod:AddCallback(Mod.ModCallbacks.POST_RAPTURE_BOSS_DEATH, KEYS_TO_THE_KINGDOM.PostKrampusRapture,
+	EntityType.ENTITY_FALLEN)
 
 --#endregion
 
@@ -1037,7 +1057,8 @@ function KEYS_TO_THE_KINGDOM:PostAngelSpare(npc)
 		and not PlayerManager.AnyoneHasTrinket(TrinketType.TRINKET_FILIGREE_FEATHERS)
 	then
 		local angelItem = Mod.Game:GetItemPool():GetCollectible(ItemPoolType.POOL_ANGEL, true,
-			PlayerManager.FirstCollectibleOwner(KEYS_TO_THE_KINGDOM.ID):GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID):Next(), nil)
+			PlayerManager.FirstCollectibleOwner(KEYS_TO_THE_KINGDOM.ID):GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID):Next(),
+			nil)
 		local pos = Mod.Room():FindFreePickupSpawnPosition(npc.Position)
 		Mod.Spawn.Collectible(angelItem, pos, npc, npc:GetDropRNG():GetSeed())
 	end
@@ -1065,7 +1086,8 @@ function KEYS_TO_THE_KINGDOM:DenyHisOfferings(player)
 		end, PickupVariant.PICKUP_COLLECTIBLE, nil, { Inverse = true })
 
 		if numPickups > 0 then
-			KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), numPickups, false)
+			KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), numPickups,
+				false)
 			Mod.SFXMan:Play(SoundEffect.SOUND_HOLY)
 		end
 		return true
@@ -1078,7 +1100,7 @@ end
 
 Mod.ConsoleCommandHelper:Create("fastspare", "Enemies spared with Keys to the Kingdom are spared in 3 seconds.",
 	{},
-	function (arguments)
+	function(arguments)
 		KEYS_TO_THE_KINGDOM.DEBUG_SPARE = not KEYS_TO_THE_KINGDOM.DEBUG_SPARE
 		return "[Furtherance] fastspare is now set to " .. tostring(KEYS_TO_THE_KINGDOM.DEBUG_SPARE)
 	end

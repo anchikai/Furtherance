@@ -30,6 +30,7 @@ Peter & Keys to the Kingdom
 - Adjusted chance of gaining soul charges from non-boss enemies. Now increases with each floor and should be gained less often
 - Peter can now gain charges from collecting black/soul heart pickups, even while at full health
 - Segmented and splitting bosses should no longer drop charges on death of each segment/piece, instead respecting that each individual boss, upon death of all segments/split parts, should only drop one boss soul charge
+- Enemies no longer drop soul charges in rooms where it would grant a holy mantle charge
 - Removed penalty for hitting a boss while it is being spared
 - Spared bosses should no longer spawn any extra enemies they would on death. This is prominent for splitting bosses (Fistula, Envy, Matriarch, etc)
 - The Visage can now be spared in their first phase

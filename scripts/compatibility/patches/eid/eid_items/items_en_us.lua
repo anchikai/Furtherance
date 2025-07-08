@@ -590,7 +590,7 @@ return function(modifiers)
 		[Item.ROTTEN_APPLE.ID] = {
 			Name = "Rotten Apple",
 			Description = {
-				"↑ {{Damage}} +2 Damage",
+				"↑ {{Damage}} +1 Damage",
 				"#Permanently grants a random worm trinket effect"
 			}
 		},
