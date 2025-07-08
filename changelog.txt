@@ -22,20 +22,18 @@ General Adjustments
 Gameplay Changes
 Peter & Keys to the Kingdom
 - Peter's damage reduced by -0.5 to cancel out the +0.5 gained from Keys to the Kingdom with Alabaster Scrap
-- Removed penalty for hitting a boss while it is being spared
-- Non-boss enemies spawned from other enemies can no longer grant soul charges
-- Adjusted chance of gaining souls from non-boss enemies for charging Keys to the Kingdom. Now increases with stage
-- Peter can now gain charges from collecting black/soul hearts directly
-- Spared bosses should no longer spawn any extra enemies they would on death. This is prominent for splitting bosses (Fistula, Envy, Matriarch, etc)
-- Segmented and splitting bosses while having Keys to the Kingdom should no longer drop charges on death of each segment/piece, instead respecting that each individual boss, upon death of all segments/split parts, should only drop one boss soul charge
-- Removed stats not able to be gained when sparing enemies that spawned from other enemies
-- Spared bosses now grant 3 random stats (from 2) and minibosses now grant 2 (from 1)
+- Increased stats gained from sparing bosses and enemies
 - Removed cap of gaining a maximum of 6 different stats from spared bosses per boss in the room
+- Spared bosses now grant 3 random stats (from 2) and minibosses now grant 2 (from 1)
+- Removed stats not able to be gained when sparing enemies that spawned from other enemies
+- Non-boss enemies spawned from other enemies can no longer grant soul charges
+- Adjusted chance of gaining soul charges from non-boss enemies. Now increases with each floor and should be gained less often
+- Peter can now gain charges from collecting black/soul heart pickups, even while at full health
+- Segmented and splitting bosses should no longer drop charges on death of each segment/piece, instead respecting that each individual boss, upon death of all segments/split parts, should only drop one boss soul charge
+- Removed penalty for hitting a boss while it is being spared
+- Spared bosses should no longer spawn any extra enemies they would on death. This is prominent for splitting bosses (Fistula, Envy, Matriarch, etc)
 - The Visage can now be spared in their first phase
 - Great Gideon can now be spared. He will become docile instead of being removed
-- Fix softlock with Gemini and Steven when sparing them with Keys to the Kingdom
-- Fixed Keys to the Kingdom able to spare in the Dogma/Beast fight. Should now grant a Holy Mantle
-- Fixed split pieces of Envy not being counted as minibosses
 
 Tainted Peter & Muddled Cross
 - T. Peter: Removed all previous methods of recharging Muddled Cross (room clear, timed recharge in clear room, killing enemies). They are instead gained from submerging 10 enemies, 10th of a charge per enemies. This can be reduced by AAA Battery and 9 Volt
@@ -47,7 +45,6 @@ Tainted Peter & Muddled Cross
 - Both: Stoneys are now present on both sides of T. Peter's reflection
 - Both: Pressure Plates can now be interacted with on both sides of T. Peter's water
 - Both: Anything submerged in T. Peter's water no longer takes damage from spikes, including T. Peter himself
-- Both: Fixed tears explosions left by tears being visible on both sides of T. Peter's water
 
 Other
 - Added numerous synergies for Tech IX with other weapon-changing items
@@ -73,6 +70,10 @@ Bug Fixes
 - Removed rooms with unused enemies
 - Fixed Moon Heart, Tab Key, and Soul of Peter not properly updating the visibility of specific rooms immediately upon use
 - Fixed having Tech IX removed while having special synergies (Brimstone, Ludovico Technique) not update what you should be firing (Brimstone shooting tears, Ludo still having a Tech Ludo ring)
+- Fixed softlock with Gemini and Steven when sparing them with Keys to the Kingdom
+- Fixed Keys to the Kingdom able to spare in the Dogma/Beast fight. Should now grant a Holy Mantle
+- Fixed split pieces of Envy not being counted as minibosses
+- Fixed explosions left by tears being visible on both sides of T. Peter's water
 
 EID Fixes
 - Adjusted Keys to the Kingdom's description to slightly reduce wording and clarify removing devil deals grants a permanent stat
@@ -91,10 +92,10 @@ API Changes
 - StatusEffectLibrary updated to v1.1.1
 - Added new callbacks KTTK_CAN_SPARE, PRE_RAPTURE_BOSS_KILL, POST_RAPTURE_BOSS_KILL
 
-Still figuring out:
+Known Issues:
 - Potential incompatibility with Lazy Mattpack, causing crashes to occur
 - Having damage up items work properly with damage multipliers
-- Tear modifiers being removed when the entity involved is split (Angelic Prism, Multidimensional Baby)
+- Custom tear modifiers being removed when the entity involved is split (Angelic Prism, Multidimensional Baby)
 
 v1.0
 Release!
