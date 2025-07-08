@@ -92,7 +92,7 @@ API Changes
 - StatusEffectLibrary updated to v1.1.1
 - Added new callbacks KTTK_CAN_SPARE, PRE_RAPTURE_BOSS_KILL, POST_RAPTURE_BOSS_KILL
 
-Known Issues:
+Known Issues
 - Potential incompatibility with Lazy Mattpack, causing crashes to occur
 - Having damage up items work properly with damage multipliers
 - Custom tear modifiers being removed when the entity involved is split (Angelic Prism, Multidimensional Baby)
