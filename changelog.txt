@@ -40,6 +40,9 @@ Gameplay Changes
 - Removed stats not able to be gained when sparing enemies that spawned from other enemies
 - Moon Hearts are now compatible with Soul Locket and Immaculate Conception
 - Added a Half Moon Heart. These do not spawn naturally and are primarily for interactions with other effects that spawn a half heart variant, such as "0 - The Fool?"
+- Spared bosses now grant 3 random stats (from 2) and minibosses now grant 2 (from 1)
+- Removed cap of gaining a maximum of 6 different stats from spared bosses per boss in the room
+- Keys to the Kingdom, Apocalypse, and The Dreidel have switched to a tears up formula instead of a direct modification of fire delay (though this won't stop it from breaking the cap because the API is awesome like that)
 
 Bug Fixes
 - Fixed Peter's soul hearts being absorbed into Keys to the Kingdom when continuing a run if not fully charged

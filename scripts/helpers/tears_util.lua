@@ -9,9 +9,9 @@ function Furtherance:Tears2Delay(tears)
 end
 
 function Furtherance:TearsUp(firedelay, val)
-	local currentTears = 30 / (firedelay + 1)
+	local currentTears = Furtherance:Delay2Tears(firedelay)
 	local newTears = currentTears + val
-	return math.max((30 / newTears) - 1, -0.99)
+	return math.max(Furtherance:Tears2Delay(newTears), -0.99)
 end
 
 ---@param player EntityPlayer

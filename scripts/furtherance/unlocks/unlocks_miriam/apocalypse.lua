@@ -8,10 +8,10 @@ APOCALYPSE.ID = Isaac.GetItemIdByName("Apocalypse")
 
 APOCALYPSE.StatTable = {
 	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 1 },
-	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = -0.5 }, -- MaxFireDelay buffs should be negative!
-	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 12.5 },
+	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = 0.5 }, -- MaxFireDelay buffs should be negative!
+	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.25 * Mod.RANGE_BASE_MULT },
 	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.1 },
-	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.05 },
+	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.1 },
 	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 1 },
 }
 
@@ -61,7 +61,11 @@ function APOCALYPSE:StatBuffs(player, flag)
 		local stat = APOCALYPSE.StatTable[tonumber(i)]
 
 		if stat.Flag == flag then
-			player[stat.Name] = player[stat.Name] + buffCount * stat.Buff
+			if flag == CacheFlag.CACHE_FIREDELAY then
+				player[stat.Name] = Mod:TearsUp(player[stat.Name], buffCount * stat.Buff)
+			else
+				player[stat.Name] = player[stat.Name] + buffCount * stat.TempBuff
+			end
 		end
 	end
 end

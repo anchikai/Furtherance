@@ -8,10 +8,10 @@ THE_DREIDEL.ID = Isaac.GetItemIdByName("The Dreidel")
 
 THE_DREIDEL.StatTable = {
 	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.25 },
-	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = -0.2 * 5 },
+	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = 0.5 },
 	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.5 * Mod.RANGE_BASE_MULT },
 	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.25 },
-	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.10 },
+	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.1 },
 	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5 }
 }
 
@@ -64,7 +64,11 @@ function THE_DREIDEL:StatBuffs(player, flag)
 		local stat = THE_DREIDEL.StatTable[tonumber(i)]
 
 		if stat.Flag == flag then
-			player[stat.Name] = player[stat.Name] - statCount * (stat.Buff * 5)
+			if flag == CacheFlag.CACHE_FIREDELAY then
+				player[stat.Name] = Mod:TearsUp(player[stat.Name], statCount * stat.Buff)
+			else
+				player[stat.Name] = player[stat.Name] + statCount * stat.TempBuff
+			end
 		end
 	end
 end

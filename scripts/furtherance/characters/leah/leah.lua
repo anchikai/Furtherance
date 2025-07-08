@@ -46,9 +46,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_ADD_HEARTS, LEAH.OnBrokenHeartAdd, A
 ---@param player EntityPlayer
 function LEAH:TearsUp(player)
 	if player:GetPlayerType() == Mod.PlayerType.LEAH then
-		local tears = Mod:Delay2Tears(player.MaxFireDelay)
-		tears = tears + LEAH.TEARS_PER_BROKEN * player:GetBrokenHearts()
-		player.MaxFireDelay = Mod:Tears2Delay(tears)
+		player.MaxFireDelay = Mod:TearsUp(player.MaxFireDelay, LEAH.TEARS_PER_BROKEN * player:GetBrokenHearts())
 	end
 end
 

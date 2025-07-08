@@ -58,7 +58,8 @@ KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS = Mod:Set({
 	EffectVariant.FART,
 	EffectVariant.WORM,
 	EffectVariant.POOF02,
-	EffectVariant.POOF04
+	EffectVariant.POOF04,
+	EffectVariant.WHIRLPOOL
 })
 KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS = {
 	SoundEffect.SOUND_ROCKET_BLAST_DEATH,
@@ -67,7 +68,8 @@ KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS = {
 	SoundEffect.SOUND_DEATH_BURST_SMALL,
 	SoundEffect.SOUND_MEAT_JUMPS,
 	SoundEffect.SOUND_FART_GURG,
-	SoundEffect.SOUND_FART
+	SoundEffect.SOUND_FART,
+	SoundEffect.SOUND_FLUSH
 }
 KEYS_TO_THE_KINGDOM.MINIBOSS = Mod:Set({
 	tostring(EntityType.ENTITY_SLOTH) .. ".0.0",
@@ -96,12 +98,12 @@ KEYS_TO_THE_KINGDOM.SPARE_TIMER = {
 }
 
 KEYS_TO_THE_KINGDOM.StatTable = {
-	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.5,                       TempBuff = 0.25 },
-	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = -0.5,                  TempBuff = -0.25 }, -- MaxFireDelay buffs should be negative!
-	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.5 * Mod.RANGE_BASE_MULT, TempBuff = 0.25 * Mod.RANGE_BASE_MULT },
-	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.25,                     TempBuff = 0.025 },
-	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.2,                       TempBuff = 0.1 },
-	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5,                       TempBuff = 0.25 }
+	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.5,                       	TempBuff = 0.25 },
+	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = 0.25,                 		TempBuff = 0.1 },
+	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.5 * Mod.RANGE_BASE_MULT, 	TempBuff = 0.25 * Mod.RANGE_BASE_MULT },
+	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.25,                     	TempBuff = 0.025 },
+	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.2,                       	TempBuff = 0.1 },
+	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5,                       	TempBuff = 0.25 }
 }
 
 local identifier = "FR_RAPTURE"
@@ -184,8 +186,9 @@ end
 local function cease(npc)
 	Mod.Foreach.EffectInRadius(npc.Position, npc.Size + 40,
 		function(effect, index)
-			if KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[effect.Variant]
-				and (not Mod:TryGetData(effect) or not Mod:GetData(effect).RaptureCloud)
+			local data = Mod:TryGetData(effect)
+			if (KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS[effect.Variant] or (effect.SpawnerType == npc.Type and effect.SpawnerVariant == npc.Variant))
+				and (not data or not data.RaptureCloud)
 				and effect.FrameCount <= 2
 			then
 				effect:Remove()
@@ -268,19 +271,21 @@ end
 ---@param numStats integer @How many stat buffs to provide. Any other than 1 will provide a different stat. Cannot be more than 6
 ---@param isTemp boolean @If set to true, will pull from the temporary stat pool and only last for the floor
 function KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, numStats, isTemp)
-	numStats = min(6, numStats)
 	local varName = "KeysToTheKingdomStatBonus"
 	if isTemp then
 		varName = varName .. "_Temp"
 	end
 	local selectedStats = {}
-	for _ = 1, numStats do
+	for i = 1, numStats do
 		local randomStatIndex = Mod:GetDifferentRandomKey(selectedStats, KEYS_TO_THE_KINGDOM.StatTable, rng)
 		selectedStats[randomStatIndex] = true
 		local key = tostring(randomStatIndex)
 		local player_save = isTemp and Mod:FloorSave(player) or Mod:RunSave(player)
 		player_save[varName] = player_save[varName] or {}
 		player_save[varName][key] = (player_save[varName][key] or 0) + 1
+		if i % 6 == 0 then
+			selectedStats = {}
+		end
 	end
 	player:AddCacheFlags(CacheFlag.CACHE_ALL, true)
 end
@@ -343,7 +348,11 @@ function KEYS_TO_THE_KINGDOM:TempStatBuffs(player, flag)
 		local stat = KEYS_TO_THE_KINGDOM.StatTable[tonumber(i)]
 
 		if stat.Flag == flag then
-			player[stat.Name] = player[stat.Name] + buffCount * stat.TempBuff
+			if flag == CacheFlag.CACHE_FIREDELAY then
+				player[stat.Name] = Mod:TearsUp(player[stat.Name], buffCount * stat.TempBuff)
+			else
+				player[stat.Name] = player[stat.Name] + buffCount * stat.TempBuff
+			end
 		end
 	end
 end
@@ -359,7 +368,11 @@ function KEYS_TO_THE_KINGDOM:StatBuffs(player, flag)
 		local stat = KEYS_TO_THE_KINGDOM.StatTable[tonumber(i)]
 
 		if stat.Flag == flag then
-			player[stat.Name] = player[stat.Name] + buffCount * stat.Buff
+			if flag == CacheFlag.CACHE_FIREDELAY then
+				player[stat.Name] = Mod:TearsUp(player[stat.Name], buffCount * stat.Buff)
+			else
+				player[stat.Name] = player[stat.Name] + buffCount * stat.Buff
+			end
 		end
 	end
 end
@@ -397,7 +410,7 @@ end
 function KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(npc, player)
 	local rng = player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID)
 	local chance = rng:RandomFloat()
-	local maxChance = (npc.MaxHitPoints * 2.5) / 100
+	local maxChance = npc.MaxHitPoints / (60 + (20 * Mod.Level():GetAbsoluteStage()))
 	if chance <= maxChance then
 		local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
 			KEYS_TO_THE_KINGDOM.SOUL,
@@ -730,7 +743,7 @@ SEL.Callbacks.AddCallback(SEL.Callbacks.ID.ENTITY_STATUS_EFFECT_UPDATE, KEYS_TO_
 function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	local statusData = SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 	---@cast statusData StatusEffectData
-	if statusData.CustomData.FailedRapture then return end
+	if statusData.CustomData.FailedRapture or Mod:GetData(npc).Raptured then return end
 
 	Mod.SFXMan:Play(SoundEffect.SOUND_ANGEL_WING, 2, 2, false, 0.75)
 
@@ -749,10 +762,9 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	if spotlight then
 		spotlight:ToEffect().Timeout = 60
 	end
-
 	Mod.Foreach.Player(function(player)
 		if player:HasCollectible(KEYS_TO_THE_KINGDOM.ID) then
-			local numStats = 1
+			local numStats = 2
 			if PETER:IsPeter(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
 				numStats = numStats + 1
 			end
