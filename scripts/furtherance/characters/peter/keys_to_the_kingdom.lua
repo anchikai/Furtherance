@@ -188,7 +188,6 @@ end
 
 ---@param npc Entity
 local function cease(npc)
-	if not npc:Exists() then return end
 	Mod.Foreach.EffectInRadius(npc.Position, npc.Size + 40,
 		function(effect, index)
 			local data = Mod:TryGetData(effect)
