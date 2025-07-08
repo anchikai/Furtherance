@@ -24,6 +24,9 @@ Furtherance.ModCallbacks = {
 	--(EntityNPC npc, EntityPlayer player, RNG collectibleRNG, UseFlag flags, ActiveSlot slot): boolean, Optional Arg: EntityType - Called when initiating the rapture process from Keys to the Kingdom on a boss enemy. Return `true` to stop the usual process from initiating
 	PRE_START_RAPTURE_BOSS = "FURTHERANCE_PRE_START_RAPTURE_BOSS",
 
+	--(EntityNPC npc), Optional Arg: EntityType - Before :Kill() is called for the boss. Return `true` to cancel this. Primarily used for Great Gideon
+	PRE_RAPTURE_BOSS_KILL = "FURTHERANCE_PRE_RAPTURE_BOSS_KILL",
+
 	--(EntityNPC npc), Optional Arg: EntityType - When a boss is raptured, :Kill() is called onto it and the code attempts to force its death animation to the end. This is called after these steps
 	POST_RAPTURE_BOSS_KILL = "FURTHERANCE_POST_RAPTURE_BOSS_KILL",
 

@@ -101,7 +101,7 @@ KEYS_TO_THE_KINGDOM.StatTable = {
 	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.5,                       	TempBuff = 0.25 },
 	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = 0.25,                 		TempBuff = 0.1 },
 	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.5 * Mod.RANGE_BASE_MULT, 	TempBuff = 0.25 * Mod.RANGE_BASE_MULT },
-	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.1,                     		TempBuff = 0.05 },
+	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.2,                     		TempBuff = 0.05 },
 	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.2,                       	TempBuff = 0.1 },
 	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5,                       	TempBuff = 0.25 }
 }
@@ -420,7 +420,7 @@ end
 function KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(npc, player)
 	local rng = player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID)
 	local chance = rng:RandomFloat()
-	local maxChance = npc.MaxHitPoints / (60 + (20 * Mod.Level():GetAbsoluteStage()))
+	local maxChance = npc.MaxHitPoints / (60 + (10 * Mod.Level():GetAbsoluteStage()))
 	if chance <= maxChance then
 		local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
 			KEYS_TO_THE_KINGDOM.SOUL,
@@ -759,11 +759,14 @@ SEL.Callbacks.AddCallback(SEL.Callbacks.ID.ENTITY_STATUS_EFFECT_UPDATE, KEYS_TO_
 function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	local statusData = SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 	---@cast statusData StatusEffectData
-	if statusData.CustomData.FailedRapture or Mod:GetData(npc).Raptured then return end
+	if statusData.CustomData.FailedRapture or Mod:GetData(npc).Raptured or npc:IsDead() then return end
 
 	Mod.SFXMan:Play(SoundEffect.SOUND_ANGEL_WING, 2, 2, false, 0.75)
 
-	KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
+	local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.PRE_RAPTURE_BOSS_KILL, npc.Type, npc)
+	if not result then
+		KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
+	end
 	local parent = SEL.Utils.GetLastParent(npc)
 
 	for _ = 1, 15 do
@@ -872,28 +875,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, KEYS_TO_THE_KINGDOM.ResetValues)
 
 ---@param ent Entity
 ---@param source EntityRef
-function KEYS_TO_THE_KINGDOM:ResetRaptureStatusOnHit(ent, _, _, source, _)
-	local statusData = SEL:GetStatusEffectData(ent, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
-	local npc = ent:ToNPC()
-	if statusData
-		and npc
-		and source.Entity
-		--Ignore friendly enemies and familiars since you don't really control them
-		and not source.Entity:ToNPC()
-		and not source.Entity:ToFamiliar()
-	then
-		local player = source.Entity:ToPlayer() or source.Entity.SpawnerEntity and source.Entity.SpawnerEntity:ToPlayer()
-		if player then
-			KEYS_TO_THE_KINGDOM:SkillIssue(player)
-		end
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.ResetRaptureStatusOnHit)
-
----@param ent Entity
----@param source EntityRef
-function KEYS_TO_THE_KINGDOM:ResetRaptureStatusOnDamage(ent, _, _, source, _)
+function KEYS_TO_THE_KINGDOM:RapturePenaltyOnTakeDamage(ent, _, _, source, _)
 	local player = ent:ToPlayer()
 	if player and source.Entity then
 		local npc = source.Entity:ToNPC() or source.Entity.SpawnerEntity and source.Entity.SpawnerEntity:ToNPC()
@@ -904,12 +886,13 @@ function KEYS_TO_THE_KINGDOM:ResetRaptureStatusOnDamage(ent, _, _, source, _)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.ResetRaptureStatusOnDamage, EntityType.ENTITY_PLAYER)
---#endregion
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.RapturePenaltyOnTakeDamage, EntityType.ENTITY_PLAYER)
 
 --#endregion
 
---#region We love The Visage
+--#endregion
+
+--#region Boss exceptions for being allowed to spare
 
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:AllowVisage(npc)
@@ -925,6 +908,43 @@ function KEYS_TO_THE_KINGDOM:AllowVisage(npc)
 end
 
 Mod:AddCallback(Mod.ModCallbacks.KTTK_CAN_SPARE, KEYS_TO_THE_KINGDOM.AllowVisage, EntityType.ENTITY_VISAGE)
+
+---@param npc EntityNPC
+function KEYS_TO_THE_KINGDOM:AllowGideon(npc)
+	if npc
+		and not SEL:HasStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
+		and not (Mod:TryGetData(npc) and Mod:GetData(npc).Raptured)
+	then
+		return true
+	end
+end
+
+Mod:AddCallback(Mod.ModCallbacks.KTTK_CAN_SPARE, KEYS_TO_THE_KINGDOM.AllowGideon, EntityType.ENTITY_GIDEON)
+
+---@param ent Entity
+---@param source EntityRef
+function KEYS_TO_THE_KINGDOM:RapturePenaltyInGideonRoom(ent, _, _, source, _)
+	local player = ent:ToPlayer()
+	if player and source.Entity and Mod.Room():GetBossID() == BossType.GREAT_GIDEON then
+		local npc = source.Entity:ToNPC() or source.Entity.SpawnerEntity and source.Entity.SpawnerEntity:ToNPC()
+		local statusData = npc and SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
+		if not statusData then
+			KEYS_TO_THE_KINGDOM:SkillIssue(player)
+		end
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.RapturePenaltyInGideonRoom, EntityType.ENTITY_PLAYER)
+
+---@param npc EntityNPC
+function KEYS_TO_THE_KINGDOM:SpecialGideonInteraction(npc)
+	npc:Morph(EntityType.ENTITY_GIDEON, 0, 1, npc:GetChampionColorIdx())
+	npc:GetSprite():Play("CloseEyes")
+	npc.State = NpcState.STATE_SPECIAL
+	return true
+end
+
+Mod:AddCallback(Mod.ModCallbacks.PRE_RAPTURE_BOSS_KILL, KEYS_TO_THE_KINGDOM.SpecialGideonInteraction, EntityType.ENTITY_GIDEON)
 
 --#endregion
 

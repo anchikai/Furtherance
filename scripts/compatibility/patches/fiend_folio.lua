@@ -105,7 +105,8 @@ local function fiendFolioPatch()
 		ff.Sounds.BuckDeath3,
 		ff.Sounds.DuskDeath,
 		ff.Sounds.BusterGhostDeath,
-		ff.Sounds.MadommeDeath
+		ff.Sounds.MadommeDeath,
+		ff.Sounds.MDP2_Death
 	})
 
 	Mod.API:RegisterKTTKMiniboss(ff.FF.Gravedigger.ID, ff.FF.Gravedigger.Var, Isaac.GetEntitySubTypeByName("Gravedigger"))

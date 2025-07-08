@@ -21,6 +21,8 @@ General Adjustments
 
 Gameplay Changes
 Peter & Keys to the Kingdom
+- Peter's damage reduced by -0.5 to cancel out the +0.5 gained from Keys to the Kingdom with Alabaster Scrap
+- Removed penalty for hitting a boss while it is being spared
 - Non-boss enemies spawned from other enemies can no longer grant soul charges
 - Adjusted chance of gaining souls from non-boss enemies for charging Keys to the Kingdom. Now increases with stage
 - Peter can now gain charges from collecting black/soul hearts directly
@@ -30,6 +32,7 @@ Peter & Keys to the Kingdom
 - Spared bosses now grant 3 random stats (from 2) and minibosses now grant 2 (from 1)
 - Removed cap of gaining a maximum of 6 different stats from spared bosses per boss in the room
 - The Visage can now be spared in their first phase
+- Great Gideon can now be spared. He will become docile instead of being removed
 - Fix softlock with Gemini and Steven when sparing them with Keys to the Kingdom
 - Fixed Keys to the Kingdom able to spare in the Dogma/Beast fight. Should now grant a Holy Mantle
 - Fixed split pieces of Envy not being counted as minibosses
@@ -86,7 +89,7 @@ API Changes
 - IsaacSaveManager updated to v2.3
 - HudHelper updated to v1.1.3
 - StatusEffectLibrary updated to v1.1.1
-- Added new callbacks KTTK_CAN_SPARE, POST_RAPTURE_BOSS_KILL
+- Added new callbacks KTTK_CAN_SPARE, PRE_RAPTURE_BOSS_KILL, POST_RAPTURE_BOSS_KILL
 
 Still figuring out:
 - Potential incompatibility with Lazy Mattpack, causing crashes to occur
