@@ -163,7 +163,6 @@ local function fiendFolioPatch()
 	Mod.API:RegisterAltruismBeggar(ff.FF.CellGame.Var,
 		function (player, slot)
 			local sprite = slot:GetSprite()
-			print(sprite:GetAnimation(), sprite:GetFrame())
 			return player:GetNumKeys() >= 1 and sprite:IsPlaying("PayShuffle") and sprite:GetFrame() == 1
 		end,
 		function (player, slot)

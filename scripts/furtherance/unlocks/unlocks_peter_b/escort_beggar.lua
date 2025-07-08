@@ -487,7 +487,6 @@ function ESCORT_BEGGAR:AbandonedEscortCountdown()
 			local room_save = full_room_save["GLOBAL"]
 			if (room_save.AbandonedEscortCountdown or 0) > 0 then
 				room_save.AbandonedEscortCountdown = room_save.AbandonedEscortCountdown - 1
-				print(room_save.AbandonedEscortCountdown)
 			end
 		end
 	end

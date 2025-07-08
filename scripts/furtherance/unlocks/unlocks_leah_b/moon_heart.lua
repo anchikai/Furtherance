@@ -96,7 +96,6 @@ Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, MOON_HEART.AddExtraLuna)
 ---@param pickup EntityPickup
 ---@param collider Entity
 function MOON_HEART:CollectMoonHeart(pickup, collider)
-	print(pickup.SubType, MOON_HEART.ID_HALF)
 	if pickup.SubType ~= MOON_HEART.ID and pickup.SubType ~= MOON_HEART.ID_HALF then
 		return
 	end
