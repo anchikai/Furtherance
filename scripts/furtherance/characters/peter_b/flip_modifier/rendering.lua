@@ -254,10 +254,12 @@ function FLIP_RENDERING:EntityUpdate(ent)
 					if costumeLayer then
 						local costumeIndex = costumeLayer.costumeIndex
 						local costumeDesc = costumeDescs[costumeIndex + 1]
-						local itemConfig = costumeDesc:GetItemConfig()
-						if itemConfig:IsNull() and costumeDesc and itemConfig.ID == hairCostume then
-							hair = costumeDesc:GetSprite()
-							break
+						if costumeDesc  then
+							local itemConfig = costumeDesc:GetItemConfig()
+							if itemConfig.ID == hairCostume and itemConfig:IsNull() then
+								hair = costumeDesc:GetSprite()
+								break
+							end
 						end
 					end
 				end
