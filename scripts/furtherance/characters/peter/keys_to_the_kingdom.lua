@@ -59,7 +59,8 @@ KEYS_TO_THE_KINGDOM.ENEMY_DEATH_EFFECTS = Mod:Set({
 	EffectVariant.WORM,
 	EffectVariant.POOF02,
 	EffectVariant.POOF04,
-	EffectVariant.WHIRLPOOL
+	EffectVariant.WHIRLPOOL,
+	EffectVariant.CHAIN_GIB
 })
 KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS = {
 	SoundEffect.SOUND_ROCKET_BLAST_DEATH,
@@ -83,7 +84,6 @@ KEYS_TO_THE_KINGDOM.MINIBOSS = Mod:Set({
 	tostring(EntityType.ENTITY_ENVY) .. ".30.0",
 	tostring(EntityType.ENTITY_PRIDE) .. ".0.0",
 })
-KEYS_TO_THE_KINGDOM.ENTITY_BLACKLIST = {}
 
 --30fps * 30 = 30 seconds
 KEYS_TO_THE_KINGDOM.MINIBOSS_RAPTURE_COUNTDOWN = 30 * 20
@@ -101,7 +101,7 @@ KEYS_TO_THE_KINGDOM.StatTable = {
 	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.5,                       	TempBuff = 0.25 },
 	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = 0.25,                 		TempBuff = 0.1 },
 	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.5 * Mod.RANGE_BASE_MULT, 	TempBuff = 0.25 * Mod.RANGE_BASE_MULT },
-	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.25,                     	TempBuff = 0.025 },
+	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.1,                     		TempBuff = 0.05 },
 	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.2,                       	TempBuff = 0.1 },
 	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5,                       	TempBuff = 0.25 }
 }
@@ -127,14 +127,18 @@ end
 ---@param allowDead? boolean
 function KEYS_TO_THE_KINGDOM:CanSpare(ent, allowDead)
 	allowDead = allowDead or false
-	return ent:ToNPC()
-		and ent:IsActiveEnemy(allowDead)
-		and not ent:IsInvincible()
-		and not ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
-		and not SEL:HasStatusEffect(ent, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
-		and not KEYS_TO_THE_KINGDOM.ENTITY_BLACKLIST[Mod:GetTypeVarSubFromEnt(ent, true)]
-		and ent:ToNPC().CanShutDoors
-		and not (Mod:TryGetData(ent) and Mod:GetData(ent).Raptured)
+	local npc = ent:ToNPC()
+	local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.KTTK_CAN_SPARE, ent.Type, npc or ent)
+	if type(result) == "boolean" then
+		return result
+	end
+	return npc
+		and npc:IsActiveEnemy(allowDead)
+		and not npc:IsInvincible()
+		and not npc:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
+		and not SEL:HasStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
+		and npc.CanShutDoors
+		and not (Mod:TryGetData(npc) and Mod:GetData(npc).Raptured)
 end
 
 ---@param ent EntityNPC | EntityPlayer
@@ -167,7 +171,7 @@ function KEYS_TO_THE_KINGDOM:GetMaxRaptureCountdown(player, ent)
 		return 0
 	end
 	if KEYS_TO_THE_KINGDOM.DEBUG_SPARE then
-		return 30 * 3
+		return 30
 	end
 	local raptureCountdown = KEYS_TO_THE_KINGDOM.BOSS_RAPTURE_COUNTDOWN
 	local typeVarSub = Mod:GetTypeVarSubFromEnt(ent, true)
@@ -184,6 +188,7 @@ end
 
 ---@param npc Entity
 local function cease(npc)
+	if not npc:Exists() then return end
 	Mod.Foreach.EffectInRadius(npc.Position, npc.Size + 40,
 		function(effect, index)
 			local data = Mod:TryGetData(effect)
@@ -198,7 +203,10 @@ local function cease(npc)
 		Mod.SFXMan:Stop(soundID)
 	end
 	Mod.Foreach.Projectile(function(projectile, index)
-		if projectile.SpawnerType == npc.Type and projectile.FrameCount < 2 then
+		if projectile.SpawnerEntity
+			and GetPtrHash(projectile.SpawnerEntity) == GetPtrHash(npc)
+			and projectile.FrameCount < 2
+		then
 			projectile:Remove()
 		end
 	end, nil, nil, { Inverse = true })
@@ -228,14 +236,15 @@ function KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
 	cease(npc)
 	Mod:DelayOneFrame(function()
 		cease(npc)
-		if not npc:IsDead() then
-			npc.Visible = true
+		if not npc:IsDead() and npc:Exists() then
+			KEYS_TO_THE_KINGDOM:RemoveBoss(npc)
 		end
 		Mod:DelayOneFrame(function()
 			cease(npc)
 		end)
 	end)
 	npc.Visible = false
+	Isaac.RunCallbackWithParam(Mod.ModCallbacks.POST_RAPTURE_BOSS_KILL, npc.Type, npc)
 end
 
 ---Raptures the enemy, spawning a spared soul and grants stats to the player who raptured it corresponding to whether or not it's a boss
@@ -279,6 +288,7 @@ function KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, numStats, isTemp)
 	for i = 1, numStats do
 		local randomStatIndex = Mod:GetDifferentRandomKey(selectedStats, KEYS_TO_THE_KINGDOM.StatTable, rng)
 		selectedStats[randomStatIndex] = true
+		Mod:DebugLog("Stat Key:", randomStatIndex)
 		local key = tostring(randomStatIndex)
 		local player_save = isTemp and Mod:FloorSave(player) or Mod:RunSave(player)
 		player_save[varName] = player_save[varName] or {}
@@ -638,6 +648,8 @@ Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, KEYS_TO_THE_KINGDOM.OnEffectIn
 
 --#region Sparing bosses
 
+--#region Grouping bosses
+
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:QueueBossOnInit(npc)
 	if npc:IsBoss() and KEYS_TO_THE_KINGDOM:CanSpare(npc, true) then
@@ -707,6 +719,10 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_PRE_ROOM_EXIT, KEYS_TO_THE_KINGDOM.ResetGroupIdx)
 
+--#endregion
+
+--#region Sparing process
+
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:RaptureBossUpdate(npc)
 	local statusData = SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
@@ -762,6 +778,7 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 	if spotlight then
 		spotlight:ToEffect().Timeout = 60
 	end
+
 	Mod.Foreach.Player(function(player)
 		if player:HasCollectible(KEYS_TO_THE_KINGDOM.ID) then
 			local numStats = 2
@@ -771,13 +788,16 @@ function KEYS_TO_THE_KINGDOM:RaptureBoss(npc)
 			local data = Mod:GetData(player)
 			if not data.BossClearRaptureStats then
 				data.BossClearRaptureStats = numStats
+				Mod:DebugLog("Newly spared boss!", numStats, "stats added to queue")
 			else
 				data.BossClearRaptureStats = data.BossClearRaptureStats + 1
+				Mod:DebugLog("Additional boss spared. Now at", data.BossClearRaptureStats, "stats")
 			end
 			--So that even if it targeted a miniboss for stats first, as its a flat +1 afterwards, you'll still get the additional point from an actual boss
 			if not data.BossClearRaptureHasBoss and npc:IsBoss() and not KEYS_TO_THE_KINGDOM.MINIBOSS[Mod:GetTypeVarSubFromEnt(npc, true)] then
 				data.BossClearRaptureHasBoss = true
 				data.BossClearRaptureStats = data.BossClearRaptureStats + 1
+				Mod:DebugLog("Enemy is an actual boss. Spare stat queue at", data.BossClearRaptureStats)
 			end
 		end
 	end)
@@ -791,6 +811,7 @@ function KEYS_TO_THE_KINGDOM:GrantStatsOnBossClear(player)
 	local data = Mod:GetData(player)
 	if data.BossClearRaptureStats then
 		KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), data.BossClearRaptureStats, false)
+		Mod:DebugLog("Added", data.BossClearRaptureStats, "spare stats to player")
 		data.BossClearRaptureStats = nil
 		data.BossClearRaptureHasBoss = nil
 		player:AnimateHappy()
@@ -883,8 +904,27 @@ function KEYS_TO_THE_KINGDOM:ResetRaptureStatusOnDamage(ent, _, _, source, _)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.ResetRaptureStatusOnDamage,
-	EntityType.ENTITY_PLAYER)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.ResetRaptureStatusOnDamage, EntityType.ENTITY_PLAYER)
+--#endregion
+
+--#endregion
+
+--#region We love The Visage
+
+---@param npc EntityNPC
+function KEYS_TO_THE_KINGDOM:AllowVisage(npc)
+	if npc
+		and npc:IsActiveEnemy(false)
+		and not npc:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
+		and not SEL:HasStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
+		and not (Mod:TryGetData(npc) and Mod:GetData(npc).Raptured)
+		and (npc.Variant == 0 or npc.Variant == 1)
+	then
+		return true
+	end
+end
+
+Mod:AddCallback(Mod.ModCallbacks.KTTK_CAN_SPARE, KEYS_TO_THE_KINGDOM.AllowVisage, EntityType.ENTITY_VISAGE)
 
 --#endregion
 

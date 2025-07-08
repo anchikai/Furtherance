@@ -78,9 +78,22 @@ local function fiendFolioPatch()
 
 	-- Keys to the Kingdom
 
-	Mod:AddToDictionary(Mod.Item.KEYS_TO_THE_KINGDOM.ENTITY_BLACKLIST, Mod:Set({
-		Mod:GetTypeVarSubFromName("Whispers Controller", true)
-	}))
+	---@param npc EntityNPC
+	local function stopWhispersControllerSpare(_, npc)
+		if npc.Variant == ff.FF.WhispersController.Var and npc.SubType == Isaac.GetEntitySubTypeByName("Whispers Controller") then
+			return false
+		end
+	end
+
+	Mod:AddCallback(Mod.ModCallbacks.KTTK_CAN_SPARE, stopWhispersControllerSpare, ff.FF.WhispersController.ID)
+
+	local function removeGhostbuster(_, npc)
+		if npc.Variant == ff.FF.Ghostbuster.Var and npc.SubType == Isaac.GetEntitySubTypeByName("Ghostbuster") then
+			npc:Remove()
+		end
+	end
+
+	Mod:AddCallback(Mod.ModCallbacks.POST_RAPTURE_BOSS_KILL, removeGhostbuster, ff.FF.Ghostbuster.ID)
 
 	Mod:AppendTable(Mod.Item.KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS, {
 		ff.Sounds.CacaDeath,

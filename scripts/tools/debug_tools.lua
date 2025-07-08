@@ -43,18 +43,13 @@ function Furtherance:Crash()
 	Isaac.GetPlayer(0):AddNullCostume(-1) -- Crashes the game
 end
 
-local shouldRender = false
-
-function Furtherance:ToggleTypeVarSub()
-	shouldRender = not shouldRender
-end
+Furtherance.ShouldRenderID = false
 
 function Furtherance:RenderTypeVarSub()
-	if not shouldRender then return end
+	if not Furtherance.ShouldRenderID then return end
 	for _, ent in ipairs(Isaac.GetRoomEntities()) do
-		local renderPos = Isaac.WorldToRenderPosition(ent.Position)
-		Isaac.RenderText(ent.Type .. ", " .. ent.Variant .. ", " .. ent.SubType, renderPos.X, renderPos.Y - 30, 1, 1, 1,
-			1)
+		local renderPos = Isaac.WorldToScreen(ent.Position)
+		Isaac.RenderText(ent.Type .. ", " .. ent.Variant .. ", " .. ent.SubType, renderPos.X, renderPos.Y - 30, 1, 1, 1, 1)
 	end
 end
 

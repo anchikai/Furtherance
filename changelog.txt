@@ -20,28 +20,39 @@ General Adjustments
 - F4 Key + Alt Key synergy will no longer activate in Greed Mode
 
 Gameplay Changes
-- Added numerous synergies for Tech IX with other weapon-changing items
-- Old Camera's photo pickups spawn Purgatory ghosts on a brief delay rather than all at the same time
-- Enemies spawned from other enemies can no longer grant soul charges to Keys of the Kingdom
-- For T. Peter, removed all previous methods of recharging Muddled Cross (room clear, timed recharge in clear room, killing enemies). They are instead gained from submerging 10 enemies, 10th of a charge per enemies. This can be reduced by AAA Battery and 9 Volt
-- For T. Peter's enemy flip, the extra duration gained from the amount of submerged enemies is capped at a total of 30 seconds. Car Battery allows this to extend up to a full minute
-- Pressure Plates can now be interacted with on both sides of T. Peter's water
-- T. Peter's enemy flip no longer instantly flips back upon killing an enemy if there are enemies in the room that are normally available on both ends of the reflection, such as any bosses
-- T. Peter's enemy flip destroys all projectiles in the room instead of in a small radius around each player
-- Stoneys are now present on both sides of T. Peter's reflection
-- Anything submerged in T. Peter's water no longer takes damage from spikes, including T. Peter himself
-- For non-T. Peter players, Muddled Cross is no longer charged across all players and all active slots simultaneously with every kill. They now only charge one Muddled Cross to the player that dealt the killing blow to the enemy.
-- For non-T. Peter characters, increased number of enemies required to kill to recharge Muddled Cross from 18 to 30
-- Full heals such as XIX - The Sun and Rainbow Poops no longer bump Heart Renovator's counter to 99. This was unintentional, but now instead add the same amount of red hearts you had before the full heal
+Peter & Keys to the Kingdom
+- Non-boss enemies spawned from other enemies can no longer grant soul charges
+- Adjusted chance of gaining souls from non-boss enemies for charging Keys to the Kingdom. Now increases with stage
 - Peter can now gain charges from collecting black/soul hearts directly
-- Rotten Apple's Damage Up changed to +1 (from +2)
 - Spared bosses should no longer spawn any extra enemies they would on death. This is prominent for splitting bosses (Fistula, Envy, Matriarch, etc)
 - Segmented and splitting bosses while having Keys to the Kingdom should no longer drop charges on death of each segment/piece, instead respecting that each individual boss, upon death of all segments/split parts, should only drop one boss soul charge
 - Removed stats not able to be gained when sparing enemies that spawned from other enemies
-- Moon Hearts are now compatible with Soul Locket and Immaculate Conception
-- Added a Half Moon Heart. These do not spawn naturally and are primarily for interactions with other effects that spawn a half heart variant, such as "0 - The Fool?"
 - Spared bosses now grant 3 random stats (from 2) and minibosses now grant 2 (from 1)
 - Removed cap of gaining a maximum of 6 different stats from spared bosses per boss in the room
+- The Visage can now be spared in their first phase
+- Fix softlock with Gemini and Steven when sparing them with Keys to the Kingdom
+- Fixed Keys to the Kingdom able to spare in the Dogma/Beast fight. Should now grant a Holy Mantle
+- Fixed split pieces of Envy not being counted as minibosses
+
+Tainted Peter & Muddled Cross
+- T. Peter: Removed all previous methods of recharging Muddled Cross (room clear, timed recharge in clear room, killing enemies). They are instead gained from submerging 10 enemies, 10th of a charge per enemies. This can be reduced by AAA Battery and 9 Volt
+- T. Peter: The extra enemy room flip duration gained from the amount of submerged enemies is capped at a total of 30 seconds. Car Battery allows this to extend up to a full minute
+- T. Peter: Enemy room flip no longer instantly flips back upon killing an enemy if there are enemies in the room that are normally available on both ends of the reflection, such as any bosses
+- T. Peter: Enemy room flip destroys all projectiles in the room instead of in a small radius around each player
+- Non-T.Peter: Muddled Cross is no longer charged across all players and all active slots simultaneously with every kill. They now only charge one Muddled Cross to the player that dealt the killing blow to the enemy.
+- Non-T. Peter: Increased number of enemies required to kill to recharge Muddled Cross from 18 to 30
+- Both: Stoneys are now present on both sides of T. Peter's reflection
+- Both: Pressure Plates can now be interacted with on both sides of T. Peter's water
+- Both: Anything submerged in T. Peter's water no longer takes damage from spikes, including T. Peter himself
+- Both: Fixed tears explosions left by tears being visible on both sides of T. Peter's water
+
+Other
+- Added numerous synergies for Tech IX with other weapon-changing items
+- Old Camera's photo pickups spawn Purgatory ghosts on a brief delay rather than all at the same time
+- Full heals such as XIX - The Sun and Rainbow Poops no longer bump Heart Renovator's counter to 99. This was unintentional, but now instead add the same amount of red hearts you had before the full heal
+- Rotten Apple's Damage Up changed to +1 (from +2)
+- Moon Hearts are now compatible with Soul Locket and Immaculate Conception
+- Added a Half Moon Heart. These do not spawn naturally and are primarily for interactions with other effects that spawn a half heart variant, such as "0 - The Fool?"
 - Keys to the Kingdom, Apocalypse, and The Dreidel have switched to a tears up formula instead of a direct modification of fire delay (though this won't stop it from breaking the cap because the API is awesome like that)
 
 Bug Fixes
@@ -59,10 +70,6 @@ Bug Fixes
 - Removed rooms with unused enemies
 - Fixed Moon Heart, Tab Key, and Soul of Peter not properly updating the visibility of specific rooms immediately upon use
 - Fixed having Tech IX removed while having special synergies (Brimstone, Ludovico Technique) not update what you should be firing (Brimstone shooting tears, Ludo still having a Tech Ludo ring)
-- Fixed tears explosions left by tears being visible on both sides of T. Peter's water
-- Fix softlock with Gemini and Steven when sparing them with Keys to the Kingdom
-- Fixed Keys to the Kingdom able to spare in the Dogma/Beast fight. Should grant a Holy Mantle
-- Fixed split pieces of Envy not being counted as minibosses
 
 EID Fixes
 - Adjusted Keys to the Kingdom's description to slightly reduce wording and clarify removing devil deals grants a permanent stat
@@ -73,9 +80,13 @@ EID Fixes
 Mod Compatibility
 - Added Library Expanded compatibility. Currently just adds Weird Book sprites to all of Furtherance's books and a TBOATB EID entry to Book of Books. Sprite edits by explodingturtle
 - Fixed a crash that happened on run start to some users with Furtherance + Custom Stage API
+- Fiend Folio's Ghostbuster, when spared with Keys to the Kingdom, no longer plays its death animation and is removed instantly
 
 API Changes
 - IsaacSaveManager updated to v2.3
+- HudHelper updated to v1.1.3
+- StatusEffectLibrary updated to v1.1.1
+- Added new callbacks KTTK_CAN_SPARE, POST_RAPTURE_BOSS_KILL
 
 Still figuring out:
 - Potential incompatibility with Lazy Mattpack, causing crashes to occur

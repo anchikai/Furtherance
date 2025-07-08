@@ -24,11 +24,17 @@ Furtherance.ModCallbacks = {
 	--(EntityNPC npc, EntityPlayer player, RNG collectibleRNG, UseFlag flags, ActiveSlot slot): boolean, Optional Arg: EntityType - Called when initiating the rapture process from Keys to the Kingdom on a boss enemy. Return `true` to stop the usual process from initiating
 	PRE_START_RAPTURE_BOSS = "FURTHERANCE_PRE_START_RAPTURE_BOSS",
 
+	--(EntityNPC npc), Optional Arg: EntityType - When a boss is raptured, :Kill() is called onto it and the code attempts to force its death animation to the end. This is called after these steps
+	POST_RAPTURE_BOSS_KILL = "FURTHERANCE_POST_RAPTURE_BOSS_KILL",
+
 	--(EntityNPC npc), Optional Arg: EntityType - Called after the "death" of a boss raptured by Keys to the Kingdom
 	POST_RAPTURE_BOSS_DEATH = "FURTHERANCE_POST_RAPTURE_BOSS_DEATH",
 
 	---() - Return `true` if the current room should be considered similarly to story boss rooms for Keys to the Kingdom, where it grants a Holy Mantle effect instead of rapturing any enemies or bosses
 	KTTK_GRANT_HOLY_MANTLE = "FURTHERANCE_KTTK_GRANT_HOLY_MANTLE",
+
+	---(EntityNPC npc): boolean - Optional Arg: EntityType - Called when Keys to the Kingdom attempts to spare an enemy. Return `true` to bypass the normal checks and allow sparing or `false` to stop sparing
+	KTTK_CAN_SPARE = "FURTHERANCE_CAN_SPARE",
 
 	--(EntityPickup pickup): boolean, OptionalArg: HeartSubType - Called when Shattered Heart wants to explode a heart pickup. Return `true` to stop the heart from exploding
 	SHATTERED_HEART_EXPLODE = "FURTHERANCE_SHATTERED_HEART_EXPLODE",
@@ -73,7 +79,7 @@ Furtherance.ModCallbacks = {
 	-- - `pickup` - The pickup being rerolled.
 	-- - `selectedVariant` - The entity variant selected to reroll the pickup into
 	-- - Optional Arg - Corresponds to the `selectedVariant`
-	ASTRAGALI_PRE_REROLL_CHEST = "FURTHERANCE_ASTRAGALI_PRE_REROLL_CHEST"
+	ASTRAGALI_PRE_REROLL_CHEST = "FURTHERANCE_ASTRAGALI_PRE_REROLL_CHEST",
 }
 
 local function postBombExplode(_, bomb)
