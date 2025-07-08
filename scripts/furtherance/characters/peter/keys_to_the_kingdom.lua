@@ -208,7 +208,7 @@ local function cease(npc)
 			if _npc:IsBoss() then
 				KEYS_TO_THE_KINGDOM:RemoveBoss(_npc)
 			else
-				npc:Remove()
+				_npc:Remove()
 			end
 		end
 	end)
