@@ -2,7 +2,7 @@
 _G.Furtherance = RegisterMod("Furtherance", 1)
 local Mod = Furtherance
 
-Furtherance.Version = "INDEV_REWRITE"
+Furtherance.Version = "1.0"
 
 Furtherance.SaveManager = include("scripts.tools.save_manager")
 Furtherance.SaveManager.Init(Furtherance)

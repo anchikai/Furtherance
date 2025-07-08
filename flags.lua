@@ -1,3 +1,3 @@
 Furtherance.FLAGS = {}
 
-Furtherance.FLAGS.Debug = true
+Furtherance.FLAGS.Debug = false
