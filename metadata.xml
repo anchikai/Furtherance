@@ -4,7 +4,7 @@
     <directory>furtherance</directory>
     <id>3513706025</id>
     <description>[img]https://imgur.com/9RMULvf.png[/img]
-A complete overhaul of the old Furtherance MOD originally released in 2022. Coded from the ground up under the experienced eye of a single coder with the power of REPENTOGON, this new release breathes new life into every corner of the original MOD to create a sizeable quality package of content.
+A complete overhaul of the [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2737123333]The old Furtherance MOD[/url] originally released in 2022. Coded from the ground up under the experienced eye of a single coder with the power of REPENTOGON, this new release breathes new life into every corner of the original MOD to create a sizeable quality package of content.
 
 [h1]REQUIRES [url=https://repentogon.com/]REPENTOGON[/url]![/h1]
 
@@ -12,7 +12,7 @@ A complete overhaul of the old Furtherance MOD originally released in 2022. Code
 [list]
 [*]3 characters and 3 tainted characters
 [*]Full completion mark unlocks for all characters
-[*]90 items
+[*]80 items
 [*]20 trinkets
 [*]20+ pickups, including cards, runes, and more!
 [/list]
@@ -30,22 +30,24 @@ Use it to spare enemies. Bosses take longer to spare. Has special interactions w
 [img]https://imgur.com/VBeVhFO.png[/img]
 Moses' sister and the first female Jewish prophetess
 Starts with Polydipsisa and Tambourine, overflowing with water and shaking enemies off your tail
-Shoot large arcing tears that leave damaging puddles. Puddles that touch have their lifetime extended!
+Shoot large arcing tears that leave damaging puddles, every 12 shots also leaving a whirlpool. Puddles that touch have their lifetime extended!
 Tambourine inflicts knockback to nearby enemies and briefly creates a gigantic puddle to help increase the lifetime of other puddles
 
 [h2]Mod Compatibility[/h2]
 [list]
-[*]EID (Full English support. Translators are welcome to help!)
-[*]Fiend Folio
-[*]Epiphany
-[*]The Future
-[*]Pog For Good Items
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872]External Item Descriptions[/url] (Full English support. Translators are welcome to help!)
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2851063440]Fiend Folio[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3012430463]Epiphany[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2993558907]The Future[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2490515687]Pog For Good Items[/url]
 [*]And more!
 [/list]
 
 [h2]Links[/h2]
 We have a Discord Server where you can talk with the team and other fans of the mod
 [url=discord.gg/fy2ACyxDt6]Join here![/url]
+
+GitHub repository can be found [url=https://github.com/anchikai/Furtherance]here![/url]
 
 We have a Wiki on the Modding of Isaac Wiki...but it's heavily WIP!
 Check the wiki [url=https://moddingofisaac.wiki.gg/wiki/User:BenevolusGoat/Furtherance]here[/url] if you wish to check it out anyways
@@ -67,9 +69,9 @@ Explodingturtle: Commissioned Benny to fix up this mod
 [*]Shoop (Coder)
 [*]BrakeDude (Coder)
 [*]Sky (Designer)
-[*]PixelPiz (Spriter, Coder)
+[*]PixelPlz (Spriter, Coder)
 [/list]
-[url=https://steamcommunity.com/id/Warhamm2000]Warhamm[/url]: Commissioned to provide numerous new and refurbished sprites
+[url=https://steamcommunity.com/id/Warhamm2000]Warhamm2000[/url]: Commissioned to provide numerous new and refurbished sprites
 [url=https://steamcommunity.com/profiles/76561198211529504]Ferpe[/url]: Thumbnail artist, and a few other misc sprites
 [url=https://steamcommunity.com/profiles/76561198371196314]Muffin Tea[/url]: Most of the new item costume sprites
 Flacker01 and HazyWonder: Playtesters who helped find lots of bugs!
@@ -78,7 +80,7 @@ Flacker01 and HazyWonder: Playtesters who helped find lots of bugs!
 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3012430463]The Epiphany team[/url]! Many of Furtherance's handy tools and helper code files come from Epiphany
 
 [img]https://imgur.com/WH2LUbP.png[/img]</description>
-    <version>1.1</version>
+    <version>1.2</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Items"/>
