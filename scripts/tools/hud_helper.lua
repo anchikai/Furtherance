@@ -3,6 +3,7 @@ local emptyShaderName = ""
 
 local VERSION = 1.13 -- (v1.1.3) do not modify
 local game = Game()
+local itemConfig = Isaac.GetItemConfig()
 
 -- debug
 local FORCE_VERSION_UPDATE = false
@@ -83,16 +84,16 @@ local function InitMod()
 
 	---@enum HUDType
 	HudHelper.HUDType = {
-		BASE = 0, --Top left corner of each HUD
-		ACTIVE = 1, --Renders on every active item
-		HEALTH = 2, --Location of the first heart of each HUD
-		POCKET = 3, --Renders on the primary pocket item slot of each HUD
-		TRINKET = 4, --Renders on every trinket
-		EXTRA = 5, --For any miscellaneous HUD elements per-player. Renders below/above the player's health
-		ACTIVE_ID = 6, --Like ACTIVE, but for specific collectible IDs instead of slots
-		TRINKET_ID = 7, --Like TRINKET, but for specific trinket IDs instead of slots
-		CARD_ID = 8, --Like POCKET, but for specific card IDs instead of slots
-		PILL_ID = 9, --Like POCKET, but for specific pill IDs instead of slots
+		BASE = 0,   		--Top left corner of each HUD
+		ACTIVE = 1, 		--Renders on every active item
+		HEALTH = 2, 		--Location of the first heart of each HUD
+		POCKET = 3, 		--Renders on the primary pocket item slot of each HUD
+		TRINKET = 4,		--Renders on every trinket
+		EXTRA = 5,  		--For any miscellaneous HUD elements per-player. Renders below/above the player's health
+		ACTIVE_ID = 6, 		--Like ACTIVE, but for specific collectible IDs instead of slots
+		TRINKET_ID = 7, 	--Like TRINKET, but for specific trinket IDs instead of slots
+		CARD_ID = 8, 		--Like POCKET, but for specific card IDs instead of slots
+		PILL_ID = 9, 		--Like POCKET, but for specific pill IDs instead of slots
 		NUM_TYPES = 10
 	}
 
@@ -177,14 +178,14 @@ local function InitMod()
 
 	---@enum HUDIconType
 	HudHelper.IconType = {
-		COINS = 1,         --Coins counter
-		BOMBS = 2,         --Bombs counter
-		KEYS = 3,          --Keys counter
-		DIFFICULTY_ICON = 5, --Hard Mode, Greed, Greedier icons
-		NO_ACHIEVEMENT_ICON = 6, --Disabled achievements icon
-		DESTINATION_ICON = 7, --Challenge destination icon
-		MISC_ICON = 8,     --Icon that awkwardly renders to the right of the previous icons
-		STAT = 9           --Bottom of the stats, if the FoundHUD option is enabled
+		COINS = 1,					--Coins counter
+		BOMBS = 2,					--Bombs counter
+		KEYS = 3,					--Keys counter
+		DIFFICULTY_ICON = 5,		--Hard Mode, Greed, Greedier icons
+		NO_ACHIEVEMENT_ICON = 6,	--Disabled achievements icon
+		DESTINATION_ICON = 7,		--Challenge destination icon
+		MISC_ICON = 8,				--Icon that awkwardly renders to the right of the previous icons
+		STAT = 9					--Bottom of the stats, if the FoundHUD option is enabled
 	}
 
 	---@type table<ModCallbacks, function[]>
@@ -299,7 +300,7 @@ local function InitFunctions()
 			return false
 		end
 
-		if twinPlayer                                             --You have a twin player
+		if twinPlayer											 --You have a twin player
 			and GetPtrHash(player:GetMainTwin()) == GetPtrHash(player) --Are the main of the 2 twins
 			and not HudHelper.HUDTwinBlacklist[twinPlayer:GetPlayerType()] --Ensure your twin is allowed a HUD
 		then
@@ -487,9 +488,8 @@ local function InitFunctions()
 
 	function HudHelper.Utils.CheckFadedHealth(player)
 		return player:GetEffects():HasNullEffect(NullItemID.ID_LOST_CURSE)
-			or
-			(player:GetSubPlayer() == nil and (player:GetPlayerType() == PlayerType.PLAYER_THESOUL or player:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN))
-			or player:GetPlayerType() == PlayerType.PLAYER_JACOB2_B
+		or (player:GetSubPlayer() == nil and (player:GetPlayerType() == PlayerType.PLAYER_THESOUL or player:GetPlayerType() == PlayerType.PLAYER_THEFORGOTTEN))
+		or player:GetPlayerType() == PlayerType.PLAYER_JACOB2_B
 	end
 
 	local tempest = Font()
@@ -740,13 +740,11 @@ local function InitFunctions()
 	---@param itemID CollectibleType
 	---@param slot ActiveSlot
 	function HudHelper.ShouldActiveBeDisplayed(player, itemID, slot)
-		local config = Isaac.GetItemConfig()
-
 		return not HudHelper.ShouldHideHUD()
 			and not player:IsCoopGhost()
 			and itemID ~= CollectibleType.COLLECTIBLE_NULL
 			and player:HasCollectible(itemID, true)
-			and config:GetCollectible(itemID).Type == ItemType.ITEM_ACTIVE
+			and itemConfig:GetCollectible(itemID).Type == ItemType.ITEM_ACTIVE
 			and player:GetActiveItem(slot) == itemID
 			and (slot <= ActiveSlot.SLOT_SECONDARY --Fine to display if you simply have the item
 				or (player:GetCard(0) == 0 --Otherwise, assumed to be in first slot if no cards or pills are there.
@@ -782,8 +780,7 @@ local function InitFunctions()
 		local hudLayout = HudHelper.Utils.GetHUDLayout(playerHUDIndex)
 		local itemOffset = Vector.Zero
 		local bookOffset = slot == ActiveSlot.SLOT_PRIMARY and getBookOffset(player) or Vector.Zero
-		local itemSpecificOffset = HudHelper.GetItemSpecificOffset(player:GetActiveItem(slot), bookOffset.Y ~= 0,
-			hudLayout == HudHelper.HUDLayout.TWIN_COOP) * scale
+		local itemSpecificOffset = HudHelper.GetItemSpecificOffset(player:GetActiveItem(slot), bookOffset.Y ~= 0, hudLayout == HudHelper.HUDLayout.TWIN_COOP) * scale
 		itemOffset = itemSpecificOffset + bookOffset
 
 		if slot <= ActiveSlot.SLOT_SECONDARY then
@@ -1108,7 +1105,7 @@ local function InitFunctions()
 					if hasNoAchievements then
 						xPos = xPos + 12
 					end
-					--2 or 0 icons present
+				--2 or 0 icons present
 				elseif hasChallenge
 					or (hasDifficulty and hasNoAchievements)
 					or (not hasDifficulty and not hasNoAchievements)
@@ -1551,10 +1548,7 @@ local function InitFunctions()
 		if playerHUDIndex == -1 then return end
 		local hudLayout = HudHelper.Utils.GetHUDLayout(playerHUDIndex)
 
-		offset = offset +
-		HudHelper.GetItemSpecificOffset(player:GetActiveItem(slot),
-			slot == ActiveSlot.SLOT_PRIMARY and (getBookOffset(player).Y ~= 0),
-			hudLayout == HudHelper.HUDLayout.TWIN_COOP) * scale
+		offset = offset + HudHelper.GetItemSpecificOffset(player:GetActiveItem(slot), slot == ActiveSlot.SLOT_PRIMARY and (getBookOffset(player).Y ~= 0), hudLayout == HudHelper.HUDLayout.TWIN_COOP) * scale
 
 		for _, hud in ipairs(HUD_ELEMENTS[HudHelper.HUDType.ACTIVE]) do
 			if (not player:IsCoopGhost() or hud.BypassGhostBaby)
@@ -1598,8 +1592,7 @@ local function InitFunctions()
 	---@param unkFloat number
 	---@param player EntityPlayer
 	---@param isPreCallback boolean
-	local function renderHeartHUDs_REPENTOGON(_, offset, sprite, pos, unkFloat, player, isPreCallback, dontLoop,
-											  mainPlayer)
+	local function renderHeartHUDs_REPENTOGON(_, offset, sprite, pos, unkFloat, player, isPreCallback, dontLoop, mainPlayer)
 		if HudHelper.ShouldHideHUD()
 			or player.Variant ~= 0
 			or not HudHelper.HUDPlayers[1]
@@ -1625,8 +1618,7 @@ local function InitFunctions()
 			end
 		end
 		if player:GetSubPlayer() and not dontLoop then
-			renderHeartHUDs_REPENTOGON(_, offset, sprite, pos + Vector(0, 10), unkFloat, player:GetSubPlayer(),
-				isPreCallback, true, player)
+			renderHeartHUDs_REPENTOGON(_, offset, sprite, pos + Vector(0, 10), unkFloat, player:GetSubPlayer(), isPreCallback, true, player)
 		end
 	end
 
@@ -1790,7 +1782,7 @@ local function InitFunctions()
 				local collectiblesHistory = player:GetHistory():GetCollectiblesHistory()
 				for i = #collectiblesHistory, 1, -1 do
 					local historyItem = collectiblesHistory[i]
-					if historyItem:IsTrinket() or Mod.ItemConfig:GetCollectible(historyItem:GetItemID()).Type ~= ItemType.ITEM_ACTIVE then
+					if historyItem:IsTrinket() or itemConfig:GetCollectible(historyItem:GetItemID()).Type ~= ItemType.ITEM_ACTIVE then
 						posIndex = posIndex + 1
 					end
 					if posIndex > maxInventory then return end
@@ -1804,8 +1796,7 @@ local function InitFunctions()
 
 						local position = HudHelper.GetHUDPosition(2) + extraHUDOffset + offset
 
-						hud.OnRender(player, 1, HudHelper.Utils.GetHUDLayout(1), position, scale, alpha,
-							historyItem:GetItemID())
+						hud.OnRender(player, 1, HudHelper.Utils.GetHUDLayout(1), position, scale, alpha, historyItem:GetItemID())
 					end
 				end
 			end
@@ -1862,8 +1853,7 @@ local function InitFunctions()
 								end
 								renderHeartHUDs(player, playerHUDIndex, hudLayout, pos, hud)
 								if player:GetSubPlayer() and hud.Condition(player:GetSubPlayer(), playerHUDIndex, hudLayout, player) then
-									renderHeartHUDs(player:GetSubPlayer(), playerHUDIndex, hudLayout, pos + Vector(0, 10),
-										hud, player)
+									renderHeartHUDs(player:GetSubPlayer(), playerHUDIndex, hudLayout, pos + Vector(0, 10), hud, player)
 								end
 							elseif hudType == HudHelper.HUDType.POCKET then
 								---@cast hud HUDInfo_Pocket
@@ -1906,8 +1896,7 @@ local function InitFunctions()
 								and (not hud.Condition or hud.Condition(player, playerHUDIndex, hudLayout))
 							then
 								---@cast hud HUDInfo_CardID | HUDInfo_PillID
-								renderPocketItemHUDs(player, playerHUDIndex, hudLayout, pos, hud, i,
-									hudType == HudHelper.HUDType.CARD_ID, hudType == HudHelper.HUDType.PILL_ID)
+								renderPocketItemHUDs(player, playerHUDIndex, hudLayout, pos, hud, i, hudType == HudHelper.HUDType.CARD_ID, hudType == HudHelper.HUDType.PILL_ID)
 							end
 							::continue2::
 						end
@@ -1994,7 +1983,9 @@ local function InitFunctions()
 					return game:GetFrameCount() > 0
 						and playerHUDIndex == 1
 						and (not HudHelper.LastAppliedHUD[HudHelper.HUDType.EXTRA][1]
-						or HudHelper.LastAppliedHUD[HudHelper.HUDType.EXTRA][1].Name == "EID")
+							or HudHelper.LastAppliedHUD[HudHelper.HUDType.EXTRA][1].Name == "EID"
+							or HudHelper.LastAppliedHUD[HudHelper.HUDType.EXTRA][1].Priority == HudHelper.Priority.VANILLA
+						)
 						and EID.PositionModifiers["HudHelper"]
 				end,
 				OnRender = function()
@@ -2012,6 +2003,7 @@ local function InitFunctions()
 						and playerHUDIndex == 1
 						and HudHelper.LastAppliedHUD[HudHelper.HUDType.EXTRA][1]
 						and HudHelper.LastAppliedHUD[HudHelper.HUDType.EXTRA][1].Name ~= "Reset EID"
+						and HudHelper.LastAppliedHUD[HudHelper.HUDType.EXTRA][1].Priority ~= HudHelper.Priority.VANILLA
 				end,
 				OnRender = function(_, _, _, position)
 					local posYModifier = 0
@@ -2137,8 +2129,7 @@ local function InitFunctions()
 
 				if hud.Name == "Tainted Blue Baby" or hud.Name == "Tainted Isaac" then
 					if hud.Condition(player, playerHUDIndex, hudLayout) then
-						taintedOffsets = taintedOffsets +
-						processFuncOrValue(hud.YPadding, player, playerHUDIndex, hudLayout) + 5
+						taintedOffsets = taintedOffsets + processFuncOrValue(hud.YPadding, player, playerHUDIndex, hudLayout) + 5
 
 						if startAt == -6 then
 							taintedOffsets = taintedOffsets + 6
