@@ -1,5 +1,5 @@
 <AnimatedActor>
-	<Info CreatedBy="Unknown" CreatedOn="5/2/2025 12:00:27 AM" Version="3" Fps="30"/>
+	<Info CreatedBy="Benny" CreatedOn="5/2/2025 12:00:27 AM" Version="3" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="eid_furtherance_mod_icon.png" Id="0"/>

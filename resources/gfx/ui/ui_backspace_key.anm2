@@ -1,5 +1,5 @@
 <AnimatedActor>
-	<Info CreatedBy="Unknown" CreatedOn="5/26/2025 1:56:36 PM" Version="7" Fps="30"/>
+	<Info CreatedBy="Benny" CreatedOn="5/26/2025 1:56:36 PM" Version="7" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="hud_backspace.png" Id="0"/>
