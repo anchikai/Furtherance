@@ -101,7 +101,7 @@ Known Issues
 - Damage ups in the mod don't respect vanilla damage multipliers
 - Custom tear modifiers being removed when the entity involved is split (Angelic Prism, Multidimensional Baby)
 - Lachryphagy + Technology -1 can result in an infinite loop of spawning tears and lasers
-- Greed Mode's waves, Challenge Rooms, and Boss Rush may have odd issues with Tainted Peter
+- Tainted Peter may still have issues relating to what side enemies should be on in wave-based rooms and the mirror dimension
 
 v1.0
 Release!
