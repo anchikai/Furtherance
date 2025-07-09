@@ -944,13 +944,15 @@ function KEYS_TO_THE_KINGDOM:RapturePenaltyInGideonRoom(ent, _, _, source, _)
 		local npc = source.Entity:ToNPC() or source.Entity.SpawnerEntity and source.Entity.SpawnerEntity:ToNPC()
 		local statusData = npc and SEL:GetStatusEffectData(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE)
 		if not statusData then
-			KEYS_TO_THE_KINGDOM:SkillIssue(player)
+			local gideon = Isaac.FindByType(EntityType.ENTITY_GIDEON)[1]
+			if gideon and SEL:HasStatusEffect(gideon, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE) then
+				KEYS_TO_THE_KINGDOM:SkillIssue(player)
+			end
 		end
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.RapturePenaltyInGideonRoom,
-	EntityType.ENTITY_PLAYER)
+Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, KEYS_TO_THE_KINGDOM.RapturePenaltyInGideonRoom, EntityType.ENTITY_PLAYER)
 
 ---@param npc EntityNPC
 function KEYS_TO_THE_KINGDOM:SpecialGideonInteraction(npc)
@@ -960,8 +962,7 @@ function KEYS_TO_THE_KINGDOM:SpecialGideonInteraction(npc)
 	return true
 end
 
-Mod:AddCallback(Mod.ModCallbacks.PRE_RAPTURE_BOSS_KILL, KEYS_TO_THE_KINGDOM.SpecialGideonInteraction,
-	EntityType.ENTITY_GIDEON)
+Mod:AddCallback(Mod.ModCallbacks.PRE_RAPTURE_BOSS_KILL, KEYS_TO_THE_KINGDOM.SpecialGideonInteraction, EntityType.ENTITY_GIDEON)
 
 --#endregion
 
