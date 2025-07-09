@@ -39,13 +39,15 @@ SPECIAL_ROOM_FLIP.TEMP_KEEP_DOORS_SHUT_DURATION = 45
 local tempCloseDoors = 0
 
 function SPECIAL_ROOM_FLIP:CanFlipRoom()
+	local room_save = Mod:RoomSave()
 	return SPECIAL_ROOM_FLIP.ALLOWED_SPECIAL_ROOMS[Mod.Room():GetType()]
 		and not SPECIAL_ROOM_FLIP:IsFlippedRoom()
+		and not room_save.MuddledCrossCannotFlip
 end
 
 function SPECIAL_ROOM_FLIP:IsFlippedRoom()
 	local room_save = Mod:RoomSave()
-	return room_save.MuddledCrossFlippedRoom and not room_save.MuddledCrossCannotFlip
+	return room_save.MuddledCrossFlippedRoom == true
 end
 
 local roomToLoad

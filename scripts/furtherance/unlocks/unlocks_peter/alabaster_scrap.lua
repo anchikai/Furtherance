@@ -34,20 +34,6 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, ALABASTER_SCRAP.OnCollectibleRemove)
 
-function ALABASTER_SCRAP:OnTrinketAdd(player, trinketID)
-	local amount = Mod:HasBitFlags(trinketID, TrinketType.TRINKET_GOLDEN_FLAG) and 2 or 1
-	ALABASTER_SCRAP:UpdateAngelItemCount(trinketID, true, amount, player)
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_TRINKET_ADDED, ALABASTER_SCRAP.OnCollectibleRemove)
-
-function ALABASTER_SCRAP:OnTrinketRemove(player, trinketID)
-	local amount = Mod:HasBitFlags(trinketID, TrinketType.TRINKET_GOLDEN_FLAG) and 2 or 1
-	ALABASTER_SCRAP:UpdateAngelItemCount(trinketID, true, -amount, player)
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_TRINKET_REMOVED, ALABASTER_SCRAP.OnCollectibleRemove)
-
 ---@param player EntityPlayer
 function ALABASTER_SCRAP:DamageUp(player)
 	if player:HasTrinket(ALABASTER_SCRAP.ID) then

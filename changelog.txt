@@ -1,6 +1,6 @@
 v1.1.0
 
-I took some time to gather bug reports and evaluate the state of the characters, namely Peter and Tainted Peter. Thank you everyone for playing the mod!
+I took some time to gather bug reports and evaluate the state of the characters, namely Peter and Tainted Peter. There's still room for improvement but I didn't want to leave this update hanging for too much longer. Thank you everyone for playing the mod!
 
 General Adjustments
 - Renamed "Two of Shields" to "2 of Shields"
@@ -21,7 +21,6 @@ General Adjustments
 
 Gameplay Changes
 Peter & Keys to the Kingdom
-- Peter's damage reduced by -0.5 to cancel out the +0.5 gained from Keys to the Kingdom with Alabaster Scrap
 - Increased stats gained from sparing bosses and enemies
 - Removed cap of gaining a maximum of 6 different stats from spared bosses per boss in the room
 - Spared bosses now grant 3 random stats (from 2) and minibosses now grant 2 (from 1)
@@ -37,15 +36,18 @@ Peter & Keys to the Kingdom
 - Great Gideon can now be spared. He will become docile instead of being removed
 
 Tainted Peter & Muddled Cross
+- T. Peter: Now has a starting speed of 1.25
 - T. Peter: Removed all previous methods of recharging Muddled Cross (room clear, timed recharge in clear room, killing enemies). They are instead gained from submerging 10 enemies, 10th of a charge per enemies. This can be reduced by AAA Battery and 9 Volt
 - T. Peter: The extra enemy room flip duration gained from the amount of submerged enemies is capped at a total of 30 seconds. Car Battery allows this to extend up to a full minute
 - T. Peter: Enemy room flip no longer instantly flips back upon killing an enemy if there are enemies in the room that are normally available on both ends of the reflection, such as any bosses
 - T. Peter: Enemy room flip destroys all projectiles in the room instead of in a small radius around each player
 - Non-T.Peter: Muddled Cross is no longer charged across all players and all active slots simultaneously with every kill. They now only charge one Muddled Cross to the player that dealt the killing blow to the enemy.
 - Non-T. Peter: Increased number of enemies required to kill to recharge Muddled Cross from 18 to 30
-- Both: Stoneys are now present on both sides of T. Peter's reflection
-- Both: Pressure Plates can now be interacted with on both sides of T. Peter's water
-- Both: Anything submerged in T. Peter's water no longer takes damage from spikes, including T. Peter himself
+- Global modifier: Stoneys and Shopkeepers are now present on both sides of T. Peter's reflection
+- Global modifier: Pressure Plates can now be interacted with on both sides of T. Peter's water
+- Global modifier: Anything submerged in T. Peter's water no longer takes damage from spikes, including T. Peter himself
+- Global modifier: Will-o-Wisps added to blacklist, available on both sides of the water
+- Global modifier: Should now be able to interact with the White Fireplace
 
 Other
 - Added numerous synergies for Tech IX with other weapon-changing items
@@ -75,6 +77,7 @@ Bug Fixes
 - Fixed Keys to the Kingdom able to spare in the Dogma/Beast fight. Should now grant a Holy Mantle
 - Fixed split pieces of Envy not being counted as minibosses
 - Fixed explosions left by tears being visible on both sides of T. Peter's water
+- Fixed unintended endless damage reduction when constantly swapping out Alabaster Scrap with another trinket
 
 EID Fixes
 - Adjusted Keys to the Kingdom's description to slightly reduce wording and clarify removing devil deals grants a permanent stat
@@ -95,8 +98,10 @@ API Changes
 
 Known Issues
 - Potential incompatibility with Lazy Mattpack, causing crashes to occur
-- Having damage up items work properly with damage multipliers
+- Damage ups in the mod don't respect vanilla damage multipliers
 - Custom tear modifiers being removed when the entity involved is split (Angelic Prism, Multidimensional Baby)
+- Lachryphagy + Technology -1 can result in an infinite loop of spawning tears and lasers
+- Greed Mode's waves, Challenge Rooms, and Boss Rush may have odd issues with Tainted Peter
 
 v1.0
 Release!

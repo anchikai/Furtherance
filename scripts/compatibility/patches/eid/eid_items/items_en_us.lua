@@ -431,7 +431,7 @@ return function(modifiers)
 					"{{Battery}} Must be charged by killing enemies"
 				)
 				end,
-				"Spawns a pool at the entrance of certain special rooms that reveal an alternate room",
+				"#Spawns a pool at the entrance of certain special rooms that reveal an alternate room",
 				"#On use, changes the current room into the previewed room",
 				"#{{TreasureRoom}} <-> {{RedTreasureRoom}}",
 				"#{{UltraSecretRoom}} <-> {{Planetarium}} Planetarium items grant broken hearts",

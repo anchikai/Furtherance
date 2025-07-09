@@ -16,13 +16,13 @@
 
 	<player name="Peter" skin="character_02_peter.png" costumeSuffix="peter" skinColor="-1" costume="79"
 		hp="4" armor="2" keys="1"
-		speedmodifier="-0.25" firedelaymodifier="-0.5" rangemodifier="0.5" damagemodifier="-0.5"
+		speedmodifier="-0.25" firedelaymodifier="-0.5" rangemodifier="0.5"
 		pocketActive="Keys to the Kingdom"
 		nameimage="playername_peter.png" portrait="playerportrait_peter.png"
 		birthright="Mercy up" />
 	<player name="Peter" bSkinParent="Peter" skin="character_02_peterb.png" costumeSuffix="peter_b" skinColor="0" costume="79"
 		hp="6"
-		luckmodifier="-1"
+		luckmodifier="-1" speedmodifier="0.25"
 		pocketActive="Muddled Cross"
 		nameimage="playername_peter.png" portrait="playerportrait_peter_b.png"
 		birthright="Enhanced flipside"

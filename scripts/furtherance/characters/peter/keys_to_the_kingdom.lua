@@ -299,7 +299,6 @@ function KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, numStats, isTemp)
 	for i = 1, numStats do
 		local randomStatIndex = Mod:GetDifferentRandomKey(selectedStats, KEYS_TO_THE_KINGDOM.StatTable, rng)
 		selectedStats[randomStatIndex] = true
-		Mod:DebugLog("Stat Key:", randomStatIndex)
 		local key = tostring(randomStatIndex)
 		local player_save = isTemp and Mod:FloorSave(player) or Mod:RunSave(player)
 		player_save[varName] = player_save[varName] or {}
@@ -427,7 +426,7 @@ end
 function KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(npc, player)
 	local rng = player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID)
 	local chance = rng:RandomFloat()
-	local maxChance = npc.MaxHitPoints / (60 + (10 * Mod.Level():GetAbsoluteStage()))
+	local maxChance = (npc.MaxHitPoints * 1.5) / (60 + (10 * Mod.Level():GetAbsoluteStage()))
 	if chance <= maxChance then
 		local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
 			KEYS_TO_THE_KINGDOM.SOUL,

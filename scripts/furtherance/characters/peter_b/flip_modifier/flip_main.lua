@@ -33,7 +33,11 @@ FLIP.BLACKLISTED_ENTITIES = Mod:Set({
 	tostring(EntityType.ENTITY_GAPING_MAW) .. ".0.0",
 	tostring(EntityType.ENTITY_BROKEN_GAPING_MAW) .. ".0.0",
 	tostring(EntityType.ENTITY_STONEY) .. ".0.0",
-	tostring(EntityType.ENTITY_FIREPLACE) .. ".4.0" --White Fireplace
+	tostring(EntityType.ENTITY_FIREPLACE) .. ".4.0", --White Fireplace
+	tostring(EntityType.ENTITY_FIREPLACE) .. ".4.1", --White Fireplace
+	tostring(EntityType.ENTITY_FIREPLACE) .. ".4.2", --White Fireplace
+	tostring(EntityType.ENTITY_WILLO) .. ".0.0",
+	EntityType.ENTITY_SHOPKEEPER,
 })
 --Not an enemy but should only be interactable on the above world
 FLIP.WHITELISTED_ENTITIES = Mod:Set({
@@ -52,6 +56,7 @@ end
 function FLIP:ShouldIgnoreEntity(ent)
 	return ent:IsBoss()
 		or FLIP.BLACKLISTED_ENTITIES[Mod:GetTypeVarSubFromEnt(ent, true)]
+		or FLIP.BLACKLISTED_ENTITIES[ent.Type]
 		or ent:ToPickup()
 end
 

@@ -340,8 +340,10 @@ function MUDDLED_CROSS:OnPossibleRoomFlipEnter()
 		local roomType = room:GetType()
 		local backdrop = Isaac.RunCallbackWithParam(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, roomType)
 		if not backdrop then return end
+		local door = room:GetDoor(Mod.Level().EnterDoor)
+		local enterPos = door and door.Position or Isaac.GetPlayer().Position
 		local puddle = Isaac.Spawn(EntityType.ENTITY_EFFECT, MUDDLED_CROSS.PUDDLE, 0,
-			room:FindFreeTilePosition(Isaac.GetPlayer().Position, 0), Vector.Zero, nil):ToEffect()
+			room:FindFreePickupSpawnPosition(enterPos, 0), Vector.Zero, nil):ToEffect()
 		---@cast puddle EntityEffect
 		local sprite = puddle:GetSprite()
 		sprite:ReplaceSpritesheet(0, backdrop, true)
