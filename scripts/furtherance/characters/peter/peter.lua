@@ -28,7 +28,7 @@ function PETER:DistributeSoulHeartsToPocket(player, amount)
 	if PETER:IsPeter(player) and player.FrameCount > 0 and amount > 0 then
 		local activeItem = player:GetActiveItem(ActiveSlot.SLOT_POCKET)
 		if activeItem == Mod.Item.KEYS_TO_THE_KINGDOM.ID then
-			local charge = player:GetActiveCharge(ActiveSlot.SLOT_POCKET)
+			local charge = player:GetActiveCharge(ActiveSlot.SLOT_POCKET) + player:GetBatteryCharge(ActiveSlot.SLOT_POCKET)
 			local maxCharge = Mod.Item.KEYS_TO_THE_KINGDOM.MAX_CHARGES
 			if player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY) then
 				maxCharge = maxCharge * 2
@@ -120,7 +120,7 @@ function PETER:AddHeartPickupToKTTKCharge(pickup, collider)
 	then
 		return
 	end
-	local charge = player:GetActiveCharge(ActiveSlot.SLOT_POCKET)
+	local charge = player:GetActiveCharge(ActiveSlot.SLOT_POCKET) + player:GetBatteryCharge(ActiveSlot.SLOT_POCKET)
 	local maxCharge = Mod.Item.KEYS_TO_THE_KINGDOM.MAX_CHARGES
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY) then
 		maxCharge = maxCharge * 2

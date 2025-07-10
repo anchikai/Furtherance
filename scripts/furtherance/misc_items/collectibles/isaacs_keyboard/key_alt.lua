@@ -63,7 +63,7 @@ function ALT_KEY:PreNewLevel(player)
 		maxCharge = maxCharge * 2
 	end
 	for _, slot in ipairs(slots) do
-		if player:GetActiveCharge(slot) < maxCharge then
+		if player:GetActiveCharge(slot) + player:GetBatteryCharge(ActiveSlot.SLOT_POCKET) < maxCharge then
 			player:AddActiveCharge(1, slot, true, hasBattery, true)
 		end
 	end

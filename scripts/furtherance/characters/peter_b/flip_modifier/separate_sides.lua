@@ -82,7 +82,7 @@ function SEPARATE_SIDES:CollisionMode(ent, collider)
 				maxCharge = maxCharge * 2
 			end
 			for _, slotData in ipairs(slots) do
-				if slotData.Charge < maxCharge then
+				if slotData.Charge + player:GetBatteryCharge(ActiveSlot.SLOT_POCKET) < maxCharge then
 					player:AddActiveCharge(floor(Mod.Item.MUDDLED_CROSS.MAX_CHARGES / CHARGE_FRACTION), slotData.Slot,
 					false, false, true)
 					break
