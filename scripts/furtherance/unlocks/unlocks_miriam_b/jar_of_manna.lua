@@ -135,7 +135,7 @@ function JAR_OF_MANNA:StatBuffs(player, flag)
 			if flag == CacheFlag.CACHE_FIREDELAY then
 				player[stat.Name] = Mod:TearsUp(player[stat.Name], buffCount * stat.Buff)
 			else
-				player[stat.Name] = player[stat.Name] + buffCount * stat.TempBuff
+				player[stat.Name] = player[stat.Name] + buffCount * stat.Buff
 			end
 		end
 	end

@@ -1,5 +1,6 @@
 v1.1.3
 - Fixed Peter not gaining Soul Hearts while Keys to the Kingdom has full overcharge
+- Fixed Jar of Manna, Apocalypse, and The Dreidel not giving stat buffs and returning an error
 
 v1.1.2
 - Fixed Tainted characters causing errors for Love Teller's EID display and not receiving anything for getting the machine to pay out

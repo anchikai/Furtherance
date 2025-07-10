@@ -67,7 +67,7 @@ function THE_DREIDEL:StatBuffs(player, flag)
 			if flag == CacheFlag.CACHE_FIREDELAY then
 				player[stat.Name] = Mod:TearsUp(player[stat.Name], statCount * stat.Buff)
 			else
-				player[stat.Name] = player[stat.Name] + statCount * stat.TempBuff
+				player[stat.Name] = player[stat.Name] + statCount * stat.Buff
 			end
 		end
 	end
