@@ -1,6 +1,7 @@
 v1.1.2
 - Fixed Tainted characters causing errors for Love Teller's EID display and not receiving anything for getting the machine to pay out
 - Fixed enemies who spawned from submerged enemies not being counted as flipped by T. Peter, not gaining the Strength status effect and other confusing effects
+- Fixed Fiend Folio's Splattercap unable to be flipped
 
 v1.1.1
 - HudHelper updated to v1.1.4

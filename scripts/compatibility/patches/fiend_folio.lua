@@ -74,9 +74,13 @@ local function fiendFolioPatch()
 		[Mod.Item.OLD_CAMERA.PHOTO_IDs[3]] = 12,
 	})
 
+	Mod:AddToDictionary(Mod.Character.PETER_B.FLIP.WHITELISTED_ENTITIES, Mod:Set({
+		Mod:GetTypeVarSubFromName("Splattercap", true)
+	}))
+
 	--#endregion
 
-	-- Keys to the Kingdom
+	--#region Keys to the Kingdom
 
 	---@param npc EntityNPC
 	local function stopWhispersControllerSpare(_, npc)

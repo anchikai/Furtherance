@@ -27,7 +27,7 @@ FLIP.TEAR_DEATH_EFFECTS = Mod:Set({
 FLIP.BLACKLISTED_EFFECTS = Mod:Set({
 	EffectVariant.PURGATORY
 })
---They have their own funky mirror stuff. Don't bother with their effects and allow them to exist on both sides
+--Interactable on both sides of the water
 FLIP.BLACKLISTED_ENTITIES = Mod:Set({
 	tostring(EntityType.ENTITY_WRAITH) .. ".0.0",
 	tostring(EntityType.ENTITY_GAPING_MAW) .. ".0.0",
@@ -39,10 +39,8 @@ FLIP.BLACKLISTED_ENTITIES = Mod:Set({
 	tostring(EntityType.ENTITY_WILLO) .. ".0.0",
 	EntityType.ENTITY_SHOPKEEPER,
 })
---Not an enemy but should only be interactable on the above world
-FLIP.WHITELISTED_ENTITIES = Mod:Set({
-	EntityType.ENTITY_MOVABLE_TNT
-})
+--Bypas normal checks for if an enemy is allowed to be flipped
+FLIP.WHITELISTED_ENTITIES = {}
 
 --#endregion
 
@@ -62,6 +60,9 @@ end
 
 ---@param ent Entity
 function FLIP:ValidEnemyToFlip(ent)
+	if FLIP.WHITELISTED_ENTITIES[Mod:GetTypeVarSubFromEnt(ent, true)] then
+		return true
+	end
 	return ent:IsActiveEnemy(false)
 		and ent:ToNPC()
 		and ent:ToNPC().CanShutDoors
