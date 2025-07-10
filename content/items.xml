@@ -58,7 +58,7 @@
 	<passive id="88" name="Cold Hearted" description="Icy touch" gfx="cold_hearted.png" achievement="Cold Hearted" quality="0" craftquality="0" tags="nolostbr" />
 	<passive id="89" name="Coffee Break" description="HP + speed up" gfx="coffee_break.png" cache="speed" maxhearts="2" hearts="4" soulhearts="2" quality="2" craftquality="2" tags="nolostbr" />
 	<passive id="90" name="Rue" description="Love's undoing" gfx="rue.png" achievement="Rue" quality="3" craftquality="3" tags="nolostbr summonable" />
-	<passive id="91" name="Exsanguination" description="Strength from scarcity" gfx="exsanguination.png" achievement="Exsanguination" cache="damage" quality="2" craftquality="2" tags="offensive summonable nolostbr" />
+	<passive id="91" name="Exsanguination" description="Strength from scarcity" gfx="exsanguination.png" achievement="Exsanguination" cache="damage" quality="2" craftquality="2" tags="offensive summonable nolostbr" persistent="true" />
 	<passive id="94" name="Molten Gold" description="It's more valuable this way..." gfx="molten_gold.png" achievement="Molten Gold" quality="0" craftquality="0" tags="nolostbr summonable" />
 	<passive id="95" name="Trepanation" description="Blood mortar" gfx="trepanation.png" quality="3" craftquality="3" tags="offensive summonable" />
 	<passive id="97" name="Liberation" description="Let go your earthly tether" gfx="liberation.png" achievement="Liberation" cache="flying" quality="1" craftquality="1" tags="offensive summonable" />
