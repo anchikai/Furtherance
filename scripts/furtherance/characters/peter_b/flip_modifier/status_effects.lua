@@ -123,7 +123,6 @@ function STATUS_EFFECTS:StrengthAndWeakness(npc)
 				npc:AddEntityFlags(EntityFlag.FLAG_WEAKNESS)
 			end
 		elseif not FLIP:IsRoomEffectActive() and not SEL:HasStatusEffect(npc, STATUS_EFFECTS.STRENGTH_FLAG) then
-			print("wh")
 			if not SEL:HasStatusEffect(npc, STATUS_EFFECTS.STRENGTH_FLAG) then
 				SEL:AddStatusEffect(npc, STATUS_EFFECTS.STRENGTH_FLAG, -1, EntityRef(nil))
 			end
