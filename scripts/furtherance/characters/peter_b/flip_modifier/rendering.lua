@@ -12,12 +12,12 @@ local FLIP_RENDERING = {}
 function FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, parent)
 	local data = Mod:GetData(ent)
 	local pData = parent and Mod:TryGetData(parent)
+	if pData and pData.PeterFlipped then
+		data.PeterFlipped = pData.PeterFlipped
+	end
 	if pData and pData.PeterFlippedIgnoredRenderFlag and not FLIP:ShouldIgnoreEntity(ent) then
 		data.PeterFlippedIgnoredRenderFlag = pData.PeterFlippedIgnoredRenderFlag
 		return
-	end
-	if pData and pData.PeterFlipped then
-		data.PeterFlipped = pData.PeterFlipped
 	end
 	local enemy = FLIP:TryGetNPC(ent)
 	local player = Mod:TryGetPlayer(ent)
