@@ -7,12 +7,12 @@ Furtherance.Item.THE_DREIDEL = THE_DREIDEL
 THE_DREIDEL.ID = Isaac.GetItemIdByName("The Dreidel")
 
 THE_DREIDEL.StatTable = {
-	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.25 },
-	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = 0.5 },
-	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.5 * Mod.RANGE_BASE_MULT },
-	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.25 },
-	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.1 },
-	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5 }
+	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Debuff = 0.25 },
+	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Debuff = 0.5 },
+	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Debuff = 0.5 * Mod.RANGE_BASE_MULT },
+	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Debuff = 0.25 },
+	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Debuff = 0.2 },
+	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Debuff = 0.5 }
 }
 
 ---@param rng RNG
@@ -65,9 +65,9 @@ function THE_DREIDEL:StatBuffs(player, flag)
 
 		if stat.Flag == flag then
 			if flag == CacheFlag.CACHE_FIREDELAY then
-				player[stat.Name] = Mod:TearsUp(player[stat.Name], statCount * stat.Buff)
+				player[stat.Name] = Mod:TearsDown(player[stat.Name], statCount * stat.Debuff)
 			else
-				player[stat.Name] = player[stat.Name] + statCount * stat.Buff
+				player[stat.Name] = player[stat.Name] - statCount * stat.Debuff
 			end
 		end
 	end

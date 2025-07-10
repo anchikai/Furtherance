@@ -14,6 +14,12 @@ function Furtherance:TearsUp(firedelay, val)
 	return math.max(Furtherance:Tears2Delay(newTears), -0.99)
 end
 
+function Furtherance:TearsDown(firedelay, val)
+	local currentTears = Furtherance:Delay2Tears(firedelay)
+	local newTears = currentTears - val
+	return math.max(Furtherance:Tears2Delay(newTears), -0.99)
+end
+
 ---@param player EntityPlayer
 ---@param tear EntityTear
 function Furtherance:ShouldLudovicoUpdate(player, tear)

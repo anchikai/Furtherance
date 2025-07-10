@@ -7,12 +7,12 @@ Furtherance.Item.APOCALYPSE = APOCALYPSE
 APOCALYPSE.ID = Isaac.GetItemIdByName("Apocalypse")
 
 APOCALYPSE.StatTable = {
-	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 1 },
-	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = 0.5 }, -- MaxFireDelay buffs should be negative!
+	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.5 },
+	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = 0.5 },
 	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.25 * Mod.RANGE_BASE_MULT },
-	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.1 },
-	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.1 },
-	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 1 },
+	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.2 },
+	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.2 },
+	{ Name = "Luck",         Flag = CacheFlag.CACHE_LUCK,      Buff = 0.5 },
 }
 
 ---@param player EntityPlayer
