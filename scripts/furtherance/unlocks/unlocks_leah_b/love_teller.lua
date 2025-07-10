@@ -172,9 +172,9 @@ function LOVE_TELLER:GetMatchMaker(playerType, result)
 	if mainPlayerConfig:IsTainted() then
 		local nonTainted = mainPlayerConfig:GetTaintedCounterpart()
 		---@cast nonTainted EntityConfigPlayer
-		mainPlayerType = nonTainted:GetPlayerType()
+		mainPlayerType = LOVE_TELLER.ParentPlayerTypes[nonTainted:GetPlayerType()] or nonTainted:GetPlayerType()
 	end
-	local matchmakingList = LOVE_TELLER.Matchmaking[playerType]
+	local matchmakingList = LOVE_TELLER.Matchmaking[mainPlayerType]
 	if result == 0 then
 		---Grab a list of all characters that aren't compatible/true love and pick a random one
 		local avoidTypes = Mod:Set({

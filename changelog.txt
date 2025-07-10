@@ -1,3 +1,10 @@
+v1.2.0
+- Fixed Tainted characters causing errors for Love Teller's EID display and not receiving anything for getting the machine to pay out
+
+v1.1.1
+- HudHelper updated to v1.1.4
+- Fixed Exsanguination losing its damage up when moving rooms
+
 v1.1.0
 
 I took some time to gather bug reports and evaluate the state of the characters, namely Peter and Tainted Peter. There's still room for improvement but I didn't want to leave this update hanging for too much longer. Thank you everyone for playing the mod!
