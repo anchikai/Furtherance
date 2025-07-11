@@ -101,7 +101,7 @@
 	<trinket id="3" name="Rebound Worm" description="Pew!" gfx="rebound_worm.png" /> <!-- Concept by Freg! -->
 	<trinket id="4" name="Grass" description="Go touch some" cache="speed" cleareffectsonremove="true" gfx="grass.png" tags="nogreed" />
 	<trinket id="5" name="Alabaster Scrap" description="With devotion comes power" gfx="alabaster_scrap.png" achievement="Alabaster Scrap" cache="damage" persistent="true" />
-	<trinket id="6" name="Leah's Lock" description="No pain? no gain" gfx="leahs_lock.png" achievement="Leah's Lock" />
+	<trinket id="6" name="Leah's Lock" description="No pain? No gain" gfx="leahs_lock.png" achievement="Leah's Lock" />
 	<trinket id="7" name="Abyssal Penny" description="Wealth of H2O" gfx="abyssal_penny.png" achievement="Abyssal Penny" />
 	<trinket id="8" name="Saline Spray" description="Salty shots" gfx="saline_spray.png" achievement="Saline Spray" />
 	<trinket id="9" name="Almagest Scrap" description="Chart the stars" gfx="almagest_scrap.png" achievement="Almagest Scrap" />
