@@ -112,7 +112,7 @@
 	<trinket id="14" name="Nil Num" description="Buffer overflow" gfx="nil_num.png" />
 	<trinket id="15" name="Dungeon Key" description="Opens challenging rooms" gfx="dungeon_key.png" achievement="Dungeon Key" tags="nogreed" />
 	<trinket id="16" name="BI-84" description="Exam approved" gfx="bi-84.png" />
-	<trinket id="17" name="Glitched Penny" description="Wealth of Corruption" gfx="glitched_penny.png" />
+	<trinket id="17" name="Glitched Penny" description="Wealth of corruption" gfx="glitched_penny.png" />
 	<trinket id="18" name="Hammerhead Worm" description="Thwack" gfx="hammerhead_worm.png" cache="range shotspeed damage" />
 	<trinket id="19" name="Parasol" description="Little protectors" gfx="parasol.png" achievement="Parasol" />
 
