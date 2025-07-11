@@ -257,7 +257,7 @@ HudHelper.RegisterHUDElement({
 	Condition = function (player, playerHUDIndex, hudLayout)
 		return LEAH_B:IsLeahB(player)
 			and player:GetBrokenHearts() < (LEAH_B.HEART_LIMIT / 2) - 1
-
+			and not Mod:HasBitFlags(Mod.Level():GetCurses(), LevelCurse.CURSE_OF_THE_UNKNOWN)
 	end,
 	OnRender = function (player, playerHUDIndex, hudLayout, position, maxColumns, _, numPlayers)
 		local alpha = (sin(Mod.Game:GetFrameCount() * 4 * 1.5 * math.pi / 180) + 1) / 2
@@ -283,6 +283,7 @@ HudHelper.RegisterHUDElement({
 		return LEAH_B:IsLeahB(player)
 			and (Mod:GetData(player).LeahBBrokenDamage or 0) > 0
 			and player:GetBrokenHearts() > 0
+			and not Mod:HasBitFlags(Mod.Level():GetCurses(), LevelCurse.CURSE_OF_THE_UNKNOWN)
 	end,
 	OnRender = function (player, playerHUDIndex, hudLayout, position, maxColumns)
 		local allHearts = LEAH_B:GetMaxHeartAmount(player)

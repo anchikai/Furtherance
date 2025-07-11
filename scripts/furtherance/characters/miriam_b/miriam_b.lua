@@ -108,8 +108,8 @@ HudHelper.RegisterHUDElement({
 	Priority = HudHelper.Priority.LOWEST,
 	Condition = function(player, playerHUDIndex, hudLayout)
 		return MIRIAM_B:IsMiriamB(player)
-			and not Mod:HasBitFlags(Mod.Level():GetCurses(), LevelCurse.CURSE_OF_THE_UNKNOWN)
 			and Mod.Item.POLARITY_SHIFT:IsChainLightningActive(player)
+			and not Mod:HasBitFlags(Mod.Level():GetCurses(), LevelCurse.CURSE_OF_THE_UNKNOWN)
 	end,
 	OnRender = function(player, playerHUDIndex, hudLayout, position, maxColumns)
 		local alpha = (sin(Mod.Game:GetFrameCount() * 4 * 1.5 * math.pi / 180) + 1) / 2
