@@ -4,13 +4,13 @@ local DD = FR_EID.DynamicDescriptions
 
 local modifiers = {
 	[Mod.Card.ACE_OF_SHIELDS.ID] = {
-		_metadata = { 12, false }
+		_metadata = { 6, false }
 	},
 	[Mod.Card.CHARITY.ID] = {
-		_metadata = { 2, false }
+		_metadata = { 8, false }
 	},
 	[Mod.Card.FAITH.ID] = {
-		_metadata = { 2, false }
+		_metadata = { 4, false }
 	},
 	[Mod.Card.GOLDEN_CARD.ID] = {
 		_metadata = { 12, false }
@@ -22,10 +22,10 @@ local modifiers = {
 		_metadata = { 6, false }
 	},
 	[Mod.Card.REVERSE_CHARITY.ID] = {
-		_metadata = { 2, false }
+		_metadata = { 6, false }
 	},
 	[Mod.Card.REVERSE_FAITH.ID] = {
-		_metadata = { 2, false }
+		_metadata = { 12, false }
 	},
 	[Mod.Card.REVERSE_HOPE.ID] = {
 		_metadata = { 2, false }

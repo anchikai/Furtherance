@@ -1,6 +1,6 @@
 <pocketitems>
 	<card type="suit" pickup="2" description="Item multiplier" hud="2 of Shields" name="2 of Shields" mimiccharge="12" />
-	<card type="suit" pickup="2" description="Convert all" hud="Ace of Shields" name="Ace of Shields" mimiccharge="12" />
+	<card type="suit" pickup="2" description="Convert all" hud="Ace of Shields" name="Ace of Shields" mimiccharge="6" />
 	<card type="special" pickup="8" description="It's time to duel" hud="Trap Card" name="Trap Card" mimiccharge="1" />
 	<card type="special" pickup="8" description="High level access" hud="Key Card" name="Key Card" mimiccharge="6" />
 	<card type="special" pickup="99" description="???" hud="Golden Card" name="Golden Card" mimiccharge="12" />
@@ -15,10 +15,10 @@
 	<card type="rune" pickup="116" description="Shortage" hud="Essence of Drought" name="Essence of Drought" name="Essence of Drought" mimiccharge="2" />
 	<card type="tarot" pickup="1" description="May your future be bright and successful" hud="Hope" name="XXIII - Hope" mimiccharge="2" />
 	<card type="tarot_reverse" pickup="14" description="I have a bad feeling about this" hud="ReverseHope" name="XXIII - Hope?" achievement="Reverse Hope" mimiccharge="2" />
-	<card type="tarot" pickup="1" description="May your soul find salvation" hud="Faith" name="XXV - Faith" mimiccharge="2" />
-	<card type="tarot_reverse" pickup="14" description="Give up your spirit" hud="ReverseFaith" name="XXV - Faith?" achievement="Reverse Faith" mimiccharge="2" />
-	<card type="tarot" pickup="1" description="To each according to his needs" hud="Charity" name="XXIV - Charity" mimiccharge="2" />
-	<card type="tarot_reverse" pickup="14" description="Everything comes at a price" hud="ReverseCharity" name="XXIV - Charity?" achievement="Reverse Charity" mimiccharge="2" />
+	<card type="tarot" pickup="1" description="May your soul find salvation" hud="Faith" name="XXV - Faith" mimiccharge="4" />
+	<card type="tarot_reverse" pickup="14" description="Give up your spirit" hud="ReverseFaith" name="XXV - Faith?" achievement="Reverse Faith" mimiccharge="12" />
+	<card type="tarot" pickup="1" description="To each according to his needs" hud="Charity" name="XXIV - Charity" mimiccharge="8" />
+	<card type="tarot_reverse" pickup="14" description="Everything comes at a price" hud="ReverseCharity" name="XXIV - Charity?" achievement="Reverse Charity" mimiccharge="6" />
 
 	<card type="object" pickup="119" description="Packaged ghost barrage" hud="Spooky Photo" name="Spooky Photo" achievement="9999" />
 	<card type="object" pickup="120" description="Packaged ghost barrage" hud="Haunted Photo" name="Haunted Photo" achievement="9999" />
