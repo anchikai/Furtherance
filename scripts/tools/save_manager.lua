@@ -1701,7 +1701,7 @@ function SaveManager.Init(mod)
 		CollectibleType.COLLECTIBLE_FLIP
 	)
 
-	modReference:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, SaveManager.Utility.CallbackPriority.LATE,
+	modReference:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, SaveManager.Utility.CallbackPriority.EARLY,
 		function (_, _, _, player)
 			if isLazB[player:GetPlayerType()] then
 				retainFamiliarSaveOnFlip = false
