@@ -31,7 +31,7 @@ return function(modifiers)
 		[Trinket.ALTRUISM.ID] = {
 			Name = "Altruism",
 			Description = {
-				"25% chance to heal Isaac for a {{HalfHeart}} Half Red Heart or refund the price Isaac paid to a beggar"
+				"Donating to any kind of beggar has a 25% chance to either heal Isaac for a {{HalfHeart}} Half Red Heart or refund the price Isaac paid to a beggar"
 			}
 		},
 		[Trinket.BI_84.ID] = {
