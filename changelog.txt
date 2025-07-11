@@ -1,4 +1,4 @@
-v1.X.X
+v1.1.4
 - Updated Alturism's EID entry to specify you need to touch a beggar for the effect of the trinket
 - Updated mimic charges for the following cards:
 	- XXIV - Charity: 2 -> 8
@@ -8,6 +8,7 @@ v1.X.X
 	- XXIV - Faith?: 2 -> 12
 	- Ace of Shields: 12 -> 6
 - Fixed Tainted Leah's Broken Heart preview and Heart Container preview on the HUD still rendering if you had Curse of the Unknown active
+- Updated IsaacSaveManager to v2.3.1. Last update to the save manager accidentally broke any callbacks that would have some sort of effect for floor-specific saves before it was reset on the next floor. This affected Alternate Reality, Epitaph, Palliuim, and Escort Beggar
 
 v1.1.3
 - Fixed Peter not gaining Soul Hearts while Keys to the Kingdom has full overcharge
