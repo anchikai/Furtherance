@@ -166,7 +166,7 @@ function HEART_RENOVATOR:ConsumeHeartCounter(player)
 				player_run_save.HeartRenovatorCounter = Mod:Clamp(player_run_save.HeartRenovatorCounter - 2, 0, HEART_RENOVATOR:GetMaxHeartCounter(player))
 				player:AddBrokenHearts(1)
 				Mod.SFXMan:Play(HEART_RENOVATOR.SFX_HEARTBEAT)
-				player:AddCacheFlags(CacheFlag.CACHE_RANGE)
+				player:AddCacheFlags(CacheFlag.CACHE_DAMAGE)
 				player:EvaluateItems()
 			end
 		elseif (data.HeartRenovatorFrameWindow or 0) > 0 then

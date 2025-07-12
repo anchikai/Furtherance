@@ -71,7 +71,7 @@
 	<active id="21" name="Book of Swiftness" description="Temporary speed up" gfx="book_of_swiftness.png" maxcharges="3" cache="speed" quality="2" craftquality="2" tags="book offensive" />
 	<active id="22" name="Book of Ambit" description="Temporary range up" gfx="book_of_ambit.png" maxcharges="4" cache="range shotspeed tearflag" quality="2" craftquality="2" tags="book offensive" />
 	<active id="25" name="Plug N' Play" description="Comes with 1000 games!" gfx="plug_n_play.png" maxcharges="6" quality="0" craftquality="0" tags="nocantrip offensive" /> <!-- Concept by Freg! -->
-	<active id="29" name="Heart Renovator" description="Eternal triumph" gfx="heart_renovator.png" achievement="Heart Renovator" maxcharges="3" cache="damage range" quality="3" craftquality="3" tags="nolostbr nocantrip" />
+	<active id="29" name="Heart Renovator" description="Eternal triumph" gfx="heart_renovator.png" achievement="Heart Renovator" maxcharges="3" cache="damage" quality="3" craftquality="3" tags="nolostbr nocantrip" />
 	<active id="33" name="Shattered Heart" description="Eternal sorrow" gfx="shattered_heart.png" achievement="Shattered Heart" chargetype="timed" maxcharges="300" quality="2" craftquality="2" tags="nolostbr nocantrip" />
 	<active id="34" name="Keys to the Kingdom" description="Strength in salvation" gfx="keys_to_the_kingdom.png" achievement="Keys to the Kingdom" maxcharges="6" chargetype="special" quality="4" craftquality="4" tags="angel" />
 	<active id="36" name="Muddled Cross" description="Change your perspective" gfx="muddled_cross.png" achievement="Muddled Cross" maxcharges="300" chargetype="special" quality="4" craftquality="4" cooldown="150" tags="offensive" customtag="nometronome" />
