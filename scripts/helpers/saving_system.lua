@@ -1,7 +1,3 @@
-local settings = Furtherance.SaveManager.DEFAULT_SAVE.file.settings
-settings.Debug = {
-	MonsterDexOverride = true
-}
 function Furtherance:GameSave()
 	return Furtherance.SaveManager.GetPersistentSave()
 end
