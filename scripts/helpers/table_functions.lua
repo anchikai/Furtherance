@@ -1,3 +1,5 @@
+local floor = Furtherance.math.floor
+
 ---Credit to Epiphany
 
 --- Adds contents of tab2 to tab1; returns tab1
@@ -360,8 +362,8 @@ function Furtherance:GetValueFromWeightedPool(pool, rng)
 	--Furtherance:DebugLog("Available Pools: ")
 	for num, value in ipairs(pool) do
 		local weight = GetWeight(value)
-		if weight == math.floor(weight) then
-			weight = math.floor(weight)
+		if weight == floor(weight) then
+			weight = floor(weight)
 		end
 		--Furtherance:DebugLog(num .. " With weight " .. weight)
 	end

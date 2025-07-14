@@ -2,6 +2,9 @@
 --Though I'm too proud of the code to just delete it, so it'll remain here
 
 local Mod = Furtherance
+local floor = Mod.math.floor
+local sqrt = Mod.math.sqrt
+local max = Mod.math.max
 
 local POLYDIPSIA = {}
 
@@ -11,7 +14,6 @@ POLYDIPSIA.ID = Isaac.GetItemIdByName("Polydipsia")
 
 POLYDIPSIA.CREEP_TIMEOUT = 90
 
-local floor = math.floor
 
 ---@param player EntityPlayer
 ---@param cacheFlag CacheFlag
@@ -31,7 +33,7 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, POLYDIPSIA.Stats, CacheFlag.CACH
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, POLYDIPSIA.Stats, CacheFlag.CACHE_RANGE)
 
 function POLYDIPSIA:UpdateCreepSize(creep, newSize)
-	local creepSize = math.sqrt(newSize / 10)
+	local creepSize = sqrt(newSize / 10)
 	creep.SpriteScale = Vector(creepSize, creepSize)
 	creep.Size = (((creepSize * 12.5) ^ 1.75) / (newSize * 0.25))
 end
@@ -96,7 +98,7 @@ function POLYDIPSIA:SpawnPolydipsiaCreep(player, ent, enemyPos)
 			data.PolydipsiaPenalty = (data.PolydipsiaPenalty or 0)
 			existingCreep.Timeout = Mod:Clamp(existingCreep.Timeout + 30 - data.PolydipsiaPenalty, 0,
 				POLYDIPSIA.CREEP_TIMEOUT)
-			data.PolydipsiaPenalty = math.max(0, data.PolydipsiaPenalty + 5)
+			data.PolydipsiaPenalty = max(0, data.PolydipsiaPenalty + 5)
 		end
 	end
 	return creep

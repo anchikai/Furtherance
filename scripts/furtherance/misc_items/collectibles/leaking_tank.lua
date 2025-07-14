@@ -1,4 +1,5 @@
 local Mod = Furtherance
+local max = Mod.math.max
 
 local LEAKING_TANK = {}
 
@@ -9,7 +10,6 @@ LEAKING_TANK.ID = Isaac.GetItemIdByName("Leaking Tank")
 LEAKING_TANK.MAX_EMPTY_HEALTH_PROC = 12 --6 hearts, 2 units = 1 heart
 LEAKING_TANK.MINIMUM_CHANCE = 0.16
 
-local max = math.max
 
 ---@param player EntityPlayer
 function LEAKING_TANK:Leaking(player)

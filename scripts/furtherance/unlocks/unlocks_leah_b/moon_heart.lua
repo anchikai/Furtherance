@@ -1,4 +1,5 @@
 local Mod = Furtherance
+local ceil = Mod.math.ceil
 
 local MOON_HEART = {}
 
@@ -85,7 +86,7 @@ function MOON_HEART:AddExtraLuna(player)
 		and player:HasCollectible(CollectibleType.COLLECTIBLE_LUNA)
 	then
 		if data.MoonHeartLunaTrack < player:GetEffects():GetNullEffectNum(NullItemID.ID_LUNA) then
-			player:GetEffects():AddNullEffect(NullItemID.ID_LUNA, true, math.ceil(MOON_HEART:GetMoonHearts(player) / 2))
+			player:GetEffects():AddNullEffect(NullItemID.ID_LUNA, true, ceil(MOON_HEART:GetMoonHearts(player) / 2))
 		end
 		data.MoonHeartLunaTrack = player:GetEffects():GetNullEffectNum(NullItemID.ID_LUNA)
 	end
@@ -143,7 +144,7 @@ function MOON_HEART:SpawnLunarLight()
 		local floor_save = Mod:FloorSave()
 		local allMoonHearts = 0
 		Mod.Foreach.Player(function(player)
-			allMoonHearts = allMoonHearts + math.ceil(MOON_HEART:GetMoonHearts(player) / 2)
+			allMoonHearts = allMoonHearts + ceil(MOON_HEART:GetMoonHearts(player) / 2)
 		end)
 		Mod:DebugLog("Total moon hearts: " .. allMoonHearts)
 		Mod:DebugLog("Activated moonlights: " .. floor_save.ActivatedMoonlights)

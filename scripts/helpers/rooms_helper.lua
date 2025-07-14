@@ -1,3 +1,5 @@
+local floor = Furtherance.math.floor
+
 function Furtherance:GetRoomDesc()
 	return Furtherance.Level():GetCurrentRoomDesc()
 end
@@ -40,7 +42,7 @@ function Furtherance:CalculateStageTypeRepentance(stage)
 	end
 	local seeds = Furtherance.Game:GetSeeds()
 	local stageSeed = seeds:GetStageSeed(stage)
-	local halfStageSeed = math.floor(stageSeed / 2)
+	local halfStageSeed = floor(stageSeed / 2)
 
 	if halfStageSeed % 2 == 0 then
 		return StageType.STAGETYPE_REPENTANCE_B

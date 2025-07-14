@@ -1,3 +1,7 @@
+local abs = Furtherance.math.abs
+local max = Furtherance.math.max
+local floor = Furtherance.math.floor
+
 Furtherance.RandomRNG = RNG()
 Furtherance.RandomRNG:SetSeed(Random() + 1)
 
@@ -96,7 +100,7 @@ end
 
 ---Exists so that random will never have 0 for a seed, which would otherwise crash the game
 function Furtherance:Random()
-	return math.max(Random(), 1)
+	return max(Random(), 1)
 end
 
 ---@param vec Vector
@@ -119,8 +123,8 @@ function Furtherance:GetRoundedDirection(vec)
 	local closestAngle
 	local closestSubtraction
 	for _, degree in ipairs(degrees) do
-		if not closestAngle or math.abs(angle - degree) < closestSubtraction then
-			closestSubtraction = math.abs(angle - degree)
+		if not closestAngle or abs(angle - degree) < closestSubtraction then
+			closestSubtraction = abs(angle - degree)
 			closestAngle = degree
 		end
 	end
@@ -147,7 +151,7 @@ end
 function Furtherance:Round(num, dp)
 	dp = dp or 2
 	local mult = 10 ^ dp
-	return math.floor(num * mult + 0.5) / mult
+	return floor(num * mult + 0.5) / mult
 end
 
 ---Takes two 2d vectors and checks them to see if they are equal
@@ -160,5 +164,5 @@ end
 
 ---@param num number
 function Furtherance:FlattenFloatValue(num)
-	return math.floor(num) == num and math.floor(num) or num
+	return floor(num) == num and floor(num) or num
 end

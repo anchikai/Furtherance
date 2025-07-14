@@ -1,3 +1,6 @@
+local floor = Furtherance.math.floor
+local max = Furtherance.math.max
+
 ---Will attempt to find the player using the attached Entity, EntityRef, or EntityPtr.
 ---Will return if its a player, the player's familiar, or loop again if it has a SpawnerEntity
 ---@param ent Entity | EntityRef | EntityPtr
@@ -122,7 +125,7 @@ function Furtherance:GetPlayerRealSoulHeartsCount(player, ignoreMods)
 	local blackMask = player:GetBlackHearts()
 
 	for i = 1, soulHearts do
-		local bit = 2 ^ math.floor((i - 1) / 2)
+		local bit = 2 ^ floor((i - 1) / 2)
 		if blackMask | bit == blackMask then
 			blackCount = blackCount + 1
 		end
@@ -145,7 +148,7 @@ function Furtherance:GetPlayerRealBlackHeartsCount(player, ignoreMods)
 	local blackMask = player:GetBlackHearts()
 
 	for i = 1, soulHearts do
-		local bit = 2 ^ math.floor((i - 1) / 2)
+		local bit = 2 ^ floor((i - 1) / 2)
 		if blackMask | bit == blackMask then
 			blackCount = blackCount + 1
 		end
@@ -398,7 +401,7 @@ end
 
 ---@param player EntityPlayer
 function Furtherance:GetLaserRange(player)
-	return 60 + math.max(0, player.TearRange - 112) * 0.25
+	return 60 + max(0, player.TearRange - 112) * 0.25
 end
 
 ---@param player EntityPlayer

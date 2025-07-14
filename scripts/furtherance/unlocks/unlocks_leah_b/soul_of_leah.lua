@@ -1,6 +1,6 @@
-local floor = math.floor
-local min = math.min
 local Mod = Furtherance
+local floor = Mod.math.floor
+local min = Mod.math.min
 
 local SOUL_OF_LEAH = {}
 

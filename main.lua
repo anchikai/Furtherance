@@ -34,6 +34,20 @@ end)
 
 Furtherance.RANGE_BASE_MULT = 40
 
+---A little optimization for storing the variables locally as opposed to calling upon them each time
+Furtherance.math = {
+	ceil = math.ceil,
+	floor = math.floor,
+	max = math.max,
+	min = math.min,
+	abs = math.abs,
+	log = math.log,
+	sin = math.sin,
+	sqrt = math.sqrt,
+	cos = math.cos,
+	rad = math.rad
+}
+
 Furtherance.REPLACER_EFFECT = Isaac.GetEntityVariantByName("Furtherance PRE_ENTITY_SPAWN Replacement")
 
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, function(_, effect)

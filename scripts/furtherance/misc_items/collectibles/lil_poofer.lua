@@ -1,5 +1,5 @@
-local floor = math.floor
 local Mod = Furtherance
+local floor = Mod.math.floor
 
 local LIL_POOFER = {}
 

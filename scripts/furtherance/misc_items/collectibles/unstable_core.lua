@@ -1,4 +1,6 @@
 local Mod = Furtherance
+local ceil = Mod.math.ceil
+local max = Mod.math.max
 
 local UNSTABLE_CORE = {}
 
@@ -9,8 +11,6 @@ UNSTABLE_CORE.ID = Isaac.GetItemIdByName("Unstable Core")
 UNSTABLE_CORE.RADIUS = 66
 UNSTABLE_CORE.DEFAULT_DURATION = 90
 local TECH_SWORD_TEAR_POOF_SUBTYPE = 23
-local ceil = math.ceil
-local max = math.max
 
 ---@param player EntityPlayer
 ---@param flags UseFlag

@@ -1,5 +1,6 @@
 --Full credit to Epiphany
 local Mod = Furtherance
+local min = Mod.math.min
 
 -- Removes given pedestal and tries to start an ambush.
 ---@function
@@ -84,7 +85,7 @@ function Furtherance:PickupShopKill(player, pickup, sound)
 		local pickupposition = pickup.Position
 		local room_save = Mod:RoomSave()
 		local tax = room_save[tostring(pickup.ShopItemId)] or 1
-		local pickupprice = (pickup.Price > 0 and pickup.Price < 99) and math.min(99, (5 + ((tax * (tax + 1)) / 2)))
+		local pickupprice = (pickup.Price > 0 and pickup.Price < 99) and min(99, (5 + ((tax * (tax + 1)) / 2)))
 			or pickup.Price
 		room_save[tostring(pickup.ShopItemId)] = tax + 1
 		local pickupsubtype = pickup.SubType

@@ -1,3 +1,6 @@
+local log = Furtherance.math.log
+local sqrt = Furtherance.math.sqrt
+
 ---@param owner EntityPlayer | EntityFamiliar
 function Furtherance:GetWeaponOwnerDamageMult(owner)
 	local damageMult = 1
@@ -101,10 +104,10 @@ function Furtherance:TearDamageToScale(tear)
 
 	if baseScale > 1.0 then
 		-- Reduces scaling rate, so for example 2.0 scale is actually ~x1.41, not x2
-		baseScale = math.log(baseScale) + 1.0
+		baseScale = log(baseScale) + 1.0
 	end
 
-	local scaleWithDamage = (math.sqrt(tear.CollisionDamage) * 0.23 + baseScale * 0.55 + tear.CollisionDamage * 0.01)
+	local scaleWithDamage = (sqrt(tear.CollisionDamage) * 0.23 + baseScale * 0.55 + tear.CollisionDamage * 0.01)
 
 	if tear:HasTearFlags(TearFlags.TEAR_EXPLOSIVE) then
 		-- Ipecac moment

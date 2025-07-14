@@ -1,6 +1,7 @@
 --#region Variables
 
 local Mod = Furtherance
+local min = Mod.math.min
 
 local ESCORT_BEGGAR = {}
 
@@ -331,7 +332,7 @@ function ESCORT_BEGGAR:ThrowUpdate(familiar)
 	elseif offset < BEGGAR_POSITION_OFFSET.Y then
 		--Yes this is a quadratic equation. Necessary? Probably not. Did I wanna do it anyways? Yeah
 		data.EscortThrowLifetime = data.EscortThrowLifetime + 1
-		familiar.PositionOffset.Y = math.min(BEGGAR_POSITION_OFFSET.Y, (1 / 3) * data.EscortThrowLifetime ^ 2 - 40)
+		familiar.PositionOffset.Y = min(BEGGAR_POSITION_OFFSET.Y, (1 / 3) * data.EscortThrowLifetime ^ 2 - 40)
 		--The player can catch the beggar mid-air which resets the position offset for some reason?
 	elseif not ESCORT_BEGGAR:IsHeldByPlayer(familiar) then
 		ESCORT_BEGGAR:OnLand(familiar)

@@ -1,4 +1,5 @@
 local Mod = Furtherance
+local min = Mod.math.min
 
 local PILLAR_OF_CLOUDS = {}
 
@@ -220,7 +221,7 @@ function PILLAR_OF_CLOUDS:ChangeRooms(player)
 			--Credit to FF for this clean code to push back the player
 			local clampedPos = room:GetClampedPosition(player.Position, -40)
 			local distance = player.Position:Distance(clampedPos)
-			player.Velocity = player.Velocity + (clampedPos - player.Position):Resized(math.min(10, distance))
+			player.Velocity = player.Velocity + (clampedPos - player.Position):Resized(min(10, distance))
 			player.Position = clampedPos + (player.Position - clampedPos)
 		end
 	end

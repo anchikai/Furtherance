@@ -1,4 +1,5 @@
 local Mod = Furtherance
+local max = Mod.math.max
 
 local HOLY_HEART = {}
 
@@ -21,7 +22,7 @@ function HOLY_HEART:CollectHeart(pickup, collider)
 		and Mod:CanPlayerBuyShopItem(player, pickup)
 	then
 		local rng = player:GetTrinketRNG(HOLY_HEART.ID)
-		local mantleChance = player:GetTrinketMultiplier(HOLY_HEART.ID) > 1 and 1 or math.max((Mod.HeartAmount[pickup.SubType] or 2) / 2)
+		local mantleChance = player:GetTrinketMultiplier(HOLY_HEART.ID) > 1 and 1 or max((Mod.HeartAmount[pickup.SubType] or 2) / 2)
 		local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.HOLY_HEART_GET_MANTLE_CHANCE, pickup.SubType, pickup, player, mantleChance)
 		if result and type(result) == "number" then
 			mantleChance = result

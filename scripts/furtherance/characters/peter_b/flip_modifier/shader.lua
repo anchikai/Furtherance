@@ -1,7 +1,7 @@
 local Mod = Furtherance
 local MUDDLED_CROSS = Mod.Item.MUDDLED_CROSS
 local FLIP = Mod.Character.PETER_B.FLIP
-local floor = math.floor
+local floor = Mod.math.floor
 
 local FLIP_SHADER = {}
 

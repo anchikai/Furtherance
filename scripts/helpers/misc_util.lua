@@ -1,3 +1,6 @@
+local floor = Furtherance.math.floor
+local ceil = Furtherance.math.ceil
+
 ---@param ent1 Entity
 ---@param ent2 Entity
 function Furtherance:IsSameEntity(ent1, ent2)
@@ -90,7 +93,7 @@ function Furtherance:IsBrimLaser(laser)
 end
 
 function Furtherance:GetScreenCenter()
-	return Vector(math.floor(Isaac.GetScreenWidth() / 2), math.floor(Isaac.GetScreenHeight() / 2))
+	return Vector(floor(Isaac.GetScreenWidth() / 2), floor(Isaac.GetScreenHeight() / 2))
 end
 
 ---@param sprite Sprite
@@ -209,7 +212,7 @@ function Furtherance:RoomCheckLineEx(pos1, pos2, lineCheckMode, gridPath, ignore
 			if gridEnt then break end
 			findGridPos = findGridPos + direction
 		end
-		local epicPosIfObstructed = Vector(math.ceil(findGridPos.X), math.ceil(findGridPos.Y))
+		local epicPosIfObstructed = Vector(ceil(findGridPos.X), ceil(findGridPos.Y))
 		return false, epicPosIfObstructed
 	else
 		return true, pos2
@@ -339,7 +342,7 @@ end
 ---@param tear EntityTear
 ---@param player EntityPlayer
 function Furtherance:ShouldUpdateLudo(tear, player)
-	return math.floor(tear.FrameCount / player.MaxFireDelay) ~= math.floor((tear.FrameCount - 1) / player.MaxFireDelay)
+	return floor(tear.FrameCount / player.MaxFireDelay) ~= floor((tear.FrameCount - 1) / player.MaxFireDelay)
 end
 
 ---@param ent Entity

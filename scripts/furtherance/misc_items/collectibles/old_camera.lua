@@ -1,4 +1,6 @@
 local Mod = Furtherance
+local max = Mod.math.max
+local floor = Mod.math.floor
 
 local OLD_CAMERA = {}
 
@@ -43,7 +45,7 @@ function OLD_CAMERA:RenderFlashbang()
 		WHITE_SQUARE.Color.A = OLD_CAMERA.FLASHBANG_TIMER / MAX_FLASHBANG
 		WHITE_SQUARE:Render(Vector.Zero)
 
-		OLD_CAMERA.FLASHBANG_TIMER = math.max(OLD_CAMERA.FLASHBANG_TIMER - 1, 0)
+		OLD_CAMERA.FLASHBANG_TIMER = max(OLD_CAMERA.FLASHBANG_TIMER - 1, 0)
 	end
 end
 
@@ -67,7 +69,7 @@ function OLD_CAMERA:OnUse(itemID, rng, player, flags, slot)
 	if totalHitPoints == 0 then
 		return true
 	end
-	local photoTier = Mod:Clamp(math.floor(totalHitPoints / OLD_CAMERA.HIT_POINT_THRESHOLD), 1, 3)
+	local photoTier = Mod:Clamp(floor(totalHitPoints / OLD_CAMERA.HIT_POINT_THRESHOLD), 1, 3)
 	local pos = Mod.Room():FindFreePickupSpawnPosition(player.Position, 40)
 	Mod.Spawn.Pickup(PickupVariant.PICKUP_TAROTCARD, OLD_CAMERA.PHOTO_IDs[photoTier], pos, Vector.Zero, player, rng:Next())
 	return true

@@ -1,3 +1,5 @@
+local cos = Furtherance.math.cos
+
 ---@param ent Entity?
 function Furtherance:IsValidEnemyTarget(ent)
 	return ent
@@ -67,7 +69,7 @@ function Furtherance:GetClosestEnemyInView(pos, range, dir, fov, occludeObstacle
 
 		local dirToEnemy = (npc.Position - pos)
 		local dotProduct = dirToEnemy:Normalized():Dot(dir:Normalized()) -- equal to cos(angleDiff)
-		if dotProduct < math.cos(math.rad(fov)) then goto continue end
+		if dotProduct < cos(rad(fov)) then goto continue end
 
 		local threshold = occludeObstacles and 1000 or 5000
 		local noOcclude = Furtherance.Room():CheckLine(pos, ent.Position, 3, threshold, occludeWalls)

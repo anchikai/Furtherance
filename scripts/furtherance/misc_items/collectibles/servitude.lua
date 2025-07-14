@@ -1,6 +1,7 @@
 --#region Variables
 
 local Mod = Furtherance
+local max = Mod.math.max
 
 local SERVITUDE = {}
 
@@ -134,7 +135,7 @@ function SERVITUDE:OnRoomClear(player)
 		if itemDesc.VarData == 0 then
 			player:AddActiveCharge(chargeAmount, slot, true, false, true)
 		else
-			local newCharge = math.max(0, player:GetActiveCharge(slot) - chargeAmount)
+			local newCharge = max(0, player:GetActiveCharge(slot) - chargeAmount)
 			player:SetActiveCharge(newCharge, slot)
 			Mod.SFXMan:Play(SoundEffect.SOUND_BEEP, 1, 2, false, 0.75)
 			Mod.HUD:FlashChargeBar(player, slot)

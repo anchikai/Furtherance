@@ -1,6 +1,7 @@
 --#region Variables
 
 local Mod = Furtherance
+local min = Mod.math.min
 
 local POLARIS = {}
 
@@ -268,7 +269,7 @@ Mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, POLARIS.FamiliarUpdate, POLARIS
 function POLARIS:OnFamiliarCache(player)
 	local rng = player:GetCollectibleRNG(POLARIS.ID)
 	rng:Next()
-	local numFamiliars = math.min(1, player:GetCollectibleNum(POLARIS.ID) + player:GetEffects():GetCollectibleEffectNum(POLARIS.ID))
+	local numFamiliars = min(1, player:GetCollectibleNum(POLARIS.ID) + player:GetEffects():GetCollectibleEffectNum(POLARIS.ID))
 	player:CheckFamiliar(POLARIS.FAMILIAR, numFamiliars, rng, Mod.ItemConfig:GetCollectible(POLARIS.ID))
 end
 

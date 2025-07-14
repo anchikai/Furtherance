@@ -1,4 +1,5 @@
 local Mod = Furtherance
+local min = Mod.math.min
 
 local EPITAPH = {}
 
@@ -345,8 +346,7 @@ local MAX_ENEMIES = 8
 local BLACK_BONY_CHANCE = 0.25
 local BIG_BONY_CHANCE = 0.25
 local BONE_FLY_CHANCE = 0.25
-local REVENANT_CHANCE = 0.01
-local min = math.min
+local REVENANT_CHANCE = 0.0
 
 ---@param npc EntityNPC
 local function canBecomeBigBony(npc)

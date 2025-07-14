@@ -1,10 +1,10 @@
 --By TheCatWizard
 local game = Game()
 local Spawn = {}
-
+local max = math.max
 
 local function randomSeed()
-	return math.max(Random(), 1) -- seed being 0 causes a crash
+	return max(Random(), 1) -- seed being 0 causes a crash
 end
 
 --#region Pickups
@@ -264,7 +264,7 @@ function Spawn.DustClouds(position, amount, velocity, spawner, seed)
 	for _ = 1, amount or 5 do
 		local cloud = spawnEffect(EffectVariant.DUST_CLOUD, 0, position, velocity or RandomVector():Resized(randomNum(0, 4) + randomNum()), spawner, seed)
 		cloud:SetTimeout(randomNum(15, 25))
-		cloud.Color.A = math.max(0.3, randomNum())
+		cloud.Color.A = max(0.3, randomNum())
 		clouds[#clouds + 1] = cloud
 	end
 	return clouds

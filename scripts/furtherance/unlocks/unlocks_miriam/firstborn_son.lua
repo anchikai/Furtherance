@@ -1,6 +1,7 @@
 --#region Variables
 
 local Mod = Furtherance
+local min = Mod.math.min
 
 local FIRSTBORN_SON = {}
 
@@ -278,7 +279,7 @@ Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, FIRSTBORN_SON.OnFamiliarInit, FIR
 function FIRSTBORN_SON:OnFamiliarCache(player)
 	local rng = player:GetCollectibleRNG(FIRSTBORN_SON.ID)
 	rng:Next()
-	local numFamiliars = math.min(1,
+	local numFamiliars = min(1,
 		player:GetCollectibleNum(FIRSTBORN_SON.ID) + player:GetEffects():GetCollectibleEffectNum(FIRSTBORN_SON.ID))
 	player:CheckFamiliar(FIRSTBORN_SON.FAMILIAR, numFamiliars, rng, Mod.ItemConfig:GetCollectible(FIRSTBORN_SON.ID))
 end

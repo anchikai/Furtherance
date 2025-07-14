@@ -1,4 +1,3 @@
-local min = math.min
 local SEL = StatusEffectLibrary
 local Mod = Furtherance
 

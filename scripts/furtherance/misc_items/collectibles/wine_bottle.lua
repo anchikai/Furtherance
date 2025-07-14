@@ -1,4 +1,5 @@
 local Mod = Furtherance
+local floor = Mod.math.floor
 
 local WINE_BOTTLE = {}
 
@@ -40,7 +41,7 @@ function WINE_BOTTLE:CorkTear(dir, amount, owner, weapon)
 		local data = Mod:GetData(cork)
 
 		--Tear size is normally 1-13 but cork only has 1-6, so half it and clamp it
-		local sizeAnim = tostring(Mod:Clamp(math.floor(tonumber(tearAnim) / 2), 1, 6))
+		local sizeAnim = tostring(Mod:Clamp(floor(tonumber(tearAnim) / 2), 1, 6))
 		if tonumber(sizeAnim) > 6 then
 			sizeAnim = "6"
 		end

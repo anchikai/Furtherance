@@ -1,9 +1,10 @@
 --#region Variables
 
 local Mod = Furtherance
-local sin = math.sin
-local ceil = math.ceil
-local min = math.min
+local sin = Mod.math.sin
+local ceil = Mod.math.ceil
+local min = Mod.math.min
+local floor = Mod.math.floor
 
 local LEAH_B = {}
 
@@ -269,7 +270,7 @@ HudHelper.RegisterHUDElement({
 			offset = ceil(allHearts / 2)
 		end
 		local pos = Vector(position.X + (offset % maxColumns) * 12,
-			position.Y + math.floor(offset / maxColumns) * 10)
+			position.Y + floor(offset / maxColumns) * 10)
 		leahHeartHUD:SetFrame("BrokenHeart", 0)
 		leahHeartHUD.Color = Color(0, 0, 0, alpha / 2 + 0.25, 0.5, 0, 0)
 		leahHeartHUD:Render(pos)
@@ -294,7 +295,7 @@ HudHelper.RegisterHUDElement({
 			offset = ceil(allHearts / 2) - 1
 		end
 		local pos = Vector(position.X + (offset % maxColumns) * 12,
-			position.Y + math.floor(offset / maxColumns) * 10)
+			position.Y + floor(offset / maxColumns) * 10)
 		leahHeartHUD:SetFrame("EmptyHeart", 0)
 		leahHeartHUD.Color = Color(1, 1, 1, 1, 0.25)
 		local amountTillHeal = (Mod:GetData(player).LeahBBrokenDamage / LEAH_B:GetDamageRequirement()) * 16

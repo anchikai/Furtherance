@@ -1,5 +1,5 @@
 local Mod = Furtherance
-local floor = math.floor
+local floor = Mod.math.floor
 
 local LITTLE_RAINCOAT = {}
 

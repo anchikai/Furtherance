@@ -1,4 +1,5 @@
 local Mod = Furtherance
+local max = Mod.math.max
 
 local PHARAOH_CAT = {}
 
@@ -11,7 +12,7 @@ PHARAOH_CAT.RADIUS = 100
 
 function PHARAOH_CAT:GetRadius()
 	local numCat = PlayerManager.GetNumCollectibles(PHARAOH_CAT.ID)
-	local radius = PHARAOH_CAT.RADIUS + math.max(0, (PHARAOH_CAT.RADIUS / 2) * (numCat - 1))
+	local radius = PHARAOH_CAT.RADIUS + max(0, (PHARAOH_CAT.RADIUS / 2) * (numCat - 1))
 	return radius
 end
 
