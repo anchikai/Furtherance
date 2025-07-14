@@ -71,6 +71,7 @@ LOVE_TELLER_BABY.PlayerTypeBabies = {
 				and familiar:GetDropRNG():RandomFloat() <= LOVE_TELLER_BABY.EFFECT_CHANCE
 			then
 				effects:AddTrinketEffect(TrinketType.TRINKET_AZAZELS_STUMP)
+				Mod:GetData(familiar).GlitchBabySubtype = nil
 			end
 		end,
 		OnFire = function(tear, familiar)
@@ -189,6 +190,7 @@ LOVE_TELLER_BABY.PlayerTypeBabies = {
 			local isSoul = data.BoneBabyIsSoul
 			if familiar:GetDropRNG():RandomFloat() <= LOVE_TELLER_BABY.EFFECT_CHANCE then
 				isSoul = not isSoul
+				data.GlitchBabySubtype = nil
 			end
 			if data.BoneBabyIsSoul ~= isSoul then
 				data.BoneBabyIsSoul = isSoul
@@ -212,6 +214,7 @@ LOVE_TELLER_BABY.PlayerTypeBabies = {
 				local cz = player:GetColor():GetColorize()
 				tear:SetColor(Color(c.R, c.G, c.B, 0.5, c.RO, c.GO, c.BO, cz.R, cz.G, cz.B, cz.A), -1, 1, false, true)
 				tear:AddTearFlags(TearFlags.TEAR_SPECTRAL)
+				familiar.FireCooldown = familiar.FireCooldown - 5
 			end
 		end
 	},
@@ -256,8 +259,7 @@ LOVE_TELLER_BABY.PlayerTypeBabies = {
 	}
 }
 
-LOVE_TELLER_BABY.PlayerTypeBabies[PlayerType.PLAYER_THESOUL] = LOVE_TELLER_BABY.PlayerTypeBabies
-	[PlayerType.PLAYER_THEFORGOTTEN]
+LOVE_TELLER_BABY.PlayerTypeBabies[PlayerType.PLAYER_THESOUL] = LOVE_TELLER_BABY.PlayerTypeBabies[PlayerType.PLAYER_THEFORGOTTEN]
 
 --#endregion
 
@@ -438,7 +440,7 @@ function LOVE_TELLER_BABY:RenderDebug(familiar)
 		1, 1)
 	Isaac.RenderScaledText("Passive countdown: " .. (data.LoveTellerPassiveCountdown or "N/A"), x, p.Y - 25, 0.5, 0.5, 1,
 		1, 1, 1)
-	Isaac.RenderScaledText("ActiveHold: " .. (tostring(data.LoveTellerActiveWait) or "N/A"), x, p.Y - 20, 0.5, 0.5, 1, 1,
+	Isaac.RenderScaledText("ActiveHold: " .. (data.LoveTellerActiveWait or "N/A"), x, p.Y - 20, 0.5, 0.5, 1, 1,
 		1, 1)
 	if familiar.SubType == PlayerType.PLAYER_EDEN then
 		Isaac.RenderScaledText("Glitch Subtype: " .. (data.GlitchBabySubtype or "N/A"), x, p.Y - 15, 0.5, 0.5, 1, 1, 1, 1)

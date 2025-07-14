@@ -1,4 +1,8 @@
 local Mod = Furtherance
+local min = Mod.math.min
+
+--Max Red Stew effect
+local THREE_MINUTES = 5400
 
 ---@param familiar EntityFamiliar
 local function checkExistingStew(_, familiar)
@@ -16,7 +20,7 @@ local function minimizeRedStew(_, familiar)
 	local player = familiar.Player
 	local data = Mod:GetData(familiar)
 	if data.EsauBabyHadStew then
-		player:SetRedStewBonusDuration(math.min(5400,
+		player:SetRedStewBonusDuration(min(THREE_MINUTES,
 			player:GetRedStewBonusDuration() + Mod.Slot.LOVE_TELLER.BABY.EFFECT_COOLDOWN))
 	else
 		player:SetRedStewBonusDuration(Mod.Slot.LOVE_TELLER.BABY.EFFECT_COOLDOWN)

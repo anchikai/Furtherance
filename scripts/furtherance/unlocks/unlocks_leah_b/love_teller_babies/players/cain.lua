@@ -39,6 +39,7 @@ local function chestCollision(_, pickup, collider)
 			and cainLoveTellerBaby:GetDropRNG():RandomFloat() <= LOCK_PICK_CHANCE * numBabies
 		then
 			player:AddKeys(1)
+			Mod:GetData(cainLoveTellerBaby).GlitchBabySubtype = nil
 		end
 	end)
 end

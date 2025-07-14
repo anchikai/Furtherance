@@ -175,6 +175,15 @@ function LOVE_TELLER:GetMatchMaker(playerType, result)
 		mainPlayerType = LOVE_TELLER.ParentPlayerTypes[nonTainted:GetPlayerType()] or nonTainted:GetPlayerType()
 	end
 	local matchmakingList = LOVE_TELLER.Matchmaking[mainPlayerType]
+	if not matchmakingList then
+		local run_save = Mod:RunSave()
+		run_save.ModdedLoveTeller = run_save.ModdedLoveTeller or {}
+		if not run_save.ModdedLoveTeller[playerType] then
+			local allPlayerTypes = Mod:GetKeys(LOVE_TELLER.Matchmaking)
+			run_save.ModdedLoveTeller[playerType] = LOVE_TELLER.Matchmaking[allPlayerTypes[Mod.GENERIC_RNG:RandomInt(#allPlayerTypes) + 1]]
+		end
+		matchmakingList = run_save.ModdedLoveTeller[playerType]
+	end
 	if result == 0 then
 		---Grab a list of all characters that aren't compatible/true love and pick a random one
 		local avoidTypes = Mod:Set({
@@ -290,7 +299,7 @@ function LOVE_TELLER:OnSlotUpdate(slot)
 			slot:SetState(Mod.SlotState.IDLE)
 		elseif num == "1" then
 			for _ = 1, 2 do
-				Mod.Spawn.Pickup(PickupVariant.PICKUP_HEART, NullPickupSubType.ANY, slot.Position,
+				Mod.Spawn.Heart(NullPickupSubType.ANY, slot.Position,
 				EntityPickup.GetRandomPickupVelocity(slot.Position, Mod.RandomRNG, 1), slot, data.SlotRNG:Next())
 			end
 			Mod.SFXMan:Play(SoundEffect.SOUND_SLOTSPAWN)
