@@ -664,15 +664,13 @@ end
 function SaveManager.Utility.AddDefaultFloorData(dataType, data, noHourglass)
 	addDefaultData(dataType, "floor", data, noHourglass)
 end
---[[
----Adds data that will be automatically added when the room data is first initialized. Lasts for the duration of the current floor, but save data is separated per-room
----@param dataType DefaultSaveKeys
----@param data table
----@param noHourglass? boolean @If true, will load data in a separate game save that is not affected by Glowing Hourglass.
-function SaveManager.Utility.AddDefaultRoomData(dataType, data, noHourglass)
-	addDefaultData(dataType, "room", data, noHourglass)
+
+---Deprecated! Please use `AddDefaultTempData` instead. Default data cannot support actual floor-lasting per-room saves
+---@deprecated
+function SaveManager.Utility.AddDefaultRoomData()
+	print(("[%s IsaacSaveManager] AddDefaultRoomData is deprecated! Please use AddDefaultTempData instead."):format(modReference.Name))
 end
- ]]
+
 ---Adds data that will be automatically added when the temp data is first initialized. Lasts for the duration of the current room, being reset once you exit the room
 ---@param dataType DefaultSaveKeys
 ---@param data table
