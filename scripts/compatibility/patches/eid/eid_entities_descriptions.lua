@@ -34,6 +34,15 @@ local modifiers = {
 							local icon = EID:GetPlayerIcon(iconPlayerType)
 							local lover = Mod.Slot.LOVE_TELLER:GetMatchMaker(playerType, 2)
 							local loverIcon = EID:GetPlayerIcon(lover)
+							local run_save = Mod:RunSave()
+							if run_save.ModdedLoveTeller and run_save.ModdedLoveTeller[tostring(playerType)] then
+								local loverName = EID:getPlayerName(lover)
+								local name = EID:getPlayerName(playerType)
+								local copy = run_save.ModdedLoveTeller[tostring(playerType)]
+								local lover2Name = EID:getPlayerName(copy)
+								local lover2Icon = EID:GetPlayerIcon(copy)
+								desc = desc .. icon .. " " .. name .. " copies " .. lover2Icon .. lover2Name .. " for this run#"
+							end
 							desc = desc .. icon .. " {{Heart}}" .. loverIcon .. " - " .. charList[lover] .. "#"
 							renderedPlayerTypes[playerType] = true
 						end

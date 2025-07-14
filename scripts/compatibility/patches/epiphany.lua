@@ -195,6 +195,12 @@ local function epiphanyPatch()
 		api:AddCollectibleToCainBagSynergy(generic_group, items_list)
 	end
 
+	for name, playerType in pairs(Epiphany.PlayerType) do
+		if PlayerType["PLAYER_".. name] then
+			Mod.Slot.LOVE_TELLER.Matchmaking[playerType] = Mod.Slot.LOVE_TELLER.Matchmaking[PlayerType["PLAYER_".. name]]
+		end
+	end
+
 	--[[ Mod.Capsule.D9 = {
 		ID = Isaac.GetCardIdByName("Capsule D9"),
 		WEIGHT = 0.3,

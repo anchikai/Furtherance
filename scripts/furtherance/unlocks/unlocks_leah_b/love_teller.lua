@@ -178,11 +178,12 @@ function LOVE_TELLER:GetMatchMaker(playerType, result)
 	if not matchmakingList then
 		local run_save = Mod:RunSave()
 		run_save.ModdedLoveTeller = run_save.ModdedLoveTeller or {}
-		if not run_save.ModdedLoveTeller[playerType] then
+		local playerTypeStr = tostring(playerType)
+		if not run_save.ModdedLoveTeller[playerTypeStr] then
 			local allPlayerTypes = Mod:GetKeys(LOVE_TELLER.Matchmaking)
-			run_save.ModdedLoveTeller[playerType] = LOVE_TELLER.Matchmaking[allPlayerTypes[Mod.GENERIC_RNG:RandomInt(#allPlayerTypes) + 1]]
+			run_save.ModdedLoveTeller[playerTypeStr] = allPlayerTypes[Mod.GENERIC_RNG:RandomInt(#allPlayerTypes) + 1]
 		end
-		matchmakingList = run_save.ModdedLoveTeller[playerType]
+		matchmakingList = LOVE_TELLER.Matchmaking[run_save.ModdedLoveTeller[playerTypeStr]]
 	end
 	if result == 0 then
 		---Grab a list of all characters that aren't compatible/true love and pick a random one
