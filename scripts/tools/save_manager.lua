@@ -3,7 +3,7 @@
 
 local game = Game()
 local SaveManager = {}
-SaveManager.VERSION = "2.3.1"
+SaveManager.VERSION = "2.3.2"
 SaveManager.Utility = {}
 
 SaveManager.Debug = false
@@ -425,7 +425,7 @@ end
 ---@param source table
 function SaveManager.Utility.PatchSaveFile(deposit, source)
 	for i, v in pairs(source) do
-		if i == "roomSave" then goto continue end --No default room-specific saves.
+		if i == "room" then goto continue end --No default room-specific saves.
 		if SaveManager.Utility.IsDefaultSaveKey(i) then
 			SaveManager.Utility.PatchSaveFile(deposit, v)
 		elseif type(v) == "table" then
@@ -664,7 +664,7 @@ end
 function SaveManager.Utility.AddDefaultFloorData(dataType, data, noHourglass)
 	addDefaultData(dataType, "floor", data, noHourglass)
 end
-
+--[[
 ---Adds data that will be automatically added when the room data is first initialized. Lasts for the duration of the current floor, but save data is separated per-room
 ---@param dataType DefaultSaveKeys
 ---@param data table
@@ -672,7 +672,7 @@ end
 function SaveManager.Utility.AddDefaultRoomData(dataType, data, noHourglass)
 	addDefaultData(dataType, "room", data, noHourglass)
 end
-
+ ]]
 ---Adds data that will be automatically added when the temp data is first initialized. Lasts for the duration of the current room, being reset once you exit the room
 ---@param dataType DefaultSaveKeys
 ---@param data table
@@ -1215,13 +1215,7 @@ local function onEntityInit(_, ent)
 					end
 					-- Only creates data if it was filled with default data
 					if next(newData) ~= nil then
-						local finalSave = targetTable
-						if history[#history] == "room" then
-							local listIndex = SaveManager.Utility.GetListIndex()
-							finalSave[listIndex] = finalSave[listIndex] or {}
-							finalSave = finalSave[listIndex]
-						end
-						finalSave[saveIndex] = newData
+						targetTable[saveIndex] = newData
 						SaveManager.Utility.DebugLog("Default data copied for", saveIndex)
 					else
 						SaveManager.Utility.DebugLog("No default data found for", saveIndex)
