@@ -1,5 +1,5 @@
 v1.1.5
-- Fixed Polydipsia not being removed when changing from Miriam to another character
+- Fixed Polydipsia not being removed when changing from Miriam to another character mid-run
 
 v1.1.4
 - Updated Alturism's EID entry to specify you need to touch a beggar for the effect of the trinket
