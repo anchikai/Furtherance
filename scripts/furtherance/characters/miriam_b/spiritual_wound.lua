@@ -139,12 +139,10 @@ Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SPIRITUAL_WOUND.HandleFirin
 function SPIRITUAL_WOUND:RemoveInnateItems(player)
 	local data = Mod:GetData(player)
 	if data.IsMiriamB and not MIRIAM_B:IsMiriamB(player) then
-		local INNATE_MAP = Mod:Set(SPIRITUAL_WOUND.INNATE_COLLECTIBLES)
 		local spoofList = player:GetSpoofedCollectiblesList()
 
-		for _, spoof in pairs(spoofList) do
-			local itemID = spoof.CollectibleID
-			if INNATE_MAP[itemID] and spoof.AppendedCount > 0 then
+		for _, itemID in pairs(SPIRITUAL_WOUND.INNATE_COLLECTIBLES) do
+			if spoofList[itemID] and spoofList[itemID].AppendedCount > 0 then
 				player:AddInnateCollectible(itemID, -1)
 				local itemConfigItem = Mod.ItemConfig:GetCollectible(itemID)
 				if not player:HasCollectible(itemID, true, true) then
