@@ -389,6 +389,9 @@
 		<Item Name="Gong" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Dedal's Blueprint" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Lums" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+
+		<!-- Foks' Booster Pack -->
+		<Item Name="Ephemeral Torch" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
 
 	<!-- Foks' Booster Pack -->
