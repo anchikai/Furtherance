@@ -18,17 +18,68 @@ local function fiendFolioPatch()
 
 	--#region Adding stuff to lists
 
+	ff.AddItemsToErrorRoomPool({
+		Item.ZZZZOPTIONSZZZZ.ID,
+		Item.PLUG_N_PLAY.ID
+	})
+
+	ff.AddItemsToContrabandPool({
+		--Trafficked Organs
+		Item.LEAHS_HEART.ID,
+		Item.OWLS_EYE.ID,
+		Item.SEVERED_EAR.ID,
+		Item.CARDIOMYOPATHY.ID,
+		Item.COLD_HEARTED.ID,
+		Item.BLOOD_CYST.ID,
+
+		--Oddballs
+		Item.FIRSTBORN_SON.ID,
+		Item.LITTLE_RAINCOAT.ID,
+	})
+
+	ff.AddItemsToBlacksmithPool({
+		Item.KARETH.ID
+	})
+
+	ff.AddItemsToGlassChestCommonPool({
+		Item.POLYDIPSIA.ID,
+		Item.KERATOCONUS.ID
+	})
+	ff.AddItemsToGlassChestRarePool({
+		Item.TECH_IX.ID,
+	})
+
+	ff.AddTrinketsToRoboTellerPool({
+		Mod.Trinket.ALMAGEST_SCRAP.ID
+	})
+
 	ff.AddItemsToPennyTrinketPool({
 		Mod.Trinket.ABYSSAL_PENNY.ID,
 		Mod.Trinket.GLITCHED_PENNY.ID
 	})
 
+	ff.AddItemsToTortureCookieTrinketPool({
+		--On-hit trinkets
+		Mod.Trinket.ESCAPE_PLAN.ID,
+		Mod.Trinket.CRINGE.ID,
+		Mod.Trinket.WORMWOOD_LEAF.ID,
+		Mod.Trinket.NIL_NUM.ID,
+
+		--Evil trinkets
+		Mod.Trinket.LEVIATHANS_TENDRIL.ID,
+	})
+
+	ff.AddItemsToTechnologyPool({
+		Item.TECH_IX.ID,
+		Item.TECHNOLOGY_MINUS_1.ID
+	})
+
 	Mod:AppendTable(FiendFolio.ReferenceItems.Passives, {
-		{ ID = Mod.Item.LITTLE_RAINCOAT.ID, Reference = "Little Nightmares" }
+		{ ID = Item.LITTLE_RAINCOAT.ID, Reference = "Little Nightmares" }
 	})
 
 	Mod:AddToDictionary(ff.DadsBattery.BLACKLIST, Mod:Set({
-		Mod.Item.SERVITUDE.ID
+		Item.SERVITUDE.ID
 	}))
 
 	Mod.API:AddRottenAppleWormTrinket(ff.ITEM.TRINKET.FORTUNE_WORM)
@@ -69,9 +120,9 @@ local function fiendFolioPatch()
 	})
 
 	Mod:AddToDictionary(ff.PocketObjectMimicCharges, {
-		[Mod.Item.OLD_CAMERA.PHOTO_IDs[1]] = 4,
-		[Mod.Item.OLD_CAMERA.PHOTO_IDs[2]] = 8,
-		[Mod.Item.OLD_CAMERA.PHOTO_IDs[3]] = 12,
+		[Item.OLD_CAMERA.PHOTO_IDs[1]] = 4,
+		[Item.OLD_CAMERA.PHOTO_IDs[2]] = 8,
+		[Item.OLD_CAMERA.PHOTO_IDs[3]] = 12,
 	})
 
 	Mod:AddToDictionary(Mod.Character.PETER_B.FLIP.WHITELISTED_ENTITIES, Mod:Set({
@@ -99,7 +150,7 @@ local function fiendFolioPatch()
 
 	Mod:AddCallback(Mod.ModCallbacks.POST_RAPTURE_BOSS_KILL, removeGhostbuster, ff.FF.Ghostbuster.ID)
 
-	Mod:AppendTable(Mod.Item.KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS, {
+	Mod:AppendTable(Item.KEYS_TO_THE_KINGDOM.ENEMY_DEATH_SOUNDS, {
 		ff.Sounds.CacaDeath,
 		ff.Sounds.WarpZoneHurt,
 		ff.Sounds.WarpZoneDeath,
@@ -119,7 +170,7 @@ local function fiendFolioPatch()
 
 	local function killWhisperController(_, npc)
 		if npc.Variant == ff.FF.Whispers.Var and npc.SpawnerEntity and not npc.SpawnerEntity:IsDead() then
-			Mod.Item.KEYS_TO_THE_KINGDOM:RemoveBoss(npc.SpawnerEntity)
+			Item.KEYS_TO_THE_KINGDOM:RemoveBoss(npc.SpawnerEntity)
 		end
 	end
 
@@ -285,11 +336,11 @@ local function fiendFolioPatch()
 		end
 	end
 
-	Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, onGainRenovator, Mod.Item.HEART_RENOVATOR.ID)
+	Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, onGainRenovator, Item.HEART_RENOVATOR.ID)
 
 	local function onLoseRenovator(_, player)
 		local playerType = player:GetPlayerType()
-		if not player:HasCollectible(Mod.Item.HEART_RENOVATOR.ID)
+		if not player:HasCollectible(Item.HEART_RENOVATOR.ID)
 			and revertBlacklist[playerType]
 		then
 			ff.doubleTapCTRLBlacklist[playerType] = false
@@ -297,10 +348,10 @@ local function fiendFolioPatch()
 		end
 	end
 
-	Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, onLoseRenovator, Mod.Item.HEART_RENOVATOR.ID)
+	Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, onLoseRenovator, Item.HEART_RENOVATOR.ID)
 
 	local function onPlayerInit(_, player)
-		if player:HasCollectible(Mod.Item.HEART_RENOVATOR.ID) then
+		if player:HasCollectible(Item.HEART_RENOVATOR.ID) then
 			onGainRenovator(_, _, _, _, _, player)
 		else
 			onLoseRenovator(_, player)

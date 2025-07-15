@@ -390,4 +390,23 @@
 		<Item Name="Dedal's Blueprint" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 		<Item Name="Lums" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
 	</Pool>
+
+	<!-- Foks' Booster Pack -->
+	<Pool Name="groceryShop">
+		<Item Name="Brunch" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Coffee Break" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Crab Legs" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+	</Pool>
+
+	<!-- Hush's Item Pool -->
+	<Pool Name="blueWomb">
+		<Item Name="Book of Swiftness" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Chi Rho" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Cold Hearted" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Flux" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Iron" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Liberation" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Polydipsia" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+		<Item Name="Quarantine" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+	</Pool>
 </ItemPools>

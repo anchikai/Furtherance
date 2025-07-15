@@ -60,6 +60,7 @@ local patches = {
 	"pogforgooditems",
 	"punished",
 	"repentance_plus",
+	"reshaken",
 	"retribution",
 	"sheriff",
 	"stageapi",
