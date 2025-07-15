@@ -14,9 +14,12 @@ LOVE_TELLER.ParentPlayerTypes = {
 	[PlayerType.PLAYER_THESOUL] = PlayerType.PLAYER_THEFORGOTTEN
 }
 
+Mod.SaveManager.Utility.AddDefaultRunData(Mod.SaveManager.DefaultSaveKeys.GLOBAL, {ModdedLoveTeller = {}})
+
 local overlaySprite = Sprite("gfx/slot_love_teller.anm2", true)
 overlaySprite:Play("OverlayIcons")
 
+---@type {[PlayerType]: {TrueLove: PlayerType, Compatible: PlayerType[]}}
 LOVE_TELLER.Matchmaking = {
 	[PlayerType.PLAYER_ISAAC] = {
 		TrueLove = PlayerType.PLAYER_BETHANY,
@@ -162,6 +165,29 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_SLOT_INIT, LOVE_TELLER.OnSlotInit, LOVE_TELLER.ID)
 
+---@param player EntityPlayer
+function LOVE_TELLER:AssignNoModCompatOnInit(player)
+	local run_save = Mod:RunSave()
+	local playerType = player:GetPlayerType()
+	local playerTypeStr = tostring(playerType)
+	local mainPlayerType = LOVE_TELLER.ParentPlayerTypes[playerType] or playerType
+	local entityConfigPlayer = EntityConfig.GetPlayer(mainPlayerType)
+	---@cast entityConfigPlayer EntityConfigPlayer
+	local mainPlayerConfig = entityConfigPlayer
+	if mainPlayerConfig:IsTainted() then
+		local nonTainted = mainPlayerConfig:GetTaintedCounterpart()
+		---@cast nonTainted EntityConfigPlayer
+		mainPlayerType = LOVE_TELLER.ParentPlayerTypes[nonTainted:GetPlayerType()] or nonTainted:GetPlayerType()
+	end
+	local matchmakingList = LOVE_TELLER.Matchmaking[mainPlayerType]
+	if not matchmakingList and not run_save.ModdedLoveTeller[playerTypeStr] then
+		local allPlayerTypes = Mod:GetKeys(LOVE_TELLER.Matchmaking)
+		run_save.ModdedLoveTeller[playerTypeStr] = allPlayerTypes[Mod.GENERIC_RNG:RandomInt(#allPlayerTypes) + 1]
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, LOVE_TELLER.AssignNoModCompatOnInit)
+
 ---@param playerType PlayerType
 ---@param result integer
 function LOVE_TELLER:GetMatchMaker(playerType, result)
@@ -177,13 +203,7 @@ function LOVE_TELLER:GetMatchMaker(playerType, result)
 	local matchmakingList = LOVE_TELLER.Matchmaking[mainPlayerType]
 	if not matchmakingList then
 		local run_save = Mod:RunSave()
-		run_save.ModdedLoveTeller = run_save.ModdedLoveTeller or {}
-		local playerTypeStr = tostring(playerType)
-		if not run_save.ModdedLoveTeller[playerTypeStr] then
-			local allPlayerTypes = Mod:GetKeys(LOVE_TELLER.Matchmaking)
-			run_save.ModdedLoveTeller[playerTypeStr] = allPlayerTypes[Mod.GENERIC_RNG:RandomInt(#allPlayerTypes) + 1]
-		end
-		matchmakingList = LOVE_TELLER.Matchmaking[run_save.ModdedLoveTeller[playerTypeStr]]
+		matchmakingList = LOVE_TELLER.Matchmaking[run_save.ModdedLoveTeller[tostring(mainPlayerType)]]
 	end
 	if result == 0 then
 		---Grab a list of all characters that aren't compatible/true love and pick a random one

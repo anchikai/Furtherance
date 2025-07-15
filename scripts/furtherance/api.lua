@@ -116,3 +116,45 @@ end
 function API:AddToBoxOfBelongingsTrinketPool(trinkets)
 	Mod:AppendTable(Mod.Item.BOX_OF_BELONGINGS.TRINKET_DROPS, trinkets)
 end
+
+---@param playerType PlayerType @The PlayerType of the character who's selected to be the origin of the selected branching relationships
+---@param compatible PlayerType[] @The array of PlayerTypes who have a friendly relationship with the primary character
+---@param lover PlayerType @PlayerType who's considered the "true love" of the primary character
+function API:AddLoveTellerRelationship(playerType, compatible, lover)
+	Mod.Slot.LOVE_TELLER.Matchmaking[playerType] = {
+		TrueLove = lover,
+		Compatible = compatible
+	}
+end
+
+---Adds a Love Teller Baby that's associated with the specified PlayerType. This baby will appear if another character has this character designated as their "true love" and is selected on the Love Teller slot machine
+---@param playerType PlayerType @The PlayerType of the character who the baby is based upon
+---@param babySkin BabySubType | string @Spritesheet for the Love Teller baby. BabySubType for an existing baby, or a string that is a path to a custom spritesheet
+---@param onUpdate fun(familiar: EntityFamiliar) @Runs on MC_FAMILIAR_UPDATE. LOVE_TELLER_BABY.GrantCollectible is commonly used for most baby's effects
+---@param onFire? fun(tear: EntityTear, familiar: EntityFamiliar)
+function API:AddLoveTellerBaby(playerType, babySkin, onUpdate, onFire)
+	Mod.Slot.LOVE_TELLER.BABY.PlayerTypeBabies[playerType] = {
+		Skin = babySkin,
+		OnUpdate = onUpdate,
+		OnFire = onFire
+	}
+end
+
+---Adds a description for the specified PlayerType's Love Teller baby. Exclusive for support with the External Item Descriptions mod
+---@param playerType PlayerType @The PlayerType of the character who the baby is based upon
+---@param desc string | table @Can provide either a table separated with different language keys or a string that will automatically be assigned the en_us language code
+function API:AddLoveTellerBabyEID(playerType, desc)
+	if type(playerType) ~= "number" then
+		error("[Furtherance]: Error: Provided PlayerType \"" .. playerType .. "\" type " .. type(playerType) .. "is not valid!")
+	end
+	if type(desc) == "table" then
+		Mod.EID_Support.LoveTellerModded[playerType] = desc
+	elseif type(desc) == "string" then
+		Mod.EID_Support.LoveTellerModded[playerType] = {
+			en_us = desc
+		}
+	else
+		error("[Furtherance]: Error: Provided text \"" .. desc .. "\" type " .. type(desc) .. "is not valid!")
+	end
+
+end

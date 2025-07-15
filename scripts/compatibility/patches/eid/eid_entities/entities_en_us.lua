@@ -53,10 +53,10 @@ return function(modifiers)
 					Name = "Love Teller",
 					Description = {
 						"{{Coin}} Costs 5 coins to use",
-						"#Randomly pairs Isaac with another character. Grants a reward depending on the matchup",
+						"#Randomly pairs the character who used the machine with another character. Grants a reward depending on the matchup",
 						"#{{EmptyHeart}} Spawns a fly",
 						"#{{HalfHeart}} Spawns two heart pickups",
-						"#{{Heart}} Spawns a unique shooter familiar related to the selected character",
+						"#{{Heart}} Spawns a unique shooter familiar related to the character's \"true love\"",
 						function(descObj)
 							return modifiers[EntityType.ENTITY_SLOT][Mod.Slot.LOVE_TELLER.ID][0]._modifier({
 								[PlayerType.PLAYER_ISAAC] = "Occasionally briefly grants {{Collectible206}} Guillotine",

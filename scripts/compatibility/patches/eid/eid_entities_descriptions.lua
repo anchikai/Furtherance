@@ -2,6 +2,9 @@ local Mod = Furtherance
 local FR_EID = Mod.EID_Support
 local DD = FR_EID.DynamicDescriptions
 
+Furtherance.EID_Support.LoveTellerModded = {}
+
+---@type {[EntityType]: {[integer]: {[integer]:{_modifier: fun(descObj: EID_DescObj, ...: any): any}}}}
 local modifiers = {
 	[EntityType.ENTITY_PICKUP] = {
 		[PickupVariant.PICKUP_HEART] = {
@@ -36,14 +39,14 @@ local modifiers = {
 							local loverIcon = EID:GetPlayerIcon(lover)
 							local run_save = Mod:RunSave()
 							if run_save.ModdedLoveTeller and run_save.ModdedLoveTeller[tostring(playerType)] then
-								local loverName = EID:getPlayerName(lover)
 								local name = EID:getPlayerName(playerType)
 								local copy = run_save.ModdedLoveTeller[tostring(playerType)]
 								local lover2Name = EID:getPlayerName(copy)
 								local lover2Icon = EID:GetPlayerIcon(copy)
 								desc = desc .. icon .. " " .. name .. " copies " .. lover2Icon .. lover2Name .. " for this run#"
 							end
-							desc = desc .. icon .. " {{Heart}}" .. loverIcon .. " - " .. charList[lover] .. "#"
+							local loveTellerDesc = FR_EID.LoveTellerModded[lover] or charList[lover]
+							desc = desc .. icon .. " {{Heart}} " .. loverIcon .. " - " .. loveTellerDesc .. "#"
 							renderedPlayerTypes[playerType] = true
 						end
 					end

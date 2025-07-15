@@ -12,7 +12,7 @@ LOVE_TELLER_BABY.EFFECT_COOLDOWN = 900
 LOVE_TELLER_BABY.EFFECT_CHANCE = 0.05
 LOVE_TELLER_BABY.PASSIVE_DURATION = 300
 
----@type {[PlayerType]: {Skin: BabySubType, OnUpdate: fun(familiar: EntityFamiliar), OnFire?: fun(tear: EntityTear, familiar: EntityFamiliar)}}
+---@type {[PlayerType]: {Skin: BabySubType | string, OnUpdate: fun(familiar: EntityFamiliar), OnFire?: fun(tear: EntityTear, familiar: EntityFamiliar)}}
 LOVE_TELLER_BABY.PlayerTypeBabies = {
 	[PlayerType.PLAYER_ISAAC] = {
 		Skin = BabySubType.BABY_BUDDY,
@@ -34,7 +34,7 @@ LOVE_TELLER_BABY.PlayerTypeBabies = {
 	[PlayerType.PLAYER_JUDAS] = {
 		Skin = BabySubType.BABY_BELIAL,
 		OnUpdate = function(familiar)
-			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_BOOK_OF_BELIAL, true)
+			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_BOOK_OF_BELIAL, true, true)
 		end,
 		OnFire = function(tear, familiar)
 			tear:ChangeVariant(TearVariant.BLOOD)
@@ -49,7 +49,7 @@ LOVE_TELLER_BABY.PlayerTypeBabies = {
 	[PlayerType.PLAYER_EVE] = {
 		Skin = BabySubType.BABY_WHORE,
 		OnUpdate = function(familiar)
-			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_WHORE_OF_BABYLON, true)
+			LOVE_TELLER_BABY:GrantCollectible(familiar, CollectibleType.COLLECTIBLE_WHORE_OF_BABYLON, true, true)
 		end
 	},
 	[PlayerType.PLAYER_SAMSON] = {
@@ -283,6 +283,8 @@ Mod.LoopInclude(specialLoadList, "scripts.furtherance.unlocks.unlocks_leah_b.lov
 
 ---@param familiar EntityFamiliar
 ---@param itemID CollectibleType
+---@param isEffect? boolean
+---@param delayNextRoom? boolean
 function LOVE_TELLER_BABY:GrantCollectible(familiar, itemID, isEffect, delayNextRoom)
 	local player = familiar.Player
 	local data = Mod:GetData(familiar)
@@ -300,7 +302,7 @@ function LOVE_TELLER_BABY:GrantCollectible(familiar, itemID, isEffect, delayNext
 
 		if not result then
 			if delayNextRoom then
-				data.LoveTellerActiveWait = true
+				data.LoveTellerWaitNextRoom = true
 			end
 			if item.Type == ItemType.ITEM_ACTIVE then
 				player:UseActiveItem(itemID, UseFlag.USE_NOANIM)
@@ -341,10 +343,10 @@ function LOVE_TELLER_BABY:GrantCollectible(familiar, itemID, isEffect, delayNext
 		end
 		data.LoveTellerPassiveCountdown = nil
 	end
-	if data.LoveTellerActiveWait then return end
 	if (data.LoveTellerEffectCooldown or 0) > 0 then
 		data.LoveTellerEffectCooldown = data.LoveTellerEffectCooldown - 1
 	elseif data.LoveTellerEffectCooldown then
+		if data.LoveTellerWaitNextRoom then return end
 		data.LoveTellerEffectCooldown = nil
 	end
 end
@@ -352,7 +354,7 @@ end
 function LOVE_TELLER_BABY:RemoveActiveItemWait()
 	Mod.Foreach.Familiar(function(familiar, index)
 		local data = Mod:GetData(familiar)
-		data.LoveTellerActiveWait = nil
+		data.LoveTellerWaitNextRoom = nil
 	end, LOVE_TELLER_BABY.FAMILIAR)
 end
 
@@ -400,9 +402,17 @@ Mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, LOVE_TELLER_BABY.EmergencyRemoveC
 
 ---@param familiar EntityFamiliar
 function LOVE_TELLER_BABY:UpdateBabySkin(familiar, babySubType)
-	local skin = EntityConfig.GetBaby(babySubType or LOVE_TELLER_BABY.PlayerTypeBabies[familiar.SubType].Skin)
-		:GetSpritesheetPath()
-	familiar:GetSprite():ReplaceSpritesheet(0, skin, true)
+	babySubType = babySubType or LOVE_TELLER_BABY.PlayerTypeBabies[familiar.SubType].Skin
+	local spritePath = "gfx/characters/players2/466_baby_blindcursed.png"
+	if type(babySubType) == "string" then
+		spritePath = babySubType
+	else
+		local skin = EntityConfig.GetBaby(babySubType)
+		if skin then
+			spritePath = skin:GetSpritesheetPath()
+		end
+	end
+	familiar:GetSprite():ReplaceSpritesheet(0, spritePath, true)
 end
 
 ---@param familiar EntityFamiliar
@@ -440,7 +450,7 @@ function LOVE_TELLER_BABY:RenderDebug(familiar)
 		1, 1)
 	Isaac.RenderScaledText("Passive countdown: " .. (data.LoveTellerPassiveCountdown or "N/A"), x, p.Y - 25, 0.5, 0.5, 1,
 		1, 1, 1)
-	Isaac.RenderScaledText("ActiveHold: " .. (data.LoveTellerActiveWait or "N/A"), x, p.Y - 20, 0.5, 0.5, 1, 1,
+	Isaac.RenderScaledText("ActiveHold: " .. (data.LoveTellerWaitNextRoom or "N/A"), x, p.Y - 20, 0.5, 0.5, 1, 1,
 		1, 1)
 	if familiar.SubType == PlayerType.PLAYER_EDEN then
 		Isaac.RenderScaledText("Glitch Subtype: " .. (data.GlitchBabySubtype or "N/A"), x, p.Y - 15, 0.5, 0.5, 1, 1, 1, 1)
