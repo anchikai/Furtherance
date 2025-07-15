@@ -1089,8 +1089,8 @@ function KEYS_TO_THE_KINGDOM:DenyHisOfferings(player)
 			KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID), numPickups,
 				false)
 			Mod.SFXMan:Play(SoundEffect.SOUND_HOLY)
+			return true
 		end
-		return true
 	end
 end
 

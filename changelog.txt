@@ -1,9 +1,16 @@
 v1.1.5
-- Fixed Polydipsia not being removed when changing from Miriam to another character mid-run
-- Fixed the Eden Love Telller baby "Glitch Baby" not having its currently selected Love Teller baby be rerolled if they had rolled into the baby for Cain, Esau, Azazel, or The Forgotten
+
+General Adjustments
+
+Gameplay Changes
 - The Soul Love Teller baby "Bound Baby" now fires slightly faster
 - Love Teller is now compatible with modded characters. If not directly made compatible, will choose a random compatible character to copy relations from for the remainder of the run. Love Teller's EID will reflect if this is the case
 - Eve and Judas' Love Teller babies, who activate Whore of Babylon and The Book of Belial respectively, will wait till the next room to allow another activation of their effects
+
+Bug Fixes
+- Fixed Polydipsia not being removed when changing from Miriam to another character mid-run
+- Fixed the Eden Love Telller baby "Glitch Baby" not having its currently selected Love Teller baby be rerolled if they had rolled into the baby for Cain, Esau, Azazel, or The Forgotten
+- Fixed Keys to the Kingdom losing its charges when used inside a devil room when there are no devil deals in the room
 
 Mod Compatibility:
 - Added items to Foks' Booster Pack's Grocery Shop item pool
