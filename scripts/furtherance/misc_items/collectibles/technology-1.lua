@@ -45,9 +45,8 @@ function TECHNOLOGY_MINUS_1:LasersShootLasers(laser)
 		local data = Mod:TryGetData(laser)
 		if not data or not data.TechMinus1Laser then
 			local rng = player:GetCollectibleRNG(TECHNOLOGY_MINUS_1.ID)
-			local samples = laser:GetSamples()
-			if #samples == 0 then return end
-			local pos = samples:Get(#samples - 1)
+			local pos = Mod:GetLaserEndPoint(laser)
+			if not pos then return end
 			local rngMult = 1
 			if laser.FrameCount == -1
 				or player:HasCollectible(CollectibleType.COLLECTIBLE_SOY_MILK)

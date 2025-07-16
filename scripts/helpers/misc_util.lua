@@ -370,3 +370,15 @@ function Furtherance:GetEntityRenderPosition(ent, offset)
 		return Isaac.WorldToScreen(ent.Position + ent.PositionOffset)
 	end
 end
+
+---@param laser EntityLaser
+---@return Vector?
+function Furtherance:GetLaserEndPoint(laser)
+	if laser.SubType == LaserSubType.LASER_SUBTYPE_LINEAR
+		and laser:IsSampleLaser()
+		and #laser:GetSamples() > 0
+	then
+		local samples = laser:GetSamples()
+		return samples:Get(#samples - 1)
+	end
+end

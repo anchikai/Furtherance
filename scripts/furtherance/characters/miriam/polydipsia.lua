@@ -46,8 +46,7 @@ function POLYDIPSIA:SpawnPolydipsiaCreep(player, ent, enemyPos)
 	if ent:ToLaser() then
 		---@cast ent EntityLaser
 		if ent.SubType == LaserSubType.LASER_SUBTYPE_LINEAR then
-			local samples = ent:GetSamples()
-			pos = enemyPos or samples:Get(#samples - 1)
+			pos = enemyPos or Mod:GetLaserEndPoint(ent) or ent.Position
 		elseif enemyPos and ent.SubType ~= LaserSubType.LASER_SUBTYPE_NO_IMPACT then
 			pos = ent.Position + (enemyPos - ent.Position):Resized(ent.Radius)
 		end

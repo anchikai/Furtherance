@@ -40,16 +40,14 @@ function REBOUND_WORM:LaserUpdate(laser)
 		end
 		return
 	end
-	if (laser.SubType ~= LaserSubType.LASER_SUBTYPE_LINEAR
-		or not laser:IsSampleLaser())
+	local endPoint = Mod:GetLaserEndPoint(laser)
+	if not endPoint
 		or laser.Timeout <= 0
 	then
 		return
 	end
 	local player = laser.SpawnerEntity and laser.SpawnerEntity:ToPlayer()
 	if player and player:HasTrinket(REBOUND_WORM.ID) and (not Mod:HasBitFlags(player.TearFlags, TearFlags.TEAR_BOUNCE) or laser.BounceLaser) then
-		local samples = laser:GetSamples()
-		local endPoint = samples:Get(#samples - 1)
 		data = Mod:GetData(laser)
 		local slickLaserRef = data.SlickWormLaser
 		local slickLaserEnt = slickLaserRef and slickLaserRef.Ref and slickLaserRef.Ref:ToLaser()
