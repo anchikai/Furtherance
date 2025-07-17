@@ -7,6 +7,7 @@ Gameplay Changes
 - Love Teller is now compatible with modded characters. If not directly made compatible, will choose a random compatible character to copy relations from for the remainder of the run. Love Teller's EID will reflect if this is the case
 - Eve and Judas' Love Teller babies, who activate Whore of Babylon and The Book of Belial respectively, will wait till the next room to allow another activation of their effects
 - Fixed The Forgotten and Apollyon Love Teller Babies not having cooldowns and triggering their effects way too often
+- T. Peter: Enemies marked as "Parented" to enemies that ignore the one-sided reflection mechanic, such as bosses, also follow said ruling. This makes it easier to fight bosses such as Clutch, not requiring you to submerge Clickety Clacks
 
 Bug Fixes
 - Fixed Polydipsia not being removed when changing from Miriam to another character mid-run

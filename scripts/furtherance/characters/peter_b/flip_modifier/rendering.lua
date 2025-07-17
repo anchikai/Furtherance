@@ -50,8 +50,8 @@ end
 --#region Handle entity rendering via WaterClipFlags
 
 function FLIP_RENDERING:UpdateReflections()
-	FLIP.PETER_EFFECTS_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
-	if FLIP.PETER_EFFECTS_ACTIVE then
+	FLIP.PETER_B_MODIFIER_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
+	if FLIP.PETER_B_MODIFIER_ACTIVE then
 		for _, ent in ipairs(Isaac.GetRoomEntities()) do
 			FLIP_RENDERING:SetAppropriateWaterClipFlag(ent)
 		end
@@ -64,7 +64,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, FLIP_RENDERING.UpdateReflectio
 
 ---@param ent Entity
 function FLIP_RENDERING:Reflection(ent)
-	if FLIP.PETER_EFFECTS_ACTIVE then
+	if FLIP.PETER_B_MODIFIER_ACTIVE then
 		FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, ent.SpawnerEntity)
 	end
 end
@@ -81,7 +81,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, FLIP_RENDERING.Reflection)
 ---!Temporarily in place while we wait for RGON to come out of Rep+ development
 ---@param ent Entity
 function FLIP_RENDERING:TempPreRender(ent)
-	if not FLIP.PETER_EFFECTS_ACTIVE then return end
+	if not FLIP.PETER_B_MODIFIER_ACTIVE or FLIP:ShouldIgnoreEntity(ent) then return end
 	local renderMode = Mod.Room():GetRenderMode()
 	local data = Mod:GetData(ent)
 
@@ -103,7 +103,7 @@ Mod:AddCallback(ModCallbacks.MC_PRE_NPC_RENDER, FLIP_RENDERING.TempPreRender)
 Mod:AddCallback(ModCallbacks.MC_PRE_EFFECT_RENDER, FLIP_RENDERING.TempPreRender)
 
 if Isaac.IsInGame() then
-	FLIP.PETER_EFFECTS_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
+	FLIP.PETER_B_MODIFIER_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
 	FLIP_RENDERING:UpdateReflections()
 end
 
@@ -113,7 +113,7 @@ end
 
 ---@param tearOrProj EntityTear | EntityProjectile
 function FLIP_RENDERING:TearSplash(tearOrProj)
-	if not FLIP.PETER_EFFECTS_ACTIVE then return end
+	if not FLIP.PETER_B_MODIFIER_ACTIVE then return end
 	local renderFlag = Mod:GetData(tearOrProj).PeterFlippedIgnoredRenderFlag
 	if not renderFlag then return end
 
@@ -128,7 +128,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_TEAR_DEATH, FLIP_RENDERING.TearSplash)
 Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_DEATH, FLIP_RENDERING.TearSplash)
 
 function FLIP_RENDERING:PostBombExplode(bomb)
-	if not FLIP.PETER_EFFECTS_ACTIVE then return end
+	if not FLIP.PETER_B_MODIFIER_ACTIVE then return end
 	local renderFlag = Mod:GetData(bomb).PeterFlippedIgnoredRenderFlag
 	if not renderFlag then return end
 
@@ -143,7 +143,7 @@ Mod:AddCallback(Mod.ModCallbacks.POST_BOMB_EXPLODE, FLIP_RENDERING.PostBombExplo
 
 ---@param effect EntityEffect
 function FLIP:MarkEnemyEffectOnInit(effect)
-	if not FLIP.PETER_EFFECTS_ACTIVE then return end
+	if not FLIP.PETER_B_MODIFIER_ACTIVE then return end
 
 	if effect.SpawnerEntity
 		and not FLIP.BLACKLISTED_EFFECTS[effect.Variant]
@@ -166,7 +166,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, FLIP.MarkEnemyEffectOnInit)
 
 ---@param npc EntityNPC
 function FLIP_RENDERING:MarkEnemyEffectOnDeath(npc)
-	if not FLIP.PETER_EFFECTS_ACTIVE then return end
+	if not FLIP.PETER_B_MODIFIER_ACTIVE then return end
 
 	Mod.Foreach.EffectInRadius(npc.Position, 324, function(effect)
 		if FLIP.TEAR_DEATH_EFFECTS[effect.Variant]
@@ -221,6 +221,123 @@ function FLIP_RENDERING:AddOutlineSprite(ent, spr, trackMode)
 end
 
 ---@param ent Entity
+function FLIP_RENDERING:TryAddOutlineUpdate(ent)
+	local sprite = ent:GetSprite()
+	local player = ent:ToPlayer()
+	if not player then
+		FLIP_RENDERING:AddOutlineSprite(ent, sprite)
+		return
+	end
+	local body = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_BODY)
+	local head = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_HEAD)
+	local hairCostume = EntityConfig.GetPlayer(player:GetPlayerType()):GetCostumeID()
+	local hair
+	if hairCostume == -1 or not hairCostume then
+		hair = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_HEAD0)
+	else
+		local layerMap = player:GetCostumeLayerMap()
+		local costumeDescs = player:GetCostumeSpriteDescs()
+		for i = PlayerSpriteLayer.SPRITE_HEAD0, PlayerSpriteLayer.SPRITE_HEAD5 do
+			local costumeLayer = layerMap[i + 1]
+			if costumeLayer then
+				local costumeIndex = costumeLayer.costumeIndex
+				local costumeDesc = costumeDescs[costumeIndex + 1]
+				if costumeDesc then
+					local itemConfig = costumeDesc:GetItemConfig()
+					if itemConfig.ID == hairCostume and itemConfig:IsNull() then
+						hair = costumeDesc:GetSprite()
+						break
+					end
+				end
+			end
+		end
+	end
+
+	if hair then
+		FLIP_RENDERING:AddOutlineSprite(ent, hair, "head")
+	end
+	if (not head and not body) or head and body then
+		FLIP_RENDERING:AddOutlineSprite(ent, sprite, head and body and "backup" or nil)
+	end
+	if head then
+		FLIP_RENDERING:AddOutlineSprite(ent, head, "head")
+		if not body then
+			FLIP_RENDERING:AddOutlineSprite(ent, sprite, "body")
+		end
+	end
+	if body then
+		if not head then
+			FLIP_RENDERING:AddOutlineSprite(ent, sprite, "head")
+		end
+		FLIP_RENDERING:AddOutlineSprite(ent, body, "body")
+	end
+end
+
+---@param ent Entity
+function FLIP_RENDERING:OutlineUpdate(ent, underSolid)
+	local data = Mod:GetData(ent)
+	if not FLIP:IsEntitySubmerged(ent) then
+		data.GSGSAGS = nil
+		return
+	end
+	local sprite = ent:GetSprite()
+	local mirrorWorld = Mod.Room():IsMirrorWorld()
+
+	for _, GSGSAGS in ipairs(data.GSGSAGS) do
+		---@type Sprite
+		local copyspr = GSGSAGS[1]
+		---@type Sprite
+		local spr = GSGSAGS[3]
+		local anim, frame = spr:GetAnimation(), spr:GetFrame()
+		local overlayAnim, overlayFrame = spr:GetOverlayAnimation(), spr:GetOverlayFrame()
+		local playerPart = GSGSAGS[4] ~= nil
+		local trackMode = GSGSAGS[4]
+
+		copyspr.Rotation = spr.Rotation
+		copyspr.Offset = -(spr.Offset + ent.PositionOffset / wtr)
+		copyspr.Rotation = spr.Rotation - 180
+		if mirrorWorld then
+			copyspr.FlipX = spr.FlipX
+		else
+			copyspr.FlipX = not spr.FlipX
+		end
+		copyspr.FlipY = spr.FlipY
+		copyspr.Scale = spr.Scale
+
+		if overlayFrame ~= -1 then
+			copyspr:SetOverlayFrame(overlayAnim, overlayFrame)
+		elseif copyspr:GetOverlayFrame() ~= -1 then
+			copyspr:RemoveOverlay()
+		end
+
+		copyspr:SetFrame(anim, frame)
+
+		if playerPart then
+			if trackMode == "head" then
+				local headScale = sprite:GetLayer("head"):GetSize()
+				copyspr.Scale = sprite.Scale * headScale
+			elseif trackMode == "body" then
+				local bodyScale = sprite:GetLayer("body"):GetSize()
+				copyspr.Scale = sprite.Scale * bodyScale
+			end
+		end
+
+		if underSolid then
+			GSGSAGS[2] = GSGSAGS[2] * 0.8 + 0.2
+		else
+			GSGSAGS[2] = GSGSAGS[2] * 0.8
+		end
+
+		copyspr.Color.A = GSGSAGS[2]
+
+		if copyspr.Color.A <= 0.01 then
+			data.GSGSAGS = nil
+			break
+		end
+	end
+end
+
+---@param ent Entity
 function FLIP_RENDERING:EntityUpdate(ent)
 	if ent:ToNPC() and ent.FrameCount < 10 or ent.FrameCount < 1 then return end
 	local data = Mod:GetData(ent)
@@ -231,120 +348,21 @@ function FLIP_RENDERING:EntityUpdate(ent)
 		or gridCol == GridCollisionClass.COLLISION_OBJECT
 		or gridCol == GridCollisionClass.COLLISION_WALL
 		or not room:IsPositionInRoom(pos, 0)
-	local sprite = ent:GetSprite()
+
+	if not FLIP:ShouldIgnoreEntity(ent)
+		and not data.PeterFlippedIgnoredRenderFlag
+	then
+		FLIP_RENDERING:SetAppropriateWaterClipFlag(ent)
+	end
 
 	if not data.GSGSAGS
 		and FLIP:IsEntitySubmerged(ent)
 		and underSolid
 		and ent.Visible
 	then
-		local player = ent:ToPlayer()
-		if player then
-			local body = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_BODY)
-			local head = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_HEAD)
-			local hairCostume = EntityConfig.GetPlayer(player:GetPlayerType()):GetCostumeID()
-			local hair
-			if hairCostume == -1 or not hairCostume then
-				hair = Mod:GetCostumeSpriteFromLayer(player, PlayerSpriteLayer.SPRITE_HEAD0)
-			else
-				local layerMap = player:GetCostumeLayerMap()
-				local costumeDescs = player:GetCostumeSpriteDescs()
-				for i = PlayerSpriteLayer.SPRITE_HEAD0, PlayerSpriteLayer.SPRITE_HEAD5 do
-					local costumeLayer = layerMap[i + 1]
-					if costumeLayer then
-						local costumeIndex = costumeLayer.costumeIndex
-						local costumeDesc = costumeDescs[costumeIndex + 1]
-						if costumeDesc  then
-							local itemConfig = costumeDesc:GetItemConfig()
-							if itemConfig.ID == hairCostume and itemConfig:IsNull() then
-								hair = costumeDesc:GetSprite()
-								break
-							end
-						end
-					end
-				end
-			end
-
-			if hair then
-				FLIP_RENDERING:AddOutlineSprite(ent, hair, "head")
-			end
-			if (not head and not body) or head and body then
-				FLIP_RENDERING:AddOutlineSprite(ent, sprite, head and body and "backup" or nil)
-			end
-			if head then
-				FLIP_RENDERING:AddOutlineSprite(ent, head, "head")
-				if not body then
-					FLIP_RENDERING:AddOutlineSprite(ent, sprite, "body")
-				end
-			end
-			if body then
-				if not head then
-					FLIP_RENDERING:AddOutlineSprite(ent, sprite, "head")
-				end
-				FLIP_RENDERING:AddOutlineSprite(ent, body, "body")
-			end
-		else
-			FLIP_RENDERING:AddOutlineSprite(ent, sprite)
-		end
+		FLIP_RENDERING:TryAddOutlineUpdate(ent)
 	elseif data.GSGSAGS then
-		if not FLIP:IsEntitySubmerged(ent) then
-			data.GSGSAGS = nil
-			return
-		end
-		local mirrorWorld = Mod.Room():IsMirrorWorld()
-
-		for _, GSGSAGS in ipairs(data.GSGSAGS) do
-			---@type Sprite
-			local copyspr = GSGSAGS[1]
-			---@type Sprite
-			local spr = GSGSAGS[3]
-			local anim, frame = spr:GetAnimation(), spr:GetFrame()
-			local overlayAnim, overlayFrame = spr:GetOverlayAnimation(), spr:GetOverlayFrame()
-			local playerPart = GSGSAGS[4] ~= nil
-			local trackMode = GSGSAGS[4]
-
-			copyspr.Rotation = spr.Rotation
-			copyspr.Offset = -(spr.Offset + ent.PositionOffset / wtr)
-			copyspr.Rotation = spr.Rotation - 180
-			if mirrorWorld then
-				copyspr.FlipX = spr.FlipX
-			else
-				copyspr.FlipX = not spr.FlipX
-			end
-			copyspr.FlipY = spr.FlipY
-			copyspr.Scale = spr.Scale
-
-			if overlayFrame ~= -1 then
-				copyspr:SetOverlayFrame(overlayAnim, overlayFrame)
-			elseif copyspr:GetOverlayFrame() ~= -1 then
-				copyspr:RemoveOverlay()
-			end
-
-			copyspr:SetFrame(anim, frame)
-
-			if playerPart then
-				if trackMode == "head" then
-					local headScale = sprite:GetLayer("head"):GetSize()
-					copyspr.Scale = sprite.Scale * headScale
-				elseif trackMode == "body" then
-					local bodyScale = sprite:GetLayer("body"):GetSize()
-					copyspr.Scale = sprite.Scale * bodyScale
-				end
-			end
-
-			if underSolid then
-				GSGSAGS[2] = GSGSAGS[2] * 0.8 + 0.2
-			else
-				GSGSAGS[2] = GSGSAGS[2] * 0.8
-			end
-
-			copyspr.Color.A = GSGSAGS[2]
-
-			if copyspr.Color.A <= 0.01 then
-				data.GSGSAGS = nil
-				break
-			end
-		end
+		FLIP_RENDERING:OutlineUpdate(ent, underSolid)
 	end
 end
 

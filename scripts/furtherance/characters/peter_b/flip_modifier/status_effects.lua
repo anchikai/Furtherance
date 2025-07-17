@@ -44,7 +44,7 @@ STATUS_EFFECTS.STRENGTH_FLAG = SEL.StatusFlag[STATUS_EFFECTS.STRENGTH_NAME]
 
 ---@param npc EntityNPC
 function STATUS_EFFECTS:RenderReflectiveStatusEffects(npc, offset)
-	if FLIP.PETER_EFFECTS_ACTIVE
+	if FLIP.PETER_B_MODIFIER_ACTIVE
 		and not FLIP:ShouldIgnoreEntity(npc)
 		and Mod.Room():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT
 	then
@@ -74,7 +74,7 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_RENDER, STATUS_EFFECTS.RenderReflectiveStatusEffects)
 
 function STATUS_EFFECTS:AllowReflectiveStatusEffects(ent)
-	if FLIP.PETER_EFFECTS_ACTIVE
+	if FLIP.PETER_B_MODIFIER_ACTIVE
 		and not SEL.Utils.IsOpenSegment(ent)
 	then
 		return true
@@ -115,14 +115,14 @@ Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, STATUS_EFFECTS.HalfDamage)
 function STATUS_EFFECTS:StrengthAndWeakness(npc)
 	local data = Mod:GetData(npc)
 	if data.PeterFlipped then
-		if FLIP:IsRoomEffectActive() then
+		if FLIP:IsEnemyFlipActive() then
 			if SEL:HasStatusEffect(npc, STATUS_EFFECTS.STRENGTH_FLAG) then
 				SEL:RemoveStatusEffect(npc, STATUS_EFFECTS.STRENGTH_FLAG)
 			end
 			if not npc:HasEntityFlags(EntityFlag.FLAG_WEAKNESS) then
 				npc:AddEntityFlags(EntityFlag.FLAG_WEAKNESS)
 			end
-		elseif not FLIP:IsRoomEffectActive() and not SEL:HasStatusEffect(npc, STATUS_EFFECTS.STRENGTH_FLAG) then
+		elseif not FLIP:IsEnemyFlipActive() and not SEL:HasStatusEffect(npc, STATUS_EFFECTS.STRENGTH_FLAG) then
 			if not SEL:HasStatusEffect(npc, STATUS_EFFECTS.STRENGTH_FLAG) then
 				SEL:AddStatusEffect(npc, STATUS_EFFECTS.STRENGTH_FLAG, -1, EntityRef(nil))
 			end
@@ -132,9 +132,9 @@ function STATUS_EFFECTS:StrengthAndWeakness(npc)
 		end
 	end
 	if FLIP:ShouldIgnoreEntity(npc) then
-		if FLIP:IsRoomEffectActive() and not npc:HasEntityFlags(EntityFlag.FLAG_WEAKNESS) then
+		if FLIP:IsEnemyFlipActive() and not npc:HasEntityFlags(EntityFlag.FLAG_WEAKNESS) then
 			npc:AddEntityFlags(EntityFlag.FLAG_WEAKNESS)
-		elseif not FLIP:IsRoomEffectActive() and npc:HasEntityFlags(EntityFlag.FLAG_WEAKNESS) then
+		elseif not FLIP:IsEnemyFlipActive() and npc:HasEntityFlags(EntityFlag.FLAG_WEAKNESS) then
 			npc:ClearEntityFlags(EntityFlag.FLAG_WEAKNESS)
 		end
 	end

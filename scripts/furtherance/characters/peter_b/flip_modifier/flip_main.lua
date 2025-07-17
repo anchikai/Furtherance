@@ -11,7 +11,7 @@ FLIP.FLIP_FACTOR = 0
 FLIP.FLIP_SPEED = 0.2
 FLIP.PAUSE_ENEMIES_DURING_FLIP = false
 FLIP.FREEZE_ROOM_EFFECT_COOLDOWN = 0
-FLIP.PETER_EFFECTS_ACTIVE = false
+FLIP.PETER_B_MODIFIER_ACTIVE = false
 FLIP.SHOW_DEBUG = false
 
 FLIP.TEAR_DEATH_EFFECTS = Mod:Set({
@@ -46,16 +46,27 @@ FLIP.WHITELISTED_ENTITIES = {}
 
 --#region Helpers
 
-function FLIP:IsRoomEffectActive()
+function FLIP:IsEnemyFlipActive()
 	return FLIP.FLIP_FACTOR > 0.5
 end
 
 ---@param ent Entity
 function FLIP:ShouldIgnoreEntity(ent)
-	return ent:IsBoss()
+	local primaryCheck = ent:IsBoss()
 		or FLIP.BLACKLISTED_ENTITIES[Mod:GetTypeVarSubFromEnt(ent, true)]
 		or FLIP.BLACKLISTED_ENTITIES[ent.Type]
 		or ent:ToPickup()
+	if not primaryCheck and ent.Parent then
+		local result = Mod.Foreach.Parent(ent, function(parent)
+			if FLIP:ShouldIgnoreEntity(parent) then
+				return true
+			end
+		end)
+		if result then
+			return true
+		end
+	end
+	return primaryCheck
 end
 
 ---@param ent Entity
@@ -80,7 +91,7 @@ function FLIP:GetIgnoredWaterClipFlag(inverse)
 		waterClipFlag = inverse and DISABLE_ABOVE_WATER or WaterClipFlag.DISABLE_RENDER_REFLECTION
 	end ]]
 	local waterClipFlag = inverse and RenderMode.RENDER_WATER_REFLECT or RenderMode.RENDER_WATER_ABOVE
-	if FLIP:IsRoomEffectActive() then
+	if FLIP:IsEnemyFlipActive() then
 		waterClipFlag = inverse and RenderMode.RENDER_WATER_ABOVE or RenderMode.RENDER_WATER_REFLECT
 	end
 	return waterClipFlag
@@ -91,7 +102,7 @@ function FLIP:IsFlippedEnemy(ent)
 	local data = Mod:GetData(ent)
 	return (data.PeterFlipped
 			or ent:HasEntityFlags(EntityFlag.FLAG_FRIENDLY))
-		or not ent:IsActiveEnemy(true) and FLIP:IsRoomEffectActive()
+		or not ent:IsActiveEnemy(true) and FLIP:IsEnemyFlipActive()
 end
 
 ---@param ent Entity
@@ -102,6 +113,7 @@ end
 
 ---@param ent Entity
 function FLIP:IsEntitySubmerged(ent)
+	if FLIP:ShouldIgnoreEntity(ent) then return false end
 	local data = Mod:GetData(ent)
 	return (data.PeterFlippedIgnoredRenderFlag or 0) == RenderMode.RENDER_WATER_ABOVE
 end
@@ -111,7 +123,7 @@ function FLIP:FlipEnemy(ent)
 	local data = Mod:GetData(ent)
 	data.PeterFlipped = true
 	local flag = FLIP:GetIgnoredWaterClipFlag()
-	if FLIP:IsRoomEffectActive() then
+	if FLIP:IsEnemyFlipActive() then
 		flag = FLIP:GetIgnoredWaterClipFlag(true)
 	end
 	--[[ if Mod:HasBitFlags(ent:GetWaterClipFlags(), WaterClipFlag.ENABLE_RENDER_BELOW_WATER) then
@@ -127,8 +139,8 @@ end
 
 function FLIP:OnUpdate()
 	local effectsStatus = PETER_B:UsePeterFlipRoomEffects()
-	if FLIP.PETER_EFFECTS_ACTIVE ~= effectsStatus then
-		FLIP.PETER_EFFECTS_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
+	if FLIP.PETER_B_MODIFIER_ACTIVE ~= effectsStatus then
+		FLIP.PETER_B_MODIFIER_ACTIVE = PETER_B:UsePeterFlipRoomEffects()
 		FLIP.RENDERING:UpdateReflections()
 	end
 end
@@ -140,7 +152,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, FLIP.OnUpdate)
 --#region Lower ripple volume
 
 function FLIP:ReduceRippleSound(id, volume, frameDelay, loop, pitch, pan)
-	if FLIP.PETER_EFFECTS_ACTIVE then
+	if FLIP.PETER_B_MODIFIER_ACTIVE then
 		return { id, 0.05, frameDelay, loop, pitch, pan }
 	end
 end

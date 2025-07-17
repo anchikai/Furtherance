@@ -41,11 +41,11 @@ Mod:AddCallback(ModCallbacks.MC_POST_RENDER, FLIP_SHADER.AnimateFlip)
 
 ---@param ent EntityNPC | EntityPlayer
 function FLIP_SHADER:FlashNearFlipEnd(ent)
-	if FLIP.PETER_EFFECTS_ACTIVE
+	if FLIP.PETER_B_MODIFIER_ACTIVE
 		and not FLIP:IsEntitySubmerged(ent)
 		and (FLIP:ValidEnemyToFlip(ent)
-		---@cast ent EntityPlayer
-		or (ent:ToPlayer() and Mod.Character.PETER_B:IsPeterB(ent)))
+			---@cast ent EntityPlayer
+			or (ent:ToPlayer() and Mod.Character.PETER_B:IsPeterB(ent)))
 	then
 		local room = Mod.Room():GetEffects()
 		if room:HasCollectibleEffect(MUDDLED_CROSS.ID) then
@@ -53,7 +53,7 @@ function FLIP_SHADER:FlashNearFlipEnd(ent)
 			if cooldown > 0 and cooldown < 60 and cooldown % 15 == 0 then
 				ent:SetColor(
 					StatusEffectLibrary.StatusConfig[Mod.Character.PETER_B.FLIP.STATUS_EFFECTS.STRENGTH_NAME].Color,
-				15, 10, true, false)
+					15, 10, true, false)
 			end
 		end
 	end
@@ -88,9 +88,9 @@ function FLIP_SHADER:FreezeEnemiesDuringFlip()
 			Isaac.GetPlayer():UseActiveItem(CollectibleType.COLLECTIBLE_PAUSE, false, false, false, false, -1)
 			Isaac.GetPlayer():GetEffects():RemoveCollectibleEffect(CollectibleType.COLLECTIBLE_PAUSE)
 			FLIP.PAUSE_ENEMIES_DURING_FLIP = true
-			Mod.Foreach.Projectile(function (projectile)
+			Mod.Foreach.Projectile(function(projectile)
 				projectile:Die()
-			end, nil, nil, {Inverse = true})
+			end, nil, nil, { Inverse = true })
 		end
 	else
 		if FLIP.PAUSE_ENEMIES_DURING_FLIP then
@@ -118,7 +118,7 @@ function FLIP_SHADER:PeterFlip(name)
 			Isaac.RenderText("Room Flip Factor:" .. tostring(MUDDLED_CROSS.FLIP_FACTOR), 50, 75, 1, 1, 1, 1)
 		end
 		return { FlipFactor = Mod.Game:IsPauseMenuOpen() and 0 or factor }
-	--[[ elseif name == "Peter Flip HUD" then
+		--[[ elseif name == "Peter Flip HUD" then
 		if FLIP.PETER_EFFECTS_ACTIVE then
 			Mod.HUD:SetVisible(true)
 			Mod.HUD:Render()
@@ -139,7 +139,7 @@ end
 
 function FLIP_SHADER:FixInputs(ent, _, button)
 	local player = ent and ent:ToPlayer()
-	if player and FLIP:IsRoomEffectActive() then
+	if player and FLIP:IsEnemyFlipActive() then
 		if button == ButtonAction.ACTION_DOWN then
 			return Input.GetActionValue(ButtonAction.ACTION_UP, player.ControllerIndex)
 		elseif button == ButtonAction.ACTION_UP then

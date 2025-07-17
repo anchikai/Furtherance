@@ -8,7 +8,7 @@ local SEPARATE_SIDES = {}
 --So that their Pathfinders obey their ability to ignore grid entities
 ---@param npc EntityNPC
 function SEPARATE_SIDES:AdjustEnemyGridCollision(npc)
-	if not FLIP.PETER_EFFECTS_ACTIVE then return end
+	if not FLIP.PETER_B_MODIFIER_ACTIVE then return end
 	local data = Mod:GetData(npc)
 	if not data.PeterFlipOGGridColl then return end
 	if FLIP:IsFlippedEnemy(npc) then
@@ -52,7 +52,7 @@ end
 ---@param ent Entity
 ---@param collider Entity
 function SEPARATE_SIDES:CollisionMode(ent, collider)
-	if not FLIP.PETER_EFFECTS_ACTIVE then return end
+	if not FLIP.PETER_B_MODIFIER_ACTIVE or Mod.Room():GetFrameCount() == 0 then return end
 	local damageSource
 	local enemyTarget
 	local oppositeTarget
@@ -72,7 +72,7 @@ function SEPARATE_SIDES:CollisionMode(ent, collider)
 			and Mod.Character.PETER_B:IsPeterB(player)
 			and FLIP:ValidEnemyToFlip(ent)
 			and not isFlippedEnemy
-			and not FLIP:IsRoomEffectActive()
+			and not FLIP:IsEnemyFlipActive()
 		then
 			SEPARATE_SIDES:BringEnemyToFlipside(damageSource)
 			local slots = Mod:GetActiveItemCharges(player, Mod.Item.MUDDLED_CROSS.ID)
@@ -84,7 +84,7 @@ function SEPARATE_SIDES:CollisionMode(ent, collider)
 			for _, slotData in ipairs(slots) do
 				if slotData.Charge + player:GetBatteryCharge(ActiveSlot.SLOT_POCKET) < maxCharge then
 					player:AddActiveCharge(floor(Mod.Item.MUDDLED_CROSS.MAX_CHARGES / CHARGE_FRACTION), slotData.Slot,
-					false, false, true)
+						false, false, true)
 					break
 				end
 			end
@@ -94,7 +94,7 @@ function SEPARATE_SIDES:CollisionMode(ent, collider)
 		local entData = Mod:GetData(oppositeTarget)
 
 		if (entData.PeterFlippedIgnoredRenderFlag ~= enemyData.PeterFlippedIgnoredRenderFlag
-			or Mod:GetData(enemyTarget).PeterJustFlipped)
+				or Mod:GetData(enemyTarget).PeterJustFlipped)
 			and not enemyTarget:IsBoss()
 			and not FLIP:ShouldIgnoreEntity(enemyTarget)
 			and not FLIP:ShouldIgnoreEntity(oppositeTarget)
@@ -120,7 +120,7 @@ Mod:AddPriorityCallback(ModCallbacks.MC_PRE_NPC_COLLISION, CallbackPriority.IMPO
 ---@param gridIndex integer
 ---@param gridEnt GridEntity?
 function SEPARATE_SIDES:GridCollision(ent, gridIndex, gridEnt)
-	if FLIP.PETER_EFFECTS_ACTIVE
+	if FLIP.PETER_B_MODIFIER_ACTIVE
 		and (
 			(gridEnt
 				and (
@@ -167,7 +167,7 @@ Mod:AddPriorityCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, CallbackPriority.IMPORT
 ---@param gridEnt GridEntity
 ---@param ent Entity
 function SEPARATE_SIDES:PreventDamageFromGrids(gridEnt, ent, _, _)
-	if FLIP.PETER_EFFECTS_ACTIVE
+	if FLIP.PETER_B_MODIFIER_ACTIVE
 		and FLIP:IsEntitySubmerged(ent)
 		and (
 			Mod.Room():GetType() ~= RoomType.ROOM_SACRIFICE
@@ -183,7 +183,7 @@ Mod:AddCallback(ModCallbacks.MC_GRID_HURT_DAMAGE, SEPARATE_SIDES.PreventDamageFr
 
 ---@param gridEnt GridEntity
 function SEPARATE_SIDES:PreventNoCollGridUpdate(gridEnt)
-	if not FLIP.PETER_EFFECTS_ACTIVE then return end
+	if not FLIP.PETER_B_MODIFIER_ACTIVE then return end
 	for _, ent in ipairs(Isaac.GetRoomEntities()) do
 		if (ent:ToPlayer() or ent:ToNPC())
 			and ent.Position:DistanceSquared(gridEnt.Position) <= 40 ^ 2

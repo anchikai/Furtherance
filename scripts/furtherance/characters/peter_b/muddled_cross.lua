@@ -150,7 +150,7 @@ function MUDDLED_CROSS:OnRoomClear(player)
 			player:FullCharge(slotData.Slot, true)
 		end
 	end ]]
-	if Mod.Character.PETER_B.FLIP:IsRoomEffectActive() then
+	if Mod.Character.PETER_B.FLIP:IsEnemyFlipActive() then
 		Mod.Room():GetEffects():RemoveCollectibleEffect(MUDDLED_CROSS.ID, -1)
 	end
 end
@@ -203,7 +203,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, MUDDLED_CROSS.MuddledCross
 function MUDDLED_CROSS:ChargeOnEnemyDeath(ent)
 	if not Mod:IsDeadEnemy(ent) or not PlayerManager.AnyoneHasCollectible(MUDDLED_CROSS.ID) then return end
 	local effects = Mod.Room():GetEffects()
-	if Mod.Character.PETER_B.FLIP:IsRoomEffectActive() and effects:HasCollectibleEffect(MUDDLED_CROSS.ID) then
+	if Mod.Character.PETER_B.FLIP:IsEnemyFlipActive() and effects:HasCollectibleEffect(MUDDLED_CROSS.ID) then
 		Mod:DelayOneFrame(function()
 			local aliveFlippedEnemies = Mod.Foreach.NPC(function(npc, index)
 				if GetPtrHash(npc) ~= GetPtrHash(ent) and (Mod:GetData(npc).PeterFlipped or Mod.Character.PETER_B.FLIP:ShouldIgnoreEntity(npc)) then
