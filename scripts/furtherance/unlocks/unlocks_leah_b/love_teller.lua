@@ -1,3 +1,5 @@
+--#region Variables
+
 local Mod = Furtherance
 
 local LOVE_TELLER = {}
@@ -109,6 +111,10 @@ LOVE_TELLER.Matchmaking = {
 
 Mod.Include("scripts.furtherance.unlocks.unlocks_leah_b.love_teller_babies.love_teller_babies")
 
+--#endregion
+
+--#region Helpers
+
 local function unknownCoopIcon()
 	local sprite = Sprite("gfx/ui/coop menu.anm2", true)
 	sprite:SetFrame("Main", 0)
@@ -157,36 +163,6 @@ function LOVE_TELLER:TryGetCoopIcon(playerOrType, allowTainted)
 	end
 	return coopSprite, renderLayer
 end
-
----@param slot EntitySlot
-function LOVE_TELLER:OnSlotInit(slot)
-	slot:SetSize(slot.Size, Vector(1.5, 0.75), 24)
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_SLOT_INIT, LOVE_TELLER.OnSlotInit, LOVE_TELLER.ID)
-
----@param player EntityPlayer
-function LOVE_TELLER:AssignNoModCompatOnInit(player)
-	local run_save = Mod:RunSave()
-	local playerType = player:GetPlayerType()
-	local playerTypeStr = tostring(playerType)
-	local mainPlayerType = LOVE_TELLER.ParentPlayerTypes[playerType] or playerType
-	local entityConfigPlayer = EntityConfig.GetPlayer(mainPlayerType)
-	---@cast entityConfigPlayer EntityConfigPlayer
-	local mainPlayerConfig = entityConfigPlayer
-	if mainPlayerConfig:IsTainted() then
-		local nonTainted = mainPlayerConfig:GetTaintedCounterpart()
-		---@cast nonTainted EntityConfigPlayer
-		mainPlayerType = LOVE_TELLER.ParentPlayerTypes[nonTainted:GetPlayerType()] or nonTainted:GetPlayerType()
-	end
-	local matchmakingList = LOVE_TELLER.Matchmaking[mainPlayerType]
-	if not matchmakingList and not run_save.ModdedLoveTeller[playerTypeStr] then
-		local allPlayerTypes = Mod:GetKeys(LOVE_TELLER.Matchmaking)
-		run_save.ModdedLoveTeller[playerTypeStr] = allPlayerTypes[Mod.GENERIC_RNG:RandomInt(#allPlayerTypes) + 1]
-	end
-end
-
-Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, LOVE_TELLER.AssignNoModCompatOnInit)
 
 ---@param playerType PlayerType
 ---@param result integer
@@ -251,6 +227,9 @@ function LOVE_TELLER:TryGetPlayer(slot)
 	return player
 end
 
+---@param player EntityPlayer
+---@param subtype PlayerType
+---@param pos Vector
 function LOVE_TELLER:SpawnLoveTellerBaby(player, subtype, pos)
 	local player_run_save = Mod:RunSave(player)
 	player_run_save.LoveTellerBabies = player_run_save.LoveTellerBabies or {}
@@ -264,6 +243,44 @@ function LOVE_TELLER:SpawnLoveTellerBaby(player, subtype, pos)
 	LOVE_TELLER.BABY:UpdateBabySkin(familiar)
 	player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
 end
+
+--#endregion
+
+--#region On Slot/Modded Player Init
+
+---@param slot EntitySlot
+function LOVE_TELLER:OnSlotInit(slot)
+	slot:SetSize(slot.Size, Vector(1.5, 0.75), 24)
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_SLOT_INIT, LOVE_TELLER.OnSlotInit, LOVE_TELLER.ID)
+
+---@param player EntityPlayer
+function LOVE_TELLER:AssignNoModCompatOnInit(player)
+	local run_save = Mod:RunSave()
+	local playerType = player:GetPlayerType()
+	local playerTypeStr = tostring(playerType)
+	local mainPlayerType = LOVE_TELLER.ParentPlayerTypes[playerType] or playerType
+	local entityConfigPlayer = EntityConfig.GetPlayer(mainPlayerType)
+	---@cast entityConfigPlayer EntityConfigPlayer
+	local mainPlayerConfig = entityConfigPlayer
+	if mainPlayerConfig:IsTainted() then
+		local nonTainted = mainPlayerConfig:GetTaintedCounterpart()
+		---@cast nonTainted EntityConfigPlayer
+		mainPlayerType = LOVE_TELLER.ParentPlayerTypes[nonTainted:GetPlayerType()] or nonTainted:GetPlayerType()
+	end
+	local matchmakingList = LOVE_TELLER.Matchmaking[mainPlayerType]
+	if not matchmakingList and not run_save.ModdedLoveTeller[playerTypeStr] then
+		local allPlayerTypes = Mod:GetKeys(LOVE_TELLER.Matchmaking)
+		run_save.ModdedLoveTeller[playerTypeStr] = allPlayerTypes[Mod.GENERIC_RNG:RandomInt(#allPlayerTypes) + 1]
+	end
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, LOVE_TELLER.AssignNoModCompatOnInit)
+
+--#endregion
+
+--#region Slot stuff
 
 ---@param slot EntitySlot
 function LOVE_TELLER:OnSlotUpdate(slot)
@@ -391,6 +408,9 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_PRE_SLOT_CREATE_EXPLOSION_DROPS, LOVE_TELLER.SlotDrops, LOVE_TELLER.ID)
 
+--#endregion
+
+--#region Render icons
 ---@param slot EntitySlot
 function LOVE_TELLER:RenderCoopIcons(slot, offset)
 	local sprite = slot:GetSprite()
@@ -419,3 +439,19 @@ function LOVE_TELLER:RenderCoopIcons(slot, offset)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_SLOT_RENDER, LOVE_TELLER.RenderCoopIcons, LOVE_TELLER.ID)
+
+--#endregion
+
+--#region Commands
+
+Mod.ConsoleCommandHelper:Create("spawnlovetellerbaby", "Spawns a Love Teller Baby with a specified SubType corresponding to PlayerType",
+	{Mod.ConsoleCommandHelper:MakeArgument("subtype", "PlayerType of the familiar", Mod.ConsoleCommandHelper.ArgumentTypes.Number, false)},
+	function(args)
+		if args[1] and LOVE_TELLER.BABY.PlayerTypeBabies[args[1]] then
+			LOVE_TELLER:SpawnLoveTellerBaby(Isaac.GetPlayer(), args[1], Isaac.GetPlayer().Position)
+		end
+	end
+)
+Mod.ConsoleCommandHelper:SetParent("spawnlovetellerbaby", "debug")
+
+--#endregion
