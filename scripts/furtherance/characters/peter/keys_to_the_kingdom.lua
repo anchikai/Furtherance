@@ -267,16 +267,10 @@ function KEYS_TO_THE_KINGDOM:RaptureEnemy(ent)
 	local subtype = ent:IsBoss() and KEYS_TO_THE_KINGDOM.SPARED_SOUL_BOSS or KEYS_TO_THE_KINGDOM.SPARED_SOUL
 	Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT, subtype,
 		parent.Position, Vector.Zero, nil)
-	local currentEnt = parent.Child
-	local loopedEntities = {}
 
-	--Clear up segmented enemies
-	while currentEnt and not loopedEntities[GetPtrHash(currentEnt)] and SEL.Utils.IsInParentChildChain(currentEnt) do
-		local child = currentEnt.Child
-		KEYS_TO_THE_KINGDOM:RemoveBoss(currentEnt)
-		loopedEntities[GetPtrHash(currentEnt)] = true
-		currentEnt = child
-	end
+	Mod.Foreach.Segment(parent, function (segment)
+		KEYS_TO_THE_KINGDOM:RemoveBoss(segment)
+	end)
 
 	if ent:IsBoss() then
 		KEYS_TO_THE_KINGDOM:RemoveBoss(parent)
@@ -695,17 +689,13 @@ function KEYS_TO_THE_KINGDOM:AssignGroupIdxOnUpdate()
 			}
 			local currentEnt = parent.Child
 			local childData = Mod:GetData(currentEnt)
-			--Clear up segmented enemies
-			while currentEnt
-				and SEL.Utils.IsInParentChildChain(currentEnt)
-				and not Mod:GetData(currentEnt).KTTKGroupIdx
-			do
-				local child = currentEnt.Child
+			Mod.Foreach.Segment(parent, function (segment)
+				if childData.KTTKGroupIdx then
+					return true
+				end
 				childData.KTTKGroupIdx = parentGroupIdx
 				Mod.Insert(activeGroupIdx[parentGroupIdx], EntityPtr(currentEnt))
-				currentEnt = child
-				childData = Mod:GetData(currentEnt)
-			end
+			end)
 		end, entType, nil, nil)
 		bossQueue[entType] = nil
 	end

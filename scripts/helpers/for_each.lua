@@ -470,24 +470,48 @@ function Foreach.EntityInRadius(pos, radius, func, searchParams)
 	return startForEachPartition(func, nil, pos, radius, nil, nil, searchParams)
 end
 
---Will move DOWN the chain from the provided entity. Provide the parent if you want to loop through the whole line of enemies
----@param npc Entity
----@param func fun(npc: Entity)
-function Foreach.Segment(npc, func)
+--Will move DOWN the chain from the provided entity and prevent loops. Provide the parent if you want to loop through the whole line of enemies
+---@generic V
+---@param ent Entity
+---@param func fun(segment: Entity): V?
+---@return V?
+function Foreach.Segment(ent, func)
 	local entitiesSearch = {}
-	local curHash = GetPtrHash(npc)
-	entitiesSearch[curHash] = true
-	local currentEnt = npc.Child
-	if currentEnt.Parent
+	local currentEnt = ent.Child
+
+	while currentEnt
+		and currentEnt.Parent
 		and currentEnt.Parent:ToNPC()
 		and currentEnt.Parent.Child
 		and GetPtrHash(currentEnt) == GetPtrHash(currentEnt.Parent.Child)
-		and not entitiesSearch[curHash]
-	then
-		entitiesSearch[curHash] = true
-		func(npc)
+		and not entitiesSearch[GetPtrHash(currentEnt)]
+	do
+		local result = func(currentEnt)
+		if result ~= nil then
+			return result
+		end
+		--needs end segment?
+		entitiesSearch[GetPtrHash(currentEnt)] = true
 		currentEnt = currentEnt.Child
-		curHash = GetPtrHash(currentEnt)
+	end
+end
+
+--Will move UP the chain from the provided entity and prevent loops
+---@param npc Entity
+---@param func fun(npc: Entity): boolean?
+function Foreach.Parent(npc, func)
+	local entitiesSearch = {}
+	local currentEnt = npc.Parent
+
+	while currentEnt
+		and not entitiesSearch[GetPtrHash(currentEnt)]
+	do
+		local result = func(currentEnt)
+		if result ~= nil then
+			return result
+		end
+		entitiesSearch[GetPtrHash(currentEnt)] = true
+		currentEnt = currentEnt.Parent
 	end
 end
 
