@@ -93,7 +93,7 @@ function ALTERNATE_REALITY:QueueNewStage(levelStage, stageType, sameStage)
 		player:GetSprite():SetFrame("Appear", 7)
 		player:GetSprite():Stop()
 	end) ]]
-	Mod.Game:StartStageTransition(sameStage or false, 0, nil)
+	Mod.Game:StartStageTransition(sameStage or false, 0, Isaac.GetPlayer())
 end
 
 ---@param rng RNG
@@ -108,7 +108,7 @@ function ALTERNATE_REALITY:OnUse(_, rng, player)
 	local randomStage = stageList[rng:RandomInt(#stageList) + 1]
 	Mod:FloorSave().AlternateRealityNewStage = true
 	Mod:DebugLog("New floor queue:", randomStage[1], randomStage[2])
-	ALTERNATE_REALITY:QueueNewStage(randomStage[1], randomStage[2], false)
+	ALTERNATE_REALITY:QueueNewStage(randomStage[1], randomStage[2], randomStage[1] == level:GetStage())
 	return { Discharge = true, Remove = true, ShowAnim = false }
 end
 
