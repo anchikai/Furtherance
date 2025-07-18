@@ -88,12 +88,19 @@ end
 function ALTERNATE_REALITY:QueueNewStage(levelStage, stageType, sameStage)
 	local floor_save = Mod:FloorSave()
 	floor_save.QueueNewStage = { levelStage, stageType }
-	Mod.Level().LeaveDoor = -1
-	--[[ Mod.Foreach.Player(function(player)
-		player:GetSprite():SetFrame("Appear", 7)
-		player:GetSprite():Stop()
-	end) ]]
-	Mod.Game:StartStageTransition(sameStage or false, 0, Isaac.GetPlayer())
+	local level = Mod.Level()
+	local room = Mod.Room()
+	level.LeaveDoor = -1
+
+	if level:GetStage() == LevelStage.STAGE3_2
+		and room:IsClear()
+		and room:IsCurrentRoomLastBoss()
+	then
+		level:SetStage(levelStage, stageType)
+		Isaac.GetPlayer():UseActiveItem(CollectibleType.COLLECTIBLE_FORGET_ME_NOW, 0, -1)
+	else
+		Mod.Game:StartStageTransition(sameStage or false, 1, Isaac.GetPlayer())
+	end
 end
 
 ---@param rng RNG
