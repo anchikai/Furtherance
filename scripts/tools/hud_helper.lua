@@ -1,7 +1,7 @@
 local Mod = Furtherance
 local emptyShaderName = ""
 
-local VERSION = 1.14 -- (v1.1.4) do not modify
+local VERSION = 1.15 -- (v1.1.5) do not modify
 local game = Game()
 local itemConfig = Isaac.GetItemConfig()
 
@@ -2006,9 +2006,9 @@ local function InitFunctions()
 						and HudHelper.LastAppliedHUD[HudHelper.HUDType.EXTRA][1].Name ~= "Reset EID"
 						and HudHelper.LastAppliedHUD[HudHelper.HUDType.EXTRA][1].Priority ~= HudHelper.Priority.VANILLA
 				end,
-				OnRender = function(_, _, _, position)
+				OnRender = function(_, playerHUDIndex, _, position)
 					local posYModifier = 0
-					local offset = -40
+					local offset = -30
 					local vanillaOffsets = {
 						"Tainted HUD",
 						"J&E HUD",
@@ -2021,7 +2021,7 @@ local function InitFunctions()
 						end
 					end
 
-					posYModifier = position.Y + offset
+					posYModifier = position.Y + offset - HudHelper.GetHUDPosition(playerHUDIndex).Y
 
 					EID:addTextPosModifier(
 						"HudHelper",
