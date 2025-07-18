@@ -45,6 +45,7 @@ local modifiers = {
 
 local descriptions = {
 	en_us = Mod.Include("scripts.compatibility.patches.eid.eid_trinkets.trinkets_en_us")(modifiers),
+	spa = Mod.Include("scripts.compatibility.patches.eid.eid_trinkets.trinkets_spa")(modifiers),
 }
 
 local allDescData = {}
