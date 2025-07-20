@@ -69,7 +69,7 @@ function Furtherance:GetData(ent)
 	local ptrHash = GetPtrHash(ent)
 	if not getData[ptrHash] then
 		local newData = {
-			Pointer = EntityRef(ent)
+			Pointer = EntityPtr(ent)
 		}
 		getData[ptrHash] = newData
 	end
@@ -94,12 +94,12 @@ Furtherance:AddPriorityCallback(ModCallbacks.MC_POST_NPC_DEATH, CallbackPriority
 end)
 
 Furtherance:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, CallbackPriority.LATE, function(_, ent)
-    for ptrHash, entityData in pairs(getData) do
-        local entityPointer = (entityData and entityData.Pointer)
-        if not (entityPointer and entityPointer.Ref) then
-            entityData[ptrHash] = nil
-        end
-    end
+	for ptrHash, entityData in pairs(getData) do
+		local entityPointer = (entityData and entityData.Pointer)
+		if not (entityPointer and entityPointer.Ref) then
+			entityData[ptrHash] = nil
+		end
+	end
 end)
 
 Furtherance.FileLoadError = false
@@ -258,7 +258,7 @@ function Furtherance:RunIDCheck()
 					print(name, itemTable.ID)
 					foundBadID = true
 				end
- 			end
+			end
 		end
 	end
 	if not foundBadID then
@@ -281,4 +281,3 @@ end
 
 Furtherance.Include = nil
 Furtherance.LoopInclude = nil
-
