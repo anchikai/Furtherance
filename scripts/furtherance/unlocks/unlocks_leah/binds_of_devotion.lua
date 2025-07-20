@@ -7,22 +7,26 @@ Furtherance.Item.BINDS_OF_DEVOTION = BINDS_OF_DEVOTION
 BINDS_OF_DEVOTION.ID = Isaac.GetItemIdByName("Binds of Devotion")
 BINDS_OF_DEVOTION.PLAYER_FAKE_JACOB = Isaac.GetPlayerTypeByName("FR FakeJacob", false)
 
+---@param player EntityPlayer
 function BINDS_OF_DEVOTION:AddJacob(player)
 	--RGON's method seems to have an odd bug with having their position be the same as it was in the previous room when moving rooms
 	--local jacob = PlayerManager.SpawnCoPlayer2(BINDS_OF_DEVOTION.PLAYER_FAKE_JACOB)
 	Isaac.ExecuteCommand("addplayer " .. BINDS_OF_DEVOTION.PLAYER_FAKE_JACOB)
 	local jacob = Isaac.GetPlayer(Mod.Game:GetNumPlayers() - 1)
 	jacob.Parent = player
+	jacob:SetControllerIndex(player.ControllerIndex)
 
 	Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, -1, jacob.Position, jacob.Velocity, jacob)
 	jacob.Position = player.Position
-	jacob:PlayExtraAnimation("Appear")
+	jacob:AnimateAppear()
 	jacob:AddCostume(Mod.ItemConfig:GetCollectible(BINDS_OF_DEVOTION.ID))
 	Mod.HUD:AssignPlayerHUDs()
 
 	return jacob
 end
 
+---@param player EntityPlayer
+---@param flag CacheFlag
 function BINDS_OF_DEVOTION:FakeJacobStats(player, flag)
 	if player:GetPlayerType() == BINDS_OF_DEVOTION.PLAYER_FAKE_JACOB then -- If the player is Fake Jacob it will apply his stats
 		if flag == CacheFlag.CACHE_FIREDELAY then
@@ -43,8 +47,9 @@ function BINDS_OF_DEVOTION:FakeJacobStats(player, flag)
 	end
 end
 
-Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, BINDS_OF_DEVOTION.FakeJacobStats)
+Mod:AddPriorityCallback(ModCallbacks.MC_EVALUATE_CACHE, CallbackPriority.IMPORTANT, BINDS_OF_DEVOTION.FakeJacobStats)
 
+---@param player EntityPlayer
 function BINDS_OF_DEVOTION:AddNewJacob(type, charge, firstTime, slot, varData, player)
 	if player:HasCollectible(BINDS_OF_DEVOTION.ID) and not player.Parent then
 		BINDS_OF_DEVOTION:AddJacob(player)
@@ -54,6 +59,7 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, BINDS_OF_DEVOTION.AddNewJacob, BINDS_OF_DEVOTION.ID)
 
+---@param player EntityPlayer
 function BINDS_OF_DEVOTION:RemoveJacob(player, itemID)
 	Mod.Foreach.Player(function(_player, playerIndex)
 		if _player:GetPlayerType() == BINDS_OF_DEVOTION.PLAYER_FAKE_JACOB
@@ -69,9 +75,10 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, BINDS_OF_DEVOTION.RemoveJacob)
 
+---@param entity Entity
 function BINDS_OF_DEVOTION:FakobDied(entity)
 	local player = entity:ToPlayer()
-	if player and player:IsDead() then
+	if player and player:IsDead() and player.Parent then
 		if player:GetPlayerType() == BINDS_OF_DEVOTION.PLAYER_FAKE_JACOB then
 			--Find the player that owns the now dead Jacob
 			Mod.Foreach.Player(function (_player, index)
