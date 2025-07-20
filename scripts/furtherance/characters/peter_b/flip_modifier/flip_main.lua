@@ -51,14 +51,14 @@ function FLIP:IsEnemyFlipActive()
 end
 
 ---@param ent Entity
-function FLIP:ShouldIgnoreEntity(ent)
+function FLIP:ShouldIgnoreEntity(ent, ignoreParent)
 	local primaryCheck = ent:IsBoss()
 		or FLIP.BLACKLISTED_ENTITIES[Mod:GetTypeVarSubFromEnt(ent, true)]
 		or FLIP.BLACKLISTED_ENTITIES[ent.Type]
 		or ent:ToPickup()
-	if not primaryCheck and ent.Parent then
+	if not primaryCheck and ent.Parent and not ignoreParent then
 		local result = Mod.Foreach.Parent(ent, function(parent)
-			if FLIP:ShouldIgnoreEntity(parent) then
+			if FLIP:ShouldIgnoreEntity(parent, true) then
 				return true
 			end
 		end)
