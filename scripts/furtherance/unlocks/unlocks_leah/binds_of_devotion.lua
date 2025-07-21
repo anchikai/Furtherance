@@ -11,10 +11,9 @@ BINDS_OF_DEVOTION.PLAYER_FAKE_JACOB = Isaac.GetPlayerTypeByName("FR FakeJacob", 
 function BINDS_OF_DEVOTION:AddJacob(player)
 	--RGON's method seems to have an odd bug with having their position be the same as it was in the previous room when moving rooms
 	--local jacob = PlayerManager.SpawnCoPlayer2(BINDS_OF_DEVOTION.PLAYER_FAKE_JACOB)
-	Isaac.ExecuteCommand("addplayer " .. BINDS_OF_DEVOTION.PLAYER_FAKE_JACOB)
+	Isaac.ExecuteCommand("addplayer " .. BINDS_OF_DEVOTION.PLAYER_FAKE_JACOB .. " " .. player.ControllerIndex)
 	local jacob = Isaac.GetPlayer(Mod.Game:GetNumPlayers() - 1)
 	jacob.Parent = player
-	jacob:SetControllerIndex(player.ControllerIndex)
 
 	Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, -1, jacob.Position, jacob.Velocity, jacob)
 	jacob.Position = player.Position
