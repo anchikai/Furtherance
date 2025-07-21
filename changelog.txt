@@ -14,8 +14,9 @@ Bug Fixes
 - Fixed the Eden Love Telller baby "Glitch Baby" not having its currently selected Love Teller baby be rerolled if they had rolled into the baby for Cain, Esau, Azazel, or The Forgotten
 - Fixed Keys to the Kingdom losing its charges when used inside a devil room when there are no devil deals in the room
 - Potentially fixed a crash related to Polydipsia, Tech -1, Miriam's whirlpool, and Rebound Worm when dealing with spawning something at the end of a laser
-- Fix Backspace Key not accounting for Repentance Alt path and Curse of the Labyrinth
-- Fix Backspace Key softlocking the game if used inside Mom's boss room after defeating her
+- Fixed Backspace Key not accounting for Repentance Alt path and Curse of the Labyrinth
+- Fixed Backspace Key softlocking the game if used inside Mom's boss room after defeating her
+- Fixed Binds of Devotion's Jacob always having their controls assigned to the keyboard
 
 Mod Compatibility:
 - Added items to Foks' Booster Pack's Grocery Shop item pool
