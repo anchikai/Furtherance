@@ -8,6 +8,8 @@ CHARGED_BOMB.ID = Isaac.GetEntitySubTypeByName("Charged Bomb")
 
 CHARGED_BOMB.EXPLODE_CHANCE = 0.01
 
+--TODO: How do Charged Bombs interact with buying them in the shop?
+
 Mod:RegisterReplacement({
 	OldType = Mod:Set({ EntityType.ENTITY_PICKUP }),
 	OldVariant = Mod:Set({ PickupVariant.PICKUP_BOMB }),

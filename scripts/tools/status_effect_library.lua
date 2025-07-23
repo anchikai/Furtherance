@@ -1,6 +1,6 @@
 local Mod = Furtherance
 
-local VERSION = 1.11 --1.1.1
+local VERSION = 1.12 --1.1.2
 local game = Game()
 local floor = math.floor
 local min = math.min
@@ -146,7 +146,7 @@ local function InitFunctions()
 		-- - `self` - StatusEffectLibrary Mod Global
 		-- - `entity` - The affected enemy/player. Will be EntityNPC/EntityPlayer appropriately
 		--
-		-- By default, will not render statuses if the render is on a water reflection or if they're part of a segmented enemy and not the head. Return `true` to override this
+		-- By default, will not render statuses if the render is on a water reflection or if they're part of a segmented enemy and not the head. Return `true` to force them to render, or `false` to stop rendering altogether
 		PRE_RENDER_STATUS_EFFECTS = "STATUSEFFECTLIBRARY_PRE_RENDER_STATUS_EFFECTS"
 	}
 
@@ -668,8 +668,7 @@ local function InitFunctions()
 		end
 
 		StatusEffectLibrary.Callbacks.FireCallback(StatusEffectLibrary.Callbacks.ID.POST_ADD_ENTITY_STATUS_EFFECT,
-			ent, statusFlag, statusEffectData
-		)
+		ent, statusFlag, statusEffectData)
 		StatusEffectLibrary.Utils.DebugLog(identifier, "End of AddStatusEffect for", ent.Type, ent.Variant)
 		return true
 	end
@@ -736,7 +735,7 @@ local function InitFunctions()
 			return true
 		end
 		if ent:HasEntityFlags(EntityFlag.FLAG_NO_STATUS_EFFECTS)
-			or not ent:IsActiveEnemy(false)
+			or (ent:ToNPC() and not ent:IsActiveEnemy(false))
 			or (ent:ToNPC() and not ent:ToNPC().CanShutDoors)
 		then
 			return false
@@ -837,9 +836,10 @@ local function InitFunctions()
 		local renderMode = game:GetRoom():GetRenderMode()
 		local result = StatusEffectLibrary.Callbacks.FireCallback(StatusEffectLibrary.Callbacks.ID.PRE_RENDER_STATUS_EFFECTS, ent)
 		local isReflection = renderMode == RenderMode.RENDER_WATER_REFLECT
-		if (isReflection
+		if result == false
+			or ((isReflection
 			or StatusEffectLibrary.Utils.IsOpenSegment(ent))
-			and not result
+			and not result)
 		then
 			return
 		end
