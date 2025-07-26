@@ -183,6 +183,8 @@ Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, FLIP_RENDERING.MarkEnemyEffectOn
 
 --#region Entity outline (GIGANTIC thanks to Goganidze)
 
+--TODO: For whatever reason, ReplaceSpritesheet on champions fucks up their sprites...even though its an outline?
+
 local wtr = 20 / 13
 local vd = Vector(0, 40)
 
@@ -200,9 +202,10 @@ function FLIP_RENDERING:AddOutlineSprite(ent, spr, trackMode)
 		local clayercolor = layer:GetColor()
 		clayercolor.A = 0.5
 		---@cast clayer LayerState
-		copyspr:ReplaceSpritesheet(id, layer:GetSpritesheetPath())
+		copyspr:ReplaceSpritesheet(id, string.lower(layer:GetSpritesheetPath()))
 		clayer:SetColor(clayercolor)
 	end
+	copyspr:SetRenderFlags(spr:GetRenderFlags())
 	copyspr:SetCustomShader("shaders/PeterBOutline")
 	copyspr:LoadGraphics()
 

@@ -1,7 +1,5 @@
 v1.1.5
 
-General Adjustments
-
 Gameplay Changes
 - The Soul Love Teller baby "Bound Baby" now fires slightly faster, firing 1.76 tears per second compared to the normal 1.36 tears per second
 - Love Teller is now compatible with modded characters. If not directly made compatible, will choose a random compatible character to copy relations from for the remainder of the run. Love Teller's EID will reflect if this is the case
@@ -17,6 +15,8 @@ Bug Fixes
 - Fixed Backspace Key not accounting for Repentance Alt path and Curse of the Labyrinth
 - Fixed Backspace Key softlocking the game if used inside Mom's boss room after defeating her
 - Fixed Binds of Devotion's Jacob always having their controls assigned to the keyboard
+- Fixed Champions becoming invisible when flipped for Tainted Peter after they moved under a grid entity
+- Potentially fixed some enemies with T. Peter becoming "pre-submerged" or already inflicted with the Strength status effect and unable to be interacted with
 
 Mod Compatibility:
 - Added items to Foks' Booster Pack's Grocery Shop item pool
