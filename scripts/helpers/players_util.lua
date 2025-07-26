@@ -1,3 +1,4 @@
+local Mod = Furtherance
 local floor = Furtherance.math.floor
 local max = Furtherance.math.max
 
@@ -429,3 +430,4 @@ function Furtherance:ActiveUsesCarBattery(player, slot)
 	end
 	return useCarBattery
 end
+

@@ -18,12 +18,18 @@ function TECHNOLOGY_MINUS_1:ShootLasers(ent)
 		then
 			local num = player:GetCollectibleNum(TECHNOLOGY_MINUS_1.ID) - 1
 			local maxLasers = 3 + num
+			local blocked = player:HasCollectible(CollectibleType.COLLECTIBLE_LACHRYPHAGY)
+			if not blocked then
+				player:BlockCollectible(CollectibleType.COLLECTIBLE_LACHRYPHAGY)
+			end
 			for _ = 1, maxLasers do
-				local laser = player:FireTechLaser(ent.Position, LaserOffset.LASER_TRACTOR_BEAM_OFFSET, RandomVector(), false, true, ent, 1)
+				local laser = player:FireTechLaser(ent.Position, LaserOffset.LASER_TRACTOR_BEAM_OFFSET, RandomVector(), false, true, player, 1)
 				laser.PositionOffset = ent.PositionOffset
-				laser.TearFlags = ent:ToBomb() and player.TearFlags or ent.TearFlags
 				laser:GetSprite().Color = player.LaserColor
 				Mod:GetData(laser).TechMinus1Laser = true
+			end
+			if not blocked then
+				player:UnblockCollectible(CollectibleType.COLLECTIBLE_LACHRYPHAGY)
 			end
 		end
 	end
@@ -59,6 +65,10 @@ function TECHNOLOGY_MINUS_1:LasersShootLasers(laser)
 				local num = player:GetCollectibleNum(TECHNOLOGY_MINUS_1.ID) - 1
 				local maxLasers = 3 + num
 				local oppositeDir = Vector.FromAngle(laser.AngleDegrees):Rotated(180)
+				local blocked = player:HasCollectible(CollectibleType.COLLECTIBLE_LACHRYPHAGY)
+				if not blocked then
+					player:BlockCollectible(CollectibleType.COLLECTIBLE_LACHRYPHAGY)
+				end
 				for _ = 1, maxLasers do
 					local dir = oppositeDir:Rotated(Mod:RandomNum(-45, 45))
 					local techLaser = player:FireTechLaser(pos, LaserOffset.LASER_SHOOP_OFFSET, dir, false, true, player, 1)
@@ -67,6 +77,9 @@ function TECHNOLOGY_MINUS_1:LasersShootLasers(laser)
 					techLaser:GetSprite().Color = laser:GetSprite().Color
 					Mod:GetData(techLaser).TechMinus1Laser = true
 					techLaser.Parent = nil
+				end
+				if not blocked then
+					player:UnblockCollectible(CollectibleType.COLLECTIBLE_LACHRYPHAGY)
 				end
 			end
 		end

@@ -1,3 +1,6 @@
+local Mod = Furtherance
+local floor = Furtherance.math.floor
+local max = Furtherance.math.max
 local log = Furtherance.math.log
 local sqrt = Furtherance.math.sqrt
 
@@ -114,4 +117,57 @@ function Furtherance:TearDamageToScale(tear)
 		scaleWithDamage = scaleWithDamage * 0.5
 	end
 	return scaleWithDamage
+end
+
+---Credit to Epiphany
+
+function Furtherance:Delay2Tears(delay)
+	return 30 / (delay + 1)
+end
+
+function Furtherance:Tears2Delay(tears)
+	return (30 / tears) - 1
+end
+
+function Furtherance:TearsUp(firedelay, val)
+	local currentTears = Furtherance:Delay2Tears(firedelay)
+	local newTears = currentTears + val
+	return max(Furtherance:Tears2Delay(newTears), -0.99)
+end
+
+function Furtherance:TearsDown(firedelay, val)
+	local currentTears = Furtherance:Delay2Tears(firedelay)
+	local newTears = currentTears - val
+	return max(Furtherance:Tears2Delay(newTears), -0.99)
+end
+
+---@param player EntityPlayer
+---@param tear EntityTear
+function Furtherance:ShouldLudovicoUpdate(player, tear)
+	return floor(tear.FrameCount / player.MaxFireDelay) ~= floor((tear.FrameCount - 1) / player.MaxFireDelay)
+end
+
+-- code and multiplier tables are taken from Damage Multiplier Stat mod
+-- https://steamcommunity.com/sharedfiles/filedetails/?id=2729900570
+
+---@param player EntityPlayer
+---@return number
+---@function
+function Furtherance:GetPlayerDamageMultiplier(player)
+	local totalMultiplier = Mod.CharacterDamageMultipliers[player:GetPlayerType()] or 1
+	if type(totalMultiplier) == "function" then
+		totalMultiplier = totalMultiplier(player) ---@type number
+	end
+
+	local effects = player:GetEffects()
+	for item, mult in pairs(Mod.CollectibleDamageMultipliers) do
+		if player:HasCollectible(item) or effects:HasCollectibleEffect(item) then
+			if type(mult) == "function" then
+				mult = mult(player)
+			end
+			totalMultiplier = totalMultiplier * mult
+		end
+	end
+
+	return totalMultiplier
 end

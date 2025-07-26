@@ -360,6 +360,8 @@ function KEYS_TO_THE_KINGDOM:TempStatBuffs(player, flag)
 		if stat.Flag == flag then
 			if flag == CacheFlag.CACHE_FIREDELAY then
 				player[stat.Name] = Mod:TearsUp(player[stat.Name], buffCount * stat.TempBuff)
+			elseif flag == CacheFlag.CACHE_DAMAGE then
+				player[stat.Name] = player[stat.Name] + buffCount * stat.TempBuff * Mod:GetPlayerDamageMultiplier(player)
 			else
 				player[stat.Name] = player[stat.Name] + buffCount * stat.TempBuff
 			end
@@ -380,6 +382,8 @@ function KEYS_TO_THE_KINGDOM:StatBuffs(player, flag)
 		if stat.Flag == flag then
 			if flag == CacheFlag.CACHE_FIREDELAY then
 				player[stat.Name] = Mod:TearsUp(player[stat.Name], buffCount * stat.Buff)
+			elseif flag == CacheFlag.CACHE_DAMAGE then
+				player[stat.Name] = player[stat.Name] + buffCount * stat.Buff * Mod:GetPlayerDamageMultiplier(player)
 			else
 				player[stat.Name] = player[stat.Name] + buffCount * stat.Buff
 			end

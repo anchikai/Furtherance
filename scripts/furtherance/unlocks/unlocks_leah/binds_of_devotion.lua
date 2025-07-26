@@ -32,7 +32,7 @@ function BINDS_OF_DEVOTION:FakeJacobStats(player, flag)
 			player.MaxFireDelay = player.MaxFireDelay - 1
 		end
 		if flag == CacheFlag.CACHE_DAMAGE then
-			player.Damage = player.Damage - 0.75
+			player.Damage = player.Damage - 0.75 * Mod:GetPlayerDamageMultiplier(player)
 		end
 		if flag == CacheFlag.CACHE_RANGE then
 			player.TearRange = player.TearRange - 60

@@ -31,7 +31,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SHIFT_KEY.DamageDecrease)
 function SHIFT_KEY:ShiftBuffs(player)
 	local effects = player:GetEffects()
 	if effects:HasCollectibleEffect(SHIFT_KEY.ID) then
-		player.Damage = player.Damage + (effects:GetCollectibleEffect(SHIFT_KEY.ID).Cooldown / SHIFT_KEY.MAX_COOLDOWN) * SHIFT_KEY.DAMAGE_BONUS
+		player.Damage = player.Damage + (effects:GetCollectibleEffect(SHIFT_KEY.ID).Cooldown / SHIFT_KEY.MAX_COOLDOWN) * SHIFT_KEY.DAMAGE_BONUS * Mod:GetPlayerDamageMultiplier(player)
 	end
 end
 

@@ -21,7 +21,7 @@ VESTA.TEAR_MODIFIER = Mod.TearModifier.New({
 function VESTA:Stats(player, cacheFlag)
 	if player:HasCollectible(VESTA.ID) then
 		if cacheFlag == CacheFlag.CACHE_DAMAGE then
-			player.Damage = player.Damage * 2
+			player.Damage = player.Damage * 2 * Mod:GetPlayerDamageMultiplier(player)
 		elseif cacheFlag == CacheFlag.CACHE_TEARCOLOR then
 			player.TearColor = Color(1, 1, 1, 0.8)
 		end

@@ -1,4 +1,4 @@
-v1.1.5
+v1.2
 
 Gameplay Changes
 - The Soul Love Teller baby "Bound Baby" now fires slightly faster, firing 1.76 tears per second compared to the normal 1.36 tears per second
@@ -6,6 +6,7 @@ Gameplay Changes
 - Eve and Judas' Love Teller babies, who activate Whore of Babylon and The Book of Belial respectively, will wait till the next room to allow another activation of their effects
 - Fixed The Forgotten and Apollyon Love Teller Babies not having cooldowns and triggering their effects way too often
 - T. Peter: Enemies marked as "Parented" to enemies that ignore the one-sided reflection mechanic, such as bosses, also follow said ruling. This makes it easier to fight bosses such as Clutch, not requiring you to submerge Clickety Clacks
+- Furtherance's items now respect vanilla damage multipliers
 
 Bug Fixes
 - Fixed Polydipsia not being removed when changing from Miriam to another character mid-run
@@ -17,6 +18,7 @@ Bug Fixes
 - Fixed Binds of Devotion's Jacob always having their controls assigned to the keyboard
 - Fixed Champions becoming invisible when flipped for Tainted Peter after they moved under a grid entity
 - Potentially fixed some enemies with T. Peter becoming "pre-submerged" or already inflicted with the Strength status effect and unable to be interacted with
+- Fixed infinite loop of spawning tears and lasers with Technology -1 and Lachryphagy
 
 Mod Compatibility:
 - Added items to Foks' Booster Pack's Grocery Shop item pool

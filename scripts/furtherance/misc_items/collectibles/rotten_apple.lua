@@ -34,7 +34,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, ROTTEN_APPLE.OnFirstPickup
 ---@param player EntityPlayer
 function ROTTEN_APPLE:DamageBuff(player)
 	if player:HasCollectible(ROTTEN_APPLE.ID) then
-		player.Damage = player.Damage + (ROTTEN_APPLE.DAMAGE_UP * player:GetCollectibleNum(ROTTEN_APPLE.ID))
+		player.Damage = player.Damage + ROTTEN_APPLE.DAMAGE_UP * player:GetCollectibleNum(ROTTEN_APPLE.ID) * Mod:GetPlayerDamageMultiplier(player)
 	end
 end
 

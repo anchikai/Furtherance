@@ -131,7 +131,7 @@ function POLARIS:AddPlayerBuffs(player, cacheFlag)
 	if not colorBuff or not colorBuff.CacheFlags[cacheFlag] then return end
 
 	if cacheFlag == CacheFlag.CACHE_DAMAGE then
-		player.Damage = player.Damage + colorBuff.CacheFlags[cacheFlag]
+		player.Damage = player.Damage + colorBuff.CacheFlags[cacheFlag] * Mod:GetPlayerDamageMultiplier(player)
 	elseif cacheFlag == CacheFlag.CACHE_SHOTSPEED then
 		player.ShotSpeed = player.ShotSpeed + colorBuff.CacheFlags[cacheFlag]
 	end

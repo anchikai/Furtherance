@@ -2,7 +2,7 @@
 _G.Furtherance = RegisterMod("Furtherance", 1)
 local Mod = Furtherance
 
-Furtherance.Version = "1.1.4"
+Furtherance.Version = "1.2"
 
 Furtherance.SaveManager = include("scripts.tools.save_manager")
 Furtherance.SaveManager.Init(Furtherance)
@@ -53,8 +53,6 @@ Furtherance.REPLACER_EFFECT = Isaac.GetEntityVariantByName("Furtherance PRE_ENTI
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, function(_, effect)
 	effect:Remove()
 end, Furtherance.REPLACER_EFFECT)
-
-include("scripts.helpers.extra_enums")
 
 ---@type table[]
 local getData = {}
@@ -148,6 +146,12 @@ Furtherance.Misc = {}
 Furtherance.Slot = {}
 include("flags")
 
+local tables = {
+	"extra_enums",
+	"character_damage_multipliers",
+	"collectible_damage_multipliers"
+}
+
 local helpers = {
 	"table_functions",
 	"saving_system",
@@ -159,7 +163,6 @@ local helpers = {
 	"familiars_util",
 	"string_util",
 	"stats_util",
-	"tears_util",
 	"proximity",
 	"npc_util",
 	"rooms_helper",
@@ -192,6 +195,7 @@ Furtherance.Spawn = include("scripts.helpers.spawn")
 Furtherance.Foreach = include("scripts.helpers.for_each")
 
 Mod.Include("scripts.tools.jumplib").Init()
+Mod.LoopInclude(tables, "scripts.tables")
 Mod.LoopInclude(helpers, "scripts.helpers")
 Mod.ConsoleCommandHelper:AddParentDescription("debug", "Debug commands for specific interactions")
 Dump = include("scripts.helpers.everything_function")
@@ -249,7 +253,7 @@ Mod:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, function(_, shaderName)
 	end
 end)
 
-function Furtherance:RunIDCheck()
+Mod.ConsoleCommandHelper:Create("checkIDs", "Searches through all of Furtherance's files with labelled IDs of \"-1\"", {}, function()
 	local foundBadID = false
 	for _, subTable in pairs(Furtherance) do
 		if type(subTable) == "table" then
@@ -264,7 +268,17 @@ function Furtherance:RunIDCheck()
 	if not foundBadID then
 		print("No -1 IDs found!")
 	end
-end
+end)
+Mod.ConsoleCommandHelper:SetParent("checkIDs", "debug")
+
+Mod.ConsoleCommandHelper:Create("checkgetdatalength", "Returns the number of entities registered in the custom GetData structure", {}, function()
+	local num = 0
+	for _, _ in pairs(getData) do
+		num = num + 1
+	end
+	print("Found", num, "entities registered with custom data")
+end)
+Mod.ConsoleCommandHelper:SetParent("checkgetdatalength", "debug")
 
 --!End of file
 

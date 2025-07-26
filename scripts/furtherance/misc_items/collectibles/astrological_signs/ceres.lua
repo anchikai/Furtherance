@@ -8,6 +8,7 @@ Furtherance.Item.CERES = CERES
 CERES.ID = Isaac.GetItemIdByName("Ceres?")
 
 CERES.CREEP_DURATION_ON_HIT = 90
+CERES.DAMAGE_UP = 0.5
 
 CERES.MODIFIER = Mod.TearModifier.New({
 	Name = "Ceres",
@@ -33,7 +34,7 @@ end
 
 function CERES:GetCeres(player, flag)
 	if player:HasCollectible(CERES.ID) then
-		player.Damage = player.Damage + 0.5
+		player.Damage = player.Damage + CERES.DAMAGE_UP * Mod:GetPlayerDamageMultiplier(player)
 	end
 end
 

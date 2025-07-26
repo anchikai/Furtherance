@@ -39,7 +39,7 @@ function ALABASTER_SCRAP:DamageUp(player)
 	if player:HasTrinket(ALABASTER_SCRAP.ID) then
 		local mult = player:GetTrinketMultiplier(ALABASTER_SCRAP.ID)
 		local numAngel = player:GetEffects():GetTrinketEffectNum(ALABASTER_SCRAP.ID)
-		player.Damage = player.Damage + (numAngel * ALABASTER_SCRAP.DAMAGE_UP * mult)
+		player.Damage = player.Damage + numAngel * ALABASTER_SCRAP.DAMAGE_UP * mult * Mod:GetPlayerDamageMultiplier(player)
 	end
 end
 Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, ALABASTER_SCRAP.DamageUp, CacheFlag.CACHE_DAMAGE)

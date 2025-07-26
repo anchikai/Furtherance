@@ -105,7 +105,7 @@ function HEART_RENOVATOR:DamageUp(player)
 		if Mod.Character.LEAH:LeahHasBirthright(player) then
 			addAmount = addAmount * 2
 		end
-		player.Damage = player.Damage + addAmount
+		player.Damage = player.Damage + addAmount * Mod:GetPlayerDamageMultiplier(player)
 	end
 end
 

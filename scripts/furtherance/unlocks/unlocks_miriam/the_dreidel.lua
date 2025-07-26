@@ -66,6 +66,8 @@ function THE_DREIDEL:StatBuffs(player, flag)
 		if stat.Flag == flag then
 			if flag == CacheFlag.CACHE_FIREDELAY then
 				player[stat.Name] = Mod:TearsDown(player[stat.Name], statCount * stat.Debuff)
+			elseif flag == CacheFlag.CACHE_DAMAGE then
+				player[stat.Name] = player[stat.Name] - statCount * stat.Debuff * Mod:GetPlayerDamageMultiplier(player)
 			else
 				player[stat.Name] = player[stat.Name] - statCount * stat.Debuff
 			end

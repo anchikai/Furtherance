@@ -45,7 +45,7 @@ function UNLUCKY_PENNY:Lucknt(player, flag)
 	if numEffects == 0 then return end
 
 	if flag == CacheFlag.CACHE_DAMAGE then
-		player.Damage = player.Damage + (numEffects / 2)
+		player.Damage = player.Damage + (numEffects / 2) * Mod:GetPlayerDamageMultiplier(player)
 	end
 	if flag == CacheFlag.CACHE_LUCK then
 		player.Luck = player.Luck - numEffects

@@ -6,7 +6,7 @@ Furtherance.Item.EXSANGUINATION = EXSANGUINATION
 
 EXSANGUINATION.ID = Isaac.GetItemIdByName("Exsanguination")
 
-EXSANGUINATION.DAMAGE_MULT_UP = 0.05
+EXSANGUINATION.DAMAGE_UP = 0.05
 EXSANGUINATION.HEART_REMOVAL_CHANCE = 0.5
 
 ---@param heart EntityPickup
@@ -28,7 +28,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_COLLISION, EXSANGUINATION.PickupHear
 function EXSANGUINATION:DamageUp(player)
 	if player:HasCollectible(EXSANGUINATION.ID) then
 		local num = player:GetEffects():GetCollectibleEffectNum(EXSANGUINATION.ID)
-		player.Damage = player.Damage + (num * EXSANGUINATION.DAMAGE_MULT_UP)
+		player.Damage = player.Damage + (num * EXSANGUINATION.DAMAGE_UP) * Mod:GetPlayerDamageMultiplier(player)
 	end
 end
 

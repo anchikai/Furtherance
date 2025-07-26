@@ -1,0 +1,46 @@
+Furtherance.CharacterDamageMultipliers = {
+		-- Normal characters
+		[PlayerType.PLAYER_ISAAC] = 1,
+		[PlayerType.PLAYER_MAGDALENE] = 1,
+		[PlayerType.PLAYER_CAIN] = 1.2,
+		[PlayerType.PLAYER_JUDAS] = 1.35,
+		[PlayerType.PLAYER_BLUEBABY] = 1.05,
+		[PlayerType.PLAYER_EVE] = function (player)
+			if player:GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_WHORE_OF_BABYLON) then return 1 end
+			return 0.75
+		end,
+		[PlayerType.PLAYER_SAMSON] = 1,
+		[PlayerType.PLAYER_AZAZEL] = 1.5,
+		[PlayerType.PLAYER_LAZARUS] = 1,
+		[PlayerType.PLAYER_THELOST] = 1,
+		[PlayerType.PLAYER_LAZARUS2] = 1.4,
+		[PlayerType.PLAYER_BLACKJUDAS] = 2,
+		[PlayerType.PLAYER_LILITH] = 1,
+		[PlayerType.PLAYER_KEEPER] = 1.2,
+		[PlayerType.PLAYER_APOLLYON] = 1,
+		[PlayerType.PLAYER_THEFORGOTTEN] = 1.5,
+		[PlayerType.PLAYER_THESOUL] = 1,
+		[PlayerType.PLAYER_BETHANY] = 1,
+		[PlayerType.PLAYER_JACOB] = 1,
+		[PlayerType.PLAYER_ESAU] = 1,
+
+		-- Tainted characters
+		[PlayerType.PLAYER_ISAAC_B] = 1,
+		[PlayerType.PLAYER_MAGDALENE_B] = 0.75,
+		[PlayerType.PLAYER_CAIN_B] = 1,
+		[PlayerType.PLAYER_JUDAS_B] = 1,
+		[PlayerType.PLAYER_BLUEBABY_B] = 1,
+		[PlayerType.PLAYER_EVE_B] = 1.2,
+		[PlayerType.PLAYER_SAMSON_B] = 1,
+		[PlayerType.PLAYER_AZAZEL_B] = 1.5,
+		[PlayerType.PLAYER_LAZARUS_B] = 1,
+		[PlayerType.PLAYER_EDEN_B] = 1,
+		[PlayerType.PLAYER_THELOST_B] = 1.3,
+		[PlayerType.PLAYER_LILITH_B] = 1,
+		[PlayerType.PLAYER_KEEPER_B] = 1,
+		[PlayerType.PLAYER_APOLLYON_B] = 1,
+		[PlayerType.PLAYER_THEFORGOTTEN_B] = 1.5,
+		[PlayerType.PLAYER_BETHANY_B] = 1,
+		[PlayerType.PLAYER_JACOB_B] = 1,
+		[PlayerType.PLAYER_LAZARUS2_B] = 1.5,
+}

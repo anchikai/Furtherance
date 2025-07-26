@@ -18,13 +18,13 @@ function SEVERED_EAR:GetSeveredEar(player, flag)
 	if player:HasCollectible(SEVERED_EAR.ID) then
 		local num = player:GetCollectibleNum(SEVERED_EAR.ID)
 		if flag == CacheFlag.CACHE_DAMAGE then
-			player.Damage = player.Damage * (SEVERED_EAR.DAMAGE_MULT_UP * num)
+			player.Damage = player.Damage * SEVERED_EAR.DAMAGE_MULT_UP * num * Mod:GetPlayerDamageMultiplier(player)
 		end
 		if flag == CacheFlag.CACHE_FIREDELAY then
 			player.MaxFireDelay = player.MaxFireDelay / (SEVERED_EAR.FIRE_DELAY_DIV_DOWN / num)
 		end
 		if flag == CacheFlag.CACHE_RANGE then
-			player.TearRange = player.TearRange + (Furtherance.RANGE_BASE_MULT*  SEVERED_EAR.RANGE_MULT_UP * num)
+			player.TearRange = player.TearRange + (Furtherance.RANGE_BASE_MULT * SEVERED_EAR.RANGE_MULT_UP * num)
 		end
 		if flag == CacheFlag.CACHE_SHOTSPEED then
 			player.ShotSpeed = player.ShotSpeed - (SEVERED_EAR.SHOTSPEED_MULT_DOWN * num)

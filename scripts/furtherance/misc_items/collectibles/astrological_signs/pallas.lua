@@ -20,7 +20,7 @@ function PALLAS:GetPallas(player, flag)
 		if (player and player:HasCollectible(CollectibleType.COLLECTIBLE_FLAT_STONE))
 			and flag == CacheFlag.CACHE_DAMAGE
 		then
-			player.Damage = player.Damage * PALLAS.FLAT_STONE_DAMAGE_BONUS
+			player.Damage = player.Damage * PALLAS.FLAT_STONE_DAMAGE_BONUS * Mod:GetPlayerDamageMultiplier(player)
 		end
 	end
 end
