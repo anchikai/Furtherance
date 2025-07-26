@@ -6,6 +6,7 @@ Furtherance.Character.LEAH = LEAH
 
 LEAH.SCARED_HEART_CHANCE = 0.0625
 LEAH.TEARS_PER_BROKEN = 0.2
+LEAH.BIRTHRIGHT_KILL_THRESHOLD = 20
 
 Mod.Include("scripts.furtherance.characters.leah.heart_renovator")
 
@@ -81,7 +82,7 @@ function LEAH:BirthrightDamageOnKill(npc)
 			---@cast player EntityPlayer
 			local run_save = Mod:RunSave(player)
 			run_save.LeahBirthrightKills = (run_save.LeahBirthrightKills or 0) + 1
-			if run_save.LeahBirthrightKills % 20 == 0 then
+			if run_save.LeahBirthrightKills % LEAH.BIRTHRIGHT_KILL_THRESHOLD == 0 then
 				run_save.HeartRenovatorDamage = run_save.HeartRenovatorDamage + 0.5
 				player:AddCacheFlags(CacheFlag.CACHE_DAMAGE, true)
 			end

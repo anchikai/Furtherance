@@ -102,7 +102,7 @@ function HEART_RENOVATOR:DamageUp(player)
 	local player_run_save = Mod:RunSave(player)
 	if player_run_save.HeartRenovatorDamage and player:HasCollectible(HEART_RENOVATOR.ID) then
 		local addAmount = player_run_save.HeartRenovatorDamage * HEART_RENOVATOR.DAMAGE_MULT
-		if Mod.Character.LEAH:IsLeah(player) and player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT) then
+		if Mod.Character.LEAH:LeahHasBirthright(player) then
 			addAmount = addAmount * 2
 		end
 		player.Damage = player.Damage + addAmount
