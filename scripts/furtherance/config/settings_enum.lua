@@ -2,5 +2,7 @@
 --! so changing the setting name will reset the value of the settings
 
 Furtherance.Setting = {
-	HeartRenovatorDoubleTap = "Heart Renovator Double Tap Frame Window"
+	HeartRenovatorDoubleTap = "Heart Renovator Double Tap Frame Window",
+	TPeterSubmergedOpacityDefault = "Submerged Entities Default Opacity",
+	TPeterSubmergedOpacityGrid = "Submerged Entities Grid Opacity",
 }

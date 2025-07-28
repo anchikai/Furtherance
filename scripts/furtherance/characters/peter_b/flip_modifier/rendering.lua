@@ -1,7 +1,6 @@
 local Mod = Furtherance
 local PETER_B = Mod.Character.PETER_B
 local FLIP = PETER_B.FLIP
-
 local FLIP_RENDERING = {}
 
 --local DISABLE_ABOVE_WATER = WaterClipFlag.DISABLE_RENDER_ABOVE_WATER | WaterClipFlag.DISABLE_RENDER_BELOW_WATER
@@ -277,7 +276,7 @@ function FLIP_RENDERING:TryAddOutlineUpdate(ent)
 end
 
 ---@param ent Entity
-function FLIP_RENDERING:OutlineUpdate(ent, underSolid)
+function FLIP_RENDERING:OutlineUpdate(ent)
 	local data = Mod:GetData(ent)
 	if not FLIP:IsEntitySubmerged(ent) then
 		data.GSGSAGS = nil
@@ -285,6 +284,13 @@ function FLIP_RENDERING:OutlineUpdate(ent, underSolid)
 	end
 	local sprite = ent:GetSprite()
 	local mirrorWorld = Mod.Room():IsMirrorWorld()
+	local room = Mod.Room()
+	local pos = ent.Position + vd + ent.PositionOffset
+	local gridCol = room:GetGridCollisionAtPos(pos)
+	local underSolid = gridCol == GridCollisionClass.COLLISION_SOLID
+		or gridCol == GridCollisionClass.COLLISION_OBJECT
+		or gridCol == GridCollisionClass.COLLISION_WALL
+		or not room:IsPositionInRoom(pos, 0)
 
 	for _, GSGSAGS in ipairs(data.GSGSAGS) do
 		---@type Sprite
@@ -326,9 +332,9 @@ function FLIP_RENDERING:OutlineUpdate(ent, underSolid)
 		end
 
 		if underSolid then
-			GSGSAGS[2] = GSGSAGS[2] * 0.8 + 0.2
+			GSGSAGS[2] = Mod:Lerp(GSGSAGS[2], (Mod.GetSetting(Mod.Setting.TPeterSubmergedOpacityGrid) - 1) * 0.1, 0.1)
 		else
-			GSGSAGS[2] = GSGSAGS[2] * 0.8
+			GSGSAGS[2] = Mod:Lerp(GSGSAGS[2], (Mod.GetSetting(Mod.Setting.TPeterSubmergedOpacityDefault) - 1) * 0.1, 0.2)
 		end
 
 		copyspr.Color.A = GSGSAGS[2]
@@ -344,13 +350,6 @@ end
 function FLIP_RENDERING:EntityUpdate(ent)
 	if ent:ToNPC() and ent.FrameCount < 10 or ent.FrameCount < 1 then return end
 	local data = Mod:GetData(ent)
-	local room = Mod.Room()
-	local pos = ent.Position + vd + ent.PositionOffset
-	local gridCol = room:GetGridCollisionAtPos(pos)
-	local underSolid = gridCol == GridCollisionClass.COLLISION_SOLID
-		or gridCol == GridCollisionClass.COLLISION_OBJECT
-		or gridCol == GridCollisionClass.COLLISION_WALL
-		or not room:IsPositionInRoom(pos, 0)
 
 	if not FLIP:ShouldIgnoreEntity(ent)
 		and not data.PeterFlippedIgnoredRenderFlag
@@ -360,12 +359,11 @@ function FLIP_RENDERING:EntityUpdate(ent)
 
 	if not data.GSGSAGS
 		and FLIP:IsEntitySubmerged(ent)
-		and underSolid
 		and ent.Visible
 	then
 		FLIP_RENDERING:TryAddOutlineUpdate(ent)
 	elseif data.GSGSAGS then
-		FLIP_RENDERING:OutlineUpdate(ent, underSolid)
+		FLIP_RENDERING:OutlineUpdate(ent)
 	end
 end
 

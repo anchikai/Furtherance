@@ -156,7 +156,7 @@ function HEART_RENOVATOR:ConsumeHeartCounter(player)
 	then
 		local data = Mod:GetData(player)
 		local dropTriggered = Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex)
-		local doubleTapWindow = Mod.GetSetting(Mod.Setting.HeartRenovatorDoubleTap)
+		local doubleTapWindow = Mod.GetSetting(Mod.Setting.HeartRenovatorDoubleTap) + 5
 
 		if dropTriggered then
 			if not data.HeartRenovatorTapped then

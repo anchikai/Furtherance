@@ -12,6 +12,7 @@ Furtherance.SettingTypes = {
 -- If you don't add a category here, it won't show up in the settings menus.
 SettingsHelper.Categories = {
 	"General",
+	"Tainted Peter"
 }
 
 --- Saves the value for a setting. Verifies that the setting exists before saving it.

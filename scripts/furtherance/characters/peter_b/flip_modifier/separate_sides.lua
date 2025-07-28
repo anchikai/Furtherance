@@ -31,7 +31,7 @@ function SEPARATE_SIDES:BringEnemyToFlipside(ent)
 	local size = ent.Size / 25
 	effect.SpriteScale = Vector(size, size)
 	Mod.SFXMan:Play(SoundEffect.SOUND_WAR_LAVA_SPLASH, 0.5, 5, false, 0.8)
-	ent:AddEntityFlags(EntityFlag.FLAG_FREEZE)
+	ent:AddFreeze(EntityRef(ent), 30)
 	local oldCollision = ent.EntityCollisionClass
 	ent.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
 	if ent.GridCollisionClass > GridCollisionClass.COLLISION_SOLID then
@@ -45,7 +45,6 @@ function SEPARATE_SIDES:BringEnemyToFlipside(ent)
 	Isaac.CreateTimer(function()
 		data.PeterJustFlipped = false
 		ent.EntityCollisionClass = oldCollision
-		ent:ClearEntityFlags(EntityFlag.FLAG_FREEZE)
 	end, 30, 1, false)
 end
 
