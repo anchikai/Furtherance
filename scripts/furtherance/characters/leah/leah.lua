@@ -58,6 +58,7 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, LEAH.TearsUp, CacheFlag.CACHE_FI
 ---@param flags DamageFlag
 ---@param source EntityRef
 function LEAH:BirthrightDamageKillCredit(ent, damage, flags, source)
+	if not ent:IsActiveEnemy(true) then return end
 	local player = Mod:TryGetPlayer(source)
 	if player
 		and LEAH:LeahHasBirthright(player)
@@ -72,10 +73,8 @@ Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, LEAH.BirthrightDamageKillC
 function LEAH:BirthrightDamageOnKill(npc)
 	local data = Mod:GetData(npc)
 
-	if data
-		and data.LeahBirthrightKill
-	then
-		---@type Entity
+	if data and data.LeahBirthrightKill then
+		---@type Entity?
 		local ref = data.LeahBirthrightKill.Ref
 		if ref then
 			local player = ref:ToPlayer()

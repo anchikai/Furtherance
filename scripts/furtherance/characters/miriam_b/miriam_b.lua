@@ -137,11 +137,11 @@ HudHelper.RegisterHUDElement({
 ---@param flags DamageFlag
 ---@param source EntityRef
 function MIRIAM_B:AddToDamageCounter(ent, amount, flags, source)
-	local player = Mod:TryGetPlayer(source.Entity, true)
+	if not ent:IsActiveEnemy(true) then return end
+	local player = Mod:TryGetPlayer(source, {WeaponOwner = true})
 	if player
 		and MIRIAM_B:IsMiriamB(player)
 		and Mod:HasBitFlags(flags, DamageFlag.DAMAGE_LASER)
-		and ent:ToNPC()
 		and not Mod.Item.POLARITY_SHIFT:IsChainLightningActive(player)
 	then
 		local data = Mod:GetData(player)

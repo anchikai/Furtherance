@@ -10,7 +10,7 @@ TECHNOLOGY_MINUS_1.SPLIT_CHANCE = math.pi * 0.01
 
 ---@param ent EntityTear | EntityKnife | EntityBomb
 function TECHNOLOGY_MINUS_1:ShootLasers(ent)
-	local player = Mod:TryGetPlayer(ent, true)
+	local player = Mod:TryGetPlayer(ent, {WeaponOwner = true})
 	if player and player:HasCollectible(TECHNOLOGY_MINUS_1.ID) then
 		local rng = player:GetCollectibleRNG(TECHNOLOGY_MINUS_1.ID)
 		if (ent:ToKnife() and ent:IsFlying() or ent:ToBomb() and ent.IsFetus or ent:ToTear())
@@ -41,7 +41,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, TECHNOLOGY_MINUS_1.ShootLasers
 
 ---@param laser EntityLaser
 function TECHNOLOGY_MINUS_1:LasersShootLasers(laser)
-	local player = Mod:TryGetPlayer(laser, true)
+	local player = Mod:TryGetPlayer(laser, {WeaponOwner = true})
 	if player
 		and player:HasCollectible(TECHNOLOGY_MINUS_1.ID)
 		and laser.SubType == LaserSubType.LASER_SUBTYPE_LINEAR

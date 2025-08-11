@@ -419,14 +419,44 @@ end
 function Foreach.Grid(func, gridType, gridVariant)
 	local room = game:GetRoom()
 	for i = 0, room:GetGridSize() - 1 do
-		local grid = room:GetGridEntity(i)
-		if grid
-			and (not gridType or grid:GetType() == gridType)
-			and (not gridVariant or grid:GetVariant() == gridVariant)
+		local gridEnt = room:GetGridEntity(i)
+		if gridEnt
+			and (not gridType or gridEnt:GetType() == gridType)
+			and (not gridVariant or gridEnt:GetVariant() == gridVariant)
 		then
-			local result = func(grid, i)
+			local result = func(gridEnt, i)
 			if result ~= nil then
 				return result
+			end
+		end
+	end
+end
+
+---Searches in a square radius rather than a circle
+---@generic V
+---@param func fun(gridEnt: GridEntity, gridIndex: integer): V?
+---@param gridType? GridEntityType
+---@param gridVariant? integer
+---@return V?
+function Foreach.GridInRadius(pos, radius, func, gridType, gridVariant)
+	local topLeft = pos + Vector(-radius, -radius)
+	local bottomRight = pos + Vector(radius, radius)
+	topLeft = Vector(topLeft.X, topLeft.Y)
+	bottomRight = Vector(bottomRight.X, bottomRight.Y)
+	local room = game:GetRoom()
+
+	for x = topLeft.X, bottomRight.X do
+		for y = topLeft.Y, bottomRight.Y do
+			local gridIndex = room:GetGridIndex(Vector(x, y))
+			local grid = room:GetGridEntity(gridIndex)
+			if grid
+				and (not gridType or grid:GetType() == gridType)
+				and (not gridVariant or grid:GetVariant() == gridVariant)
+			then
+				local result = func(grid, gridIndex)
+				if result ~= nil then
+					return result
+				end
 			end
 		end
 	end

@@ -238,6 +238,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, LEAH_B.HeartDecay, Mod.Play
 ---@param source EntityRef
 ---@param countdown integer
 function LEAH_B:HealBrokenHearts(ent, amount, flags, source, countdown)
+	if not ent:IsActiveEnemy(true) then return end
 	local player = Mod:TryGetPlayer(source)
 	if player and LEAH_B:IsLeahB(player) and Mod:IsValidEnemyTarget(ent) then
 		local data = Mod:GetData(player)

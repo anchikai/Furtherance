@@ -191,6 +191,12 @@ end
 
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, WHIRLPOOL.OnEffectInit, WHIRLPOOL.ID)
 
+local fireplaceVars = Mod:Set({
+	0,
+	1,
+	10,
+})
+
 ---@param effect EntityEffect
 function WHIRLPOOL:OnEffectUpdate(effect)
 	local capsule = effect:GetNullCapsule("hitcapsule")
@@ -207,33 +213,43 @@ function WHIRLPOOL:OnEffectUpdate(effect)
 	elseif sprite:IsFinished("Death") then
 		effect:Remove()
 	end
-	if capsule then
-		local data = Mod:GetData(effect)
-		data.SuccList = data.SuccList or {}
-		for _, ent in ipairs(Isaac.FindInCapsule(capsule, EntityPartition.ENEMY)) do
-			if ent:IsActiveEnemy(false) then
-				if not data.SuccList[ent.Index] then
-					local dist = (effect.Position - ent.Position):Resized(ent.Position:Distance(effect.Position))
-					data.SuccList[ent.Index] = { Dist = dist, DamageCountdown = WHIRLPOOL.DAMAGE_COUNTDOWN }
-				end
-				local entData = data.SuccList[ent.Index]
-				local newPos = entData.Dist
-				ent.Velocity = effect.Position - ent.Position - Vector(newPos.X, newPos.Y / 2.5)
-				entData.Dist = (newPos - newPos:Resized(0.4)):Rotated(-15)
-				if entData.DamageCountdown > 0 then
-					entData.DamageCountdown = entData.DamageCountdown - 1
-				else
-					ent:TakeDamage(effect.CollisionDamage, 0, EntityRef(effect), 0)
-					entData.DamageCountdown = WHIRLPOOL.DAMAGE_COUNTDOWN
-				end
-				Mod:DelayOneFrame(function()
-					if ent:IsDead() or not ent:Exists() or ent.EntityCollisionClass == EntityCollisionClass.ENTCOLL_NONE then
-						data.SuccList[ent.Index] = nil
-					end
-				end)
+
+	if not capsule then return end
+
+	local data = Mod:GetData(effect)
+	data.SuccList = data.SuccList or {}
+	for _, ent in ipairs(Isaac.FindInCapsule(capsule, EntityPartition.ENEMY)) do
+		if ent:IsActiveEnemy(false) then
+			local ptrHash = GetPtrHash(ent)
+			if not data.SuccList[ptrHash] then
+				local dist = (effect.Position - ent.Position):Resized(ent.Position:Distance(effect.Position))
+				data.SuccList[ptrHash] = { Dist = dist, DamageCountdown = WHIRLPOOL.DAMAGE_COUNTDOWN }
 			end
+			local entData = data.SuccList[ptrHash]
+			local newPos = entData.Dist
+			ent.Velocity = effect.Position - ent.Position - Vector(newPos.X, newPos.Y / 2.5)
+			entData.Dist = (newPos - newPos:Resized(0.4)):Rotated(-15)
+			if entData.DamageCountdown > 0 then
+				entData.DamageCountdown = entData.DamageCountdown - 1
+			else
+				ent:TakeDamage(effect.CollisionDamage, 0, EntityRef(effect), 0)
+				entData.DamageCountdown = WHIRLPOOL.DAMAGE_COUNTDOWN
+			end
+			Mod:DelayOneFrame(function()
+				if ent:IsDead() or not ent:Exists() or ent.EntityCollisionClass == EntityCollisionClass.ENTCOLL_NONE then
+					data.SuccList[ptrHash] = nil
+				end
+			end)
+		elseif ent.Type == EntityType.ENTITY_FIREPLACE and fireplaceVars[ent.Variant] and not ent:IsDead() then
+			ent:Die()
 		end
 	end
+
+	Mod.Foreach.GridInRadius(effect.Position, capsule:GetF1() * 2, function (gridEnt)
+		if gridEnt.State ~= 2 then
+			gridEnt:Hurt(1)
+		end
+	end, GridEntityType.GRID_POOP)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, WHIRLPOOL.OnEffectUpdate, WHIRLPOOL.ID)

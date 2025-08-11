@@ -87,7 +87,7 @@ end
 ---@param source EntityRef
 ---@param countdown integer
 function POLARITY_SHIFT:ChargeWithDamage(ent, amount, flags, source, countdown)
-	if not ent:CanShutDoors() then return end
+	if not ent:IsActiveEnemy(true) then return end
 	local player = Mod:TryGetPlayer(source)
 	if player then
 		local slots = Mod:GetActiveItemCharges(player, POLARITY_SHIFT.ID_1)

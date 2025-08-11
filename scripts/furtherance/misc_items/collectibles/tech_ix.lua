@@ -94,7 +94,7 @@ end
 
 ---@param tear EntityTear
 function TECH_IX:PostFireTear(tear)
-	local player = Mod:TryGetPlayer(tear, true)
+	local player = Mod:TryGetPlayer(tear, {WeaponOwner = true})
 	if player and player:HasCollectible(TECH_IX.ID) then
 		if tear:HasTearFlags(TearFlags.TEAR_FETUS) then
 			if tear:HasTearFlags(TearFlags.TEAR_FETUS_BRIMSTONE) then
@@ -114,7 +114,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, TECH_IX.PostFireTear)
 
 ---@param bomb EntityBomb
 function TECH_IX:PostFireBomb(bomb)
-	local player = Mod:TryGetPlayer(bomb, true)
+	local player = Mod:TryGetPlayer(bomb, {WeaponOwner = true})
 	if player and player:HasCollectible(TECH_IX.ID) and not player:HasCollectible(CollectibleType.COLLECTIBLE_TECH_X) then
 		local laser = TECH_IX:FireTechIXRing(player, bomb.Position, bomb.Size, Vector.Zero)
 		laser.Parent = bomb
@@ -126,7 +126,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BOMB, TECH_IX.PostFireBomb)
 
 ---@param tear EntityTear
 function TECH_IX:FetusFireTechIX(tear)
-	local player = Mod:TryGetPlayer(tear, true)
+	local player = Mod:TryGetPlayer(tear, {WeaponOwner = true})
 	if player and player:HasCollectible(TECH_IX.ID)
 		and not (
 			tear:HasTearFlags(TearFlags.TEAR_FETUS_SWORD)
@@ -148,7 +148,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, TECH_IX.FetusFireTechIX, TearV
 ---@param tear EntityTear
 function TECH_IX:LudoTear(tear)
 	Mod:DelayOneFrame(function()
-		local player = Mod:TryGetPlayer(tear, true)
+		local player = Mod:TryGetPlayer(tear, {WeaponOwner = true})
 		if player and player:HasCollectible(TECH_IX.ID) and tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then
 			tear:Remove()
 		end

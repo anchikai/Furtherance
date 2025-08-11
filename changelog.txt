@@ -1,3 +1,9 @@
+v1.2.1
+- Fixed T. Peter's outline not updating with any changes to their costumes while active
+- Added various safety measures to any of Furtherance's effects involved with tracking damage dealt to enemies or effects on enemy death
+- Polydipsia now instantly extinguishes fireplaces
+- Miriam's Whirlpool now instantly extinguishes fireplaces and rapidly damages poops
+
 v1.2
 
 General Changes

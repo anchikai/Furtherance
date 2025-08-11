@@ -160,7 +160,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SPIRITUAL_WOUND.RemoveInnat
 ---@param flags DamageFlag
 ---@param source EntityRef
 function SPIRITUAL_WOUND:LaserDamage(ent, amount, flags, source)
-	local player = Mod:TryGetPlayer(source.Entity, true)
+	local player = Mod:TryGetPlayer(source, {WeaponOwner = true})
 	if player
 		and SPIRITUAL_WOUND:ShouldUseSpiritualWound(player)
 		and Mod:HasBitFlags(flags, DamageFlag.DAMAGE_LASER)

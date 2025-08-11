@@ -465,7 +465,6 @@ function TearModifier.New(params)
 
 			data[dataName] = data[dataName] or {}
 
-
 			if knife:GetIsSwinging() or knife:GetIsSpinAttack() then
 				local hitList = Mod:Set(knife:GetHitList())
 				for _, enemy in ipairs(Isaac.GetRoomEntities()) do

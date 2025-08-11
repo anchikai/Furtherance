@@ -1,14 +1,19 @@
-local Mod = Furtherance
 local floor = Furtherance.math.floor
 local max = Furtherance.math.max
+
+---@class TryGetParams
+---@field WeaponOwner boolean? If a familiar is found, will only pass the player if that familiar is a weapon-copying familiar
+---@field WeaponFamiliar boolean? If a familiar is found, will pass the familiar if it is a weapon-copying familiar
+---@field CheckSpawnerEnt boolean? Will pass the SpawnerEntity back into the function in an attempt to locate the player
+
+local preventLoop = {}
 
 ---Will attempt to find the player using the attached Entity, EntityRef, or EntityPtr.
 ---Will return if its a player, the player's familiar, or loop again if it has a SpawnerEntity
 ---@param ent Entity | EntityRef | EntityPtr
----@param weaponOwner? boolean #If specified, and it finds a familiar, will only pass the player if that familiar is a weapon-copying familiar
----@param weaponFamiliar? boolean #If this and `weaponOwner` are true, will return the familiar instead of the player. Recommended to use TryGetOwner instead of a Player|Famliiar return
+---@param tryGetParams? TryGetParams
 ---@return EntityPlayer?
-function Furtherance:TryGetPlayer(ent, weaponOwner, weaponFamiliar)
+function Furtherance:TryGetPlayer(ent, tryGetParams)
 	if not ent then return end
 	if string.match(getmetatable(ent).__type, "EntityPtr") then
 		if ent.Ref then
@@ -21,9 +26,9 @@ function Furtherance:TryGetPlayer(ent, weaponOwner, weaponFamiliar)
 	elseif ent:ToPlayer() then
 		return ent:ToPlayer()
 	elseif ent:ToFamiliar() and ent:ToFamiliar().Player then
-		if weaponOwner and ent:ToFamiliar():GetWeapon() then
+		if tryGetParams and (tryGetParams.WeaponOwner or tryGetParams.WeaponFamiliar) and ent:ToFamiliar():GetWeapon() then
 			local familiar = ent:ToFamiliar()
-			if weaponFamiliar then
+			if tryGetParams.WeaponFamiliar then
 				---@diagnostic disable-next-line: return-type-mismatch
 				return familiar
 			elseif familiar then
@@ -33,7 +38,13 @@ function Furtherance:TryGetPlayer(ent, weaponOwner, weaponFamiliar)
 			return ent:ToFamiliar().Player
 		end
 	elseif ent.SpawnerEntity then
-		return Furtherance:TryGetPlayer(ent.SpawnerEntity)
+		local ptrHash = GetPtrHash(ent)
+		if not preventLoop[ptrHash] then
+			preventLoop[ptrHash] = true
+			local result = Furtherance:TryGetPlayer(ent.SpawnerEntity)
+			preventLoop[ptrHash] = nil
+			return result
+		end
 	end
 end
 
@@ -41,7 +52,7 @@ end
 ---@param ent Entity | EntityRef | EntityPtr
 ---@return EntityPlayer | EntityFamiliar?
 function Furtherance:TryGetOwner(ent)
-	return Furtherance:TryGetPlayer(ent, true, true)
+	return Furtherance:TryGetPlayer(ent, {WeaponFamiliar = true})
 end
 
 ---@param player EntityPlayer

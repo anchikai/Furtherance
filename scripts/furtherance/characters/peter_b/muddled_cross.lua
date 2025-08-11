@@ -188,6 +188,7 @@ end
 ---@param flags DamageFlag
 ---@param source EntityRef
 function MUDDLED_CROSS:MuddledCrossDamageKillCredit(ent, damage, flags, source)
+	if not ent:IsActiveEnemy(true) then return end
 	local player = Mod:TryGetPlayer(source)
 	if player
 		and player:HasCollectible(MUDDLED_CROSS.ID)

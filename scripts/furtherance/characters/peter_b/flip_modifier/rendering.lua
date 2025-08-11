@@ -193,6 +193,9 @@ local vd = Vector(0, 40)
 function FLIP_RENDERING:AddOutlineSprite(ent, spr, trackMode)
 	local data = Mod:GetData(ent)
 	local copyspr = Mod:CopySprite(spr)
+	if not copyspr:IsLoaded() then
+		return
+	end
 	local mirrorWorld = Mod.Room():IsMirrorWorld()
 
 	for _, layer in pairs(spr:GetAllLayers()) do
@@ -299,7 +302,6 @@ function FLIP_RENDERING:OutlineUpdate(ent)
 		local spr = GSGSAGS[3]
 		local anim, frame = spr:GetAnimation(), spr:GetFrame()
 		local overlayAnim, overlayFrame = spr:GetOverlayAnimation(), spr:GetOverlayFrame()
-		local playerPart = GSGSAGS[4] ~= nil
 		local trackMode = GSGSAGS[4]
 
 		copyspr.Rotation = spr.Rotation
@@ -321,7 +323,7 @@ function FLIP_RENDERING:OutlineUpdate(ent)
 
 		copyspr:SetFrame(anim, frame)
 
-		if playerPart then
+		if trackMode ~= nil then
 			if trackMode == "head" then
 				local headScale = sprite:GetLayer("head"):GetSize()
 				copyspr.Scale = sprite.Scale * headScale
@@ -345,6 +347,14 @@ function FLIP_RENDERING:OutlineUpdate(ent)
 		end
 	end
 end
+
+local function resetCostume(_, _, player)
+	local data = Mod:GetData(player)
+	data.GSGSAGS = nil
+end
+
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_ADD_COSTUME, resetCostume)
+Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_REMOVE_COSTUME, resetCostume)
 
 ---@param ent Entity
 function FLIP_RENDERING:EntityUpdate(ent)

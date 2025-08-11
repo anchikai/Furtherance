@@ -123,6 +123,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, SHATTERED_HEART.SharpHeartUp
 ---@param source EntityRef
 ---@param countdown integer
 function SHATTERED_HEART:RemoveBrokensFromDamage(ent, amount, flags, source, countdown)
+	if not ent:IsActiveEnemy(true) then return end
 	local player = Mod:TryGetPlayer(source)
 	if player and PlayerManager.AnyoneHasCollectible(Mod.Item.SHATTERED_HEART.ID) then
 		local rng = player:GetCollectibleRNG(Mod.Item.SHATTERED_HEART.ID)
