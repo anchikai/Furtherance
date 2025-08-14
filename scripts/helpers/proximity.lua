@@ -1,4 +1,5 @@
 local cos = Furtherance.math.cos
+local rad = Furtherance.math.rad
 
 ---@param ent Entity?
 function Furtherance:IsValidEnemyTarget(ent)
