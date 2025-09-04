@@ -106,7 +106,7 @@ return function(modifiers)
 			Name = "Caduceus Staff",
 			Description = {
 				"5% chance for damage taken to not remove any health and grant either a {{Heart}} Red Heart, {{SoulHeart}} Soul Heart, or half of both depending on Isaac's health",
-				"#If effect wasn't triggered upon taking damage, doubles chance to trigger on next damage",
+				"#If effect wasn't triggered upon taking damage, multiplies chance by x1.7 to trigger on next damage",
 				"#Chance resets upon effect activating"
 			}
 		},
@@ -568,8 +568,7 @@ return function(modifiers)
 				"#Isaac's tears are shot in an arc",
 				"#Isaac's tears leave creep, its size scaling with the size of the tear",
 				"#{{Damage}} The creep deals 66% of Isaac's damage per second and inherits his tear effects",
-				"#When coming into contact with another Polydipsia creep, increases its lifetime by 1 second",
-				"#The creep will stay alive for "
+				"#When coming into contact with another Polydipsia creep, increases its lifetime by 1 second"
 			}
 		},
 		[Item.PRAYER_JOURNAL.ID] = {
