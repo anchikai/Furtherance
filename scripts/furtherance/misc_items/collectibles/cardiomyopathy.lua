@@ -48,7 +48,7 @@ Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, CARDIOMYOPATHY.ConvertBon
 ---@param player EntityPlayer
 function CARDIOMYOPATHY:ReplaceBoneHearts(player)
 	local numBoneHearts = player:GetBoneHearts()
-	if player:HasCollectible(CARDIOMYOPATHY.ID) and numBoneHearts > 0 then
+	if player:HasCollectible(CARDIOMYOPATHY.ID) and numBoneHearts > 0 and player:GetHealthType() ~= HealthType.BONE then
 		player:AddBoneHearts(-numBoneHearts)
 		player:AddMaxHearts(numBoneHearts * 2, true)
 	end

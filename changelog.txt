@@ -3,6 +3,8 @@ v1.2.2
 - When Caduceus Staff fails to trigger its effect, it will multiply the last chance by x1.7 instead of adding +5%
 - Furtherance's items that grant tear effects now have a stacking chance effect, multiplying the base chance of effect to trigger by the number of copies of the item. This can exceed the capped chance.
 - Because of this these Items have stacking effects: Ceres?, Juno?, Vesta?, Leah's Lock, Owl's Eye, Saline Spray
+- Added missing stackable item effect for Chi Rho
+- Epitaph's effect of spawning a tombstone on the next run now matches Eden's Blessings requirements (i.e. no challenges, no seeded runs, owning the items directly, etc.)
 - Fixed EID description for Caduceus Staff and Cardiomyopathy being incorrect
 - Fixed several of Furtherance's item descriptions being blank when viewed on the item collection screen on the main menu
 

@@ -34,7 +34,9 @@ end
 ---Triggers after certain death, as it doesn't run for vanilla revives and will be cancelled for modded revives
 ---@param player EntityPlayer
 function EPITAPH:SavePlayerInventoryOnDeath(player)
-	if player:HasCollectible(EPITAPH.ID) then
+	if player:HasCollectible(EPITAPH.ID, true, true)
+		and not Mod.Game:AchievementUnlocksDisallowed()
+	then
 		Mod:DebugLog("Died with Epitaph! Checking inventory...")
 		local player_run_save = Mod:RunSave(player)
 		local inv = { LevelStage = Mod.Level():GetAbsoluteStage(), Collectibles = {} }

@@ -119,8 +119,11 @@ return function(modifiers)
 		[Item.CARDIOMYOPATHY.ID] = {
 			Name = "Cardiomyopathy",
 			Description = {
-				"{{Timer}} Picking up hearts that grant {{Heart}} Red Health has a 33% chance to grant invulnerability",
-				"#Invulnerability duration is 1 second for each half a heart the pickup would grant"
+				"Picking up {{Heart}} Red Hearts has a 33% chance to grant brief invincibility",
+				"#Invincibility lasts 1 second for each half a heart the pickup grants",
+				"#{{Heart}} Additionally adds a 1% chance upon heart pickup to grant +1 Red Heart",
+				"#{{Luck}} 20% chance at 20 luck",
+				"#!!! Converts all {{BoneHeart}} Bone Hearts into {{Heart}} Red Hearts"
 			}
 		},
 		[Item.CERES.ID] = {
