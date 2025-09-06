@@ -12,7 +12,6 @@ if not EID then
 end
 
 local Item = Mod.Item
-local Trinket = Mod.Trinket
 
 ---@param entity Entity
 ---@return EntityPlayer
@@ -151,8 +150,8 @@ function DD:ContainsFunction(tbl)
 end
 
 ---@param descTab table
----@return {Func: fun(descObj: table): (string), AppendToEnd: boolean}
-function DD:CreateCallback(descTab, appendToEnd)
+---@return {Func: fun(descObj: table): (string), AppendToEnd: boolean, HasFallback: boolean}
+function DD:CreateCallback(descTab, appendToEnd, hasFallback)
 	return {
 		Func = function(descObj)
 			return table.concat(
@@ -176,7 +175,8 @@ function DD:CreateCallback(descTab, appendToEnd)
 				""
 			)
 		end,
-		AppendToEnd = appendToEnd or false
+		AppendToEnd = appendToEnd or false,
+		HasFallback = hasFallback or false
 	}
 end
 
@@ -210,7 +210,7 @@ end
 ---@param variant integer
 ---@param subtype integer
 ---@param language string
----@return {Func: fun(descObj: table): (string?), AppendToEnd: boolean}?
+---@return {Func: fun(descObj: table): (string?), AppendToEnd: boolean, HasFallback: boolean}?
 function DD:GetCallback(type, variant, subtype, language)
 	if not DynamicDescriptions[type] then
 		return nil
@@ -301,6 +301,60 @@ function FR_EID:TrinketMultiStr(multiplier, ...)
 	return ({ ... })[multiplier] or ""
 end
 
+function FR_EID:TrinketMultiGoldStr(player, trinketID, num)
+	local multi = FR_EID:TrinketMulti(player, trinketID)
+	if multi > 1 then
+		return "{{ColorGold}}" .. num * multi .. "{{CR}}"
+	end
+	return num
+end
+
+local min = math.min
+local max = math.max
+local floor = math.floor
+
+---@param player EntityPlayer
+---@param modifier TearModifier
+---@param chanceMult integer
+function FR_EID:GetTearModifierMaxLuckChance(player, modifier, chanceMult)
+	local luck = player.Luck
+	player.Luck = 0
+	local minChance = modifier:GetChance(player, true, chanceMult)
+	player.Luck = luck
+	local maxLuck = modifier.MaxLuck
+	local luckWorth = (modifier.MaxChance - modifier.MinChance) / (modifier.MaxLuck - modifier.MinLuck)
+	local maxChance = minChance + (luckWorth * modifier.MaxLuck)
+	if maxChance > 1 then
+		local luckSavedInChance = floor((maxChance - 1) / luckWorth)
+		maxLuck = max(0, maxLuck - luckSavedInChance)
+	end
+	return maxChance, maxLuck
+end
+
+---@param str string
+---@param player EntityPlayer
+---@param modifier TearModifier
+---@param chanceMult integer
+function FR_EID:LuckChanceStr(str, player, modifier, chanceMult)
+	local maxChance, maxLuck = FR_EID:GetTearModifierMaxLuckChance(player, modifier, chanceMult)
+	local maxChanceCapped = min(1, maxChance)
+	local maxChanceStr = (tostring(floor(maxChanceCapped * 100)))
+	local maxLuckStr = tostring(maxLuck)
+	--So that a golden glow doesn't trigger at 100% chance
+	if maxChanceCapped > modifier.MaxChance then
+		maxChanceStr = "{{ColorGold}}" .. maxChanceStr .. "{{CR}}"
+	end
+	if maxLuck < modifier.MaxLuck then
+		maxLuckStr = "{{ColorGold}}" .. maxLuckStr .. "{{CR}}"
+	end
+	return str:format(maxChanceStr .. "%", maxLuckStr)
+end
+
+---@param descObj EID_DescObj
+function FR_EID.GetFallbackDescription(descObj)
+	return EID:getDescriptionObj(5, 100, descObj.ObjSubType, nil, false).Description
+end
+
 local eidCategory = {
 	"items",
 	"trinkets",
@@ -343,10 +397,11 @@ EID:addDescriptionModifier(
 
 		if callback.AppendToEnd then ---@diagnostic disable-line: need-check-nil
 			descObj.Description = descObj.Description .. descString
+		elseif callback.HasFallback then ---@diagnostic disable-line: need-check-nil
+			descObj.Description = descString
 		else
 			descObj.Description = descString .. descObj.Description
 		end
-
 		return descObj
 	end
 )

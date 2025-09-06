@@ -78,6 +78,9 @@ return function(modifiers)
 				function(descObj)
 					return modifiers[Item.BOOK_OF_LEVITICUS.ID]._modifier(descObj)
 				end
+			},
+			FallbackDescription = {
+				"{{Card72}} Uses XVI - The Tower?"
 			}
 		},
 		[Item.BOOK_OF_SWIFTNESS.ID] = {
@@ -86,6 +89,9 @@ return function(modifiers)
 				function(descObj)
 					return modifiers[Item.BOOK_OF_SWIFTNESS.ID]._modifier(descObj)
 				end
+			},
+			FallbackDescription = {
+				"{{Card54}} Uses Era Walk"
 			}
 		},
 		[Item.BRUNCH.ID] = {
@@ -308,6 +314,9 @@ return function(modifiers)
 				function(descObj)
 					return modifiers[Item.KEY_CAPS.ID]._modifier(descObj)
 				end
+			},
+			FallbackDescription = {
+				"{{Card52}} Uses Huge Growth"
 			}
 		},
 		[Item.KEY_E.ID] = {
@@ -424,13 +433,11 @@ return function(modifiers)
 		},
 		[Item.MUDDLED_CROSS.ID] = {
 			Name = "Muddled Cross",
-			Description = {
-				function (descObj)
-					return modifiers[Item.MUDDLED_CROSS.ID]._modifier(descObj,
-					"{{Battery}} Must be charged by submerging enemies",
-					"{{Battery}} Must be charged by killing enemies"
-				)
-				end,
+			Description = function (descObj)
+				return modifiers[Item.MUDDLED_CROSS.ID]._modifier(descObj, "killing", "submerging")
+			end,
+			FallbackDescription = {
+				"{{Battery}} Must be charged by killing enemies",
 				"#Spawns a pool at the entrance of certain special rooms that reveal an alternate room",
 				"#On use, changes the current room into the previewed room",
 				"#{{TreasureRoom}} <-> {{RedTreasureRoom}}",
@@ -474,13 +481,16 @@ return function(modifiers)
 		[Item.PALLAS.ID] = {
 			Name = "Pallas?",
 			Description = {
-				"↑ {{Tearsize}}+20% Tear size",
-				"#{{Collectible529}} Isaac's tears bounce off the floor after floating for a short time",
+				Mod.EID_Support.GetFallbackDescription,
 				function(descObj)
 					return modifiers[Item.PALLAS.ID]._modifier(descObj,
 						"#{{Collectible540}} + Flat Stone: {{Damage}} +16% damage and {{Tearsize}} x2 Tear size"
 					)
 				end
+			},
+			FallbackDescription = {
+				"↑ {{Tearsize}}+20% Tear size",
+				"#{{Collectible529}} Isaac's tears bounce off the floor after floating for a short time",
 			}
 		},
 		[Item.PALLIUM.ID] = {

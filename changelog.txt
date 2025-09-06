@@ -1,3 +1,11 @@
+v1.2.2
+- Soul of Leah now grants a one-time-use Heartbreak-like effect (since I couldn't get the health cap increase to work). Will grant 2 Broken Hearts and deal fake damage when used, but is also used automatically when you would take fatal damage
+- When Caduceus Staff fails to trigger its effect, it will multiply the last chance by x1.7 instead of adding +5%
+- Furtherance's items that grant tear effects now have a stacking chance effect, multiplying the base chance of effect to trigger by the number of copies of the item. This can exceed the capped chance.
+- Because of this these Items have stacking effects: Ceres?, Juno?, Vesta?, Leah's Lock, Owl's Eye, Saline Spray
+- Fix EID incorrectly describing Caduceus Staff as doubling the last effect trigger chance upon failing to trigger its effect (now reflects the new chance seen above)
+- Fixed several of Furtherance's item descriptions being blank when viewed on the item collection screen on the main menu
+
 v1.2.1
 - Fixed T. Peter's outline not updating with any changes to their costumes while active
 - Added various safety measures to any of Furtherance's effects involved with tracking damage dealt to enemies or effects on enemy death

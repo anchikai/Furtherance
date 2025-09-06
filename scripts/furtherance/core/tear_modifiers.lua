@@ -1,4 +1,4 @@
---Full credit to Epiphany which I was granted permission to use
+--Credit to Epiphany for original tear modifier code. Upgraded by Benny with RGON implementation
 local Mod = Furtherance
 local modInitial = "FR_"
 local game = Mod.Game
@@ -25,16 +25,17 @@ end
 ---@field Name string @The string identifier for this TearModifier.
 ---@field Items CollectibleType[] @List of items that cause this TearModifier to activate.
 ---@field Trinkets TrinketType[] @List of trinkets that cause this TearModifier to activate.
----@field RngGetter (fun(player:EntityPlayer): RNG?)? @A function that returns the rng to use for the chance calculation. Overrides the item/trinket checks.
+---@field RngGetter (fun(player:EntityPlayer): RNG?, baseChanceMult: integer?)? @A function that returns the rng to use for the chance calculation. Overrides the item/trinket checks.
 ---@field IsTrinket boolean @If `Item` is a `TrinketType`.
 ---@field MinLuck number @The minimum luck for calculating chance-based tear modifiers.
 ---@field MaxLuck number @The maximum luck for calculating chance-based tear modifiers.
 ---@field MinChance number @The minimum chance of proccing for chance-based tear modifiers. Affected by the luck variables.
 ---@field MaxChance number @The maximum chance of proccing for chance-based tear modifiers. Affected by the luck variables.
----@field LastRoll integer @The last chance roll made.
+---@field LastRoll integer @The last chance roll made. Only set when using the default GetChance.
 ---@field ShouldAffectBombs boolean @Whether Dr and Epic fetus are affected by this modifier.
 ---@field Cooldown Cooldown
 ---@field GFX string? @The anm2 to use for the tear.
+---@field GFX_BLOOD string? @The anm2 to use for the blood tear.
 ---@field Color Color? @The color to use for the tear.
 ---@field LaserColor Color? @The color to use for the laser
 local TearModifier = {}
@@ -105,21 +106,23 @@ end
 ---Returns the RNG object for the item or trinket that causes this TearModifier to activate.
 ---Returns nil if the player doesn't have any items or trinkets that contribute to the tear modifier.
 ---@param player EntityPlayer
----@return RNG?
+---@return RNG?, integer?
 function TearModifier:TryGetItemRNG(player)
 	if self.RngGetter then
-		return self.RngGetter(player)
+		local rng, baseChanceMult = self.RngGetter(player)
+		baseChanceMult = baseChanceMult or 1
+		return rng, baseChanceMult
 	end
 
 	for i = 1, #self.Items do
 		if player:HasCollectible(self.Items[i]) then
-			return player:GetCollectibleRNG(self.Items[i])
+			return player:GetCollectibleRNG(self.Items[i]), player:GetCollectibleNum(self.Items[i])
 		end
 	end
 
 	for i = 1, #self.Trinkets do
 		if player:HasTrinket(self.Trinkets[i], false) then
-			return player:GetTrinketRNG(self.Trinkets[i])
+			return player:GetTrinketRNG(self.Trinkets[i]), player:GetTrinketMultiplier(self.Trinkets[i])
 		end
 	end
 end
@@ -128,13 +131,9 @@ end
 ---@param player EntityPlayer
 ---@param ignoreTeardrop? boolean
 function TearModifier:CheckTearAffected(player, ignoreTeardrop)
-	local rng = self:TryGetItemRNG(player)
-	if not rng then
-		return false
-	end
-	self.LastRoll = rng:RandomFloat()
+	local rng, numItems = self:TryGetItemRNG(player)
 
-	return self.LastRoll < self:GetChance(player, ignoreTeardrop)
+	return rng and rng:RandomFloat() < self:GetChance(player, ignoreTeardrop, numItems)
 end
 
 ---Only called for knives, lasers, samson's punch, and Ludovico, this checks if the TearModifier should be applied.
@@ -142,7 +141,7 @@ end
 ---@param weapon EntityKnife | EntityLaser | EntityTear | nil Nil if a samson punch.
 ---@param ignoreTeardrop? boolean
 function TearModifier:CheckKnifeLaserAffected(player, weapon, ignoreTeardrop)
-	local rng = self:TryGetItemRNG(player)
+	local rng, numItems = self:TryGetItemRNG(player)
 	if not rng then
 		return false
 	end
@@ -153,7 +152,7 @@ function TearModifier:CheckKnifeLaserAffected(player, weapon, ignoreTeardrop)
 		self.LastRoll = rng:RandomFloat()
 	end
 
-	return self.LastRoll < self:GetChance(player, ignoreTeardrop)
+	return self.LastRoll < self:GetChance(player, ignoreTeardrop, numItems)
 end
 
 ---Credit to Epiphany
@@ -173,13 +172,14 @@ end
 ---A percentage float chance to be used with an RNG object.
 ---@param player EntityPlayer
 ---@param ignoreTeardrop? boolean
-function TearModifier:GetChance(player, ignoreTeardrop)
+---@param baseChanceMult? integer
+function TearModifier:GetChance(player, ignoreTeardrop, baseChanceMult)
 	local luck = getTearModifierLuck(player, ignoreTeardrop)
 	luck = Mod:Clamp(luck, self.MinLuck, self.MaxLuck)
-
+	baseChanceMult = baseChanceMult or 1
 	local deltaX = self.MaxLuck - self.MinLuck
-	local rngRequirement = ((self.MaxChance - self.MinChance) / deltaX) * luck +
-		(self.MaxLuck * self.MinChance - self.MinLuck * self.MaxChance) / deltaX
+	local rngRequirement = ((self.MaxChance - self.MinChance) / deltaX) * luck + (self.MaxLuck * self.MinChance - self.MinLuck * self.MaxChance) / deltaX
+	rngRequirement = rngRequirement + (self.MinChance * (baseChanceMult - 1))
 
 	return rngRequirement
 end
@@ -246,16 +246,31 @@ function TearModifier:IsValidEnemyTarget(ent)
 		and (ent:ToNPC().CanShutDoors or ent.Type == EntityType.ENTITY_DUMMY)
 end
 
+local bloodTearTable = {
+	[TearVariant.BLOOD] = true,
+	[TearVariant.CUPID_BLOOD] = true,
+	[TearVariant.NAIL_BLOOD] = true,
+	[TearVariant.PUPULA_BLOOD] = true,
+	[TearVariant.GODS_FLESH_BLOOD] = true,
+	[TearVariant.GLAUCOMA_BLOOD] = true,
+	[TearVariant.EYE_BLOOD] = true,
+}
+
+function TearModifier:IsBloodTear(tearVariant)
+	return bloodTearTable[tearVariant] ~= nil
+end
+
 ---@class TearModifierParams
 ---@field Name string @The string identifier for this TearModifier.
 ---@field Items CollectibleType[]? @List of items that cause this TearModifier to activate.
 ---@field Trinkets TrinketType[]? @List of trinkets that cause this TearModifier to activate.
----@field RngGetter (fun(player:EntityPlayer): RNG?)? @A function that returns the rng to use for the chance calculation. Overrides the item/trinket checks.
+---@field RngGetter (fun(player:EntityPlayer): RNG?, baseChanceMult: integer?)? @A function that returns the rng to use for the chance calculation. Overrides the item/trinket checks.
 ---@field MinLuck number? @The minimum luck for calculating chance-based tear modifiers. 0 by default.
 ---@field MaxLuck number? @The maximum luck for calculating chance-based tear modifiers. 10 by default.
 ---@field MinChance number? @The minimum chance of proccing for chance-based tear modifiers. Affected by the luck variables. 0 by default.
 ---@field MaxChance number? @The maximum chance of proccing for chance-based tear modifiers. Affected by the luck variables. 0.25 by default.
 ---@field GFX string? @The anm2 to use for a tear. Leave nil to let the game decide.
+---@field GFX_BLOOD string? @The anm2 to use for a blood tear, will use normal gfx if not used
 ---@field Color Color? @The color to use for a tear, knife, or laser. Leave nil to let the game decide.
 ---@field LaserColor Color? @The color to use for only lasers. If `Color` is defined, this will override it
 ---@field ShouldAffectBombs boolean? @If Dr and Epic Fetus should be affected. By default, this is false.
@@ -281,6 +296,7 @@ function TearModifier.New(params)
 	self.LastRoll = 0
 
 	self.GFX = params.GFX
+	self.GFX_BLOOD = params.GFX_BLOOD
 	self.Color = params.Color
 	self.LaserColor = params.LaserColor
 
@@ -306,17 +322,28 @@ function TearModifier.New(params)
 		local player = Mod:TryGetPlayer(tear.SpawnerEntity)
 		if player and self:CheckTearAffected(player, true) then
 			local sprite = tear:GetSprite()
-			data[modInitial .. self.Name] = true
-			self:PostFire(tear)
+			local appliedGFX = false
+			local animationName = sprite:GetAnimation()
 
-			if self.GFX then
+			if self.GFX_BLOOD and self:IsBloodTear(tear.Variant) then
+				sprite:Load(self.GFX_BLOOD, true)
+				sprite:Play(animationName, true)
+				appliedGFX = true
+			elseif self.GFX and not self:IsBloodTear(tear.Variant) then
 				sprite:Load(self.GFX, true)
-				sprite:Play(sprite:GetDefaultAnimation(), true)
+				sprite:Play(animationName, true)
+				appliedGFX = true
 			end
+			if not sprite:IsPlaying(animationName) then
+				sprite:Play(sprite:GetDefaultAnimation())
+			end
+			tear:ResetSpriteScale(true)
 
-			if self.Color then
+			if self.Color and not appliedGFX then
 				sprite.Color = self.Color
 			end
+			data[modInitial .. self.Name] = true
+			self:PostFire(tear)
 		end
 	end)
 
@@ -421,12 +448,12 @@ function TearModifier.New(params)
 		local player = Mod:TryGetPlayer(knife.SpawnerEntity)
 		if player and self:CheckKnifeLaserAffected(player, knife, true) then
 			local sprite = knife:GetSprite()
-			data[modInitial .. self.Name] = true
-			self:PostFire(knife)
 
 			if self.Color then
 				sprite.Color = self.Color
 			end
+			data[modInitial .. self.Name] = true
+			self:PostFire(knife)
 		end
 	end
 	Mod:AddCallback(ModCallbacks.MC_POST_FIRE_KNIFE, fireKnife)
@@ -624,7 +651,7 @@ function TearModifier.New(params)
 
 	if Epiphany then
 		--#region Samson code !!
-		Epiphany:AddExtraCallback(Epiphany.ExtraCallbacks.SAMSON_PUNCH_ENTITY, function(player, npc, isSlam, point)
+			Epiphany:AddExtraCallback(Epiphany.ExtraCallbacks.SAMSON_PUNCH_ENTITY, function(player, npc, isSlam, point)
 			if player and self:CheckKnifeLaserAffected(player, nil) then
 				self:PostNpcHit(player, npc, false, true)
 			end
@@ -648,11 +675,11 @@ function TearModifier.New(params)
 			if player and self:CheckTearAffected(player) then
 				local sprite = bag:GetSprite()
 				TbData[modInitial .. self.Name] = true
-				self:PostFire(bag)
 
 				if self.Color then
 					sprite.Color = self.Color
 				end
+				self:PostFire(bag)
 			end
 		end)
 
@@ -674,8 +701,8 @@ function TearModifier.New(params)
 			if not effect.SpawnerEntity then
 				return
 			end
-
 			local player = Mod:TryGetPlayer(effect.SpawnerEntity)
+
 			if player and self:CheckTearAffected(player) then
 				local sprite = effect:GetSprite()
 				local data = getData(effect)
@@ -698,11 +725,12 @@ function TearModifier.New(params)
 			if player and self:CheckTearAffected(player, true) then
 				local sprite = bomb:GetSprite()
 				data[modInitial .. self.Name] = true
-				self:PostFire(bomb)
 
 				if self.Color then
 					sprite.Color = self.Color
 				end
+
+				self:PostFire(bomb)
 			end
 		end)
 
@@ -735,16 +763,18 @@ function TearModifier.New(params)
 		Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function(_, entity, _, _, source)
 			local bomb = source.Entity and source.Entity:ToBomb()
 			local effect = source.Entity and source.Entity:ToEffect()
-			local data = getData(bomb)
 			local npc = entity:ToNPC()
 
-			if bomb and npc and TearModifier:IsValidEnemyTarget(npc) and data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
+			local data = bomb and getData(bomb)
+			if bomb and npc and data and TearModifier:IsValidEnemyTarget(npc) and data[modInitial .. self.Name] and not data[modInitial .. self.Name .. "_Disabled"] then
 				if bomb.IsFetus and npc then
 					self:PostNpcHit(bomb, npc)
 				end
 			end
-			local eData = getData(effect)
-			if effect and npc and TearModifier:IsValidEnemyTarget(npc) and eData[modInitial .. self.Name] and not eData[modInitial .. self.Name .. "_Disabled"] then
+
+			--Epic Fetus Rockets
+			local eData = effect and getData(effect)
+			if effect and npc and eData and TearModifier:IsValidEnemyTarget(npc) and eData[modInitial .. self.Name] and not eData[modInitial .. self.Name .. "_Disabled"] then
 				if npc then
 					self:PostNpcHit(effect, npc)
 				end

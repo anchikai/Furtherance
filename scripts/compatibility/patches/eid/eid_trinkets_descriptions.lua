@@ -40,7 +40,7 @@ local modifiers = {
 			desc[2] = desc[2]:format(chanceStr2, chanceStr2)
 			return desc
 		end,
-	}
+	},
 }
 
 local descriptions = {

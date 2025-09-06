@@ -114,14 +114,9 @@ return function(modifiers)
 		[Mod.Rune.SOUL_OF_LEAH.ID] = {
 			Name = "Soul of Leah",
 			Description = {
-				"↑ The max amount of heart containers is increased by 3",
-				"#↓ {{BrokenHeart}} +3 Broken Hearts",
-				"#!!! Cannot increase max heart containers past 24, but still grants Broken Hearts",
-				function(descObj)
-					return modifiers[Mod.Rune.SOUL_OF_LEAH.ID]._modifier(descObj,
-						"Only increases max health by 1 and gains +1 Broken Coin Heart"
-					)
-				end
+				"{{BrokenHeart}} +2 Broken Hearts",
+				"#Hurts Isaac without removing any health",
+				"#This item is used automatically when Isaac would take fatal damage, preventing him from dying"
 			}
 		},
 		[Mod.Rune.SOUL_OF_MIRIAM.ID] = {

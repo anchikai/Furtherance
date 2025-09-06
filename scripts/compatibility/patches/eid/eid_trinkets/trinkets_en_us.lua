@@ -89,13 +89,18 @@ return function(modifiers)
 		[Trinket.LEAHS_LOCK.ID] = {
 			Name = "Leah's Lock",
 			Description = {
-				"25% chance to fire {{Charm}} Charm or {{Fear}} Fear tears",
-				"#{{Luck}} 50% chance at 10 luck",
 				function(descObj)
-					local funy= modifiers[Trinket.LEAHS_LOCK.ID]._modifier(descObj,
+					local baseChance = Mod.math.floor((Trinket.LEAHS_LOCK.TEAR_MODIFIER.MinChance * 100))
+					local player = Mod.EID_Support:ClosestPlayerTo(descObj.Entity)
+					local newChance = Mod.EID_Support:TrinketMultiGoldStr(player, descObj.ObjSubType, baseChance)
+					local str = newChance .. "% chance to fire {{Charm}} Charm or {{Fear}} Fear tears"
+					local mult = Mod.EID_Support:TrinketMulti(player, descObj.ObjSubType)
+					return str .. Mod.EID_Support:LuckChanceStr("#{{Luck}} %s chance at %s luck", player, Trinket.LEAHS_LOCK.TEAR_MODIFIER, mult)
+				end,
+				function(descObj)
+					return modifiers[Trinket.LEAHS_LOCK.ID]._modifier(descObj,
 						"Can trigger both charm and fear at the same time"
 					)
-					return funy
 				end
 			}
 		},
@@ -121,22 +126,23 @@ return function(modifiers)
 			Description = {
 				"All of Isaac's familiars block projectiles"
 			}
-
 		},
 		[Trinket.REBOUND_WORM.ID] = {
 			Name = "Rebound Worm",
 			Description = {
 				"Tears ricochet off of walls and grid entities, firing at the closest enemy in range"
 			}
-
 		},
 		[Trinket.SALINE_SPRAY.ID] = {
 			Name = "Saline Spray",
-			Description = {
-				"{{Collectible596}} 5% chance to shoot freezing tears",
-				"#{{Luck}} 100% chance at 10 luck",
-			}
-
+			Description = function(descObj)
+				local baseChance = Mod.math.floor((Trinket.SALINE_SPRAY.TEAR_MODIFIER.MinChance * 100))
+				local player = Mod.EID_Support:ClosestPlayerTo(descObj.Entity)
+				local newChance = Mod.EID_Support:TrinketMultiGoldStr(player, descObj.ObjSubType, baseChance)
+				local str = "{{Collectible596}} " .. newChance .. "% chance to shoot freezing tears"
+				local mult = Mod.EID_Support:TrinketMulti(player, descObj.ObjSubType)
+				return str .. Mod.EID_Support:LuckChanceStr("#{{Luck}} %s chance at %s luck", player, Trinket.SALINE_SPRAY.TEAR_MODIFIER, mult)
+			end,
 		},
 		[Trinket.WORMWOOD_LEAF.ID] = {
 			Name = "Wormwood Leaf",
@@ -144,7 +150,6 @@ return function(modifiers)
 				"10% chance to negate damage and turn Isaac into an invulnerable immobile statue for 2 seconds",
 				"#Grants Isaac a half second of invulnerability afterwards"
 			}
-
 		},
 	}
 end
