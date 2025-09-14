@@ -7,6 +7,7 @@ v1.2.2
 - Epitaph's effect of spawning a tombstone on the next run now matches Eden's Blessings requirements (i.e. no challenges, no seeded runs, owning the items directly, etc.)
 - Fixed EID description for Caduceus Staff and Cardiomyopathy being incorrect
 - Fixed several of Furtherance's item descriptions being blank when viewed on the item collection screen on the main menu
+- Fixed Cringe not freezing enemies for 2 seconds
 
 v1.2.1
 - Fixed T. Peter's outline not updating with any changes to their costumes while active
