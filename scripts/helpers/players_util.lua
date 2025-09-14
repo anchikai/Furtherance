@@ -4,12 +4,12 @@ local max = Furtherance.math.max
 ---@class TryGetParams
 ---@field WeaponOwner boolean? If a familiar is found, will only pass the player if that familiar is a weapon-copying familiar
 ---@field WeaponFamiliar boolean? If a familiar is found, will pass the familiar if it is a weapon-copying familiar
----@field CheckSpawnerEnt boolean? Will pass the SpawnerEntity back into the function in an attempt to locate the player
+---@field LoopSpawnerEnt boolean? Will recursively pass the SpawnerEntity back into the function in an attempt to locate the player
 
 local preventLoop = {}
 
 ---Will attempt to find the player using the attached Entity, EntityRef, or EntityPtr.
----Will return if its a player, the player's familiar, or loop again if it has a SpawnerEntity
+---Will return the player if the entity is a player or a familiar
 ---@param ent Entity | EntityRef | EntityPtr
 ---@param tryGetParams? TryGetParams
 ---@return EntityPlayer?
@@ -17,11 +17,11 @@ function Furtherance:TryGetPlayer(ent, tryGetParams)
 	if not ent then return end
 	if string.match(getmetatable(ent).__type, "EntityPtr") then
 		if ent.Ref then
-			return Furtherance:TryGetPlayer(ent.Ref)
+			return Furtherance:TryGetPlayer(ent.Ref, tryGetParams)
 		end
 	elseif string.match(getmetatable(ent).__type, "EntityRef") then
 		if ent.Entity then
-			return Furtherance:TryGetPlayer(ent.Entity)
+			return Furtherance:TryGetPlayer(ent.Entity, tryGetParams)
 		end
 	elseif ent:ToPlayer() then
 		return ent:ToPlayer()
@@ -37,11 +37,11 @@ function Furtherance:TryGetPlayer(ent, tryGetParams)
 		else
 			return ent:ToFamiliar().Player
 		end
-	elseif ent.SpawnerEntity then
+	elseif ent.SpawnerEntity and tryGetParams and tryGetParams.LoopSpawnerEnt then
 		local ptrHash = GetPtrHash(ent)
 		if not preventLoop[ptrHash] then
 			preventLoop[ptrHash] = true
-			local result = Furtherance:TryGetPlayer(ent.SpawnerEntity)
+			local result = Furtherance:TryGetPlayer(ent.SpawnerEntity, tryGetParams)
 			preventLoop[ptrHash] = nil
 			return result
 		end
@@ -52,7 +52,7 @@ end
 ---@param ent Entity | EntityRef | EntityPtr
 ---@return EntityPlayer | EntityFamiliar?
 function Furtherance:TryGetOwner(ent)
-	return Furtherance:TryGetPlayer(ent, {WeaponFamiliar = true})
+	return Furtherance:TryGetPlayer(ent, { WeaponFamiliar = true })
 end
 
 ---@param player EntityPlayer
@@ -441,4 +441,3 @@ function Furtherance:ActiveUsesCarBattery(player, slot)
 	end
 	return useCarBattery
 end
-

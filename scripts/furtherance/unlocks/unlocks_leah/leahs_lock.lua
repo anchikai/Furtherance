@@ -44,7 +44,7 @@ end
 
 function modifier:PostFire(object)
 	if object:ToTear() or object:ToBomb() then
-		local player = Mod:TryGetPlayer(object)
+		local player = Mod:TryGetPlayer(object.SpawnerEntity)
 		if not player then return end
 		LEAHS_LOCK:ApplyFearOrCharm(object, player)
 	end
@@ -52,7 +52,7 @@ end
 
 function modifier:PostUpdate(object)
 	if object:ToLaser() or object:ToKnife() then
-		local player = Mod:TryGetPlayer(object)
+		local player = Mod:TryGetPlayer(object.SpawnerEntity)
 		if not player then return end
 		LEAHS_LOCK:ApplyFearOrCharm(object, player)
 	end

@@ -17,7 +17,8 @@ local floor = math.floor
 
 ---@param player EntityPlayer
 function POLARITY_SHIFT:IsChainLightningActive(player)
-	return player:GetEffects():HasCollectibleEffect(POLARITY_SHIFT.ID_1) or Mod:GetData(player).FrameStartedPolarityShift ~= nil
+	return player:GetEffects():HasCollectibleEffect(POLARITY_SHIFT.ID_1) or
+	Mod:GetData(player).FrameStartedPolarityShift ~= nil
 end
 
 ---@param player EntityPlayer
@@ -88,7 +89,7 @@ end
 ---@param countdown integer
 function POLARITY_SHIFT:ChargeWithDamage(ent, amount, flags, source, countdown)
 	if not ent:IsActiveEnemy(true) then return end
-	local player = Mod:TryGetPlayer(source)
+	local player = Mod:TryGetPlayer(source, { LoopSpawnerEnt = true })
 	if player then
 		local slots = Mod:GetActiveItemCharges(player, POLARITY_SHIFT.ID_1)
 		local hasBattery = player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY)
@@ -134,20 +135,20 @@ Mod:AddCallback(ModCallbacks.MC_USE_ITEM, POLARITY_SHIFT.PolarityShiftMiriam, PO
 
 HudHelper.RegisterHUDElement({
 	ItemID = POLARITY_SHIFT.ID_1,
-	Condition = function (player, playerHUDIndex, hudLayout)
+	Condition = function(player, playerHUDIndex, hudLayout)
 		return POLARITY_SHIFT:IsChainLightningActive(player)
 	end,
-	OnRender = function (player, playerHUDIndex, hudLayout, position, alpha, scale)
+	OnRender = function(player, playerHUDIndex, hudLayout, position, alpha, scale)
 		HudHelper.RenderHUDItem("gfx/items/polarity_shift_alt.png", position, scale, alpha)
 	end
 }, HudHelper.HUDType.ACTIVE_ID)
 
 HudHelper.RegisterHUDElement({
 	ItemID = POLARITY_SHIFT.ID_2,
-	Condition = function (player, playerHUDIndex, hudLayout)
+	Condition = function(player, playerHUDIndex, hudLayout)
 		return POLARITY_SHIFT:IsChainLightningActive(player)
 	end,
-	OnRender = function (player, playerHUDIndex, hudLayout, position, alpha, scale)
+	OnRender = function(player, playerHUDIndex, hudLayout, position, alpha, scale)
 		HudHelper.RenderHUDItem("gfx/items/polarity_shift_alt.png", position, scale, alpha)
 	end
 }, HudHelper.HUDType.ACTIVE_ID)

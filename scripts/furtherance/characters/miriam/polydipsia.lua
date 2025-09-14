@@ -105,7 +105,7 @@ end
 
 ---@param weaponEnt Entity
 function POLYDIPSIA:OnWeaponEntityFire(weaponEnt)
-	local player = Mod:TryGetPlayer(weaponEnt)
+	local player = Mod:TryGetPlayer(weaponEnt, { LoopSpawnerEnt = true })
 	if player and player:HasCollectible(POLYDIPSIA.ID) then
 		Mod:GetData(weaponEnt).PolydipsiaShot = true
 		if weaponEnt:ToTear() and not weaponEnt:ToTear():HasTearFlags(TearFlags.TEAR_LUDOVICO) then
@@ -133,7 +133,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BONE_CLUB, POLYDIPSIA.OnWeaponEntityFi
 
 ---@param tear EntityTear
 function POLYDIPSIA:OnTearDeath(tear)
-	local player = Mod:TryGetPlayer(tear, {WeaponOwner = true})
+	local player = Mod:TryGetPlayer(tear.SpawnerEntity, { WeaponOwner = true })
 	local data = Mod:TryGetData(tear)
 	if player and data and data.PolydipsiaShot then
 		POLYDIPSIA:SpawnPolydipsiaCreep(player, tear)
@@ -158,7 +158,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, POLYDIPSIA.ExtinguishFirep
 
 ---@param tear EntityTear
 function POLYDIPSIA:OnFlatStoneBounce(tear)
-	local player = Mod:TryGetPlayer(tear, {WeaponOwner = true})
+	local player = Mod:TryGetPlayer(tear.SpawnerEntity, { WeaponOwner = true })
 	local data = Mod:TryGetData(tear)
 	if player
 		and data
@@ -176,7 +176,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, POLYDIPSIA.OnFlatStoneBounce)
 ---@param tear EntityTear
 function POLYDIPSIA:OnLudoTearUpdate(tear)
 	if not tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then return end
-	local player = Mod:TryGetPlayer(tear, {WeaponOwner = true})
+	local player = Mod:TryGetPlayer(tear.SpawnerEntity, { WeaponOwner = true })
 	if not player then return end
 	if player:HasCollectible(POLYDIPSIA.ID) and Mod:ShouldUpdateLudo(tear, player) then
 		POLYDIPSIA:SpawnPolydipsiaCreep(player, tear)
@@ -188,7 +188,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, POLYDIPSIA.OnLudoTearUpdate)
 ---@param bomb EntityBomb
 function POLYDIPSIA:OnBombExplode(bomb)
 	local data = Mod:TryGetData(bomb)
-	local player = Mod:TryGetPlayer(bomb, {WeaponOwner = true})
+	local player = Mod:TryGetPlayer(bomb.SpawnerEntity, { WeaponOwner = true })
 	if player and data and data.PolydipsiaShot then
 		POLYDIPSIA:SpawnPolydipsiaCreep(player, bomb)
 	end
@@ -199,7 +199,7 @@ Mod:AddCallback(Mod.ModCallbacks.POST_ROCKET_EXPLODE, POLYDIPSIA.OnBombExplode)
 
 ---@param knife EntityKnife
 function POLYDIPSIA:OnKnifeUpdate(knife)
-	local player = Mod:TryGetPlayer(knife, {WeaponOwner = true})
+	local player = Mod:TryGetPlayer(knife.SpawnerEntity, { WeaponOwner = true })
 	if player and player:HasCollectible(POLYDIPSIA.ID) and knife:IsFlying() then
 		local data = Mod:GetData(knife)
 		if (data.NextPuddleSpawn or 0) == 0 then
@@ -218,7 +218,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_KNIFE_UPDATE, POLYDIPSIA.OnKnifeUpdate)
 
 ---@param laser EntityLaser
 function POLYDIPSIA:OnLaserUpdate(laser)
-	local player = Mod:TryGetPlayer(laser, {WeaponOwner = true})
+	local player = Mod:TryGetPlayer(laser.SpawnerEntity, { WeaponOwner = true })
 	local data = Mod:TryGetData(laser)
 	if player and (data and data.PolydipsiaShot or (player:HasCollectible(POLYDIPSIA.ID) and laser.SubType ~= LaserSubType.LASER_SUBTYPE_LINEAR)) then
 		data = Mod:GetData(laser)

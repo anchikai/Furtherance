@@ -1,7 +1,7 @@
 local Mod = Furtherance
 local emptyShaderName = ""
 
-local VERSION = 1.15 -- (v1.1.5) do not modify
+local VERSION = 1.151 -- (v1.1.5a) do not modify
 local game = Game()
 local itemConfig = Isaac.GetItemConfig()
 
@@ -743,7 +743,6 @@ local function InitFunctions()
 		return not HudHelper.ShouldHideHUD()
 			and not player:IsCoopGhost()
 			and itemID ~= CollectibleType.COLLECTIBLE_NULL
-			and player:HasCollectible(itemID, true)
 			and itemConfig:GetCollectible(itemID).Type == ItemType.ITEM_ACTIVE
 			and player:GetActiveItem(slot) == itemID
 			and (slot <= ActiveSlot.SLOT_SECONDARY --Fine to display if you simply have the item

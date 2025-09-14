@@ -216,17 +216,28 @@ function TearModifier:PrintChanceLine(luck, teardropCharm)
 	local deltaX = self.MaxLuck - self.MinLuck
 	local rngRequirement = ((self.MaxChance - self.MinChance) / deltaX) * luck +
 		(self.MaxLuck * self.MinChance - self.MinLuck * self.MaxChance) / deltaX
-	local luckString = teardropCharm and (tostring(luck - 3) .. " (+3 from teardrop charm)") or tostring(luck)
+	local luckString = teardropCharm and (tostring(luck - 4) .. " (+4 from teardrop charm)") or tostring(luck)
 
 	Mod:DebugLog("The player has a " ..
 		string.format("%.2f%%", rngRequirement * 100) ..
 		" for the " .. self.Name .. " TearModifier to activate at " .. luckString .. " luck")
 end
 
+---@param ent Entity
+local function tryGetPlayer(ent, dontCheckSpawnEnt)
+	if ent:ToPlayer() then
+		return ent:ToPlayer()
+	elseif ent:ToFamiliar() then
+		return ent:ToFamiliar().Player
+	elseif ent.SpawnerEntity and not dontCheckSpawnEnt then
+		return tryGetPlayer(ent.SpawnerEntity, true)
+	end
+end
+
 ---When the affected ludo tear, laser, or knife loses its effect and needs to reset back to its expected color
 ---@param object EntityTear | EntityKnife | EntityLaser
 function TearModifier:GetResetColor(object)
-	local player = Mod:TryGetPlayer(object)
+	local player = tryGetPlayer(object)
 	if not player then return Color.Default end
 	if object:ToLaser() then
 		return player.LaserColor
@@ -319,7 +330,7 @@ function TearModifier.New(params)
 			return
 		end
 
-		local player = Mod:TryGetPlayer(tear.SpawnerEntity)
+		local player = tryGetPlayer(tear.SpawnerEntity)
 		if player and self:CheckTearAffected(player, true) then
 			local sprite = tear:GetSprite()
 			local appliedGFX = false
@@ -355,7 +366,7 @@ function TearModifier.New(params)
 			return
 		end
 		if tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then
-			local player = Mod:TryGetPlayer(tear.SpawnerEntity)
+			local player = tryGetPlayer(tear.SpawnerEntity)
 			if player and self:CheckKnifeLaserAffected(player, tear, true) then
 				local sprite = tear:GetSprite()
 				data[modInitial .. self.Name] = true
@@ -382,7 +393,7 @@ function TearModifier.New(params)
 		end
 
 		if not data[modInitial .. self.Name .. "_Disabled"] and tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then
-			local player = Mod:TryGetPlayer(tear.SpawnerEntity)
+			local player = tryGetPlayer(tear.SpawnerEntity)
 			if player and self:CheckKnifeLaserAffected(player, tear) then
 				local sprite = tear:GetSprite()
 				if self.Color then
@@ -445,7 +456,7 @@ function TearModifier.New(params)
 			return
 		end
 
-		local player = Mod:TryGetPlayer(knife.SpawnerEntity)
+		local player = tryGetPlayer(knife.SpawnerEntity)
 		if player and self:CheckKnifeLaserAffected(player, knife, true) then
 			local sprite = knife:GetSprite()
 
@@ -467,7 +478,7 @@ function TearModifier.New(params)
 			return
 		end
 
-		local player = Mod:TryGetPlayer(knife)
+		local player = tryGetPlayer(knife)
 		if not player then return end
 		if self:CheckKnifeLaserAffected(player, knife) then
 			local sprite = knife:GetSprite()
@@ -548,7 +559,7 @@ function TearModifier.New(params)
 			return
 		end
 
-		local player = Mod:TryGetPlayer(laser.SpawnerEntity)
+		local player = tryGetPlayer(laser.SpawnerEntity)
 		if player and self:CheckKnifeLaserAffected(player, laser, true) then
 			data[modInitial .. self.Name] = true
 			self:PostFire(laser)
@@ -582,7 +593,7 @@ function TearModifier.New(params)
 			return
 		end
 
-		local player = Mod:TryGetPlayer(laser.SpawnerEntity)
+		local player = tryGetPlayer(laser.SpawnerEntity)
 		if player and self:CheckKnifeLaserAffected(player, laser) then
 			--Laser's Color in GetSprite is const. Use Entity Color instead.
 			local newColor = self.LaserColor or self.Color
@@ -701,7 +712,7 @@ function TearModifier.New(params)
 			if not effect.SpawnerEntity then
 				return
 			end
-			local player = Mod:TryGetPlayer(effect.SpawnerEntity)
+			local player = tryGetPlayer(effect.SpawnerEntity)
 
 			if player and self:CheckTearAffected(player) then
 				local sprite = effect:GetSprite()
@@ -721,7 +732,7 @@ function TearModifier.New(params)
 				return
 			end
 
-			local player = Mod:TryGetPlayer(bomb.SpawnerEntity)
+			local player = tryGetPlayer(bomb.SpawnerEntity)
 			if player and self:CheckTearAffected(player, true) then
 				local sprite = bomb:GetSprite()
 				data[modInitial .. self.Name] = true

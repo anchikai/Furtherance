@@ -35,7 +35,8 @@ end
 ---@param player EntityPlayer
 function MIRIAM_B:OnPlayerInit(player)
 	if MIRIAM_B:IsMiriamB(player) then
-		local deathAura = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.HALO, 3, player.Position, Vector.Zero, player):ToEffect()
+		local deathAura = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.HALO, 3, player.Position, Vector.Zero,
+			player):ToEffect()
 		---@cast deathAura EntityEffect
 		deathAura.RenderZOffset = -1000
 		deathAura.Parent = player
@@ -138,7 +139,7 @@ HudHelper.RegisterHUDElement({
 ---@param source EntityRef
 function MIRIAM_B:AddToDamageCounter(ent, amount, flags, source)
 	if not ent:IsActiveEnemy(true) then return end
-	local player = Mod:TryGetPlayer(source, {WeaponOwner = true})
+	local player = Mod:TryGetPlayer(source, { WeaponOwner = true, LoopSpawnerEnt = true })
 	if player
 		and MIRIAM_B:IsMiriamB(player)
 		and Mod:HasBitFlags(flags, DamageFlag.DAMAGE_LASER)
@@ -165,7 +166,7 @@ function MIRIAM_B:FearInRadius(effect)
 		local source = EntityRef(player)
 		local size = MIRIAM_B.FEAR_BASE_SCALE + (player:GetHearts() * MIRIAM_B.FEAR_SCALE_PER_HEART)
 		effect.SpriteScale = Vector(size, size)
-		Mod.Foreach.NPCInRadius(effect.Position, MIRIAM_B.FEAR_BASE_RADIUS * size, function (npc, index)
+		Mod.Foreach.NPCInRadius(effect.Position, MIRIAM_B.FEAR_BASE_RADIUS * size, function(npc, index)
 			if npc:IsActiveEnemy(false) then
 				npc:AddFear(source, 2)
 			end
@@ -176,8 +177,8 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, MIRIAM_B.FearInRadius, EffectVariant.HALO)
 
 if Isaac.IsInGame() then
-	Mod.Foreach.Effect(function (effect, index)
-		Mod.Foreach.PlayerInRadius(effect.Position, 5, function (player)
+	Mod.Foreach.Effect(function(effect, index)
+		Mod.Foreach.PlayerInRadius(effect.Position, 5, function(player)
 			Mod:GetData(player).MiriamBFearAura = true
 		end)
 	end, EffectVariant.HALO, 3)
@@ -196,13 +197,14 @@ function MIRIAM_B:ReplaceHearts(entType, variant, subtype, pos, vel, spawner, se
 		and PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.MIRIAM_B)
 		and (Mod.HeartGroups.Soul[subtype] or Mod.HeartGroups.Black[subtype])
 	then
-		local anyoneNotMiriamB = Mod.Foreach.Player(function (player, index)
+		local anyoneNotMiriamB = Mod.Foreach.Player(function(player, index)
 			if not MIRIAM_B:IsMiriamB(player) and not Mod.Character.LEAH_B:IsLeahB(player) then
 				return true
 			end
 		end)
 		if anyoneNotMiriamB then return end
-		return {entType, variant, (Mod.HeartAmount[subtype] or 0) == 1 and HeartSubType.HEART_HALF or HeartSubType.HEART_FULL, seed}
+		return { entType, variant, (Mod.HeartAmount[subtype] or 0) == 1 and HeartSubType.HEART_HALF or
+		HeartSubType.HEART_FULL, seed }
 	end
 end
 

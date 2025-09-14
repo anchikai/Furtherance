@@ -33,7 +33,7 @@ LEAH_B.BIRTHRIGHT_HEART_UPGRADE_CHANCE = 0.2
 
 LEAH_B.STAT_TABLE = {
 	{ Name = "Damage",       Flag = CacheFlag.CACHE_DAMAGE,    Buff = 0.05 },
-	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = 0.025}, --Set for tears, not firedelay.
+	{ Name = "MaxFireDelay", Flag = CacheFlag.CACHE_FIREDELAY, Buff = 0.025 }, --Set for tears, not firedelay.
 	{ Name = "TearRange",    Flag = CacheFlag.CACHE_RANGE,     Buff = 0.125 * Mod.RANGE_BASE_MULT },
 	{ Name = "ShotSpeed",    Flag = CacheFlag.CACHE_SHOTSPEED, Buff = 0.01 },
 	{ Name = "MoveSpeed",    Flag = CacheFlag.CACHE_SPEED,     Buff = 0.01 },
@@ -114,7 +114,7 @@ function LEAH_B:StopHeartsBeyondCap(player, amount, addHealthType)
 			if addHealthType ~= AddHealthType.BROKEN then
 				return remainingToCap
 			else
-				Mod:DelayOneFrame(function ()
+				Mod:DelayOneFrame(function()
 					LEAH_B:ReplaceHeartsIfAboveCap(player)
 				end)
 			end
@@ -143,7 +143,8 @@ local function heartLimit(player)
 	end
 end
 
-CustomHealthAPI.Library.AddCallback("Furtherance", CustomHealthAPI.Enums.Callbacks.GET_MAX_HP_CAP, CustomHealthAPI.Enums.CallbackPriorities.FIRST, heartLimit)
+CustomHealthAPI.Library.AddCallback("Furtherance", CustomHealthAPI.Enums.Callbacks.GET_MAX_HP_CAP,
+	CustomHealthAPI.Enums.CallbackPriorities.FIRST, heartLimit)
 
 ---@param player EntityPlayer
 function LEAH_B:UpdateRedHealthStats(player)
@@ -239,7 +240,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, LEAH_B.HeartDecay, Mod.Play
 ---@param countdown integer
 function LEAH_B:HealBrokenHearts(ent, amount, flags, source, countdown)
 	if not ent:IsActiveEnemy(true) then return end
-	local player = Mod:TryGetPlayer(source)
+	local player = Mod:TryGetPlayer(source, { LoopSpawnerEnt = true })
 	if player and LEAH_B:IsLeahB(player) and Mod:IsValidEnemyTarget(ent) then
 		local data = Mod:GetData(player)
 		local damageDealt = min(ent.HitPoints, amount)
@@ -256,12 +257,12 @@ Mod:AddCallback(ModCallbacks.MC_POST_ENTITY_TAKE_DMG, LEAH_B.HealBrokenHearts)
 HudHelper.RegisterHUDElement({
 	Name = "Leah B Heart Decay",
 	Priority = HudHelper.Priority.NORMAL,
-	Condition = function (player, playerHUDIndex, hudLayout)
+	Condition = function(player, playerHUDIndex, hudLayout)
 		return LEAH_B:IsLeahB(player)
 			and player:GetBrokenHearts() < (LEAH_B.HEART_LIMIT / 2) - 1
 			and not Mod:HasBitFlags(Mod.Level():GetCurses(), LevelCurse.CURSE_OF_THE_UNKNOWN)
 	end,
-	OnRender = function (player, playerHUDIndex, hudLayout, position, maxColumns, _, numPlayers)
+	OnRender = function(player, playerHUDIndex, hudLayout, position, maxColumns, _, numPlayers)
 		local alpha = (sin(Mod.Game:GetFrameCount() * 4 * 1.5 * math.pi / 180) + 1) / 2
 		local allHearts = LEAH_B:GetMaxHeartAmount(player)
 		local offset = 0
@@ -281,13 +282,13 @@ HudHelper.RegisterHUDElement({
 HudHelper.RegisterHUDElement({
 	Name = "Leah B Heart Gain",
 	Priority = HudHelper.Priority.NORMAL,
-	Condition = function (player, playerHUDIndex, hudLayout)
+	Condition = function(player, playerHUDIndex, hudLayout)
 		return LEAH_B:IsLeahB(player)
 			and (Mod:GetData(player).LeahBBrokenDamage or 0) > 0
 			and player:GetBrokenHearts() > 0
 			and not Mod:HasBitFlags(Mod.Level():GetCurses(), LevelCurse.CURSE_OF_THE_UNKNOWN)
 	end,
-	OnRender = function (player, playerHUDIndex, hudLayout, position, maxColumns)
+	OnRender = function(player, playerHUDIndex, hudLayout, position, maxColumns)
 		local allHearts = LEAH_B:GetMaxHeartAmount(player)
 		local offset = 0
 		if allHearts == LEAH_B.HEART_LIMIT then
@@ -332,7 +333,7 @@ function LEAH_B:ReplaceHearts(entType, variant, subtype, pos, vel, spawner, seed
 		and PlayerManager.AnyoneIsPlayerType(Mod.PlayerType.LEAH_B)
 		and (Mod.HeartGroups.Soul[subtype] or Mod.HeartGroups.Black[subtype])
 	then
-		local anyoneNotLeahB = Mod.Foreach.Player(function (player, index)
+		local anyoneNotLeahB = Mod.Foreach.Player(function(player, index)
 			if not LEAH_B:IsLeahB(player) and not Mod.Character.MIRIAM_B:IsMiriamB(player) then
 				return true
 			end
@@ -348,7 +349,7 @@ function LEAH_B:ReplaceHearts(entType, variant, subtype, pos, vel, spawner, seed
 			end
 		end
 		Mod:DebugLog(entType, variant, heartSubtype, seed)
-		return {entType, variant, heartSubtype, seed}
+		return { entType, variant, heartSubtype, seed }
 	end
 end
 

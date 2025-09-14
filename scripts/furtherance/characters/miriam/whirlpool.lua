@@ -19,7 +19,7 @@ WHIRLPOOL.DAMAGE_COUNTDOWN = 3
 ---@param ent Entity @The source of the Whirlpool
 ---@param enemyPos? Vector
 function WHIRLPOOL:SpawnWhirlpool(ent, enemyPos)
-	local player = Mod:TryGetPlayer(ent)
+	local player = Mod:TryGetPlayer(ent.SpawnerEntity)
 	local pos = enemyPos or ent.Position
 	if ent:ToLaser() then
 		---@cast ent EntityLaser
@@ -30,8 +30,8 @@ function WHIRLPOOL:SpawnWhirlpool(ent, enemyPos)
 		end
 	end
 	pos = Mod.Room():GetClampedPosition(pos, 25)
-	local whirlpool = Isaac.Spawn(EntityType.ENTITY_EFFECT, WHIRLPOOL.ID, 0, pos, Vector.Zero, ent.SpawnerEntity)
-		:ToEffect()
+	local whirlpool = Isaac.Spawn(EntityType.ENTITY_EFFECT, WHIRLPOOL.ID, 0,
+		pos, Vector.Zero, ent.SpawnerEntity):ToEffect()
 	---@cast whirlpool EntityEffect
 	whirlpool.CollisionDamage = (player and player.Damage or 3.5) * 0.33
 	whirlpool.Timeout = 60
@@ -52,7 +52,7 @@ end
 ---@param owner EntityPlayer | EntityFamiliar
 ---@param weapon Weapon
 function WHIRLPOOL:WhirlpoolOnFire(dir, amount, owner, weapon)
-	local player = Mod:TryGetPlayer(owner)
+	local player = Mod:TryGetPlayer(owner, {WeaponOwner = true})
 	if not player or not MIRIAM:IsMiriam(player) then return end
 	local previousNum = weapon:GetNumFired() - amount
 	local threshold = WHIRLPOOL.THRESHOLD
@@ -72,7 +72,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_WEAPON_FIRED, WHIRLPOOL.WhirlpoolOn
 
 ---@param weaponEnt Entity
 function WHIRLPOOL:OnWeaponEntityFire(weaponEnt)
-	local player = Mod:TryGetPlayer(weaponEnt)
+	local player = Mod:TryGetPlayer(weaponEnt.SpawnerEntity)
 	if not player then return end
 	local data = Mod:GetData(player)
 	if data.MiriamQueueWhirlpoolShot then
@@ -110,7 +110,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_TEAR_DEATH, WHIRLPOOL.OnTearDeath)
 ---@param tear EntityTear
 function WHIRLPOOL:OnLudoTearUpdate(tear)
 	if not tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then return end
-	local player = Mod:TryGetPlayer(tear)
+	local player = Mod:TryGetPlayer(tear.SpawnerEntity)
 	if not player then return end
 	local data = Mod:GetData(player)
 	if data.MiriamQueueWhirlpoolShot then
@@ -133,7 +133,7 @@ Mod:AddCallback(Mod.ModCallbacks.POST_ROCKET_EXPLODE, WHIRLPOOL.OnBombExplode)
 
 ---@param knife EntityKnife
 function WHIRLPOOL:SpawnWhirlpoolAtKnifePeak(knife)
-	local player = Mod:TryGetPlayer(knife)
+	local player = Mod:TryGetPlayer(knife.SpawnerEntity)
 	if not player then return end
 	local pData = Mod:GetData(player)
 	if pData.MiriamQueueWhirlpoolShot then
@@ -157,7 +157,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_KNIFE_UPDATE, WHIRLPOOL.SpawnWhirlpoolAtKni
 
 ---@param laser EntityLaser
 function WHIRLPOOL:WhirlpoolAtLaserPeak(laser)
-	local player = Mod:TryGetPlayer(laser)
+	local player = Mod:TryGetPlayer(laser.SpawnerEntity)
 	if not player then return end
 	local pData = Mod:GetData(player)
 	local lData = Mod:TryGetData(laser)

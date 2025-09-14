@@ -189,7 +189,7 @@ end
 
 function POLARIS.WHITE_MODIFIER:PostNpcHit(hitter, npc)
 	if not hitter:ToTear() and not hitter:ToBomb() then
-		local player = Mod:TryGetPlayer(hitter)
+		local player = Mod:TryGetPlayer(hitter.SpawnerEntity)
 		if not player then return end
 		npc:TakeDamage(player.Damage * 3, 0, EntityRef(hitter), 0)
 		Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.CRACK_THE_SKY, 10, npc.Position, Vector.Zero, hitter)

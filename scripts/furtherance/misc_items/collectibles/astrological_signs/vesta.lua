@@ -33,7 +33,7 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, VESTA.Stats, CacheFlag.CACHE_TEA
 
 ---@param tear EntityTear
 function VESTA:PostFireTear(tear)
-	local player = Mod:TryGetPlayer(tear)
+	local player = Mod:TryGetPlayer(tear.SpawnerEntity)
 	if player and player:HasCollectible(VESTA.ID) then
 		tear:ChangeVariant(TearVariant.BLUE)
 		local sprite = tear:GetSprite()
@@ -47,7 +47,7 @@ Mod:AddPriorityCallback(ModCallbacks.MC_POST_FIRE_TEAR, CallbackPriority.EARLY, 
 
 ---@param bomb EntityBomb
 function VESTA:PostFireBomb(bomb)
-	local player = Mod:TryGetPlayer(bomb)
+	local player = Mod:TryGetPlayer(bomb.SpawnerEntity)
 	if player and player:HasCollectible(VESTA.ID) then
 		bomb:SetScale(0.1)
 		bomb:SetLoadCostumes(true)
@@ -58,7 +58,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_FIRE_BOMB, VESTA.PostFireBomb)
 
 ---@param laser EntityLaser
 function VESTA:PostFireLaser(laser)
-	local player = Mod:TryGetPlayer(laser)
+	local player = Mod:TryGetPlayer(laser.SpawnerEntity)
 	if player and player:HasCollectible(VESTA.ID) then
 		--RGON my beloved
 		laser:SetScale(0.353553)
@@ -74,7 +74,7 @@ function VESTA.TEAR_MODIFIER:PostFire(object)
 end
 
 function VESTA.TEAR_MODIFIER:PostUpdate(object)
-	local player = Mod:TryGetPlayer(object)
+	local player = Mod:TryGetPlayer(object.SpawnerEntity)
 	if player and object:ToLaser() and not Mod:HasBitFlags(player.TearFlags, TearFlags.TEAR_QUADSPLIT) then
 		object:AddTearFlags(TearFlags.TEAR_QUADSPLIT)
 	end

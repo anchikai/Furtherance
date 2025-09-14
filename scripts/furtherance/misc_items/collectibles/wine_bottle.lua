@@ -23,7 +23,7 @@ WINE_BOTTLE.THRESHOLD = 15
 ---@param owner EntityPlayer | EntityFamiliar
 ---@param weapon Weapon
 function WINE_BOTTLE:CorkTear(dir, amount, owner, weapon)
-	local player = Mod:TryGetPlayer(owner)
+	local player = Mod:TryGetPlayer(owner.SpawnerEntity, {WeaponOwner = true})
 	if not player or not player:HasCollectible(WINE_BOTTLE.ID) then return end
 	local previousNum = weapon:GetNumFired() - amount
 	local fireDir = player:GetFireDirection()

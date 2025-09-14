@@ -41,10 +41,10 @@ function SHATTERED_HEART:ExplodeHeart(pickup, player, radiusMult)
 		damage = damage * 2
 	end
 
-	Mod.Foreach.NPCInRadius(pickup.Position, radius, function (npc, index)
+	Mod.Foreach.NPCInRadius(pickup.Position, radius, function(npc, index)
 		npc:TakeDamage(damage, DamageFlag.DAMAGE_EXPLOSION | DamageFlag.DAMAGE_IGNORE_ARMOR,
 			EntityRef(pickup), 0)
-	end, nil, nil, {UseEnemySearchParams = true})
+	end, nil, nil, { UseEnemySearchParams = true })
 
 	for _ = 1, 5 do
 		local position = Vector(Mod:RandomNum(-posRange, posRange), Mod:RandomNum(-posRange, posRange))
@@ -76,7 +76,7 @@ function SHATTERED_HEART:OnUse(_, _, player, flags, slot)
 	if Mod:HasBitFlags(flags, UseFlag.USE_CARBATTERY) then
 		return
 	end
-	Mod.Foreach.Pickup(function (pickup, index)
+	Mod.Foreach.Pickup(function(pickup, index)
 		local result = Isaac.RunCallbackWithParam(Mod.ModCallbacks.SHATTERED_HEART_EXPLODE, pickup.SubType,
 			pickup:ToPickup())
 		if result then
@@ -93,16 +93,16 @@ Mod:AddCallback(ModCallbacks.MC_USE_ITEM, SHATTERED_HEART.OnUse, SHATTERED_HEART
 function SHATTERED_HEART:SharpHeartUpdate(pickup)
 	local data = Mod:TryGetData(pickup)
 	if not (data
-		and data.ShatteredHeartPickup
-		and (pickup:GetSprite():IsPlaying("Idle")
-			or pickup:GetSprite():WasEventTriggered("DropSound")
-		))
+			and data.ShatteredHeartPickup
+			and (pickup:GetSprite():IsPlaying("Idle")
+				or pickup:GetSprite():WasEventTriggered("DropSound")
+			))
 	then
 		return
 	end
 	local player = pickup.SpawnerEntity and pickup.SpawnerEntity:ToPlayer()
 
-	Mod.Foreach.NPCInRadius(pickup.Position, pickup.Size, function (npc, index)
+	Mod.Foreach.NPCInRadius(pickup.Position, pickup.Size, function(npc, index)
 		Mod.SFXMan:Play(SoundEffect.SOUND_MEAT_IMPACTS, 1, 2, false, 0.5)
 		if player and Mod.Character.LEAH_B:LeahBHasBirthright(player) and Mod:CanCollectHeart(player, pickup.SubType) then
 			player:ForceCollide(pickup, true)
@@ -112,7 +112,7 @@ function SHATTERED_HEART:SharpHeartUpdate(pickup)
 		end
 		npc:TakeDamage(SHATTERED_HEART:GetHeartDamage(pickup), DamageFlag.DAMAGE_IGNORE_ARMOR, EntityRef(pickup), 0)
 		return true
-	end, nil, nil, {UseEnemySearchParams = true})
+	end, nil, nil, { UseEnemySearchParams = true })
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, SHATTERED_HEART.SharpHeartUpdate, PickupVariant.PICKUP_HEART)
@@ -124,7 +124,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, SHATTERED_HEART.SharpHeartUp
 ---@param countdown integer
 function SHATTERED_HEART:RemoveBrokensFromDamage(ent, amount, flags, source, countdown)
 	if not ent:IsActiveEnemy(true) then return end
-	local player = Mod:TryGetPlayer(source)
+	local player = Mod:TryGetPlayer(source, { LoopSpawnerEnt = true })
 	if player and PlayerManager.AnyoneHasCollectible(Mod.Item.SHATTERED_HEART.ID) then
 		local rng = player:GetCollectibleRNG(Mod.Item.SHATTERED_HEART.ID)
 		if rng:RandomFloat() <= SHATTERED_HEART.SCARED_HEART_CHANCE then

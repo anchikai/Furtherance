@@ -19,7 +19,7 @@ function FLIP_RENDERING:SetAppropriateWaterClipFlag(ent, parent)
 		return
 	end
 	local enemy = FLIP:TryGetNPC(ent)
-	local player = Mod:TryGetPlayer(ent)
+	local player = Mod:TryGetPlayer(ent, { LoopSpawnerEnt = true })
 
 	if player then
 		if PETER_B:IsPeterB(player) then

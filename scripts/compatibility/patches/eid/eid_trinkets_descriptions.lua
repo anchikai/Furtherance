@@ -1,33 +1,26 @@
 local Mod = Furtherance
+local Trinket = Mod.Trinket
 local FR_EID = Mod.EID_Support
 local DD = FR_EID.DynamicDescriptions
 
 local modifiers = {
 	[Mod.Trinket.ALMAGEST_SCRAP.ID] = {
 		---@param descObj EID_DescObj
-		---@param desc string
-		_modifier = function(descObj, desc)
-			if Mod:HasBitFlags(descObj.ObjSubType, TrinketType.TRINKET_GOLDEN_FLAG) then
-				return "#{{ColorGold}}" .. desc .. "{{CR}}"
-			end
-		end,
-	},
-	[Mod.Trinket.LEAHS_LOCK.ID] = {
-		_modifier = function(descObj, desc)
-			local multi = FR_EID:TrinketMulti(EID.player, descObj.ObjSubType)
-			if multi > 1 then
-				return "#{{ColorGold}}" .. desc .. "{{CR}}"
-			end
-			return ""
+		_modifier = function(descObj, ...)
+			local player = Mod.EID_Support:ClosestPlayerTo(descObj.Entity)
+			local trinketMult = Mod.EID_Support:TrinketMulti(player, Trinket.ALMAGEST_SCRAP.ID)
+			local str = Mod.EID_Support:TrinketMultiStr(trinketMult, ...)
+			return Mod.EID_Support:TrinketMultiGoldStr(descObj, str, false, true)
 		end,
 	},
 	[Mod.Trinket.LEVIATHANS_TENDRIL.ID] = {
+		---@param descObj EID_DescObj
 		_modifier = function(descObj, desc, leviathanLine)
 			local player = FR_EID:ClosestPlayerTo(descObj.Entity)
 			if player:HasPlayerForm(PlayerForm.PLAYERFORM_EVIL_ANGEL) then
 				Mod.Insert(desc, leviathanLine)
 			end
-			local multi = FR_EID:TrinketMulti(EID.player, descObj.ObjSubType)
+			local multi = FR_EID:TrinketMulti(player, descObj.ObjSubType)
 			local chance1 = Mod.Trinket.LEVIATHANS_TENDRIL.REFLECT_CHANCE
 			local chance2 = Mod.Trinket.LEVIATHANS_TENDRIL.FEAR_CHANCE
 			local chanceStr1 = tostring(math.floor(chance1 * 100)) .. "%"
@@ -40,6 +33,26 @@ local modifiers = {
 			desc[2] = desc[2]:format(chanceStr2, chanceStr2)
 			return desc
 		end,
+	},
+	[Mod.Trinket.LEAHS_LOCK.ID] = {
+		_modifier = function (descObj, chanceStr, luckStr)
+			local baseChance = Mod.math.floor((Trinket.LEAHS_LOCK.TEAR_MODIFIER.MinChance * 100))
+			local player = Mod.EID_Support:ClosestPlayerTo(descObj.Entity)
+			local mult = Mod.EID_Support:TrinketMulti(player, descObj.ObjSubType)
+			local newChance = Mod.EID_Support:TrinketMultiGoldStr(descObj, baseChance * mult)
+			chanceStr = chanceStr:format(newChance .. "%")
+			return chanceStr .. Mod.EID_Support:LuckChanceStr(luckStr, player, Trinket.LEAHS_LOCK.TEAR_MODIFIER, mult)
+		end
+	},
+	[Mod.Trinket.SALINE_SPRAY.ID] = {
+		_modifier = function (descObj, chanceStr, luckStr)
+			local baseChance = Mod.math.floor((Trinket.SALINE_SPRAY.TEAR_MODIFIER.MinChance * 100))
+			local player = Mod.EID_Support:ClosestPlayerTo(descObj.Entity)
+			local mult = Mod.EID_Support:TrinketMulti(player, descObj.ObjSubType)
+			local newChance = Mod.EID_Support:TrinketMultiGoldStr(descObj, baseChance * mult)
+			chanceStr = chanceStr:format(newChance .. "%")
+			return chanceStr .. Mod.EID_Support:LuckChanceStr(luckStr, player, Trinket.SALINE_SPRAY.TEAR_MODIFIER, mult)
+		end
 	},
 }
 

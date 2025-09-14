@@ -13,7 +13,7 @@ TREPANATION.THRESHOLD = 15
 ---@param owner EntityPlayer | EntityFamiliar
 ---@param weapon Weapon
 function TREPANATION:OnWeaponFire(dir, amount, owner, weapon)
-	local player = Mod:TryGetPlayer(owner)
+	local player = Mod:TryGetPlayer(owner, {WeaponOwner = true})
 	if not player or amount == 0 or not player:HasCollectible(TREPANATION.ID) then return end
 	local previousNum = weapon:GetNumFired() - amount
 	if player:GetFireDirection() == Direction.NO_DIRECTION then

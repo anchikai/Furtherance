@@ -8,6 +8,8 @@ v1.2.2
 - Fixed EID description for Caduceus Staff and Cardiomyopathy being incorrect
 - Fixed several of Furtherance's item descriptions being blank when viewed on the item collection screen on the main menu
 - Fixed Cringe not freezing enemies for 2 seconds
+- Changed trinket multiplier interations with Almagest Scrap. A trinket multiplier of 2 across all players will make items always cost 1 broken heart. A multiplier of 3 will make them free, akin to the previous golden-exclusive trinket effect
+- Added golden trinket/Mom's Box interactions to Dungeon Key, Hammerhead Worm, and Parasol
 
 v1.2.1
 - Fixed T. Peter's outline not updating with any changes to their costumes while active

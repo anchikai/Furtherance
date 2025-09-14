@@ -29,7 +29,7 @@ end
 ---@param owner EntityPlayer | EntityFamiliar
 ---@param weapon Weapon
 function CHI_RHO:OnWeaponFire(dir, amount, owner, weapon)
-	local player = Mod:TryGetPlayer(owner)
+	local player = Mod:TryGetPlayer(owner, {WeaponOwner = true})
 	if not player then return end
 	if player:GetFireDirection() == Direction.NO_DIRECTION then
 		dir = Mod:DirectionToVector(player:GetHeadDirection())

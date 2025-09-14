@@ -14,7 +14,7 @@ FLUX.RANGE_UP = 9.75
 ---@param owner EntityPlayer | EntityFamiliar
 ---@param weapon Weapon
 function FLUX:OnWeaponFire(dir, amount, owner, weapon)
-	local player = Mod:TryGetPlayer(owner)
+	local player = Mod:TryGetPlayer(owner, {WeaponOwner = true})
 	---@cast player EntityPlayer
 	if player:HasCollectible(FLUX.ID) then
 		if player:GetFireDirection() == Direction.NO_DIRECTION then
@@ -31,7 +31,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_WEAPON_FIRED, FLUX.OnWeaponFire)
 
 ---@param tear EntityTear
 function FLUX:ManageTearVelocity(tear)
-	local player = Mod:TryGetPlayer(tear)
+	local player = Mod:TryGetPlayer(tear.SpawnerEntity)
 	if not player then return end
 
 	local data = Mod:GetData(tear)

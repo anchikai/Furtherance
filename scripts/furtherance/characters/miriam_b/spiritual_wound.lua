@@ -113,7 +113,7 @@ function SPIRITUAL_WOUND:HandleFiringSFX(player)
 	then
 		if not data.FiringSpiritualWound then
 			data.FiringSpiritualWound = true
-			Isaac.CreateTimer(function ()
+			Isaac.CreateTimer(function()
 				if player:GetFireDirection() ~= Direction.NO_DIRECTION then
 					SPIRITUAL_WOUND.IS_FIRING = true
 					local startSFX = SPIRITUAL_WOUND:GetAttackInitSound(player)
@@ -160,7 +160,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, SPIRITUAL_WOUND.RemoveInnat
 ---@param flags DamageFlag
 ---@param source EntityRef
 function SPIRITUAL_WOUND:LaserDamage(ent, amount, flags, source)
-	local player = Mod:TryGetPlayer(source, {WeaponOwner = true})
+	local player = Mod:TryGetPlayer(source, { WeaponOwner = true, LoopSpawnerEnt = true })
 	if player
 		and SPIRITUAL_WOUND:ShouldUseSpiritualWound(player)
 		and Mod:HasBitFlags(flags, DamageFlag.DAMAGE_LASER)
@@ -178,8 +178,12 @@ function SPIRITUAL_WOUND:LaserDamage(ent, amount, flags, source)
 		end
 		local dist = ent.Position:Distance(player.Position) / 80
 		local dmgMult = dist <= 1 and 0 or Mod:Clamp(dist * 0.15, 0, 0.5)
-		return { Damage = (amount - (amount * dmgMult) * damageMultBonus), DamageFlags = flags | DamageFlag.DAMAGE_COUNTDOWN, DamageCountdown =
-		countdown }
+		return {
+			Damage = (amount - (amount * dmgMult) * damageMultBonus),
+			DamageFlags = flags | DamageFlag.DAMAGE_COUNTDOWN,
+			DamageCountdown =
+				countdown
+		}
 	end
 end
 

@@ -101,7 +101,8 @@ function ALMAGEST_SCRAP.TurnToAlmagestShopItem(pickup)
 	local pickup_save = Mod:PickupSave(pickup)
 	local quality = Mod.ItemConfig:GetCollectible(pickup.SubType).Quality
 	local price = ALMAGEST_SCRAP.PickupPrice.ONE_BROKEN_HEART
-	if quality >= 3 then
+	local mult = PlayerManager.GetTotalTrinketMultiplier(ALMAGEST_SCRAP.ID)
+	if quality >= 3 and mult == 1 then
 		price = ALMAGEST_SCRAP.PickupPrice.TWO_BROKEN_HEARTS
 	end
 	pickup_save.Price = price
@@ -119,12 +120,8 @@ function ALMAGEST_SCRAP:UpdateFirstVisitPlanetarium()
 	if ALMAGEST_SCRAP:ShouldUpdateTreasureRoom() then
 		updateTreasureDoors("gfx/grid/door_00x_planetariumdoor.anm2")
 	end
-	local hasGoldenScrap = Mod.Foreach.Player(function (player, index)
-		if player:HasGoldenTrinket(ALMAGEST_SCRAP.ID) then
-			return true
-		end
-	end)
-	if not hasGoldenScrap and Mod:RoomSave().AlmagestPlanetarium and Mod.Room():IsFirstVisit() then
+	local shouldMakeShopItem = PlayerManager.GetTotalTrinketMultiplier(ALMAGEST_SCRAP.ID) >= 3
+	if not shouldMakeShopItem and Mod:RoomSave().AlmagestPlanetarium and Mod.Room():IsFirstVisit() then
 		Mod.Foreach.Pickup(ALMAGEST_SCRAP.TurnToAlmagestShopItem, PickupVariant.PICKUP_COLLECTIBLE)
 	end
 end

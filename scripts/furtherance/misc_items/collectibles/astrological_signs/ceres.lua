@@ -26,7 +26,7 @@ SEL.RegisterStatusEffect(identifier, nil, Color(0, 0.75, 0, 1, 0, 0, 0), nil, tr
 CERES.STATUS_CERES = SEL.StatusFlag[identifier]
 
 function CERES.MODIFIER:PostNpcHit(hitter, npc)
-	local player = Mod:TryGetPlayer(hitter)
+	local player = Mod:TryGetPlayer(hitter.SpawnerEntity)
 	if player then
 		SEL:AddStatusEffect(npc, CERES.STATUS_CERES, CERES.CREEP_DURATION_ON_HIT, EntityRef(player))
 	end

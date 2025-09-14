@@ -217,7 +217,7 @@ end
 
 ---@param slot EntitySlot
 ---@return EntityPlayer?
-function LOVE_TELLER:TryGetPlayer(slot)
+function LOVE_TELLER:GetLastTouchedPlayer(slot)
 	local player = Mod:GetData(slot).TouchedPlayer
 	if not player or not player:Exists() then
 		Mod.SFXMan:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
@@ -315,7 +315,7 @@ function LOVE_TELLER:OnSlotUpdate(slot)
 			prizeResult = 1
 		end
 		sprite:Play("Prize" .. prizeResult)
-		local player = LOVE_TELLER:TryGetPlayer(slot)
+		local player = LOVE_TELLER:GetLastTouchedPlayer(slot)
 		if not player then return end
 		local iconLeft, layerLeft = LOVE_TELLER:TryGetCoopIcon(player, true)
 		data.IconLeft = { Sprite = iconLeft, Layer = layerLeft }
@@ -343,7 +343,7 @@ function LOVE_TELLER:OnSlotUpdate(slot)
 			Mod.SFXMan:Play(SoundEffect.SOUND_SLOTSPAWN)
 			slot:SetState(Mod.SlotState.IDLE)
 		elseif num == "2" then
-			local player = LOVE_TELLER:TryGetPlayer(slot)
+			local player = LOVE_TELLER:GetLastTouchedPlayer(slot)
 			if not player then return end
 			LOVE_TELLER:SpawnLoveTellerBaby(player, data.MatchedPlayer, slot.Position)
 			player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)

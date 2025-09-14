@@ -7,8 +7,12 @@ Furtherance.Trinket.HAMMERHEAD_WORM = HAMMERHEAD_WORM
 HAMMERHEAD_WORM.ID = Isaac.GetTrinketIdByName("Hammerhead Worm")
 
 HAMMERHEAD_WORM.RNG_INFLUENCE = 0.2
-function HAMMERHEAD_WORM:GetMultiplier(rng)
-	return rng:RandomFloat() * HAMMERHEAD_WORM.RNG_INFLUENCE * 2 + 1 - HAMMERHEAD_WORM.RNG_INFLUENCE
+
+---@param rng RNG
+---@param mult integer
+function HAMMERHEAD_WORM:GetMultiplier(rng, mult)
+	local rngNum = HAMMERHEAD_WORM.RNG_INFLUENCE * mult
+	return rng:RandomFloat() * rngNum * 2 + 1 - rngNum
 end
 
 ---@param tear EntityTear
@@ -16,13 +20,14 @@ function HAMMERHEAD_WORM:FireHammerheadWormTear(tear)
 	local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
 	if player and player:HasTrinket(HAMMERHEAD_WORM.ID) then
 		local rng = player:GetTrinketRNG(HAMMERHEAD_WORM.ID)
-		local damageMultiplier = HAMMERHEAD_WORM:GetMultiplier(rng)
-		local velocityMultiplier = HAMMERHEAD_WORM:GetMultiplier(rng)
+		local mult = player:GetTrinketMultiplier(HAMMERHEAD_WORM.ID)
+		local damageMultiplier = HAMMERHEAD_WORM:GetMultiplier(rng, mult)
+		local velocityMultiplier = HAMMERHEAD_WORM:GetMultiplier(rng, mult)
 
 		tear.ContinueVelocity = tear.ContinueVelocity * velocityMultiplier
 		tear.Velocity = tear.Velocity * velocityMultiplier
 		tear.CollisionDamage = tear.CollisionDamage * damageMultiplier
-		tear.Height = tear.Height * HAMMERHEAD_WORM:GetMultiplier(rng)
+		tear.Height = tear.Height * HAMMERHEAD_WORM:GetMultiplier(rng, mult)
 		tear.Scale = tear.Scale * (damageMultiplier * 0.5 + 0.5)
 	end
 end
@@ -34,8 +39,9 @@ function HAMMERHEAD_WORM:FireHammerheadWormBomb(bomb)
 	local player = bomb.SpawnerEntity and bomb.SpawnerEntity:ToPlayer()
 	if player and player:HasTrinket(HAMMERHEAD_WORM.ID) then
 		local rng = player:GetTrinketRNG(HAMMERHEAD_WORM.ID)
-		local damageMultiplier = HAMMERHEAD_WORM:GetMultiplier(rng)
-		local velocityMultiplier = HAMMERHEAD_WORM:GetMultiplier(rng) * 1.5
+		local mult = player:GetTrinketMultiplier(HAMMERHEAD_WORM.ID)
+		local damageMultiplier = HAMMERHEAD_WORM:GetMultiplier(rng, mult)
+		local velocityMultiplier = HAMMERHEAD_WORM:GetMultiplier(rng, mult) * 1.5
 		bomb.Velocity = bomb.Velocity * velocityMultiplier
 		bomb.ExplosionDamage = bomb.ExplosionDamage * damageMultiplier
 		bomb:SetScale(bomb.ExplosionDamage / 35)
@@ -56,12 +62,12 @@ function HAMMERHEAD_WORM:HammerheadWormKnife(ent, amount, flags, source, countdo
 		and source.Entity
 		and (source.Entity:ToKnife() or source.Entity:ToPlayer() and Mod:HasBitFlags(flags, DamageFlag.DAMAGE_LASER))
 	then
-		local sourceEnt = source.Entity
-		local player = Mod:TryGetPlayer(sourceEnt, true)
+		local player = Mod:TryGetPlayer(source, { WeaponOwner = true, LoopSpawnerEnt = true })
 		if player and player:HasTrinket(HAMMERHEAD_WORM.ID) then
 			local rng = player:GetTrinketRNG(HAMMERHEAD_WORM.ID)
-			local damageMultiplier = HAMMERHEAD_WORM:GetMultiplier(rng)
-			return {Damage = amount * damageMultiplier}
+			local mult = player:GetTrinketMultiplier(HAMMERHEAD_WORM.ID)
+			local damageMultiplier = HAMMERHEAD_WORM:GetMultiplier(rng, mult)
+			return { Damage = amount * damageMultiplier }
 		end
 	end
 end

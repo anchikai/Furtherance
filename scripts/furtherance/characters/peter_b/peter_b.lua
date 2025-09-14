@@ -18,7 +18,7 @@ function PETER_B:UsePeterFlipRoomEffects()
 end
 
 function PETER_B:BloodTears(tear)
-	local player = Mod:TryGetPlayer(tear)
+	local player = Mod:TryGetPlayer(tear.SpawnerEntity)
 	if player and PETER_B:IsPeterB(player) then
 		Mod:TryChangeTearToBloodVariant(tear)
 	end

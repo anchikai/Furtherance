@@ -32,7 +32,7 @@ end
 
 function modifier:PostFire(object)
 	if object:ToTear() or object:ToBomb() then
-		local player = Mod:TryGetPlayer(object)
+		local player = Mod:TryGetPlayer(object.SpawnerEntity)
 		if not player then return end
 		object:AddTearFlags(TearFlags.TEAR_ICE)
 		if object:ToTear() then
@@ -43,7 +43,7 @@ end
 
 function modifier:PostUpdate(object)
 	if object:ToLaser() or object:ToKnife() then
-		local player = Mod:TryGetPlayer(object)
+		local player = Mod:TryGetPlayer(object.SpawnerEntity)
 		if not player then return end
 	end
 end

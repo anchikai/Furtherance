@@ -17,7 +17,7 @@ IRON.ORBIT_SPEED = 0.01
 ---@param weaponEnt Entity | EntityBomb
 function IRON:ShouldBotherWithUpdate(weaponEnt)
 	return #Isaac.FindByType(EntityType.ENTITY_FAMILIAR, IRON.FAMILIAR) > 0
-		and Mod:TryGetPlayer(weaponEnt)
+		and Mod:TryGetPlayer(weaponEnt.SpawnerEntity)
 		and (not weaponEnt:ToBomb() or weaponEnt.IsFetus)
 end
 
@@ -53,7 +53,7 @@ function IRON:TearCollision(tear)
 	end, IRON.FAMILIAR)
 	local data = Mod:TryGetData(tear)
 	if not data or not tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then return end
-	local player = Mod:TryGetPlayer(tear)
+	local player = Mod:TryGetPlayer(tear.SpawnerEntity)
 	---@cast player EntityPlayer
 	if data.WentThruIron and Mod:ShouldUpdateLudo(tear, player) then
 		if data.CheckLeavingIron then
@@ -175,7 +175,7 @@ function IRON:LaserCollision(laser)
 		and data.IronFireActive
 		and laser.SubType == LaserSubType.LASER_SUBTYPE_LINEAR
 	then
-		local player = Mod:TryGetPlayer(laser)
+		local player = Mod:TryGetPlayer(laser.SpawnerEntity)
 		---@cast player EntityPlayer
 		laser:GetSprite().Color = player.LaserColor
 		if data.IronDamageMult then

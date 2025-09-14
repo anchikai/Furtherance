@@ -20,9 +20,10 @@ return function(modifiers)
 			Name = "Almagest Scrap",
 			Description = {
 				"{{Planetarium}} Treasure Rooms are replaced with Planetariums",
-				"#{{BrokenHeart}} Items inside grant broken hearts",
 				function(descObj)
 					return modifiers[Trinket.ALMAGEST_SCRAP.ID]._modifier(descObj,
+						"{{BrokenHeart}} Items inside grant broken hearts",
+						"{{BrokenHeart}} Items inside grant 1 broken heart",
 						"Items inside are free"
 					)
 				end
@@ -50,7 +51,22 @@ return function(modifiers)
 		[Trinket.DUNGEON_KEY.ID] = {
 			Name = "Dungeon Key",
 			Description = {
-				"Opens Challenge Room doors regardless of Isaac's health"
+				"Opens Challenge Room doors regardless of Isaac's health",
+				function(descObj)
+					return Mod.EID_Support:TrinketMultiGoldStr(descObj,
+						"Door will stay open while ambush is active",
+						false, true
+					) .. Mod.EID_Support:TrinketMultiGoldStr(descObj,
+						"Boss Room doors will stay open",
+						false, true
+					)
+				end,
+				function(descObj)
+					return Mod.EID_Support:TrinketMultiGoldStr(descObj,
+						"Upon clearing a Challenge Room, opens all doors and creates red rooms on every door if possible",
+						3, true, "{{Card83}}"
+					)
+				end
 			}
 		},
 		[Trinket.ESCAPE_PLAN.ID] = {
@@ -90,16 +106,15 @@ return function(modifiers)
 			Name = "Leah's Lock",
 			Description = {
 				function(descObj)
-					local baseChance = Mod.math.floor((Trinket.LEAHS_LOCK.TEAR_MODIFIER.MinChance * 100))
-					local player = Mod.EID_Support:ClosestPlayerTo(descObj.Entity)
-					local newChance = Mod.EID_Support:TrinketMultiGoldStr(player, descObj.ObjSubType, baseChance)
-					local str = newChance .. "% chance to fire {{Charm}} Charm or {{Fear}} Fear tears"
-					local mult = Mod.EID_Support:TrinketMulti(player, descObj.ObjSubType)
-					return str .. Mod.EID_Support:LuckChanceStr("#{{Luck}} %s chance at %s luck", player, Trinket.LEAHS_LOCK.TEAR_MODIFIER, mult)
+					return modifiers[Trinket.LEAHS_LOCK.ID]._modifier(descObj,
+						"%s chance to fire {{Charm}} Charm or {{Fear}} Fear tears",
+						"#{{Luck}} %s chance at %s luck"
+					)
 				end,
 				function(descObj)
-					return modifiers[Trinket.LEAHS_LOCK.ID]._modifier(descObj,
-						"Can trigger both charm and fear at the same time"
+					return Mod.EID_Support:TrinketMultiGoldStr(descObj,
+						"Can trigger both charm and fear at the same time",
+						false, true
 					)
 				end
 			}
@@ -124,7 +139,12 @@ return function(modifiers)
 		[Trinket.PARASOL.ID] = {
 			Name = "Parasol",
 			Description = {
-				"All of Isaac's familiars block projectiles"
+				"All of Isaac's familiars block projectiles",
+				function (descObj)
+					return Mod.EID_Support:TrinketMultiGoldStr(descObj,
+						"50% chance to reflect the projectile that can hit enemies instead"
+				)
+				end
 			}
 		},
 		[Trinket.REBOUND_WORM.ID] = {
@@ -136,12 +156,10 @@ return function(modifiers)
 		[Trinket.SALINE_SPRAY.ID] = {
 			Name = "Saline Spray",
 			Description = function(descObj)
-				local baseChance = Mod.math.floor((Trinket.SALINE_SPRAY.TEAR_MODIFIER.MinChance * 100))
-				local player = Mod.EID_Support:ClosestPlayerTo(descObj.Entity)
-				local newChance = Mod.EID_Support:TrinketMultiGoldStr(player, descObj.ObjSubType, baseChance)
-				local str = "{{Collectible596}} " .. newChance .. "% chance to shoot freezing tears"
-				local mult = Mod.EID_Support:TrinketMulti(player, descObj.ObjSubType)
-				return str .. Mod.EID_Support:LuckChanceStr("#{{Luck}} %s chance at %s luck", player, Trinket.SALINE_SPRAY.TEAR_MODIFIER, mult)
+				return modifiers[Trinket.SALINE_SPRAY.ID]._modifier(descObj,
+					"{{Collectible596}} %s chance to shoot freezing tears",
+					"#{{Luck}} %s chance at %s luck"
+				)
 			end,
 		},
 		[Trinket.WORMWOOD_LEAF.ID] = {

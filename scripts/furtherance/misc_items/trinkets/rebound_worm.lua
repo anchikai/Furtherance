@@ -31,6 +31,13 @@ end
 Mod:AddCallback(ModCallbacks.MC_PRE_TEAR_GRID_COLLISION, REBOUND_WORM.PreTearAndBombCollision)
 Mod:AddCallback(ModCallbacks.MC_PRE_BOMB_GRID_COLLISION, REBOUND_WORM.PreTearAndBombCollision)
 
+local brimVariants = Mod:Set({
+	LaserVariant.THICK_RED,
+	LaserVariant.THICKER_RED,
+	LaserVariant.BRIM_TECH,
+	LaserVariant.THICKER_BRIM_TECH,
+})
+
 ---@param laser EntityLaser
 function REBOUND_WORM:LaserUpdate(laser)
 	local data = Mod:TryGetData(laser)
@@ -66,9 +73,10 @@ function REBOUND_WORM:LaserUpdate(laser)
 				local slickLaser
 				if laser.Variant == LaserVariant.THIN_RED then
 					slickLaser = player:FireTechLaser(endPoint, LaserOffset.LASER_SHOOP_OFFSET, dir, false, false, player, laser:GetDamageMultiplier())
-				else
+				elseif brimVariants[laser.Variant] then
 					slickLaser = player:FireBrimstone(dir, player, laser:GetDamageMultiplier())
 				end
+				if not slickLaser then return end
 				slickLaser.Timeout = laser.Timeout
 				slickLaser.DisableFollowParent = true
 				slickLaser.Position = endPoint

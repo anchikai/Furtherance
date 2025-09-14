@@ -59,7 +59,7 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, LEAH.TearsUp, CacheFlag.CACHE_FI
 ---@param source EntityRef
 function LEAH:BirthrightDamageKillCredit(ent, damage, flags, source)
 	if not ent:IsActiveEnemy(true) then return end
-	local player = Mod:TryGetPlayer(source)
+	local player = Mod:TryGetPlayer(source, { LoopSpawnerEnt = true })
 	if player
 		and LEAH:LeahHasBirthright(player)
 	then

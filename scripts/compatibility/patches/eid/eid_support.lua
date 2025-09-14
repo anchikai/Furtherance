@@ -301,12 +301,27 @@ function FR_EID:TrinketMultiStr(multiplier, ...)
 	return ({ ... })[multiplier] or ""
 end
 
-function FR_EID:TrinketMultiGoldStr(player, trinketID, num)
-	local multi = FR_EID:TrinketMulti(player, trinketID)
-	if multi > 1 then
-		return "{{ColorGold}}" .. num * multi .. "{{CR}}"
+---@param descObj EID_DescObj
+---@param desc string | number
+---@param multRequirement? boolean | number If a boolean is passed, will only modify text is the object is a golden trinket. If a number is passed, will check that the multiplier is above or equal to this number
+---@param emptyIfFailed? boolean Will return an empty string if multiplier isn't above 1 (Or if `multRequirement` is true, it's a golden)
+---@param icon? string
+function FR_EID:TrinketMultiGoldStr(descObj, desc, multRequirement, emptyIfFailed, icon)
+	icon = icon or ""
+	local player = FR_EID:ClosestPlayerTo(descObj.Entity)
+	local trinketID = descObj.ObjSubType
+	local mult = FR_EID:TrinketMulti(player, trinketID)
+	if multRequirement and
+		(type(multRequirement) == "boolean" and trinketID > TrinketType.TRINKET_GOLDEN_FLAG)
+		or type(multRequirement) == "number" and mult >= multRequirement
+		or not multRequirement and mult > 1
+	then
+		return "#" .. icon .. " {{ColorGold}}" .. desc .. "{{CR}}"
+	elseif emptyIfFailed then
+		return ""
+	else
+		return tostring(desc)
 	end
-	return num
 end
 
 local min = math.min

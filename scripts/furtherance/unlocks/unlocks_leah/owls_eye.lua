@@ -24,7 +24,7 @@ local modifier = OWLS_EYE.TEAR_MODIFIER
 
 function modifier:PostFire(object)
 	if object:ToTear() or object:ToBomb() then
-		local player = Mod:TryGetPlayer(object)
+		local player = Mod:TryGetPlayer(object.SpawnerEntity)
 		if not player then return end
 		object:AddTearFlags(TearFlags.TEAR_HOMING | TearFlags.TEAR_PIERCING)
 		if object:ToTear() then

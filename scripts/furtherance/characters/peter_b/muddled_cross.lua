@@ -189,7 +189,7 @@ end
 ---@param source EntityRef
 function MUDDLED_CROSS:MuddledCrossDamageKillCredit(ent, damage, flags, source)
 	if not ent:IsActiveEnemy(true) then return end
-	local player = Mod:TryGetPlayer(source)
+	local player = Mod:TryGetPlayer(source, { LoopSpawnerEnt = true })
 	if player
 		and player:HasCollectible(MUDDLED_CROSS.ID)
 		and not Mod.Character.PETER_B:IsPeterB(player)

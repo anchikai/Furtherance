@@ -36,15 +36,13 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, BOOK_OF_AMBIT.AmbitStats)
 
 ---@param tear EntityTear
 function BOOK_OF_AMBIT:UpdateTearVariant(tear)
-	local player = Mod:TryGetPlayer(tear)
-	if player then
-		if player:GetEffects():GetCollectibleEffectNum(BOOK_OF_AMBIT.ID) > 0 then
-			local variant = TearVariant.CUPID_BLUE
-			if Furtherance:IsBloodTear(tear) then
-				variant = TearVariant.CUPID_BLOOD
-			end
-			tear:ChangeVariant(variant)
+	local player = Mod:TryGetPlayer(tear.SpawnerEntity)
+	if player and player:GetEffects():GetCollectibleEffectNum(BOOK_OF_AMBIT.ID) > 0 then
+		local variant = TearVariant.CUPID_BLUE
+		if Mod:IsBloodTear(tear) then
+			variant = TearVariant.CUPID_BLOOD
 		end
+		tear:ChangeVariant(variant)
 	end
 end
 
