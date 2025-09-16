@@ -32,10 +32,8 @@ local function epiphanyPatch()
 	GOLDEN_BEGGAR.NormalToGold[Mod.Slot.ESCORT_BEGGAR.SLOT] = ESCORT_MIDAS
 	Mod:AddToDictionary(GOLDEN_BEGGAR.GoldBeggarInfo, {
 		[ESCORT_MIDAS] = {
-			{
-				ItemPool = Mod.Slot.ESCORT_BEGGAR.ITEM_POOL,
-				Drops = {}
-			}
+			ItemPool = Mod.Slot.ESCORT_BEGGAR.POOL,
+			Drops = {}
 		}
 	})
 
@@ -196,8 +194,9 @@ local function epiphanyPatch()
 	end
 
 	for name, playerType in pairs(Epiphany.PlayerType) do
-		if PlayerType["PLAYER_".. name] then
-			Mod.Slot.LOVE_TELLER.Matchmaking[playerType] = Mod.Slot.LOVE_TELLER.Matchmaking[PlayerType["PLAYER_".. name]]
+		if PlayerType["PLAYER_" .. name] then
+			Mod.Slot.LOVE_TELLER.Matchmaking[playerType] = Mod.Slot.LOVE_TELLER.Matchmaking
+			[PlayerType["PLAYER_" .. name]]
 		end
 	end
 

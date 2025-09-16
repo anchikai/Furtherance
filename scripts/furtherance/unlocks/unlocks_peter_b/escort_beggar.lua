@@ -9,7 +9,7 @@ Furtherance.Slot.ESCORT_BEGGAR = ESCORT_BEGGAR
 
 ESCORT_BEGGAR.SLOT = Isaac.GetEntityVariantByName("Escort Beggar (Slot)")
 ESCORT_BEGGAR.FAMILIAR = Isaac.GetEntityVariantByName("Escort Beggar (Familiar)")
-ESCORT_BEGGAR.ITEM_POOL = Isaac.GetPoolIdByName("escortBeggar")
+ESCORT_BEGGAR.POOL = Isaac.GetPoolIdByName("escortBeggar")
 
 --You can blame Warhamm for these
 ESCORT_BEGGAR.ANIM_RAISE_HANDS = "GdezheVashiRuchkiNuGdezheVashiRuchki"
@@ -177,7 +177,7 @@ function ESCORT_BEGGAR:OnSlotUpdate(slot)
 	elseif slot:GetState() == Mod.SlotState.PAYOUT then
 		if sprite:IsEventTriggered("Prize") then
 			Mod.SFXMan:Play(SoundEffect.SOUND_SLOTSPAWN)
-			local itemID = Mod.Game:GetItemPool():GetCollectible(ESCORT_BEGGAR.ITEM_POOL, true, slot.InitSeed)
+			local itemID = Mod.Game:GetItemPool():GetCollectible(ESCORT_BEGGAR.POOL, true, slot.InitSeed)
 			local pos = Mod.Room():FindFreePickupSpawnPosition(slot.Position, 40, true, false)
 			Mod.Spawn.Collectible(itemID, pos, slot, slot.InitSeed)
 		elseif sprite:IsFinished("Prize") then
@@ -471,7 +471,7 @@ function ESCORT_BEGGAR:AbandonBeggars(_, newLevel)
 
 	if noBitches and not newLevel then return end
 
-	Mod.Foreach.Player(function (player, index)
+	Mod.Foreach.Player(function(player)
 		player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
 	end)
 	--To update MinimapAPI
@@ -484,7 +484,7 @@ function ESCORT_BEGGAR:AbandonedEscortCountdown()
 	local floor_save = Mod.SaveManager.TryGetFloorSave()
 	if floor_save and (floor_save.TotalAbandonedEscorts or 0) > 0 then
 		local all_room_saves = Mod.SaveManager.GetEntireSave().game.room
-		for listIndex, full_room_save in pairs(all_room_saves) do
+		for _, full_room_save in pairs(all_room_saves) do
 			local room_save = full_room_save["GLOBAL"]
 			if (room_save.AbandonedEscortCountdown or 0) > 0 then
 				room_save.AbandonedEscortCountdown = room_save.AbandonedEscortCountdown - 1
@@ -499,7 +499,7 @@ function ESCORT_BEGGAR:ResetOnNewFloor()
 	local floor_save = Mod:FloorSave()
 	if #Isaac.FindByType(EntityType.ENTITY_FAMILIAR, ESCORT_BEGGAR.FAMILIAR) > 0 then
 		floor_save.EscortBeggars = nil
-		Mod.Foreach.Player(function (player, index)
+		Mod.Foreach.Player(function(player)
 			player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
 		end)
 	end
@@ -549,7 +549,8 @@ function ESCORT_BEGGAR:RespawnBeggarOnEntry()
 		local player = ESCORT_BEGGAR:GetFirstAlivePlayer()
 		for _, abandoned_beggar in ipairs(room_save.AbandonedFamiliarEscorts) do
 			local spawnPos = Vector(abandoned_beggar.Position.X, abandoned_beggar.Position.Y)
-			local familiar = Isaac.Spawn(EntityType.ENTITY_FAMILIAR, ESCORT_BEGGAR.FAMILIAR, 0, spawnPos, Vector.Zero, player)
+			local familiar = Isaac.Spawn(EntityType.ENTITY_FAMILIAR, ESCORT_BEGGAR.FAMILIAR, 0,
+				spawnPos, Vector.Zero, player)
 			Mod:FloorSave(familiar).EscortRoom = (abandoned_beggar.EscortRoom)
 			familiar:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
 			familiar.Visible = true
@@ -726,7 +727,7 @@ function ESCORT_BEGGAR:EnterDestinationRoom()
 	if floor_save.EscortBeggars == 0 then return end
 	local room = Mod.Room()
 
-	Mod.Foreach.Familiar(function(familiar, index)
+	Mod.Foreach.Familiar(function(familiar)
 		local familiar_floor_save = Mod:FloorSave(familiar)
 		if room:GetType() == (familiar_floor_save.EscortRoom or 0) then
 			floor_save.EscortBeggars = floor_save.EscortBeggars - 1
@@ -738,7 +739,7 @@ function ESCORT_BEGGAR:EnterDestinationRoom()
 		end
 	end, ESCORT_BEGGAR.FAMILIAR)
 
-	Mod.Foreach.Player(function (player, index)
+	Mod.Foreach.Player(function(player)
 		player:AddCacheFlags(CacheFlag.CACHE_FAMILIARS, true)
 	end)
 end
