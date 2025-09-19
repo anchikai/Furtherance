@@ -33,7 +33,9 @@ local function epiphanyPatch()
 	Mod:AddToDictionary(GOLDEN_BEGGAR.GoldBeggarInfo, {
 		[ESCORT_MIDAS] = {
 			ItemPool = Mod.Slot.ESCORT_BEGGAR.POOL,
-			Drops = {}
+			Drops = {
+				{Amount = 0, BonusAmount = 0, Variant = PickupVariant.PICKUP_COIN, SubType = 0}
+			}
 		}
 	})
 

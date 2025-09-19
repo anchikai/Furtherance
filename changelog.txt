@@ -10,7 +10,7 @@ v1.2.2
 - Fixed Cringe not freezing enemies for 2 seconds
 - Changed trinket multiplier interations with Almagest Scrap. A trinket multiplier of 2 across all players will make items always cost 1 broken heart. A multiplier of 3 will make them free, akin to the previous golden-exclusive trinket effect
 - Added golden trinket/Mom's Box interactions to Dungeon Key, Hammerhead Worm, and Parasol
-- Fixed the Midas Cursed "golden" Escort Beggar causing errors when bombed and not dropping anything
+- Fixed the Midas Cursed "Golden" Escort Beggar causing errors when bombed and not dropping anything
 
 v1.2.1
 - Fixed T. Peter's outline not updating with any changes to their costumes while active
