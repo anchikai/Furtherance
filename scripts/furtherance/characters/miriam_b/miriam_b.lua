@@ -117,15 +117,14 @@ HudHelper.RegisterHUDElement({
 		local playerHeartsHUD = Mod.HUD:GetPlayerHUD(player:GetPlayerIndex()):GetHearts()
 
 		for i, heart in ipairs(playerHeartsHUD) do
-			local offset = 0
 			local anim = heart:GetHeartAnim()
 			if (string.find(anim, "Bone")
 					or string.find(anim, "Red")
 					or string.find(anim, "Rotten"))
 				and not string.find(anim, "Empty")
 			then
-				local pos = Vector(position.X + ((i + offset - 1) % maxColumns) * 12,
-					position.Y + floor((i + offset - 1) / maxColumns) * 10)
+				local pos = Vector(position.X + ((i - 1) % maxColumns) * 12,
+					position.Y + floor((i - 1) / maxColumns) * 10)
 				heartHUD.Color = Color(0, 0, 0, alpha / 2 + 0.25, 0.5 - alpha / 2, 0, 0)
 				heartHUD:Render(pos)
 			end
