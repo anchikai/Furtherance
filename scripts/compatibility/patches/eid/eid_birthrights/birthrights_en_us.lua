@@ -29,19 +29,19 @@ return function(modifiers)
 			Description = {
 				"20% chance to upgrade any spawned {{Heart}} Red Hearts",
 				"#Enemies that collide with the specially dropped Scared Hearts will have it also act like it was collected by Isaac",
-				"#{{Collectible" .. Item.SHATTERED_HEART.ID .. "}} double damage of exploded hearts"
+				"#{{Collectible" .. Item.SHATTERED_HEART.ID .. "}} Exploded heart damage is doubled"
 			}
 		},
 		[Mod.PlayerType.PETER_B] = {
 			Name = "Tainted Peter",
 			Description = {
 				"Provides bonuses to flipped special rooms",
-				"#{{TreasureRoom}} {{RedTreasureRoom}} : Allows two items to choose from",
-				"#{{Planetarium}} : Planetarium items no longer grant broken hearts",
-				"#{{Library}} : Library books no longer cost money",
-				"#{{Shop}} : {{Player33}} Tainted Keeper-style shops",
-				"#{{DevilRoom}} : One item can be taken for free without removing the others",
-				"#{{AngelRoom}} : {{Collectible64}} Steam Sale effect",
+				"#{{TreasureRoom}} {{RedTreasureRoom}} Allows two items to choose from",
+				"#{{Planetarium}} Planetarium items no longer grant broken hearts",
+				"#{{Library}} Library books no longer cost money",
+				"#{{Shop}} {{Player33}} Tainted Keeper-style shops",
+				"#{{DevilRoom}} One item can be taken for free without removing the others",
+				"#{{AngelRoom}} {{Collectible64}} Steam Sale effect",
 			}
 		},
 		[Mod.PlayerType.MIRIAM_B] = {

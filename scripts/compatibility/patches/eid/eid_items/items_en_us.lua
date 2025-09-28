@@ -229,7 +229,7 @@ return function(modifiers)
 		[Item.HEART_RENOVATOR.ID] = {
 			Name = "Heart Renovator",
 			Description = {
-				"Can pick up {{Heart}} Red Hearts while at full red health puts them in a special counter, up to 99 total health",
+				"Picking up {{Heart}} Red Hearts while at full red health puts them in a special counter",
 				"#!!! Double tapping {{ButtonRT}} removes 2 from the counter and grants a {{BrokenHeart}} Broken Heart",
 				"#↑ Upon use, removes a Broken Heart and grants a permanent {{Damage}} +0.5 Damage up"
 			}
@@ -568,7 +568,7 @@ return function(modifiers)
 			Description = {
 				"Changes Spiritual Wound to Chain Lightning",
 				"#Can only be activated while Isaac has {{Heart}} Red Hearts",
-				"#While active:",
+				"#{{Timer}} While active:",
 				"#{{Blank}} Life steal is disabled, instead rapidly draining {{Heart}} Red Hearts.",
 				"#{{Blank}} Less delay between damaging enemies"
 			}

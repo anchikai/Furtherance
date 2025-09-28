@@ -7,7 +7,6 @@ return function(modifiers)
 			Description = {
 				"{{Tears}} +0.2 Tears for every {{BrokenHeart}} Broken Heart"
 			}
-
 		},
 		[Mod.PlayerType.PETER] = {
 			Name = "Peter",
@@ -16,7 +15,6 @@ return function(modifiers)
 				Mod.Item.KEYS_TO_THE_KINGDOM.ID ..
 				"}} Keys to the Kingdom instead of Peter's health if it still needs charges"
 			}
-
 		},
 		[Mod.PlayerType.MIRIAM] = {
 			Name = "Miriam",
@@ -24,7 +22,6 @@ return function(modifiers)
 				"Every 12 tears, a whirlpool will spawn where the tear landed. It sucks enemies into it in a spiral motion, dealing constant damage",
 				"#Whirlpool lasts 2 seconds"
 			}
-
 		},
 		[Mod.PlayerType.LEAH_B] = {
 			Name = "Tainted Leah",
@@ -35,7 +32,6 @@ return function(modifiers)
 				"#↑ All stats up for every Half Red Heart Leah has",
 				"#{{SoulHeart}} Soul/Black Hearts are replaced with Red Hearts"
 			}
-
 		},
 		[Mod.PlayerType.PETER_B] = {
 			Name = "Tainted Peter",
@@ -50,7 +46,6 @@ return function(modifiers)
 				"#Cannot submerge enemies",
 				"#{{Weakness}} Weakness instead of Strength"
 			}
-
 		},
 		[Mod.PlayerType.MIRIAM_B] = {
 			Name = "Tainted Miriam",
