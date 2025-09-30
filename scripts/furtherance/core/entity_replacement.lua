@@ -29,7 +29,8 @@ end
 ---@param variant integer
 ---@param subtype integer
 ---@param seed integer
-local function entityReplacement(entType, variant, subtype, seed)
+---@param dontReturnSeed? boolean
+local function entityReplacement(entType, variant, subtype, seed, dontReturnSeed)
 	for _, replacement_info in pairs(Mod.EntityReplacements) do
 		--Must match type
 		local isNullPickup = entType == EntityType.ENTITY_PICKUP and replacement_info.NewType == EntityType.ENTITY_PICKUP and variant == PickupVariant.PICKUP_NULL
@@ -71,7 +72,11 @@ local function entityReplacement(entType, variant, subtype, seed)
 
 			if roll <= replaceChance then
 				Mod:DebugLog("Replacement successful!")
-				return { replacement_info.NewType, replacement_info.NewVariant, newSubType, seed }
+				if dontReturnSeed then
+					return { replacement_info.NewType, replacement_info.NewVariant, newSubType }
+				else
+					return { replacement_info.NewType, replacement_info.NewVariant, newSubType, seed }
+				end
 			else
 				Mod:DebugLog("Roll failed for replacement")
 			end
@@ -88,7 +93,7 @@ Mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, preEntitySpawn)
 
 local function preRoomEntitySpawn(_, entType, variant, subtype, gridIndex, seed)
 	if entType ~= EntityType.ENTITY_SLOT then return end
-	return entityReplacement(entType, variant, subtype, seed)
+	return entityReplacement(entType, variant, subtype, seed, true)
 end
 
 Mod:AddCallback(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, preRoomEntitySpawn)
