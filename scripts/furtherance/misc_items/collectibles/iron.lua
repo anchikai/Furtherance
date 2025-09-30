@@ -21,18 +21,6 @@ function IRON:ShouldBotherWithUpdate(weaponEnt)
 		and (not weaponEnt:ToBomb() or weaponEnt.IsFetus)
 end
 
----@param familiar EntityFamiliar
-function IRON:IronInit(familiar)
-	familiar:AddToOrbit(5)
-	familiar.OrbitLayer = 5
-	familiar.OrbitDistance = IRON.ORBIT_DISTANCE
-	familiar.OrbitSpeed = IRON.ORBIT_SPEED
-	familiar:RecalculateOrbitOffset(familiar.OrbitLayer, true)
-	IRON:IronUpdate(familiar)
-end
-
-Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, IRON.IronInit, IRON.FAMILIAR)
-
 ---@param tear EntityTear
 function IRON:TearCollision(tear)
 	if not IRON:ShouldBotherWithUpdate(tear) then return end
@@ -197,13 +185,22 @@ end
 Mod:AddCallback(ModCallbacks.MC_POST_LASER_UPDATE, IRON.LaserCollision)
 
 ---@param familiar EntityFamiliar
-function IRON:IronUpdate(familiar)
+function IRON:IronInit(familiar)
 	local player = familiar.Player
-	local targetPosition = familiar:GetOrbitPosition(player.Position + player.Velocity)
-	familiar.OrbitLayer = 5
+	familiar:AddToOrbit(5)
 	familiar.OrbitDistance = IRON.ORBIT_DISTANCE
 	familiar.OrbitSpeed = IRON.ORBIT_SPEED
-	familiar.Velocity = targetPosition - familiar.Position
+	familiar.Position = familiar:GetOrbitPosition(player.Position)
+end
+
+Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, IRON.IronInit, IRON.FAMILIAR)
+
+---@param familiar EntityFamiliar
+function IRON:IronUpdate(familiar)
+	local player = familiar.Player
+	familiar.OrbitDistance = IRON.ORBIT_DISTANCE
+	familiar.OrbitSpeed = IRON.ORBIT_SPEED
+	familiar.Velocity = familiar:GetOrbitPosition(player.Position) - familiar.Position
 end
 
 Mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, IRON.IronUpdate, IRON.FAMILIAR)
