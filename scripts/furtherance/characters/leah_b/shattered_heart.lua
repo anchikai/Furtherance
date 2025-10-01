@@ -127,7 +127,11 @@ function SHATTERED_HEART:RemoveBrokensFromDamage(ent, amount, flags, source, cou
 	local player = Mod:TryGetPlayer(source, { LoopSpawnerEnt = true })
 	if player and PlayerManager.AnyoneHasCollectible(Mod.Item.SHATTERED_HEART.ID) then
 		local rng = player:GetCollectibleRNG(Mod.Item.SHATTERED_HEART.ID)
-		if rng:RandomFloat() <= SHATTERED_HEART.SCARED_HEART_CHANCE then
+		local chance = SHATTERED_HEART.SCARED_HEART_CHANCE
+		if BirthcakeRebaked and BirthcakeRebaked:PlayerTypeHasBirthcake(player, Mod.PlayerType.LEAH_B) then
+			chance = chance * (BirthcakeRebaked:GetTrinketMult(player) + 1)
+		end
+		if rng:RandomFloat() <= chance then
 			local sharpPickup = Mod.Spawn.Heart(HeartSubType.HEART_SCARED, ent.Position,
 				EntityPickup.GetRandomPickupVelocity(ent.Position, rng), player, rng:Next()
 			)

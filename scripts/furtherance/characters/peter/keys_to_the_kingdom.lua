@@ -262,11 +262,29 @@ end
 ---
 ---Will spawn the soul at the parent head if it happens to be a segmented enemy and remove the rest
 ---@param ent Entity
-function KEYS_TO_THE_KINGDOM:RaptureEnemy(ent)
+---@param player? EntityPlayer @Player who raptured the enemy
+function KEYS_TO_THE_KINGDOM:RaptureEnemy(ent, player)
 	local parent = SEL.Utils.GetLastParent(ent)
 	local subtype = ent:IsBoss() and KEYS_TO_THE_KINGDOM.SPARED_SOUL_BOSS or KEYS_TO_THE_KINGDOM.SPARED_SOUL
-	Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT, subtype,
-		parent.Position, Vector.Zero, nil)
+	local spawnEffect = true
+	if not ent:IsBoss()
+		and BirthcakeRebaked
+		and BirthcakeRebaked:AnyPlayerTypeHasBirthcake(Mod.PlayerType.PETER)
+		and player
+	then
+		local rng = player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID)
+		local chance = rng:RandomFloat()
+		local maxChance = KEYS_TO_THE_KINGDOM:GetEnemySoulSpawnChance(ent, player)
+
+		if chance <= maxChance then
+			KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(ent, player)
+			spawnEffect = false
+		end
+	end
+	if spawnEffect then
+		Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT, subtype,
+			parent.Position, Vector.Zero, nil)
+	end
 
 	Mod.Foreach.Segment(parent, function (segment)
 		KEYS_TO_THE_KINGDOM:RemoveBoss(segment)
@@ -335,7 +353,7 @@ function KEYS_TO_THE_KINGDOM:OnUse(itemID, rng, player, flags, slot)
 				SEL:AddStatusEffect(npc, KEYS_TO_THE_KINGDOM.STATUS_RAPTURE, raptureCountdown, source, nil,
 					{ MaxCountdown = raptureCountdown })
 			elseif canSpare and npc:Exists() then
-				KEYS_TO_THE_KINGDOM:RaptureEnemy(npc)
+				KEYS_TO_THE_KINGDOM:RaptureEnemy(npc, player)
 				KEYS_TO_THE_KINGDOM:GrantRaptureStats(player, rng, 1, true)
 			end
 		end, nil, nil, nil, { Inverse = true })
@@ -410,27 +428,61 @@ Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_NEW_LEVEL, KEYS_TO_THE_KINGDOM.OnNew
 
 --#region Dropping soul charges on death
 
----@param npc EntityNPC
+---@param ent Entity
 ---@param player EntityPlayer
-function KEYS_TO_THE_KINGDOM:SpawnBossSoulCharge(npc, player)
+function KEYS_TO_THE_KINGDOM:SpawnBossSoulCharge(ent, player)
 	local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
 		KEYS_TO_THE_KINGDOM.SOUL_BOSS,
-		npc.Position, RandomVector():Resized(5), npc)
+		ent.Position, RandomVector():Resized(5), ent)
 	effect.Target = player
 end
 
----@param npc EntityNPC
----@param player EntityPlayer
-function KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(npc, player)
-	local rng = player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID)
-	local chance = rng:RandomFloat()
-	local maxChance = (npc.MaxHitPoints * 1.5) / (60 + (10 * Mod.Level():GetAbsoluteStage()))
-	if chance <= maxChance then
-		local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
-			KEYS_TO_THE_KINGDOM.SOUL,
-			npc.Position, RandomVector():Resized(5), npc)
-		effect.Target = player
+---@param npc Entity
+---@param player EntityPlayer?
+function KEYS_TO_THE_KINGDOM:GetEnemySoulSpawnChance(npc, player)
+	local chance = (npc.MaxHitPoints * 1.5) / (60 + (10 * Mod.Level():GetAbsoluteStage()))
+	if BirthcakeRebaked and player and BirthcakeRebaked:PlayerTypeHasBirthcake(player, Mod.PlayerType.PETER) then
+		local mult = BirthcakeRebaked:GetTrinketMult(player) - 1
+		chance = chance + (0.05 * mult)
 	end
+	return chance
+end
+
+---@param ent Entity
+---@param player EntityPlayer
+function KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(ent, player)
+	local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, KEYS_TO_THE_KINGDOM.EFFECT,
+		KEYS_TO_THE_KINGDOM.SOUL,
+		ent.Position, RandomVector():Resized(5), ent)
+	effect.Target = player
+end
+
+---@param ent Entity
+---@param player? EntityPlayer
+function KEYS_TO_THE_KINGDOM:TrySpawnSoul(ent, player)
+	local players = player and {player} or PlayerManager.GetPlayers()
+	for _, _player in ipairs(players) do
+		local slots = Mod:GetActiveItemCharges(_player, KEYS_TO_THE_KINGDOM.ID)
+		if #slots == 0 then goto nextPlayer end
+		for _, slotData in ipairs(slots) do
+			if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES then
+				if ent:IsBoss() then
+					KEYS_TO_THE_KINGDOM:SpawnBossSoulCharge(ent, _player)
+					return true
+				elseif ent.SpawnerType == 0 then
+					local rng = _player:GetCollectibleRNG(KEYS_TO_THE_KINGDOM.ID)
+					local chance = rng:RandomFloat()
+					local maxChance = KEYS_TO_THE_KINGDOM:GetEnemySoulSpawnChance(ent, _player)
+					if chance <= maxChance then
+						KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(ent, _player)
+						return true
+					end
+				end
+			end
+		end
+	    ::nextPlayer::
+	end
+	return false
 end
 
 ---@param npc EntityNPC
@@ -463,23 +515,10 @@ function KEYS_TO_THE_KINGDOM:OnDeath(npc)
 					return
 				end
 			end
-
-			Mod.Foreach.Player(function(player)
-				local slots = Mod:GetActiveItemCharges(player, KEYS_TO_THE_KINGDOM.ID)
-				if #slots == 0 then return end
-				for _, slotData in ipairs(slots) do
-					if slotData.Charge < KEYS_TO_THE_KINGDOM.MAX_CHARGES then
-						if npc:IsBoss() then
-							KEYS_TO_THE_KINGDOM:SpawnBossSoulCharge(npc, player)
-						elseif npc.SpawnerType == 0 then
-							KEYS_TO_THE_KINGDOM:SpawnEnemySoulCharge(npc, player)
-						end
-						break
-					end
-				end
-			end)
 		end)
 	end
+
+	KEYS_TO_THE_KINGDOM:TrySpawnSoul(npc)
 end
 
 Mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, KEYS_TO_THE_KINGDOM.OnDeath)

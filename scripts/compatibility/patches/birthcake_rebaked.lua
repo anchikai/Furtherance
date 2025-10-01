@@ -16,24 +16,24 @@ Mod.LoopInclude(birthcakeFiles, "scripts.compatibility.patches.birthcake") ]]
 FR_BIRTHCAKE.BirthcakeDescriptions = {
 	[Mod.PlayerType.LEAH] = {
 		Name = "Leah's",
-		PickupQuote = "???",
-		AccurateBlurb = "Accurate?",
-		EIDDesc = "???",
+		PickupQuote = "Move love",
+		AccurateBlurb = "Hearts might be worth double for Heart Renovator",
+		EIDDesc = "Picking up {{Heart}} Red Hearts at full health have a 50% chance to grant double its amount into {{Collectible" .. Mod.Item.HEART_RENOVATOR.ID .. "}} Heart Renovator's counter",
 		SpriteName = "leah"
 	},
 	[Mod.PlayerType.LEAH_B] = {
 		Name = "Tainted Leah's",
 		Title = "The Unloved's",
-		PickupQuote = "???",
-		AccurateBlurb = "Accurate?",
-		EIDDesc = "???",
+		PickupQuote = "Rip their hearts out",
+		AccurateBlurb = "Special hearts drop from damaged enemies more often",
+		EIDDesc = "Doubles the chance of special heart pickups spawning from damaged enemies",
 		SpriteName = "leah_b"
 	},
 	[Mod.PlayerType.PETER] = {
 		Name = "Peter's",
-		PickupQuote = "???",
-		AccurateBlurb = "Accurate?",
-		EIDDesc = "???",
+		PickupQuote = "Recycled souls",
+		AccurateBlurb = "Spared enemies may become active charge",
+		EIDDesc = "Souls from spared enemies have a chance to grant charge to {{Collectible" .. Mod.Item.KEYS_TO_THE_KINGDOM.ID .. "}} Keys to the Kingdom",
 		SpriteName = "peter"
 	},
 	[Mod.PlayerType.PETER_B] = {

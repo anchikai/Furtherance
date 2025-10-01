@@ -28,7 +28,6 @@ return function(modifiers)
 			Description = {
 				"{{EmptyHeart}} Maximum of 24 heart containers",
 				"#{{BrokenHeart}} Health above one heart will be slowly be replaced with Broken Hearts, 1 every 20 seconds",
-				"#{{Heart}} Damaging enemies may have them drop a special Scared Heart. It disappears after 10 seconds and be collected by enemies, damaging them",
 				"#↑ All stats up for every Half Red Heart Leah has",
 				"#{{SoulHeart}} Soul/Black Hearts are replaced with Red Hearts"
 			}

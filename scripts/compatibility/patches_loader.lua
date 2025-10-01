@@ -46,7 +46,7 @@ local patches = {
 	"addicted_beggar",
 	"andromeda",
 	"arachna",
-	--"birthcake.birthcake",
+	"birthcake_rebaked",
 	"brawler_beggar",
 	"cadaver",
 	"epiphany",

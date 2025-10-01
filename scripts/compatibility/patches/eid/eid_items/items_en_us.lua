@@ -284,6 +284,7 @@ return function(modifiers)
 		[Item.KEYS_TO_THE_KINGDOM.ID] = { --123 filigree feather
 			Name = "Keys to the Kingdom",
 			Description = {
+				"#{{Battery}} Must be charged by souls dropped by enemies and bosses",
 				"#{{Timer}} Each normal enemy is removed and grants a random temporary stat up for the remainder of the floor",
 				"#{{BossRoom}} Bosses are spared after 30 seconds, granting 3 random permanent stat ups",
 				"#Getting hit or hurting the boss will add 1/3rd of the countdown back",
@@ -648,7 +649,8 @@ return function(modifiers)
 		[Item.SHATTERED_HEART.ID] = {
 			Name = "Shattered Heart",
 			Description = {
-				"Explodes all hearts in the room, dealing damage based on the heart and leaves damaging creep"
+				"Explodes all hearts in the room, dealing damage based on the heart and leaves damaging creep",
+				"#{{Heart}} Damaging enemies may have them drop a special Scared Heart. It disappears after 10 seconds and can be collected by enemies, damaging them",
 			}
 		},
 		[Item.SUNSCREEN.ID] = {

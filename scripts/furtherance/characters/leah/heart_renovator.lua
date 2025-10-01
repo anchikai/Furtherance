@@ -141,6 +141,18 @@ function HEART_RENOVATOR:AddHeartPickupToCounter(pickup, collider)
 	local amount = HEART_RENOVATOR:CannotPickRedHeartsOrWillOverflow(pickup, player)
 
 	if amount then
+		if BirthcakeRebaked
+			and BirthcakeRebaked:PlayerTypeHasBirthcake(player, Mod.PlayerType.LEAH)
+			and player:GetHearts() >= player:GetEffectiveMaxHearts()
+		then
+			local rng = player:GetCollectibleRNG(HEART_RENOVATOR.ID)
+			local BASE_CHANCE = 0.25
+			local mult = BirthcakeRebaked:GetTrinketMult(player)
+			if rng:RandomFloat() <= BirthcakeRebaked:GetBalanceApprovedChance(BASE_CHANCE, mult) then
+				amount = amount * 2
+				Mod.SFXMan:Play(BirthcakeRebaked.SFX.PARTY_HORN)
+			end
+		end
 		HEART_RENOVATOR:AddToCounter(player, amount)
 	end
 end
@@ -200,12 +212,7 @@ Mod:AddPriorityCallback(ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS, CallbackPriority.
 HudHelper.RegisterHUDElement({
 	Name = "Heart Renovator Counter",
 	Priority = HudHelper.Priority.NORMAL,
-	XPadding = {
-		-5,
-		0,
-		0,
-		0
-	},
+	XPadding = 0,
 	YPadding = 6,
 	Condition = function(player)
 		return player:HasCollectible(HEART_RENOVATOR.ID)
