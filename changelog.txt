@@ -1,16 +1,28 @@
-v1.2.2
+v1.3
+
+General Changes/Bug Fixes
+- Fixed Cringe not freezing enemies for 2 seconds
+- Fixed the Midas Cursed "Golden" Escort Beggar causing errors when bombed and not dropping anything
+- Fixed several "on new floor" effects triggering when continuing a run
+- Fixed Iron and Miriam's Well not respecting the speed changes applied by orbitals such as Big Fan and Guardian Angel
+- Heartache Up/Down now respect PHD-like effects and False PHD. However, due to API limitations, this is a global effect across all players instead of changing appropriately with the player holding the pill
+- Epitaph's effect of spawning a tombstone on the next run now matches Eden's Blessings requirements (i.e. no challenges, no seeded runs, owning the items directly, etc.)
+
+Gameplay Changes
 - Soul of Leah now grants a one-time-use Heartbreak-like effect (since I couldn't get the health cap increase to work). Will grant 2 Broken Hearts and deal fake damage when used, but is also used automatically when you would take fatal damage
 - When Caduceus Staff fails to trigger its effect, it will multiply the last chance by x1.7 instead of adding +5%
 - Furtherance's items that grant tear effects now have a stacking chance effect, multiplying the base chance of effect to trigger by the number of copies of the item. This can exceed the capped chance.
-- Because of this these Items have stacking effects: Ceres?, Juno?, Vesta?, Leah's Lock, Owl's Eye, Saline Spray
+- Because of this, the following items now have stacking effects: Ceres?, Juno?, Vesta?, Leah's Lock, Owl's Eye, Saline Spray
 - Added missing stackable item effect for Chi Rho
-- Epitaph's effect of spawning a tombstone on the next run now matches Eden's Blessings requirements (i.e. no challenges, no seeded runs, owning the items directly, etc.)
-- Fixed EID description for Caduceus Staff and Cardiomyopathy being incorrect
-- Fixed several of Furtherance's item descriptions being blank when viewed on the item collection screen on the main menu
-- Fixed Cringe not freezing enemies for 2 seconds
 - Changed trinket multiplier interations with Almagest Scrap. A trinket multiplier of 2 across all players will make items always cost 1 broken heart. A multiplier of 3 will make them free, akin to the previous golden-exclusive trinket effect
 - Added golden trinket/Mom's Box interactions to Dungeon Key, Hammerhead Worm, and Parasol
-- Fixed the Midas Cursed "Golden" Escort Beggar causing errors when bombed and not dropping anything
+
+EID Fixes
+- Fixed EID description for Caduceus Staff and Cardiomyopathy being incorrect
+- Fixed several of Furtherance's item descriptions being blank when viewed on the item collection screen on the main menu
+
+Mod Compatibility
+- Added compatibility with the Birthcake mod. Each of Furtherance's characters now have a unique Birthcake effect
 
 v1.2.1
 - Fixed T. Peter's outline not updating with any changes to their costumes while active
@@ -43,7 +55,7 @@ Bug Fixes
 - Potentially fixed some enemies with T. Peter becoming "pre-submerged" or already inflicted with the Strength status effect and unable to be interacted with
 - Fixed infinite loop of spawning tears and lasers with Technology -1 and Lachryphagy
 
-Mod Compatibility:
+Mod Compatibility
 - Added items to Foks' Booster Pack's Grocery Shop item pool
 - Added items to Hush's Item Pool Blue Womb item pool
 - Added items to TBoI: Reshaken Vol. 1's Glass item pool
