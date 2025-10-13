@@ -25,7 +25,6 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, MIRIAMS_WELL.FamiliarCache, Cach
 ---@param familiar EntityFamiliar
 function MIRIAMS_WELL:OnFamiliarInit(familiar)
 	familiar:AddToOrbit(1)
-	familiar.OrbitLayer = 1
 	familiar.OrbitDistance = MIRIAMS_WELL.ORBIT_DISTANCE
 	familiar.OrbitSpeed = MIRIAMS_WELL.ORBIT_SPEED
 	familiar:RecalculateOrbitOffset(familiar.OrbitLayer, true)
@@ -38,9 +37,6 @@ function MIRIAMS_WELL:WellUpdate(familiar)
 	local player = familiar.Player
 	local sprite = familiar:GetSprite()
 
-	familiar.OrbitLayer = 1
-	familiar.OrbitDistance = MIRIAMS_WELL.ORBIT_DISTANCE
-	familiar.OrbitSpeed = MIRIAMS_WELL.ORBIT_SPEED
 	local targetPosition = familiar:GetOrbitPosition(player.Position + player.Velocity)
 	familiar.Velocity = targetPosition - familiar.Position
 

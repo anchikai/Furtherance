@@ -19,6 +19,7 @@ CHIRON.MAP_EFFECTS = {
 
 ---@param player EntityPlayer
 function CHIRON:ChironMapping(player) -- Apply a random map effect every floor
+	if player.FrameCount == 0 then return end
 	if player:HasCollectible(CHIRON.ID) then
 		local level = Mod.Level()
 		local rng = player:GetCollectibleRNG(CHIRON.ID)

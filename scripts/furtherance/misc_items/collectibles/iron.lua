@@ -198,8 +198,6 @@ Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, IRON.IronInit, IRON.FAMILIAR)
 ---@param familiar EntityFamiliar
 function IRON:IronUpdate(familiar)
 	local player = familiar.Player
-	familiar.OrbitDistance = IRON.ORBIT_DISTANCE
-	familiar.OrbitSpeed = IRON.ORBIT_SPEED
 	familiar.Velocity = familiar:GetOrbitPosition(player.Position) - familiar.Position
 end
 

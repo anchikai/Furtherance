@@ -54,6 +54,7 @@ Mod:AddCallback(ModCallbacks.MC_USE_ITEM, ALT_KEY.OnUse, ALT_KEY.ID)
 ---Runs before POST_NEW_LEVEL when floor save data gets reset :P
 ---@param player EntityPlayer
 function ALT_KEY:PreNewLevel(player)
+	if player.FrameCount == 0 then return end
 	local player_floor_save = Mod:FloorSave(player)
 	local slots = Mod:GetActiveItemSlots(player, ALT_KEY.ID)
 	if player_floor_save.SkipFloorRecharge then return end

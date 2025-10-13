@@ -413,6 +413,7 @@ Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, KEYS_TO_THE_KINGDOM.StatBuffs)
 
 ---@param player EntityPlayer
 function KEYS_TO_THE_KINGDOM:OnNewLevel(player)
+	if player.FrameCount == 0 then return end
 	local player_floor_save = Mod.SaveManager.TryGetFloorSave(player)
 	if player_floor_save
 		and player_floor_save.KeysToTheKingdomStatBonus_Temp

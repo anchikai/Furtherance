@@ -10,6 +10,7 @@ BEGINNERS_LUCK.LUCK_BONUS = 10
 
 ---@param player EntityPlayer
 function BEGINNERS_LUCK:BonusOnNewLevel(player)
+	if player.FrameCount == 0 then return end
 	if player:HasCollectible(BEGINNERS_LUCK.ID) then
 		local effects = player:GetEffects()
 		local numItems = player:GetCollectibleNum(BEGINNERS_LUCK.ID)
