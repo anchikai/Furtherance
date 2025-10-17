@@ -7,6 +7,7 @@ General Changes/Bug Fixes
 - Fixed Iron and Miriam's Well not respecting the speed changes applied by orbitals such as Big Fan and Guardian Angel
 - Heartache Up/Down now respect PHD-like effects and False PHD. However, due to API limitations, this is a global effect across all players instead of changing appropriately with the player holding the pill
 - Epitaph's effect of spawning a tombstone on the next run now matches Eden's Blessings requirements (i.e. no challenges, no seeded runs, owning the items directly, etc.)
+- Fixed an error occuring if you encountered a Luna beam without ever having a Moon Heart
 
 Gameplay Changes
 - Soul of Leah now grants a one-time-use Heartbreak-like effect (since I couldn't get the health cap increase to work). Will grant 2 Broken Hearts and deal fake damage when used, but is also used automatically when you would take fatal damage

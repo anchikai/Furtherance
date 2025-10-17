@@ -199,11 +199,12 @@ Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, MOON_HEART.SpawnLunarLight)
 ---@param moonlight EntityEffect
 function MOON_HEART:ActivateMoonlight(moonlight)
 	if moonlight.SubType == 1 then
-		local roomSave = Mod:RoomSave()
+		local room_save = Mod:RoomSave()
 		if moonlight:GetSprite():IsPlaying("Disappear")
-			and not Mod:HasBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_ACTIVATED)
+			and room_save.SpawnMoonlight
+			and not Mod:HasBitFlags(room_save.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_ACTIVATED)
 		then
-			roomSave.SpawnMoonlight = Mod:AddBitFlags(roomSave.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_ACTIVATED)
+			room_save.SpawnMoonlight = Mod:AddBitFlags(room_save.SpawnMoonlight, MOON_HEART.ROOM_MOONLIGHT_FLAGS.FLAG_ACTIVATED)
 			Mod:DebugLog("Moonlight activated")
 			local floorSave = Mod:FloorSave()
 			floorSave.ActivatedMoonlights = floorSave.ActivatedMoonlights + 1
