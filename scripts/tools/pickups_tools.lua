@@ -199,13 +199,15 @@ function Furtherance:KillDevilPedestals(ignoredPickup, filter)
 	local level = Mod.Level()
 	local isDarkRoom = level:GetStage() == LevelStage.STAGE6 and level:GetStageType() == StageType.STAGETYPE_ORIGINAL
 	local pickups = Isaac.FindByType(EntityType.ENTITY_PICKUP)
+	local roomIndex = level:GetCurrentRoomDesc().SafeGridIndex
+	local startingRoomIndex = level:GetStartingRoomIndex()
 
 	for i = #pickups, 1, -1 do
 		local ent = pickups[i]
 		local pickup = ent:ToPickup() ---@cast pickup EntityPickup
 		if GetPtrHash(pickup) ~= ignoredHash
 			and (Mod:IsDevilDealItem(pickup)
-				or Mod:IsInStartingRoom()
+				or roomIndex == startingRoomIndex
 				and pickup.Variant == PickupVariant.PICKUP_REDCHEST
 				and isDarkRoom)
 			and (not filter or filter(pickup))
