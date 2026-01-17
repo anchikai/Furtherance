@@ -12,7 +12,9 @@ local function libraryExpandedPatch()
 		Mod.Item.PRAYER_JOURNAL.ID,
 		Mod.Item.SECRET_DIARY.ID
 	}))
-	LibraryExpanded.LibraryEID.TBOATB[Mod.Item.BOOK_OF_BOOKS.ID] = "#{{TBOATB}} Activated books will have TBOATB synergies"
+	if EID then
+		LibraryExpanded.LibraryEID.TBOATB[Mod.Item.BOOK_OF_BOOKS.ID] = "#{{TBOATB}} Activated books will have TBOATB synergies"
+	end
 end
 
 loader:RegisterPatch("LibraryExpanded", libraryExpandedPatch)
