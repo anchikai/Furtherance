@@ -57,7 +57,7 @@ return function(modifiers)
 						"Door will stay open while ambush is active",
 						false, true
 					) .. Mod.EID_Support:TrinketMultiGoldStr(descObj,
-						"Boss Room doors will stay open",
+						"Opens the door to the Boss Rush regardless of the timer",
 						false, true
 					)
 				end,
