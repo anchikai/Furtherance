@@ -26,6 +26,7 @@ EID Fixes
 
 Mod Compatibility
 - Added compatibility with the Birthcake mod. Each of Furtherance's characters now have a unique Birthcake effect
+- Fixed an error with Library Expanded if EID wasn't enabled
 
 v1.2.1
 - Fixed T. Peter's outline not updating with any changes to their costumes while active
