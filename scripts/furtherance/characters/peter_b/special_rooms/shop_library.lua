@@ -15,13 +15,13 @@ local function getShopLevel(rng)
 	end
 	local evenStoreUpgrades = 0
 	if persistentGameData:Unlocked(Achievement.STORE_UPGRADE_LV2) then
-		oddStoreUpgrades = oddStoreUpgrades + 1
+		evenStoreUpgrades = evenStoreUpgrades + 1
 	end
 	if persistentGameData:Unlocked(Achievement.STORE_UPGRADE_LV4) then
-		oddStoreUpgrades = oddStoreUpgrades + 1
+		evenStoreUpgrades = evenStoreUpgrades + 1
 	end
 
-	local shopLevel = rng:RandomInt(oddStoreUpgrades) + rng:RandomInt(evenStoreUpgrades);
+	local shopLevel = rng:RandomInt(oddStoreUpgrades) + rng:RandomInt(evenStoreUpgrades)
 	if (rng:RandomInt(2) == 0 or not Mod.Game:IsHardMode()) then
 		shopLevel = oddStoreUpgrades + evenStoreUpgrades --best unlocked shop level
 	end
@@ -29,11 +29,14 @@ local function getShopLevel(rng)
 	return shopLevel
 end
 
-local SHOP_KEEPER_OFFSET = 7
+local SHOP_KEEPER_OFFSET = RoomSubType.SHOP_KEEPER_LEVEL_1
 
-local function getShopSubtype(rng)
-	local shopSubType = getShopLevel(rng)
-	local rareShopSeed = rng:RandomInt(255)
+---@param rng RNG
+---@return integer
+function Furtherance.Item.MUDDLED_CROSS:GetShopSubtype(rng)
+	local subTypeRNG = RNG(rng:GetSeed(), 19)
+	local shopSubType = getShopLevel(subTypeRNG)
+	local rareShopSeed = subTypeRNG:RandomInt(255)
 	if (rareShopSeed == 0) then
 		shopSubType = RoomSubType.SHOP_RARE_BAD
 	elseif rareShopSeed == 1 and shopSubType > 1 then
@@ -51,9 +54,8 @@ local function getShopSubtype(rng)
 end
 
 local function getShopRoomData(rng)
-	local subTypeRNG = RNG(rng:GetSeed(), 19)
 	return RoomConfigHolder.GetRandomRoom(rng:Next(), true, StbType.SPECIAL_ROOMS, RoomType.ROOM_SHOP,
-		Mod.Room():GetRoomShape(), 0, -1, 1, 10, 0, getShopSubtype(subTypeRNG))
+		Mod.Room():GetRoomShape(), 0, -1, 1, 10, 0, MUDDLED_CROSS:GetShopSubtype(rng))
 end
 
 local function libraryRoomFlip()
@@ -85,7 +87,8 @@ end
 
 Mod:AddCallback(Mod.ModCallbacks.GET_MUDDLED_CROSS_PUDDLE_BACKDROP, shopRoomBackdrop, RoomType.ROOM_LIBRARY)
 
-local function getLibraryRoomData(rng)
+function Furtherance.Item.MUDDLED_CROSS:GetLibrarySubtype(rng)
+	local subTypeRNG = RNG(rng:GetSeed(), 19)
 	local persistentGameData = Mod.PersistGameData
 	local storeLevel = 0
 	for i = Achievement.STORE_UPGRADE_LV1, Achievement.STORE_UPGRADE_LV4 do
@@ -93,10 +96,12 @@ local function getLibraryRoomData(rng)
 			storeLevel = storeLevel + 1
 		end
 	end
-	local roomSubType = rng:RandomInt(storeLevel + 1)
+	return subTypeRNG:RandomInt(storeLevel + 1)
+end
 
+local function getLibraryRoomData(rng)
 	return RoomConfigHolder.GetRandomRoom(rng:Next(), false, StbType.SPECIAL_ROOMS, RoomType.ROOM_LIBRARY,
-		Mod.Room():GetRoomShape(), 0, -1, 1, 10, 0, roomSubType);
+		Mod.Room():GetRoomShape(), 0, -1, 1, 10, 0, MUDDLED_CROSS:GetLibrarySubtype(rng))
 end
 
 local function shopRoomFlip()

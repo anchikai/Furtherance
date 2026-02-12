@@ -29,9 +29,53 @@ SOUL_OF_PETER.BLACKLISTED_NEIGHBORS = Mod:Set({
 	RoomType.ROOM_SUPERSECRET,
 	RoomType.ROOM_ULTRASECRET
 })
-SOUL_OF_PETER.SPECIAL_ROOM_CHANCE = 0.1
+SOUL_OF_PETER.SPECIAL_ROOM_CHANCE = 1
 SOUL_OF_PETER.NUM_ROOMS = 5
 SOUL_OF_PETER.REQUIRED_DOORS = 4
+
+local ROOM_TYPE_TO_SUBTYPE = {
+	[RoomType.ROOM_ARCADE] = function (rng)
+		for _, player in ipairs(PlayerManager.GetPlayers()) do
+			if player:GetPlayerType() == PlayerType.PLAYER_CAIN and player:GetCollectibleNum(CollectibleType.COLLECTIBLE_BIRTHRIGHT) > 0
+        		and rng:RandomInt(2) == 0
+			then
+				return RoomSubType.ARCADE_CAIN
+			end
+		end
+	end,
+	[RoomType.ROOM_CURSE] = function(rng)
+		if PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_VOODOO_HEAD) then
+			return RoomSubType.CURSE_VOODOO_HEAD
+		end
+	end,
+	[RoomType.ROOM_MINIBOSS] = function(rng)
+		return -1
+	end,
+	[RoomType.ROOM_SUPERSECRET] = function(rng)
+		return -1
+	end,
+	[RoomType.ROOM_TREASURE] = function(rng)
+		local subtype = 0
+		if PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_MORE_OPTIONS) then
+			subtype = subtype + RoomSubType.TREASURE_OPTIONS
+		end
+		if PlayerManager.AnyoneHasTrinket(TrinketType.TRINKET_PAY_TO_WIN) then
+			subtype = subtype + RoomSubType.TREASURE_PAY_TO_PLAY --Named incorrectly
+		end
+		return subtype
+	end,
+	[RoomType.ROOM_SHOP] = function(rng)
+		return Mod.Item.MUDDLED_CROSS:GetShopSubtype(rng)
+	end,
+	[RoomType.ROOM_LIBRARY] = function(rng)
+		return Mod.Item.MUDDLED_CROSS:GetLibrarySubtype(rng)
+	end,
+	[RoomType.ROOM_DEVIL] = function(rng)
+		if PlayerManager.AnyoneHasTrinket(TrinketType.TRINKET_NUMBER_MAGNET) then
+			return RoomSubType.DEVIL_NUMBER_MAGNET
+		end
+	end
+}
 
 -- Essentially following the same rules as Red Key, more or less
 ---@param player EntityPlayer
@@ -52,13 +96,10 @@ function SOUL_OF_PETER:OnUse(_, player)
 	for _ = 1, SOUL_OF_PETER.NUM_ROOMS do
 		local stbtype = Isaac.GetCurrentStageConfigId()
 		local roomtype = RoomType.ROOM_DEFAULT
-		if rng:RandomFloat() <= SOUL_OF_PETER.SPECIAL_ROOM_CHANCE then
-			stbtype = StbType.SPECIAL_ROOMS
-			roomtype = SOUL_OF_PETER.ALLOWED_SPECIAL_ROOMS[rng:RandomInt(#SOUL_OF_PETER.ALLOWED_SPECIAL_ROOMS) + 1]
-		end
+		local subtype = ROOM_TYPE_TO_SUBTYPE[roomtype] and ROOM_TYPE_TO_SUBTYPE[roomtype](rng) or 0
 
 		-- Get a random 1x1 room that can accept a door on all sides
-		local roomConfig = RoomConfigHolder.GetRandomRoom(rng:GetSeed(), true, stbtype, roomtype, RoomShape.ROOMSHAPE_1x1, -1, -1, 0, 10, SOUL_OF_PETER.REQUIRED_DOORS)
+		local roomConfig = RoomConfigHolder.GetRandomRoom(rng:GetSeed(), true, stbtype, roomtype, RoomShape.ROOMSHAPE_1x1, -1, -1, 0, 10, SOUL_OF_PETER.REQUIRED_DOORS, subtype)
 		rng:Next()
 		local allowMultipleDoors = true
 		local allowSpecialNeighbors = true
