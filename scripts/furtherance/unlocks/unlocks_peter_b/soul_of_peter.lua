@@ -37,6 +37,12 @@ SOUL_OF_PETER.REQUIRED_DOORS = 4
 ---@param player EntityPlayer
 function SOUL_OF_PETER:OnUse(_, player)
 	local level = Mod.Level()
+	if Mod.Game:IsGreedMode()
+		or level:GetStage() == LevelStage.STAGE8
+	then
+		player:AnimateSad()
+		return
+	end
 
 	local dimension = -1 -- current dimension
 	local seed = level:GetDungeonPlacementSeed()
