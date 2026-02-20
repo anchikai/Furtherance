@@ -18,7 +18,7 @@ function TECHNOLOGY_MINUS_1:ShootLasers(ent)
 		then
 			local num = player:GetCollectibleNum(TECHNOLOGY_MINUS_1.ID) - 1
 			local maxLasers = 3 + num
-			local blocked = player:HasCollectible(CollectibleType.COLLECTIBLE_LACHRYPHAGY)
+			local blocked = player:IsCollectibleBlocked(CollectibleType.COLLECTIBLE_LACHRYPHAGY)
 			if not blocked then
 				player:BlockCollectible(CollectibleType.COLLECTIBLE_LACHRYPHAGY)
 			end
