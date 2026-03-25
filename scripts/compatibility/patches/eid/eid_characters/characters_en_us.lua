@@ -27,8 +27,9 @@ return function(modifiers)
 			Name = "Tainted Leah",
 			Description = {
 				"{{EmptyHeart}} Maximum of 24 heart containers",
+				"#{{DamageSmall}} Dealing enough damage to enemies will replace 1 {{BrokenHeart}} Broken Heart with an {{EmptyHeart}} empty heart container",
 				"#{{BrokenHeart}} Health above one heart will be slowly be replaced with Broken Hearts, 1 every 20 seconds",
-				"#↑ All stats up for every Half Red Heart Leah has",
+				"#↑ All stats up for every {{HalfHeart}} Half Red Heart Leah has",
 				"#{{SoulHeart}} Soul/Black Hearts are replaced with Red Hearts"
 			}
 		},
