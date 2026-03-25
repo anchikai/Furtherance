@@ -358,6 +358,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_REMOVE_COSTUME, resetCostume)
 
 ---@param ent Entity
 function FLIP_RENDERING:EntityUpdate(ent)
+	if not FLIP.PETER_B_MODIFIER_ACTIVE then return end
 	if ent:ToNPC() and ent.FrameCount < 10 or ent.FrameCount < 1 then return end
 	local data = Mod:GetData(ent)
 

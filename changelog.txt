@@ -15,6 +15,7 @@ General Changes/Bug Fixes
 - Fix Soul of Peter using the incorrect offset for Tainted Keeper's unique shop subtypes and not spawning them
 - ACTUALLY fix infinite loop of spawning tears and lasers with Technology -1 and Lachryphagy
 - Fix Ace of Shields and D16 affecting pedestals
+- Fix T. Peter's reflection outline effect always being active in flooded rooms while T. Peter isn't present
 
 Gameplay Changes
 - Soul of Leah now grants a one-time-use Heartbreak-like effect (since I couldn't get the health cap increase to work). Will grant 2 Broken Hearts and deal fake damage when used, but is also used automatically when you would take fatal damage
