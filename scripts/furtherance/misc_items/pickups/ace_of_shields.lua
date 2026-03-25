@@ -9,7 +9,8 @@ ACE_OF_SHIELDS.ID = Isaac.GetCardIdByName("Ace of Shields")
 ACE_OF_SHIELDS.BlacklistedPickupVariants = Mod:Set({
 	PickupVariant.PICKUP_BROKEN_SHOVEL,
 	PickupVariant.PICKUP_BED,
-	PickupVariant.PICKUP_MOMSCHEST
+	PickupVariant.PICKUP_MOMSCHEST,
+	PickupVariant.PICKUP_COLLECTIBLE
 })
 
 function ACE_OF_SHIELDS:OnUse(_, player)

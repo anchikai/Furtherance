@@ -173,7 +173,7 @@ return function(modifiers)
 		[Item.D16.ID] = {
 			Name = "D16",
 			Description = {
-				"Rerolls all heart pickups in the room into other heart variants"
+				"Rerolls all pickups in the room into random heart pickups"
 			}
 		},
 		[Item.D9.ID] = {
