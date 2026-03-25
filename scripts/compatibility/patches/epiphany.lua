@@ -202,13 +202,15 @@ local function epiphanyPatch()
 		end
 	end
 
-	--[[ Mod.Capsule.D9 = {
+	Furtherance.Capsule = {}
+
+	Furtherance.Capsule.D9 = {
 		ID = Isaac.GetCardIdByName("Capsule D9"),
 		WEIGHT = 0.3,
 		MOD = "Furtherance"
 	}
 
-	Mod.Capsule.D16 = {
+	Furtherance.Capsule.D16 = {
 		ID = Isaac.GetCardIdByName("Capsule D16"),
 		WEIGHT = 0.3,
 		MOD = "Furtherance"
@@ -216,20 +218,21 @@ local function epiphanyPatch()
 
 	--#region Dice Capsules
 	for name, capsuleData in pairs(Mod.Capsule) do
-		local weight = Dice.WEIGHT or 1
+		local weight = capsuleData.WEIGHT or 1
 		if capsuleData.MOD == "Furtherance" then
 			api:AddCardsToCardGroup("DiceCapsule", { V = capsuleData.ID, Weight = weight })
 
+			---@param player EntityPlayer
 			Mod:AddCallback(ModCallbacks.MC_USE_CARD, function(_, _, player, useFlags)
-				player:UseActiveItem(Mod.Item[name].ID, 1, -1)
-			end)
+				player:UseActiveItem(Mod.Item[name].ID, UseFlag.USE_NOANIM, -1)
+			end, capsuleData.ID)
 		end
 	end
 
-	Mod:AddExtraCallback(Mod.ExtraCallbacks.PRE_UNLOCK_CACHE, function(unlocks)
-		unlocks.Cards[Mod.Capsule.D9] = true
-		unlocks.Cards[Mod.Capsule.D16] = Mod.PersistGameData:Unlocked(Mod.Item.D16.ACHIEVEMENT)
-	end) ]]
+	Epiphany:AddExtraCallback(Epiphany.ExtraCallbacks.PRE_UNLOCK_CACHE, function(unlocks)
+		unlocks.Cards[Mod.Capsule.D9.ID] = true
+		unlocks.Cards[Mod.Capsule.D16.ID] = Mod.PersistGameData:Unlocked(Mod.Item.D16.ACHIEVEMENT)
+	end)
 end
 
 loader:RegisterPatch("Epiphany", epiphanyPatch)

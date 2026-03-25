@@ -23,8 +23,8 @@
 	<card type="object" pickup="119" description="Packaged ghost barrage" hud="Spooky Photo" name="Spooky Photo" achievement="9999" />
 	<card type="object" pickup="120" description="Packaged ghost barrage" hud="Haunted Photo" name="Haunted Photo" achievement="9999" />
 	<card type="object" pickup="121" description="Packaged ghost barrage" hud="Possessed Photo" name="Possessed Photo" achievement="9999" />
-	<card type="object" pickup="122" description="Smells like mod compatibility" hud="Capsule D9" name="Capsule D9" achievement="9999" />
-	<card type="object" pickup="123" description="Smells like mod compatibility" hud="Capsule D16" name="Capsule D16" achievement="9999" />
+	<card type="object" pickup="122" description="Smells like grape" hud="Capsule D9" name="Capsule D9" achievement="9999" />
+	<card type="object" pickup="123" description="Smells like cherry" hud="Capsule D16" name="Capsule D16" achievement="9999" />
 
 	<pilleffect name="Heartache Up" class="3-" mimiccharge="4" />
 	<pilleffect name="Heartache Down" class="3+" mimiccharge="6" />
