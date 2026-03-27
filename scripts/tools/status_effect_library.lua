@@ -1,6 +1,6 @@
 local Mod = Furtherance
 
-local VERSION = 1.12 --1.1.2
+local VERSION = 1.13 --1.1.3
 local game = Game()
 local floor = math.floor
 local min = math.min
@@ -80,12 +80,19 @@ local function InitMod()
 
 	---@type table<ModCallbacks, function[]>
 	StatusEffectLibrary.AddedCallbacks = {} -- for any vanilla callback functions added by this library
-
 	StatusEffectLibrary.Callbacks = {}
-
 	---@type table<string, StatusCallback[]>
-	StatusEffectLibrary.Callbacks.RegisteredCallbacks = game:GetFrameCount() == 0 and CACHED_CALLBACKS or {}
-	StatusEffectLibrary.AddedCallbacks = game:GetFrameCount() == 0 and CACHED_MOD_CALLBACKS or StatusEffectLibrary.AddedCallbacks
+	StatusEffectLibrary.Callbacks.RegisteredCallbacks = {}
+	if game:GetFrameCount() == 0 and CACHED_CALLBACKS then
+		StatusEffectLibrary.Callbacks.RegisteredCallbacks = CACHED_CALLBACKS
+	end
+
+	-- Unregister previous callbacks
+	for callback, funcs in pairs(CACHED_MOD_CALLBACKS or {}) do
+		for i = 1, #funcs do
+			StatusEffectLibrary:RemoveCallback(callback, funcs[i])
+		end
+	end
 
 	StatusEffectLibrary.EntityData = {}
 
@@ -736,7 +743,7 @@ local function InitFunctions()
 		end
 		if ent:HasEntityFlags(EntityFlag.FLAG_NO_STATUS_EFFECTS)
 			or (ent:ToNPC() and not ent:IsActiveEnemy(false))
-			or (ent:ToNPC() and not ent:ToNPC().CanShutDoors)
+			or (ent:ToNPC() and not ent:IsInvincible())
 		then
 			return false
 		end
@@ -936,13 +943,6 @@ local function InitFunctions()
 	function StatusEffectLibrary.OnEntityRemove(_, ent)
 		if StatusEffectLibrary.EntityData[GetPtrHash(ent)] then
 			StatusEffectLibrary.EntityData[GetPtrHash(ent)] = nil
-		end
-	end
-
-	-- Unregister previous callbacks
-	for callback, funcs in pairs(StatusEffectLibrary.AddedCallbacks) do
-		for i = 1, #funcs do
-			StatusEffectLibrary:RemoveCallback(callback, funcs[i])
 		end
 	end
 

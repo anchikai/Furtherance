@@ -207,11 +207,21 @@ local function InitMod()
 		HudHelper.AddedCallbacks[ModCallbacks.MC_GET_SHADER_PARAMS] = {}
 	end
 
+	---@type table<ModCallbacks, function[]>
+	HudHelper.AddedCallbacks = {} -- for any vanilla callback functions added by this library
 	HudHelper.Callbacks = {}
-
 	---@type table<string, HUDCallback[]>
-	HudHelper.Callbacks.RegisteredCallbacks = game:GetFrameCount() == 0 and CACHED_CALLBACKS or {}
-	HudHelper.AddedCallbacks = game:GetFrameCount() == 0 and CACHED_MOD_CALLBACKS or HudHelper.AddedCallbacks
+	HudHelper.Callbacks.RegisteredCallbacks = {}
+	if game:GetFrameCount() == 0 and CACHED_CALLBACKS then
+		HudHelper.Callbacks.RegisteredCallbacks = CACHED_CALLBACKS
+	end
+
+	-- Unregister previous callbacks
+	for callback, funcs in pairs(CACHED_MOD_CALLBACKS or {}) do
+		for i = 1, #funcs do
+			HudHelper:RemoveCallback(callback, funcs[i])
+		end
+	end
 
 	HudHelper.LoadedPatches = false
 
@@ -998,7 +1008,11 @@ local function InitFunctions()
 			end
 			local frame = floor(chargePercent * 100)
 			HUDSprite:SetFrame("Charging", frame)
-		elseif chargePercent == 0 and not HUDSprite:IsPlaying("Disappear") and not HUDSprite:IsFinished("Disappear") then
+		elseif chargePercent == 0
+			and not HUDSprite:IsPlaying("Disappear")
+			and not HUDSprite:IsFinished("Disappear")
+			and (HUDSprite:IsPlaying() or HUDSprite:GetAnimation() == "Charging")
+		then
 			HUDSprite:Play("Disappear", true)
 		end
 
@@ -1438,7 +1452,6 @@ local function InitFunctions()
 	---@param hudLayout HUDLayout
 	---@param hud HUDInfo_Active | HUDInfo_ActiveID
 	local function renderActiveHUDs(player, playerHUDIndex, hudLayout, pos, hud, i, isItem)
-		if REPENTOGON then return end
 		for slot = ActiveSlot.SLOT_POCKET, ActiveSlot.SLOT_PRIMARY, -1 do
 			local cornerHUD = min(4, playerHUDIndex)
 			if slot == ActiveSlot.SLOT_POCKET
@@ -1574,7 +1587,6 @@ local function InitFunctions()
 	---@param pos Vector
 	---@param hud HUDInfo_Health
 	local function renderHeartHUDs(player, playerHUDIndex, hudLayout, pos, hud, mainPlayer)
-		if REPENTOGON then return end
 		local maxColumns = HudHelper.Utils.GetMaxHeartColumns(hudLayout)
 		local alpha = HudHelper.Utils.CheckFadedHealth(player) and 0.3 or 1
 		hud.OnRender(player, playerHUDIndex, hudLayout, pos, maxColumns, alpha, mainPlayer)
@@ -1817,10 +1829,19 @@ local function InitFunctions()
 		for playerHUDIndex, hudPlayer in pairs(HudHelper.HUDPlayers) do
 			for i, entityPtr in pairs(hudPlayer) do
 				local player = tryGetPlayerFromPtr(entityPtr)
-				if not player then goto continue end
+				if not player then goto skipPlayer end
 				local hudLayout = HudHelper.Utils.GetHUDLayout(playerHUDIndex)
 
 				for hudType, hudTable in pairs(HudHelper.HUD_ELEMENTS) do
+					if REPENTOGON
+						and (
+							hudType == HudHelper.HUDType.HEALTH
+							or hudType == HudHelper.HUDType.ACTIVE
+							or hudType == HudHelper.HUDType.ACTIVE_ID
+						)
+					then
+						goto skipHUDType
+					end
 					extraYPadding = 0
 					---Separated as these are indexed uniquely by itemIDs instead of a priority order
 					if not isItemIDType[hudType] then
@@ -1872,7 +1893,7 @@ local function InitFunctions()
 							if not ((not player:IsCoopGhost() or hud.BypassGhostBaby)
 									and ((not hud.PreRenderCallback and not isPreCallback) or (hud.PreRenderCallback and isPreCallback))
 								) then
-								goto continue2
+								goto skipHUD
 							end
 							local pos = HudHelper.GetHUDPosition(playerHUDIndex)
 							if i == 2 then
@@ -1890,12 +1911,13 @@ local function InitFunctions()
 								---@cast hud HUDInfo_CardID | HUDInfo_PillID
 								renderPocketItemHUDs(player, playerHUDIndex, hudLayout, pos, hud, i, hudType == HudHelper.HUDType.CARD_ID, hudType == HudHelper.HUDType.PILL_ID)
 							end
-							::continue2::
+							::skipHUD::
 						end
 					end
+					::skipHUDType::
 				end
 
-				::continue::
+				::skipPlayer::
 			end
 		end
 		if #HudHelper.HUD_ELEMENTS[HudHelper.HUDType.HEALTH] ~= 0 and not REPENTOGON then
@@ -1908,13 +1930,6 @@ local function InitFunctions()
 		end
 		if Options.ExtraHUDStyle > 0 then
 			--HudHelper.RenderExtraItemHUDTrinkets(isPreCallback)
-		end
-	end
-
-	-- Unregister previous callbacks
-	for callback, funcs in pairs(HudHelper.AddedCallbacks) do
-		for i = 1, #funcs do
-			HudHelper:RemoveCallback(callback, funcs[i])
 		end
 	end
 

@@ -218,28 +218,28 @@ Furtherance.ACHIEVEMENT_COMPLETION = achievement("You've gone Further than Furth
 
 --#region Entity replacements
 
-Mod:RegisterReplacement({
-	OldType = Mod:Set({ EntityType.ENTITY_SLOT }),
-	OldVariant = Mod:Set({ SlotVariant.SLOT_MACHINE, SlotVariant.FORTUNE_TELLING_MACHINE, SlotVariant.CRANE_GAME }),
+Mod:RegisterReplacementEntity({
+	OldType = { EntityType.ENTITY_SLOT },
+	OldVariant = { SlotVariant.SLOT_MACHINE, SlotVariant.FORTUNE_TELLING_MACHINE, SlotVariant.CRANE_GAME },
 	NewType = EntityType.ENTITY_SLOT,
 	NewVariant = Mod.Slot.LOVE_TELLER.ID,
 	ReplacementChance = 0.05,
 	Achievement = Mod.Slot.LOVE_TELLER.ACHIEVEMENT,
 })
 
-Mod:RegisterReplacement({
-	OldType = Mod:Set({ EntityType.ENTITY_SLOT }),
-	OldVariant = Mod:Set({ SlotVariant.BEGGAR, SlotVariant.DEVIL_BEGGAR, SlotVariant.KEY_MASTER }),
+Mod:RegisterReplacementEntity({
+	OldType = { EntityType.ENTITY_SLOT },
+	OldVariant = { SlotVariant.BEGGAR, SlotVariant.DEVIL_BEGGAR, SlotVariant.KEY_MASTER },
 	NewType = EntityType.ENTITY_SLOT,
 	NewVariant = Mod.Slot.ESCORT_BEGGAR.ID,
 	ReplacementChance = 0.05,
 	Achievement = Mod.Slot.ESCORT_BEGGAR.ACHIEVEMENT,
 })
 
-Mod:RegisterReplacement({
-	OldType = Mod:Set({ EntityType.ENTITY_PICKUP }),
-	OldVariant = Mod:Set({ PickupVariant.PICKUP_HEART }),
-	OldSubtype = Mod:Set({ HeartSubType.HEART_SOUL }),
+Mod:RegisterReplacementPickup({
+	OldType = { EntityType.ENTITY_PICKUP },
+	OldVariant = { PickupVariant.PICKUP_HEART },
+	OldSubtype = { HeartSubType.HEART_SOUL },
 	NewType = EntityType.ENTITY_PICKUP,
 	NewVariant = PickupVariant.PICKUP_HEART,
 	NewSubtype = Mod.Pickup.MOON_HEART.ID,
@@ -247,9 +247,9 @@ Mod:RegisterReplacement({
 	Achievement = Mod.Pickup.MOON_HEART.ACHIEVEMENT
 })
 
-Mod:RegisterReplacement({
-	OldType = Mod:Set({ EntityType.ENTITY_PICKUP }),
-	OldVariant = Mod:Set({ PickupVariant.PICKUP_GRAB_BAG }),
+Mod:RegisterReplacementPickup({
+	OldType = { EntityType.ENTITY_PICKUP },
+	OldVariant = { PickupVariant.PICKUP_GRAB_BAG },
 	NewType = EntityType.ENTITY_PICKUP,
 	NewVariant = PickupVariant.PICKUP_GRAB_BAG,
 	NewSubtype = Mod.Pickup.GOLDEN_SACK.ID,
