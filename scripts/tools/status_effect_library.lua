@@ -1,6 +1,6 @@
 local Mod = Furtherance
 
-local VERSION = 1.13 --1.1.3
+local VERSION = 1.12 --1.1.2
 local game = Game()
 local floor = math.floor
 local min = math.min
