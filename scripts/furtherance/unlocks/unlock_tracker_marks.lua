@@ -13,13 +13,14 @@ function Furtherance:TryUpdateCompletionMark(playerType, completionType)
 				or completionType == CompletionType.SATAN
 				or completionType == CompletionType.LAMB
 				or completionType == CompletionType.BLUE_BABY)
-			and Isaac.AllTaintedCompletion(playerType, TaintedMarksGroup.POLAROID_NEGATIVE) > 0
 		then
-			return Mod.PersistGameData:TryUnlock(completionTable[TaintedMarksGroup.POLAROID_NEGATIVE])
-		elseif (completionType == CompletionType.BOSS_RUSH or completionType == CompletionType.HUSH)
-			and Isaac.AllTaintedCompletion(playerType, TaintedMarksGroup.SOULSTONE) > 0
-		then
-			return Mod.PersistGameData:TryUnlock(completionTable[TaintedMarksGroup.SOULSTONE])
+			if Isaac.AllTaintedCompletion(playerType, TaintedMarksGroup.POLAROID_NEGATIVE) > 0 then
+				return Mod.PersistGameData:TryUnlock(completionTable[TaintedMarksGroup.POLAROID_NEGATIVE])
+			end
+		elseif (completionType == CompletionType.BOSS_RUSH or completionType == CompletionType.HUSH) then
+			if Isaac.AllTaintedCompletion(playerType, TaintedMarksGroup.SOULSTONE) > 0 then
+				return Mod.PersistGameData:TryUnlock(completionTable[TaintedMarksGroup.SOULSTONE])
+			end
 		elseif completionTable[completionType] then
 			return Mod.PersistGameData:TryUnlock(completionTable[completionType])
 		end
