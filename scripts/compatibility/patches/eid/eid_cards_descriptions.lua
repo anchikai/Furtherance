@@ -80,6 +80,7 @@ local modifiers = {
 
 local descriptions = {
 	en_us = Mod.Include("scripts.compatibility.patches.eid.eid_cards.cards_en_us")(modifiers),
+	spa = Mod.Include("scripts.compatibility.patches.eid.eid_cards.cards_spa")(modifiers),
 }
 
 local allDescData = {}
