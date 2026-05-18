@@ -95,7 +95,7 @@ Furtherance:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, CallbackPriority.
 	for ptrHash, entityData in pairs(getData) do
 		local entityPointer = (entityData and entityData.Pointer)
 		if not (entityPointer and entityPointer.Ref) then
-			entityData[ptrHash] = nil
+			getData[ptrHash] = nil
 		end
 	end
 end)
